@@ -68,7 +68,6 @@ which gives the following with the above simple button program:
 
 ![](documentation_images/simple_macOS_darkmode_test.png)
 
-
 ## Ui-Elements
 
 ### CTkButton
