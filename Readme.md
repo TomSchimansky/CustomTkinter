@@ -5,7 +5,7 @@ With CustomTkinter you can create modern looking user
 interfaces in python with tkinter. CustomTkinter is a
 tkinter extension which provides extra ui-elements like
 the CTkButton, which can be used like a normal tkinter.Button,
-but can be customized with a border and corner_radius.
+but can be customized with a border and round edges.
 
 CustomTkinter also supports a light and dark theme,
 which can either be set manually or get controlled by
@@ -110,12 +110,12 @@ hover | enable/disable hover effect: True, False
 ### CTkLabel
 Example Code:
 ```python
-button = customtkinter.CTkButton(master=root_tk,
+label = customtkinter.CTkButton(master=root_tk,
                                  text="CTkLabel",
                                  width=120,
                                  height=25,
                                  corner_radius=8)
-button.place(relx=0.5, rely=0.5, anchor=tkinter.CENTER)
+label.place(relx=0.5, rely=0.5, anchor=tkinter.CENTER)
 ```
 <details>
 <summary>Show all arguments:</summary>
