@@ -11,6 +11,41 @@ CustomTkinter also supports a light and dark theme,
 which can either be set manually or get controlled by
 the system appearance mode (only macOS).
 
+### Example program (simple button):
+```python
+import tkinter
+import customtkinter
+
+root_tk = tkinter.Tk()
+root_tk.geometry("400x240")
+root_tk.title("CustomTkinter Test")
+
+def button_function():
+    print("button pressed")
+
+button = customtkinter.CTkButton(master=root_tk, corner_radius=10, command=button_function)
+button.place(relx=0.5, rely=0.5, anchor=tkinter.CENTER)
+
+root_tk.mainloop()
+```
+which gives the following:
+![](documentation_images/simple_button_test.png)
+
+### How to use macOS dark mode?
+If you have a python version with Tcl/Tk >= 8.6.9, then you can enable the macOS
+darkmode. Currently only the anaconda python versions have Tcl/Tk >= 8.6.9.
+```python
+import tkinter
+import customtkinter
+
+customtkinter.enable_macos_darkmode()
+customtkinter.set_appearance_mode("System")
+
+... the program ...
+
+customtkinter.disable_macos_darkmode()
+```
+
 ## Ui-Elements
 
 ### CTkButton
@@ -163,7 +198,7 @@ Example Code:
 frame = customtkinter.CTkSlider(master=root_tk,
                                 width=200,
                                 height=200,
-                               corner_radius=10)
+                                corner_radius=10)
 frame.place(relx=0.5, rely=0.5, anchor=tkinter.CENTER)
 ```
 <details>
