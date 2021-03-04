@@ -11,7 +11,6 @@ class CTkProgressBar(tkinter.Frame):
                  border_color=None,
                  fg_color=CTkColorManager.PROGRESS_BG,
                  progress_color=CTkColorManager.MAIN,
-                 function=None,
                  width=160,
                  height=20,
                  border_width=5,
@@ -45,8 +44,6 @@ class CTkProgressBar(tkinter.Frame):
                                      width=self.width,
                                      height=self.height)
         self.canvas.place(x=0, y=0)
-
-        self.function = function
 
         self.border_parts = []
         self.fg_parts = []

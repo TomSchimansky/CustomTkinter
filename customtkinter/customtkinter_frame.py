@@ -9,8 +9,8 @@ class CTkFrame(tkinter.Frame):
                  bg_color=None,
                  fg_color=None,
                  corner_radius=10,
-                 width=50,
-                 height=20,
+                 width=200,
+                 height=200,
                  **kwargs):
         super().__init__(*args, **kwargs)
 
