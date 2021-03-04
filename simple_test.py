@@ -42,6 +42,8 @@
 import tkinter
 import customtkinter
 
+customtkinter.enable_macos_darkmode()
+
 root_tk = tkinter.Tk()
 root_tk.geometry("250x150")
 root_tk.title("CustomTkinter Test")

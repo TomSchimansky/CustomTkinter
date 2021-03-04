@@ -1,3 +1,4 @@
+import sys
 
 
 class CTkColorManager:
@@ -25,5 +26,5 @@ class CTkColorManager:
         elif main_color.lower() == "blue":
             cls.set_theme_color("#1C94CF", "#5FB4DD")
 
-        elif main_color.lower() == "blue":
-            cls.set_theme_color("#1C94CF", "#5FB4DD")
+        else:
+            sys.stderr.write("WARNING (CTkColorManager): No such color theme available: {}\n".format(main_color))

@@ -14,22 +14,35 @@ the system appearance mode (only macOS).
 ### Example program (simple button):
 ```python
 import tkinter
-import customtkinter
+import customtkinter  # <- import the CustomTkinter module
 
-root_tk = tkinter.Tk()
+customtkinter.set_appearance_mode("Light")  # Other: "Dark", "System" (only macOS)
+
+root_tk = tkinter.Tk()  # create the Tk window like you normally do
 root_tk.geometry("400x240")
 root_tk.title("CustomTkinter Test")
 
 def button_function():
     print("button pressed")
 
+# Use CTkButton instead of tkinter Button
 button = customtkinter.CTkButton(master=root_tk, corner_radius=10, command=button_function)
 button.place(relx=0.5, rely=0.5, anchor=tkinter.CENTER)
 
 root_tk.mainloop()
 ```
 which gives the following:
+
 ![](documentation_images/simple_button_test.png)
+
+### Use custom colors and shapes:
+If you dont specify any colors, customtkinter uses the standard blue color in the light theme.
+You can change the color theme to dark by calling
+```customtkinter.set_appearance_mode("Dark")```.
+If you specify custom colors for CustomTkinter elements, the you can either use a
+tuple in the form: (light_color, dark_color). Or you can set a single color
+which will be used in light and dark theme.
+
 
 ### How to use macOS dark mode?
 If you have a python version with Tcl/Tk >= 8.6.9, then you can enable the macOS
@@ -45,6 +58,10 @@ customtkinter.set_appearance_mode("System")
 
 customtkinter.disable_macos_darkmode()
 ```
+which gives the following with the above simple button program:
+
+![](documentation_images/simple_macOS_darkmode_test.png)
+
 
 ## Ui-Elements
 
