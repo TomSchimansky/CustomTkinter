@@ -2,11 +2,11 @@ import tkinter
 import customtkinter
 
 customtkinter.enable_macos_darkmode()
-customtkinter.deactivate_threading()
+#customtkinter.set_appearance_mode("Light")
 
 app = tkinter.Tk()
 app.geometry("400x240")
-app.title("TkinterCustomButton")
+app.title("CustomTkinter Test")
 
 
 def button_function():
