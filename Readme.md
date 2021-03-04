@@ -8,7 +8,7 @@ the CTkButton, which can be used like a normal tkinter.Button,
 but can be customized with a border and corner_radius.
 
 CustomTkinter also supports a light and dark theme,
-which can be either set manually or gets controlled by
+which can either be set manually or get controlled by
 the system appearance mode (only macOS).
 
 Detailed documentation is coming soon....
