@@ -42,7 +42,13 @@ You can change the color theme to dark by calling
 If you specify custom colors for CustomTkinter elements, the you can either use a
 tuple in the form: (light_color, dark_color). Or you can set a single color
 which will be used in light and dark theme.
-
+```python
+button = customtkinter.CTkButton(master=root_tk,
+                                 fg_color=("black", "lightgray"),  # <- tuple color for light and dark theme
+                                 text="CTkButton",
+                                 command=button_event)
+button.place(relx=0.5, rely=0.5, anchor=tkinter.CENTER)
+```
 
 ### How to use macOS dark mode?
 If you have a python version with Tcl/Tk >= 8.6.9, then you can enable the macOS
