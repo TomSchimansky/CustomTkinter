@@ -55,6 +55,8 @@ button.place(relx=0.5, rely=0.5, anchor=tkinter.CENTER)
 ### How to use macOS dark mode?
 If you have a python version with Tcl/Tk >= 8.6.9, then you can enable the macOS
 darkmode. Currently only the anaconda python versions have Tcl/Tk >= 8.6.9.
+So if you want a dark window titlebar, you have to install anaconda python version
+or miniconda.
 ```python
 import tkinter
 import customtkinter
