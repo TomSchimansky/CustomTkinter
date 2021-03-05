@@ -263,10 +263,17 @@ bg_color | background color, tuple: (light_color, dark_color) or single color
 </details>
 
 ### Special commands
+Change appearance mode:
+```python
+customtkinter.set_appearance_mode("Light")
+customtkinter.set_appearance_mode("Dark")
+customtkinter.set_appearance_mode("System")  # macOS only
+
+print(customtkinter.get_appearance_mode())
+```
+
 Use macOS darkmode window style:
 ```python
-import customtkinter
-
 customtkinter.enable_macos_darkmode()  # get darkmode window style
 customtkinter.disable_macos_darkmode()  # disable darkmode (important!)
 ```
