@@ -77,6 +77,7 @@ enable the macOS darkmode, and used multpiple CTkFrames. It has some
 kind of a menu on the left side, and I used all CustomTkinter elements
 there are at the moment.Maybe this is a good reference if you want to
 create your own application with this library.
+(Code: /complex_example.py) 
 
 With macOS darkmode turned on, it looks like this:
 
