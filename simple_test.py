@@ -1,12 +1,12 @@
 import tkinter
-import customtkinter
+import customtkinter  # <- import the CustomTkinter module
 
 customtkinter.enable_macos_darkmode()
 customtkinter.set_appearance_mode("System")  # Other: "Dark", "System" (only macOS)
 
-app = tkinter.Tk()
-app.geometry("400x240")
-app.title("CustomTkinter Test")
+root_tk = tkinter.Tk()  # create the Tk window like you normally do
+root_tk.geometry("400x240")
+root_tk.title("CustomTkinter Test")
 
 
 def button_function():
@@ -17,7 +17,7 @@ def slider_function(value):
     progressbar_1.set(value)
 
 
-frame_1 = customtkinter.CTkFrame(master=app, width=300, height=200, corner_radius=15)
+frame_1 = customtkinter.CTkFrame(master=root_tk, width=300, height=200, corner_radius=15)
 frame_1.place(relx=0.5, rely=0.5, anchor=tkinter.CENTER)
 
 label_1 = customtkinter.CTkLabel(master=frame_1)
@@ -35,5 +35,5 @@ slider_1.place(relx=0.5, rely=0.7, anchor=tkinter.CENTER)
 entry_1 = customtkinter.CTkEntry(master=frame_1)
 entry_1.place(relx=0.5, rely=0.85, anchor=tkinter.CENTER)
 
-app.mainloop()
+root_tk.mainloop()
 customtkinter.disable_macos_darkmode()
