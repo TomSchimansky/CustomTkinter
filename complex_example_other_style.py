@@ -22,8 +22,9 @@ class App(tkinter.Tk):
 
         tkinter.Tk.__init__(self, *args, **kwargs)
 
-        if customtkinter.get_appearance_mode() == "Dark":
-            self.configure(bg="gray20")  # set window background to dark color
+        if "win" in sys.platform:
+            if customtkinter.get_appearance_mode() == "Dark":
+                self.configure(bg="gray20")  # set window background to dark color
 
         self.title(App.APP_NAME)
         self.geometry(str(App.WIDTH) + "x" + str(App.HEIGHT))
