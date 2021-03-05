@@ -1,7 +1,9 @@
 import tkinter
 import tkinter.messagebox
 import customtkinter
+import sys
 
+# Set dark appearance mode:
 customtkinter.set_appearance_mode("Dark")  # Other: "Light", "System"
 
 
@@ -19,6 +21,9 @@ class App(tkinter.Tk):
         customtkinter.enable_macos_darkmode()
 
         tkinter.Tk.__init__(self, *args, **kwargs)
+
+        if customtkinter.get_appearance_mode() == "Dark":
+            self.configure(bg="gray20")  # set window background to dark color
 
         self.title(App.APP_NAME)
         self.geometry(str(App.WIDTH) + "x" + str(App.HEIGHT))
