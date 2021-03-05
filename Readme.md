@@ -87,6 +87,12 @@ Otherwise it looks like this:
 
 ![](documentation_images/complex_example_light.png)
 
+But can also customize it by yourself. Here I changed the main
+colors and removed the round corners, and added a border to the buttons:
+
+![](documentation_images/complex_example_other_style.png)
+
+
 ## Documentation - CustomTkinter Elements
 
 ### CTkButton

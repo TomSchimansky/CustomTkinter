@@ -36,7 +36,10 @@ class CTkButton(tkinter.Frame):
 
         AppearanceModeTracker.add(self.set_appearance_mode)
 
-        self.fg_color = fg_color
+        if fg_color == None:
+            self.fg_color = self.bg_color
+        else:
+            self.fg_color = fg_color
         self.hover_color = hover_color
         self.border_color = border_color
         self.appearance_mode = AppearanceModeTracker.get_mode()  # 0: "Light" 1: "Dark"
@@ -167,13 +170,13 @@ class CTkButton(tkinter.Frame):
                                                                  self.height - self.inner_corner_radius - self.border_width))
 
         for part in self.canvas_fg_parts:
-            if type(self.fg_color) == tuple and len(self.hover_color) == 2:
+            if type(self.fg_color) == tuple and len(self.fg_color) == 2:
                 self.canvas.itemconfig(part, fill=self.fg_color[self.appearance_mode], width=0)
             else:
                 self.canvas.itemconfig(part, fill=self.fg_color, outline=self.fg_color, width=0)
 
         for part in self.canvas_border_parts:
-            if type(self.border_color) == tuple and len(self.hover_color) == 2:
+            if type(self.border_color) == tuple and len(self.border_color) == 2:
                 self.canvas.itemconfig(part, fill=self.border_color[self.appearance_mode], width=0)
             else:
                 self.canvas.itemconfig(part, fill=self.border_color, outline=self.border_color, width=0)
@@ -219,7 +222,7 @@ class CTkButton(tkinter.Frame):
 
     def on_leave(self, event=0):
         for part in self.canvas_fg_parts:
-            if type(self.fg_color) == tuple and len(self.hover_color) == 2:
+            if type(self.fg_color) == tuple and len(self.fg_color) == 2:
                 self.canvas.itemconfig(part, fill=self.fg_color[self.appearance_mode], width=0)
             else:
                 self.canvas.itemconfig(part, fill=self.fg_color, width=0)
