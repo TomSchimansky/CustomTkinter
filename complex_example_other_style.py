@@ -2,7 +2,7 @@ import tkinter
 import tkinter.messagebox
 import customtkinter
 
-customtkinter.set_appearance_mode("System")  # Other: "Light", "Dark"
+customtkinter.set_appearance_mode("Dark")  # Other: "Light", "System"
 
 
 class App(tkinter.Tk):
