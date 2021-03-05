@@ -127,12 +127,12 @@ class App(tkinter.Tk):
         self.slider_2.place(x=20, rely=0.7, anchor=tkinter.W)
         self.slider_2.set(0.7)
 
-        self.label_info_1 = customtkinter.CTkLabel(master=self.frame_right,
+        self.label_info_2 = customtkinter.CTkLabel(master=self.frame_right,
                                                    text="CTkLabel: Lorem ipsum",
-                                                   width=150,
+                                                   width=180,
                                                    height=20,
                                                    justify=tkinter.CENTER)
-        self.label_info_1.place(x=310, rely=0.6, anchor=tkinter.CENTER)
+        self.label_info_2.place(x=310, rely=0.6, anchor=tkinter.CENTER)
 
         self.button_4 = customtkinter.CTkButton(master=self.frame_right,
                                                 border_color=App.MAIN_COLOR,
