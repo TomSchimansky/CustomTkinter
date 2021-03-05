@@ -65,7 +65,7 @@ def activate_threading():
     AppearanceModeTracker.init_listener_function()
 
 
-def update_theme():
+def update_appearance_mode():
     if isinstance(AppearanceModeTracker.system_mode_listener, SystemAppearanceModeListenerNoThread):
         AppearanceModeTracker.system_mode_listener.update()
     else:
