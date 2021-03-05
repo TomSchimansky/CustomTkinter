@@ -12,11 +12,11 @@ which can either be set manually or get controlled by
 the system appearance mode (only macOS).
 
 ### Example program (simple button):
+To use CustomTkinter, just place the /customtkinter folder from this repository
+next to your program, and then you can do `import customtkinter`.
 ```python
 import tkinter
 import customtkinter  # <- import the CustomTkinter module
-
-customtkinter.set_appearance_mode("Light")  # Other: "Dark", "System" (only macOS)
 
 root_tk = tkinter.Tk()  # create the Tk window like you normally do
 root_tk.geometry("400x240")
@@ -43,6 +43,8 @@ If you specify custom colors for CustomTkinter elements, the you can either use 
 tuple in the form: (light_color, dark_color). Or you can set a single color
 which will be used in light and dark theme.
 ```python
+customtkinter.set_appearance_mode("Dark") # Other: "Light", "System" (only macOS)
+
 button = customtkinter.CTkButton(master=root_tk,
                                  fg_color=("black", "lightgray"),  # <- tuple color for light and dark theme
                                  text="CTkButton",

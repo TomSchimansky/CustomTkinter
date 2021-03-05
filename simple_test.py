@@ -42,7 +42,8 @@
 import tkinter
 import customtkinter
 
-customtkinter.enable_macos_darkmode()
+# customtkinter.enable_macos_darkmode()
+customtkinter.set_appearance_mode("light")
 
 root_tk = tkinter.Tk()
 root_tk.geometry("250x150")
@@ -55,3 +56,4 @@ button = customtkinter.CTkButton(master=root_tk, corner_radius=10, command=butto
 button.place(relx=0.5, rely=0.5, anchor=tkinter.CENTER)
 
 root_tk.mainloop()
+customtkinter.disable_macos_darkmode()
