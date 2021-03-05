@@ -70,7 +70,23 @@ which gives the following with the above simple button program:
 
 ![](documentation_images/simple_macOS_darkmode_test.png)
 
-## Ui-Elements
+### Advanced example with multiple CTkFrames
+
+Here I used the ``customtkinter.enable_macos_darkmode()`` command to
+enable the macOS darkmode, and used multpiple CTkFrames. It has some
+kind of a menu on the left side, and I used all CustomTkinter elements
+there are at the moment.Maybe this is a good reference if you want to
+create your own application with this library.
+
+With macOS darkmode turned on, it looks like this:
+
+![](documentation_images/complex_example_dark.png)
+
+Otherwise it looks like this:
+
+![](documentation_images/complex_example_light.png)
+
+## Documentation - CustomTkinter Elements
 
 ### CTkButton
 Examle Code:
@@ -111,11 +127,11 @@ hover | enable/disable hover effect: True, False
 ### CTkLabel
 Example Code:
 ```python
-label = customtkinter.CTkButton(master=root_tk,
-                                 text="CTkLabel",
-                                 width=120,
-                                 height=25,
-                                 corner_radius=8)
+label = customtkinter.CTkLabel(master=root_tk,
+                               text="CTkLabel",
+                               width=120,
+                               height=25,
+                               corner_radius=8)
 label.place(relx=0.5, rely=0.5, anchor=tkinter.CENTER)
 ```
 <details>
@@ -193,10 +209,10 @@ button_hover_color | hover color, tuple: (light_color, dark_color) or single col
 ### CTkProgressBar
 Example Code:
 ```python
-progressbar = customtkinter.CTkSlider(master=root_tk,
-                                      width=160,
-                                      height=20,
-                                      border_width=5)
+progressbar = customtkinter.CTkProgressBar(master=root_tk,
+                                           width=160,
+                                           height=20,
+                                           border_width=5)
 progressbar.place(relx=0.5, rely=0.5, anchor=tkinter.CENTER)
 
 progressbar.set(value)
@@ -219,10 +235,10 @@ progress_color | progress color, tuple: (light_color, dark_color) or single colo
 ### CTkFrame
 Example Code:
 ```python
-frame = customtkinter.CTkSlider(master=root_tk,
-                                width=200,
-                                height=200,
-                                corner_radius=10)
+frame = customtkinter.CTkFrame(master=root_tk,
+                               width=200,
+                               height=200,
+                               corner_radius=10)
 frame.place(relx=0.5, rely=0.5, anchor=tkinter.CENTER)
 ```
 <details>

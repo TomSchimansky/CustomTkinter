@@ -9,7 +9,7 @@ class CTkColorManager:
     SLIDER_BG = ("#6B6B6B", "#222222")
     PROGRESS_BG = ("#6B6B6B", "#222222")
     FRAME = ("#D4D5D6", "#3F3F3F")
-    FRAME_2 = ("#505050", "#505050")
+    FRAME_2 = ("#BFBEC1", "#505050")
 
     @classmethod
     def set_theme_color(cls, hex_color, hex_color_hover):

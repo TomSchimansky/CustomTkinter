@@ -111,3 +111,12 @@ class CTkEntry(tkinter.Frame):
 
         self.draw()
 
+    def delete(self, *args, **kwargs):
+        return self.entry.delete(*args, **kwargs)
+
+    def insert(self, *args, **kwargs):
+        return self.entry.insert(*args, **kwargs)
+
+    def get(self):
+        return self.entry.get()
+

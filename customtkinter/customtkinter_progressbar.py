@@ -8,12 +8,12 @@ from .customtkinter_color_manager import CTkColorManager
 class CTkProgressBar(tkinter.Frame):
     def __init__(self,
                  bg_color=None,
-                 border_color=None,
+                 border_color=CTkColorManager.PROGRESS_BG,
                  fg_color=CTkColorManager.PROGRESS_BG,
                  progress_color=CTkColorManager.MAIN,
                  width=160,
-                 height=20,
-                 border_width=5,
+                 height=10,
+                 border_width=0,
                  *args, **kwargs):
         super().__init__(*args, **kwargs)
 
