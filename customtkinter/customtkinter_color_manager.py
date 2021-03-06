@@ -16,8 +16,6 @@ class CTkColorManager:
         cls.MAIN = (hex_color, hex_color)
         cls.MAIN_HOVER = (hex_color_hover, hex_color_hover)
 
-        print(CTkColorManager.MAIN, id(CTkColorManager))
-
     @classmethod
     def set_theme(cls, main_color):
         if main_color.lower() == "green":

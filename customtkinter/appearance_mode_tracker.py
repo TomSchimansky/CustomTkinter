@@ -1,7 +1,12 @@
 from threading import Thread
 from time import sleep
-import darkdetect
 import sys
+
+if sys.platform == "darwin":
+    try:
+        import darkdetect
+    except ImportError as e:
+        sys.stderr.write(e + "\nYou have to install darkdetect: pip install darkdetect")
 
 
 class SystemAppearanceModeListener(Thread):

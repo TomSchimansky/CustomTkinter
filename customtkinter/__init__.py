@@ -22,7 +22,7 @@ def enable_macos_darkmode():
             sys.stderr.write("WARNING (customtkinter.enable_macos_darkmode): " +
                              "This command forces macOS dark-mode on all programs." +
                              "This can cause bugs on some other programs.\n" +
-                             "Disable it by calling customtkinter.disable_macos_darkmode at the end of the program.\n")
+                             "Disable it by calling customtkinter.disable_macos_darkmode() at the end of the program.\n")
         else:
             sys.stderr.write("WARNING (customtkinter.enable_macos_darkmode): " +
                              "Currently this works only with anaconda python version (Tcl/Tk >= 8.6.9).\n" +
@@ -58,7 +58,7 @@ def deactivate_threading():
     AppearanceModeTracker.init_listener_function(no_thread=True)
     sys.stderr.write("WARNING (customtkinter.deactivate_threading): Automatic threaded search for a change of the " +
                      "system appearance mode is deativated now.\nYou have to update the appearance mode manually " +
-                     "in your mainloop by calling customtkinter.update_theme() every time.\n")
+                     "in your mainloop by calling customtkinter.update_appearance_mode() every time.\n")
 
 
 def activate_threading():
