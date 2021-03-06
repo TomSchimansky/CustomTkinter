@@ -6,7 +6,7 @@ if sys.platform == "darwin":
     try:
         import darkdetect
     except ImportError as e:
-        sys.stderr.write(e + "\nYou have to install darkdetect: pip install darkdetect")
+        sys.stderr.write(str(e) + "\nERROR: You have to install darkdetect: pip install darkdetect\n")
 
 
 class SystemAppearanceModeListener(Thread):
@@ -36,9 +36,12 @@ class SystemAppearanceModeListener(Thread):
     @staticmethod
     def detect_appearance_mode():
         if sys.platform == "darwin":
-            if darkdetect.theme() == "Dark":
-                return 1  # Dark
-            else:
+            try:
+                if darkdetect.theme() == "Dark":
+                    return 1  # Dark
+                else:
+                    return 0  # Light
+            except NameError:
                 return 0  # Light
         else:
             return 0  # Light
@@ -70,9 +73,12 @@ class SystemAppearanceModeListenerNoThread():
     @staticmethod
     def detect_appearance_mode():
         if sys.platform == "darwin":
-            if darkdetect.theme() == "Dark":
-                return 1  # Dark
-            else:
+            try:
+                if darkdetect.theme() == "Dark":
+                    return 1  # Dark
+                else:
+                    return 0  # Light
+            except NameError:
                 return 0  # Light
         else:
             return 0  # Light
