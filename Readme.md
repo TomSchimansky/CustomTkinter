@@ -94,6 +94,14 @@ colors and removed the round corners, and added a border to the buttons:
 
 ![](documentation_images/complex_example_other_style.png)
 
+### CTkButton with images
+It's also possible to put an image on a CTkButton. You just have to
+pass a PhotoImage object to the CTkButton with the argument ``image``.
+You can find an example program ( /simple_test_images.py ), where I
+created two buttons with a bell and a settings image on them:
+
+![](documentation_images/CTkButton_with_images.png)
+
 
 ## Documentation - CustomTkinter Elements
 

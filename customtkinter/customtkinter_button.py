@@ -23,6 +23,7 @@ class CTkButton(tkinter.Frame):
                  text_color=CTkColorManager.TEXT,
                  text="CTkButton",
                  hover=True,
+                 image=None,
                  *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -75,6 +76,7 @@ class CTkButton(tkinter.Frame):
 
         self.function = command
         self.hover = hover
+        self.image = image
 
         self.configure(width=self.width, height=self.height)
 
@@ -96,7 +98,8 @@ class CTkButton(tkinter.Frame):
 
         self.canvas_fg_parts = []
         self.canvas_border_parts = []
-        self.text_part = None
+        self.text_label = None
+        self.image_label = None
 
         self.draw()
 
@@ -181,17 +184,49 @@ class CTkButton(tkinter.Frame):
             else:
                 self.canvas.itemconfig(part, fill=self.border_color, outline=self.border_color, width=0)
 
-        self.text_part = self.canvas.create_text(self.width / 2,
-                                                 self.height / 2,
-                                                 text=self.text,
-                                                 font=self.text_font)
+        # no image provided
+        if self.image is None:
+            self.text_label = tkinter.Label(master=self,
+                                            text=self.text,
+                                            font=self.text_font)
+            self.text_label.place(relx=0.5, rely=0.5, anchor=tkinter.CENTER)
 
-        if type(self.text_color) == tuple and len(self.text_color) == 2:
-            self.canvas.itemconfig(self.text_part, fill=self.text_color[self.appearance_mode])
+            if self.hover is True:
+                self.text_label.bind("<Enter>", self.on_enter)
+                self.text_label.bind("<Leave>", self.on_leave)
+
+            self.text_label.bind("<Button-1>", self.clicked)
+            self.text_label.bind("<Button-1>", self.clicked)
+
+            if type(self.text_color) == tuple and len(self.text_color) == 2:
+                self.text_label.configure(fg=self.text_color[self.appearance_mode])
+            else:
+                self.text_label.configure(fg=self.text_color)
+
+            if type(self.fg_color) == tuple and len(self.fg_color) == 2:
+                self.text_label.configure(bg=self.fg_color[self.appearance_mode])
+            else:
+                self.text_label.configure(bg=self.fg_color)
+
+            self.set_text(self.text)
+
+        # use image for button
         else:
-            self.canvas.itemconfig(self.text_part, fill=self.text_color)
+            self.image_label = tkinter.Label(master=self,
+                                             image=self.image)
+            self.image_label.place(relx=0.5, rely=0.5, anchor=tkinter.CENTER)
 
-        self.set_text(self.text)
+            if self.hover is True:
+                self.image_label.bind("<Enter>", self.on_enter)
+                self.image_label.bind("<Leave>", self.on_leave)
+
+            self.image_label.bind("<Button-1>", self.clicked)
+            self.image_label.bind("<Button-1>", self.clicked)
+
+            if type(self.fg_color) == tuple and len(self.fg_color) == 2:
+                self.image_label.configure(bg=self.fg_color[self.appearance_mode])
+            else:
+                self.image_label.configure(bg=self.fg_color)
 
     def configure_color(self, bg_color=None, fg_color=None, hover_color=None, text_color=None):
         if bg_color is not None:
@@ -211,7 +246,9 @@ class CTkButton(tkinter.Frame):
         self.draw()
 
     def set_text(self, text):
-        self.canvas.itemconfig(self.text_part, text=text)
+        self.text = text
+        if self.text_label is not None:
+            self.text_label.configure(text=self.text)
 
     def on_enter(self, event=0):
         for part in self.canvas_fg_parts:
@@ -220,12 +257,36 @@ class CTkButton(tkinter.Frame):
             else:
                 self.canvas.itemconfig(part, fill=self.hover_color, width=0)
 
+        if self.text_label is not None:
+            if type(self.fg_color) == tuple and len(self.fg_color) == 2:
+                self.text_label.configure(bg=self.hover_color[self.appearance_mode])
+            else:
+                self.text_label.configure(bg=self.hover_color)
+
+        if self.image_label is not None:
+            if type(self.fg_color) == tuple and len(self.fg_color) == 2:
+                self.image_label.configure(bg=self.hover_color[self.appearance_mode])
+            else:
+                self.image_label.configure(bg=self.hover_color)
+
     def on_leave(self, event=0):
         for part in self.canvas_fg_parts:
             if type(self.fg_color) == tuple and len(self.fg_color) == 2:
                 self.canvas.itemconfig(part, fill=self.fg_color[self.appearance_mode], width=0)
             else:
                 self.canvas.itemconfig(part, fill=self.fg_color, width=0)
+
+        if self.text_label is not None:
+            if type(self.fg_color) == tuple and len(self.fg_color) == 2:
+                self.text_label.configure(bg=self.fg_color[self.appearance_mode])
+            else:
+                self.text_label.configure(bg=self.fg_color)
+
+        if self.image_label is not None:
+            if type(self.fg_color) == tuple and len(self.fg_color) == 2:
+                self.image_label.configure(bg=self.fg_color[self.appearance_mode])
+            else:
+                self.image_label.configure(bg=self.fg_color)
 
     def clicked(self, event=0):
         if self.function is not None:
