@@ -249,6 +249,8 @@ class CTkButton(tkinter.Frame):
         self.text = text
         if self.text_label is not None:
             self.text_label.configure(text=self.text)
+        else:
+            sys.stderr.write("ERROR (CTkButton): Cant change text because button has no text.")
 
     def change_image(self, image):
         if self.image_label is not None:
