@@ -250,6 +250,13 @@ class CTkButton(tkinter.Frame):
         if self.text_label is not None:
             self.text_label.configure(text=self.text)
 
+    def change_image(self, image):
+        if self.image_label is not None:
+            self.image = image
+            self.image_label.configure(image=self.image)
+        else:
+            sys.stderr.write("ERROR (CTkButton): Cant change image because button has no image.")
+
     def on_enter(self, event=0):
         for part in self.canvas_fg_parts:
             if type(self.hover_color) == tuple and len(self.hover_color) == 2:

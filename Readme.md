@@ -139,6 +139,18 @@ hover_color | hover color, tuple: (light_color, dark_color) or single color
 text_color | text color, tuple: (light_color, dark_color) or single color
 text_font | button text font, tuple: (font_name, size)
 hover | enable/disable hover effect: True, False
+image | put an image on the button, removes the text, must be class PhotoImage
+
+CTkButton Methods:
+```python
+CTkButton.set_text(new_text)
+CTkButton.change_image(new_image)
+CTkButton.configure_color(bg_color=new_bg_color,
+                          fg_color=new_fg_color,
+                          hover_color=new_hover_color,
+                          text_color=new_text_color)
+```
+
 </details>
 
 ### CTkLabel
