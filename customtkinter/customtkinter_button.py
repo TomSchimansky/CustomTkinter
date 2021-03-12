@@ -267,13 +267,13 @@ class CTkButton(tkinter.Frame):
                 self.canvas.itemconfig(part, fill=self.hover_color, width=0)
 
         if self.text_label is not None:
-            if type(self.fg_color) == tuple and len(self.fg_color) == 2:
+            if type(self.hover_color) == tuple and len(self.hover_color) == 2:
                 self.text_label.configure(bg=self.hover_color[self.appearance_mode])
             else:
                 self.text_label.configure(bg=self.hover_color)
 
         if self.image_label is not None:
-            if type(self.fg_color) == tuple and len(self.fg_color) == 2:
+            if type(self.hover_color) == tuple and len(self.hover_color) == 2:
                 self.image_label.configure(bg=self.hover_color[self.appearance_mode])
             else:
                 self.image_label.configure(bg=self.hover_color)

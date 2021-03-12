@@ -110,6 +110,7 @@ class App(tkinter.Tk):
                                                         height=15,
                                                         border_width=0)
         self.progressbar.place(relx=0.5, rely=0.85, anchor=tkinter.S)
+        self.progressbar.set(0.65)
 
         # ============ frame_right <- ============
 
@@ -144,7 +145,7 @@ class App(tkinter.Tk):
                                                 border_color=App.MAIN_COLOR,
                                                 fg_color=None,
                                                 hover_color=App.MAIN_HOVER,
-                                                height=25,
+                                                height=28,
                                                 text="CTkButton",
                                                 command=self.button_event,
                                                 border_width=2,
@@ -153,7 +154,7 @@ class App(tkinter.Tk):
 
         self.entry = customtkinter.CTkEntry(master=self.frame_right,
                                             width=120,
-                                            height=25,
+                                            height=28,
                                             corner_radius=0)
         self.entry.place(relx=0.33, rely=0.92, anchor=tkinter.CENTER)
         self.entry.insert(0, "CTkEntry")
@@ -162,16 +163,12 @@ class App(tkinter.Tk):
                                                 border_color=App.MAIN_COLOR,
                                                 fg_color=None,
                                                 hover_color=App.MAIN_HOVER,
-                                                height=25,
+                                                height=28,
                                                 text="CTkButton",
                                                 command=self.button_event,
                                                 border_width=2,
                                                 corner_radius=0)
         self.button_5.place(relx=0.66, rely=0.92, anchor=tkinter.CENTER)
-
-
-
-        self.progressbar.set(0.65)
 
     def button_event(self):
         print("Button pressed")
