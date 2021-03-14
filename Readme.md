@@ -72,6 +72,11 @@ which gives the following with the above simple button program:
 
 ![](documentation_images/simple_macOS_darkmode_test.png)
 
+If you set the appearance mode to "System", it should change with
+the System mode:
+
+![](documentation_images/customtkinter_mode_switch.gif)
+
 ### Advanced example with multiple CTkFrames
 
 Here I used the ``customtkinter.enable_macos_darkmode()`` command to

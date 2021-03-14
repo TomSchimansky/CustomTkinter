@@ -4,6 +4,7 @@ from .customtkinter_frame import CTkFrame
 from .customtkinter_progressbar import CTkProgressBar
 from .customtkinter_label import CTkLabel
 from .customtkinter_entry import CTkEntry
+from .customtkinter_dialog import CTkDialog
 
 from .appearance_mode_tracker import AppearanceModeTracker, SystemAppearanceModeListenerNoThread
 from .customtkinter_color_manager import CTkColorManager

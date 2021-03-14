@@ -9,8 +9,10 @@ root_tk = tkinter.Tk()  # create the Tk window like you normally do
 root_tk.geometry("400x240")
 root_tk.title("CustomTkinter Test")
 
+
 def button_function():
     print("button pressed")
+
 
 # load images as PhotoImage
 settings_image = ImageTk.PhotoImage(Image.open("test_images/settings.png").resize((40, 40)))

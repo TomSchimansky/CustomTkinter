@@ -125,7 +125,7 @@ class CTkLabel(tkinter.Frame):
         self.draw()
 
     def set_text(self, text):
-        self.text_label.configure(text=text)
+        self.text_label.configure(text=text, width=len(self.text))
 
     def change_appearance_mode(self, mode_string):
         if mode_string.lower() == "dark":
