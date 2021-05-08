@@ -1,3 +1,7 @@
+![PyPI](https://img.shields.io/pypi/v/customtkinter)
+![PyPI - Downloads](https://img.shields.io/pypi/dm/customtkinter)
+![PyPI - License](https://img.shields.io/pypi/l/customtkinter)
+
 # CustomTkinter
 ![](documentation_images/customtkinter_comparison.png)
 
