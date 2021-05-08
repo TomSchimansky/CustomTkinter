@@ -11,9 +11,17 @@ CustomTkinter also supports a light and dark theme,
 which can either be set manually or get controlled by
 the system appearance mode (only macOS).
 
-### Example program (simple button):
+### Instalation
+
 To use CustomTkinter, just place the /customtkinter folder from this repository
-next to your program, and then you can do `import customtkinter`.
+next to your program, or **install the module with pip**:
+
+```
+pip install customtkinter
+```
+
+### Example program (simple button):
+To test customtkinter you can try this simple example with only a single button:
 ```python
 import tkinter
 import customtkinter  # <- import the CustomTkinter module
