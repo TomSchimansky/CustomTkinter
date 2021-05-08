@@ -23,6 +23,7 @@ next to your program, or **install the module with pip**:
 ```
 pip install customtkinter
 ```
+PyPI: https://pypi.org/project/customtkinter/
 
 ### Example program (simple button):
 To test customtkinter you can try this simple example with only a single button:
