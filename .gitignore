@@ -1,3 +1,9 @@
 .DS_Store
 .idea/
 __pycache__/
+/build/
+/dist/
+/test/
+/documentation_images/customtkinter_design.afdesign
+/images/
+Readme_pypi.md
