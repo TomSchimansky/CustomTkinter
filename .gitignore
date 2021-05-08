@@ -6,4 +6,5 @@ __pycache__/
 /test/
 /documentation_images/customtkinter_design.afdesign
 /images/
-Readme_pypi.md
+/Readme_pypi.md
+project.toml

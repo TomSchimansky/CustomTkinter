@@ -3,7 +3,10 @@ import os
 
 
 def read(filename):
-    return open(os.path.join(os.path.dirname(__file__), filename)).read()
+    try:
+        return open(os.path.join(os.path.dirname(__file__), filename)).read()
+    except Exception as err:
+        return ""
 
 
 setup(name="customtkinter",
