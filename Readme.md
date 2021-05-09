@@ -1,5 +1,5 @@
 ![PyPI](https://img.shields.io/pypi/v/customtkinter)
-![PyPI - Downloads](https://img.shields.io/pypi/dm/customtkinter?color=green)
+![PyPI - Downloads](https://img.shields.io/pypi/dm/customtkinter?color=green&label=pip%20downloads)
 ![PyPI - License](https://img.shields.io/pypi/l/customtkinter)
 
 # CustomTkinter
