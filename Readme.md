@@ -56,7 +56,7 @@ If you specify custom colors for CustomTkinter elements, the you can either use 
 tuple in the form: (light_color, dark_color). Or you can set a single color
 which will be used in light and dark theme.
 ```python
-customtkinter.set_appearance_mode("Dark") # Other: "Light", "System" (only macOS)
+customtkinter.set_appearance_mode("Dark") # Other: "Light", "System"
 
 button = customtkinter.CTkButton(master=root_tk,
                                  fg_color=("black", "lightgray"),  # <- tuple color for light and dark theme
