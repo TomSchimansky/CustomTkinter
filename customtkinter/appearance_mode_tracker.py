@@ -1,12 +1,13 @@
 from threading import Thread
 from time import sleep
 import sys
+from distutils.version import StrictVersion as Version
+import darkdetect
 
-if sys.platform == "darwin":
-    try:
-        import darkdetect
-    except ImportError as e:
-        sys.stderr.write(str(e) + "\nERROR: You have to install darkdetect: pip install darkdetect\n")
+if Version(darkdetect.__version__) < Version("0.3.1"):
+    sys.stderr.write("WARNING: You have to update the darkdetect library: pip3 install --upgrade darkdetect\n")
+    if sys.platform != "darwin":
+        exit()
 
 
 class SystemAppearanceModeListener(Thread):
@@ -35,15 +36,12 @@ class SystemAppearanceModeListener(Thread):
 
     @staticmethod
     def detect_appearance_mode():
-        if sys.platform == "darwin":
-            try:
-                if darkdetect.theme() == "Dark":
-                    return 1  # Dark
-                else:
-                    return 0  # Light
-            except NameError:
+        try:
+            if darkdetect.theme() == "Dark":
+                return 1  # Dark
+            else:
                 return 0  # Light
-        else:
+        except NameError:
             return 0  # Light
 
     def run(self):
@@ -72,15 +70,12 @@ class SystemAppearanceModeListenerNoThread():
 
     @staticmethod
     def detect_appearance_mode():
-        if sys.platform == "darwin":
-            try:
-                if darkdetect.theme() == "Dark":
-                    return 1  # Dark
-                else:
-                    return 0  # Light
-            except NameError:
+        try:
+            if darkdetect.theme() == "Dark":
+                return 1  # Dark
+            else:
                 return 0  # Light
-        else:
+        except NameError:
             return 0  # Light
 
     def update(self):
