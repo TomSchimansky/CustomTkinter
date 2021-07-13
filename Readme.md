@@ -13,7 +13,7 @@ but can be customized with a border and round edges.
 
 CustomTkinter also supports a light and dark theme,
 which can either be set manually or get controlled by
-the system appearance mode (only macOS).
+the system appearance mode.
 
 ### Installation
 
@@ -305,7 +305,7 @@ Change appearance mode:
 ```python
 customtkinter.set_appearance_mode("Light")
 customtkinter.set_appearance_mode("Dark")
-customtkinter.set_appearance_mode("System")  # macOS only
+customtkinter.set_appearance_mode("System")
 
 print(customtkinter.get_appearance_mode())
 ```

@@ -1,9 +1,9 @@
 import tkinter
 import customtkinter  # <- import the CustomTkinter module
-#from PIL import Image, ImageTk  # <- import PIL for the images
+from PIL import Image, ImageTk  # <- import PIL for the images
 
-#customtkinter.enable_macos_darkmode()
-#customtkinter.set_appearance_mode("System")  # Other: "Dark", "Light"
+customtkinter.enable_macos_darkmode()
+customtkinter.set_appearance_mode("System")  # Other: "Dark", "Light"
 
 root_tk = tkinter.Tk()  # create the Tk window like you normally do
 root_tk.geometry("400x240")
