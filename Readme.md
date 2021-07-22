@@ -158,6 +158,7 @@ text_color | text color, tuple: (light_color, dark_color) or single color
 text_font | button text font, tuple: (font_name, size)
 hover | enable/disable hover effect: True, False
 image | put an image on the button, removes the text, must be class PhotoImage
+state | tkinter.NORMAL (standard) or tkinter.DISABLED (not clickable, darker color)
 
 CTkButton Methods:
 ```python
@@ -167,6 +168,10 @@ CTkButton.configure_color(bg_color=new_bg_color,
                           fg_color=new_fg_color,
                           hover_color=new_hover_color,
                           text_color=new_text_color)
+
+CTkButton.configure(state=tkinter.DISABLED)
+CTkButton.configure(state=tkinter.NORMAL)
+button_state = CTkButton.state
 ```
 
 </details>

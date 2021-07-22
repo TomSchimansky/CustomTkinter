@@ -29,6 +29,11 @@ progressbar_1.place(relx=0.5, rely=0.25, anchor=tkinter.CENTER)
 button_1 = customtkinter.CTkButton(master=frame_1, corner_radius=10, command=button_function)
 button_1.place(relx=0.5, rely=0.5, anchor=tkinter.CENTER)
 
+#button_1.configure(state="disabled")
+
+for child in button_1.winfo_children():
+    child.configure(state='disable')
+
 slider_1 = customtkinter.CTkSlider(master=frame_1, command=slider_function)
 slider_1.place(relx=0.5, rely=0.7, anchor=tkinter.CENTER)
 

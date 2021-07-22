@@ -24,6 +24,7 @@ class CTkButton(tkinter.Frame):
                  text="CTkButton",
                  hover=True,
                  image=None,
+                 state=tkinter.NORMAL,
                  *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -37,7 +38,7 @@ class CTkButton(tkinter.Frame):
 
         AppearanceModeTracker.add(self.set_appearance_mode)
 
-        if fg_color == None:
+        if fg_color is None:
             self.fg_color = self.bg_color
         else:
             self.fg_color = fg_color
@@ -75,6 +76,7 @@ class CTkButton(tkinter.Frame):
             self.text_font = text_font
 
         self.function = command
+        self.state = state
         self.hover = hover
         self.image = image
 
@@ -174,9 +176,18 @@ class CTkButton(tkinter.Frame):
 
         for part in self.canvas_fg_parts:
             if type(self.fg_color) == tuple and len(self.fg_color) == 2:
-                self.canvas.itemconfig(part, fill=self.fg_color[self.appearance_mode], width=0)
+                if self.state == tkinter.DISABLED:
+                    self.canvas.itemconfig(part,
+                                           fill=CTkColorManager.darken_hex_color(self.fg_color[self.appearance_mode]), width=0)
+                else:
+                    self.canvas.itemconfig(part, fill=self.fg_color[self.appearance_mode], width=0)
             else:
-                self.canvas.itemconfig(part, fill=self.fg_color, outline=self.fg_color, width=0)
+                if self.state == tkinter.DISABLED:
+                    self.canvas.itemconfig(part,
+                                           fill=CTkColorManager.darken_hex_color(self.fg_color),
+                                           outline=self.fg_color, width=0)
+                else:
+                    self.canvas.itemconfig(part, fill=self.fg_color, outline=self.fg_color, width=0)
 
         for part in self.canvas_border_parts:
             if type(self.border_color) == tuple and len(self.border_color) == 2:
@@ -191,9 +202,8 @@ class CTkButton(tkinter.Frame):
                                             font=self.text_font)
             self.text_label.place(relx=0.5, rely=0.5, anchor=tkinter.CENTER)
 
-            if self.hover is True:
-                self.text_label.bind("<Enter>", self.on_enter)
-                self.text_label.bind("<Leave>", self.on_leave)
+            self.text_label.bind("<Enter>", self.on_enter)
+            self.text_label.bind("<Leave>", self.on_leave)
 
             self.text_label.bind("<Button-1>", self.clicked)
             self.text_label.bind("<Button-1>", self.clicked)
@@ -204,9 +214,15 @@ class CTkButton(tkinter.Frame):
                 self.text_label.configure(fg=self.text_color)
 
             if type(self.fg_color) == tuple and len(self.fg_color) == 2:
-                self.text_label.configure(bg=self.fg_color[self.appearance_mode])
+                if self.state == tkinter.DISABLED:
+                    self.text_label.configure(bg=CTkColorManager.darken_hex_color(self.fg_color[self.appearance_mode]))
+                else:
+                    self.text_label.configure(bg=self.fg_color[self.appearance_mode])
             else:
-                self.text_label.configure(bg=self.fg_color)
+                if self.state == tkinter.DISABLED:
+                    self.text_label.configure(bg=CTkColorManager.darken_hex_color(self.fg_color))
+                else:
+                    self.text_label.configure(bg=self.fg_color)
 
             self.set_text(self.text)
 
@@ -216,17 +232,22 @@ class CTkButton(tkinter.Frame):
                                              image=self.image)
             self.image_label.place(relx=0.5, rely=0.5, anchor=tkinter.CENTER)
 
-            if self.hover is True:
-                self.image_label.bind("<Enter>", self.on_enter)
-                self.image_label.bind("<Leave>", self.on_leave)
+            self.image_label.bind("<Enter>", self.on_enter)
+            self.image_label.bind("<Leave>", self.on_leave)
 
             self.image_label.bind("<Button-1>", self.clicked)
             self.image_label.bind("<Button-1>", self.clicked)
 
             if type(self.fg_color) == tuple and len(self.fg_color) == 2:
-                self.image_label.configure(bg=self.fg_color[self.appearance_mode])
+                if self.state == tkinter.DISABLED:
+                    self.image_label.configure(bg=CTkColorManager.darken_hex_color(self.fg_color[self.appearance_mode]))
+                else:
+                    self.image_label.configure(bg=self.fg_color[self.appearance_mode])
             else:
-                self.image_label.configure(bg=self.fg_color)
+                if self.state == tkinter.DISABLED:
+                    self.image_label.configure(bg=CTkColorManager.darken_hex_color(self.fg_color))
+                else:
+                    self.image_label.configure(bg=self.fg_color)
 
     def configure_color(self, bg_color=None, fg_color=None, hover_color=None, text_color=None):
         if bg_color is not None:
@@ -245,6 +266,35 @@ class CTkButton(tkinter.Frame):
 
         self.draw()
 
+    def config(self, *args, **kwargs):
+        self.configure(*args, **kwargs)
+
+    def configure(self, *args, **kwargs):
+        if "text" in kwargs:
+            self.set_text(kwargs["text"])
+            del kwargs["text"]
+
+        if "state" in kwargs:
+            self.set_state(kwargs["state"])
+            del kwargs["state"]
+
+        super().configure(*args, **kwargs)
+
+    def set_state(self, state):
+        self.state = state
+
+        if self.state == tkinter.DISABLED:
+            self.hover = False
+            if sys.platform == "darwin" and self.function is not None:
+                self.configure(cursor="arrow")
+
+        elif self.state == tkinter.NORMAL:
+            self.hover = True
+            if sys.platform == "darwin" and self.function is not None:
+                self.configure(cursor="pointinghand")
+
+        self.draw()
+
     def set_text(self, text):
         self.text = text
         if self.text_label is not None:
@@ -260,47 +310,50 @@ class CTkButton(tkinter.Frame):
             sys.stderr.write("ERROR (CTkButton): Cant change image because button has no image.")
 
     def on_enter(self, event=0):
-        for part in self.canvas_fg_parts:
-            if type(self.hover_color) == tuple and len(self.hover_color) == 2:
-                self.canvas.itemconfig(part, fill=self.hover_color[self.appearance_mode], width=0)
-            else:
-                self.canvas.itemconfig(part, fill=self.hover_color, width=0)
+        if self.hover is True:
+            for part in self.canvas_fg_parts:
+                if type(self.hover_color) == tuple and len(self.hover_color) == 2:
+                    self.canvas.itemconfig(part, fill=self.hover_color[self.appearance_mode], width=0)
+                else:
+                    self.canvas.itemconfig(part, fill=self.hover_color, width=0)
 
-        if self.text_label is not None:
-            if type(self.hover_color) == tuple and len(self.hover_color) == 2:
-                self.text_label.configure(bg=self.hover_color[self.appearance_mode])
-            else:
-                self.text_label.configure(bg=self.hover_color)
+            if self.text_label is not None:
+                if type(self.hover_color) == tuple and len(self.hover_color) == 2:
+                    self.text_label.configure(bg=self.hover_color[self.appearance_mode])
+                else:
+                    self.text_label.configure(bg=self.hover_color)
 
-        if self.image_label is not None:
-            if type(self.hover_color) == tuple and len(self.hover_color) == 2:
-                self.image_label.configure(bg=self.hover_color[self.appearance_mode])
-            else:
-                self.image_label.configure(bg=self.hover_color)
+            if self.image_label is not None:
+                if type(self.hover_color) == tuple and len(self.hover_color) == 2:
+                    self.image_label.configure(bg=self.hover_color[self.appearance_mode])
+                else:
+                    self.image_label.configure(bg=self.hover_color)
 
     def on_leave(self, event=0):
-        for part in self.canvas_fg_parts:
-            if type(self.fg_color) == tuple and len(self.fg_color) == 2:
-                self.canvas.itemconfig(part, fill=self.fg_color[self.appearance_mode], width=0)
-            else:
-                self.canvas.itemconfig(part, fill=self.fg_color, width=0)
+        if self.hover is True:
+            for part in self.canvas_fg_parts:
+                if type(self.fg_color) == tuple and len(self.fg_color) == 2:
+                    self.canvas.itemconfig(part, fill=self.fg_color[self.appearance_mode], width=0)
+                else:
+                    self.canvas.itemconfig(part, fill=self.fg_color, width=0)
 
-        if self.text_label is not None:
-            if type(self.fg_color) == tuple and len(self.fg_color) == 2:
-                self.text_label.configure(bg=self.fg_color[self.appearance_mode])
-            else:
-                self.text_label.configure(bg=self.fg_color)
+            if self.text_label is not None:
+                if type(self.fg_color) == tuple and len(self.fg_color) == 2:
+                    self.text_label.configure(bg=self.fg_color[self.appearance_mode])
+                else:
+                    self.text_label.configure(bg=self.fg_color)
 
-        if self.image_label is not None:
-            if type(self.fg_color) == tuple and len(self.fg_color) == 2:
-                self.image_label.configure(bg=self.fg_color[self.appearance_mode])
-            else:
-                self.image_label.configure(bg=self.fg_color)
+            if self.image_label is not None:
+                if type(self.fg_color) == tuple and len(self.fg_color) == 2:
+                    self.image_label.configure(bg=self.fg_color[self.appearance_mode])
+                else:
+                    self.image_label.configure(bg=self.fg_color)
 
     def clicked(self, event=0):
         if self.function is not None:
-            self.function()
-            self.on_leave()
+            if self.state is not tkinter.DISABLED:
+                self.function()
+                self.on_leave()
 
     def set_appearance_mode(self, mode_string):
         if mode_string.lower() == "dark":
