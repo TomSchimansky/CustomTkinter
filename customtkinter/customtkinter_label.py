@@ -31,10 +31,7 @@ class CTkLabel(tkinter.Frame):
         else:
             self.bg_color = bg_color
 
-        if fg_color is None:
-            self.fg_color = self.bg_color
-        else:
-            self.fg_color = fg_color
+        self.fg_color = self.bg_color if fg_color is None else fg_color
         self.text_color = text_color
         self.appearance_mode = AppearanceModeTracker.get_mode()  # 0: "Light" 1: "Dark"
 

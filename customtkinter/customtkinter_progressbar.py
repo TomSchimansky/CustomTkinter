@@ -29,7 +29,8 @@ class CTkProgressBar(tkinter.Frame):
 
         self.border_color = border_color
         self.fg_color = fg_color
-        self.progress_color = progress_color
+        self.progress_color = CTkColorManager.MAIN if progress_color is None else progress_color
+
         self.appearance_mode = AppearanceModeTracker.get_mode()  # 0: "Light" 1: "Dark"
 
         self.width = width

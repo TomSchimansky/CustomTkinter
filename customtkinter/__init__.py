@@ -7,6 +7,7 @@ from .customtkinter_progressbar import CTkProgressBar
 from .customtkinter_label import CTkLabel
 from .customtkinter_entry import CTkEntry
 from .customtkinter_dialog import CTkDialog
+from .customtkinter_checkbox import CTkCheckBox
 
 from .appearance_mode_tracker import AppearanceModeTracker, SystemAppearanceModeListenerNoThread
 from .customtkinter_color_manager import CTkColorManager
@@ -51,10 +52,6 @@ def get_appearance_mode():
         return "Light"
     elif AppearanceModeTracker.appearance_mode == 1:
         return "Dark"
-
-
-def set_theme(main_color):
-    CTkColorManager.set_theme(main_color)
 
 
 def deactivate_threading():

@@ -1,6 +1,9 @@
 import tkinter
 import customtkinter  # <- import the CustomTkinter module
 from PIL import Image, ImageTk  # <- import PIL for the images
+import os
+
+PATH = os.path.dirname(os.path.realpath(__file__))
 
 customtkinter.enable_macos_darkmode()
 customtkinter.set_appearance_mode("System")  # Other: "Dark", "Light"
@@ -15,8 +18,8 @@ def button_function():
 
 
 # load images as PhotoImage
-settings_image = ImageTk.PhotoImage(Image.open("test_images/settings.png").resize((40, 40)))
-bell_image     = ImageTk.PhotoImage(Image.open("test_images/bell.png").resize((40, 40)))
+settings_image = ImageTk.PhotoImage(Image.open(PATH + "/test_images/settings.png").resize((40, 40)))
+bell_image     = ImageTk.PhotoImage(Image.open(PATH + "/test_images/bell.png").resize((40, 40)))
 
 frame_1 = customtkinter.CTkFrame(master=root_tk, width=300, height=200, corner_radius=15)
 frame_1.place(relx=0.5, rely=0.5, anchor=tkinter.CENTER)

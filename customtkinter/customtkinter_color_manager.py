@@ -10,6 +10,7 @@ class CTkColorManager:
     PROGRESS_BG = ("#6B6B6B", "#222222")
     FRAME = ("#D4D5D6", "#3F3F3F")
     FRAME_2 = ("#BFBEC1", "#505050")
+    CHECKBOX_LINES = ("black", "#ededed")
 
     DARKEN_COLOR_FACTOR = 0.8  # used for generate color for disabled button
 
@@ -34,8 +35,8 @@ class CTkColorManager:
 
     @classmethod
     def set_theme_color(cls, hex_color, hex_color_hover):
-        cls.MAIN = (hex_color, hex_color)
-        cls.MAIN_HOVER = (hex_color_hover, hex_color_hover)
+        cls.MAIN = hex_color
+        cls.MAIN_HOVER = hex_color_hover
 
     @classmethod
     def set_theme(cls, main_color):

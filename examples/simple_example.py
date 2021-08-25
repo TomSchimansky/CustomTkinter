@@ -3,21 +3,22 @@ import customtkinter  # <- import the CustomTkinter module
 
 customtkinter.enable_macos_darkmode()
 customtkinter.set_appearance_mode("System")  # Other: "Dark", "Light"
+# customtkinter.set_theme_color(("red2", "red3"), ("red3", "red4"))
 
 root_tk = tkinter.Tk()  # create the Tk window like you normally do
-root_tk.geometry("400x240")
+root_tk.geometry("400x300")
 root_tk.title("CustomTkinter Test")
 
 
 def button_function():
-    print("button pressed")
+    print("CheckBox value:", checkbox_1.get())
 
 
 def slider_function(value):
     progressbar_1.set(value)
 
 
-frame_1 = customtkinter.CTkFrame(master=root_tk, width=300, height=200, corner_radius=15)
+frame_1 = customtkinter.CTkFrame(master=root_tk, width=300, height=260, corner_radius=15)
 frame_1.place(relx=0.5, rely=0.5, anchor=tkinter.CENTER)
 
 label_1 = customtkinter.CTkLabel(master=frame_1)
@@ -27,18 +28,17 @@ progressbar_1 = customtkinter.CTkProgressBar(master=frame_1)
 progressbar_1.place(relx=0.5, rely=0.25, anchor=tkinter.CENTER)
 
 button_1 = customtkinter.CTkButton(master=frame_1, corner_radius=10, command=button_function)
-button_1.place(relx=0.5, rely=0.5, anchor=tkinter.CENTER)
-
-#button_1.configure(state="disabled")
-
-for child in button_1.winfo_children():
-    child.configure(state='disable')
+button_1.place(relx=0.5, rely=0.4, anchor=tkinter.CENTER)
+# button_1.configure(state="disabled")
 
 slider_1 = customtkinter.CTkSlider(master=frame_1, command=slider_function)
-slider_1.place(relx=0.5, rely=0.7, anchor=tkinter.CENTER)
+slider_1.place(relx=0.5, rely=0.55, anchor=tkinter.CENTER)
 
 entry_1 = customtkinter.CTkEntry(master=frame_1)
-entry_1.place(relx=0.5, rely=0.85, anchor=tkinter.CENTER)
+entry_1.place(relx=0.5, rely=0.75, anchor=tkinter.CENTER)
+
+checkbox_1 = customtkinter.CTkCheckBox(master=frame_1)
+checkbox_1.place(relx=0.5, rely=0.9, anchor=tkinter.CENTER)
 
 root_tk.mainloop()
 customtkinter.disable_macos_darkmode()

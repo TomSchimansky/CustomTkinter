@@ -20,8 +20,9 @@ class CTkDialog:
         self.running = False
 
         self.height = len(text.split("\n"))*20 + 150
-        self.fg_color = fg_color
-        self.hover_color = hover_color
+
+        self.fg_color = CTkColorManager.MAIN if fg_color is None else fg_color
+        self.hover_color = CTkColorManager.MAIN_HOVER if hover_color is None else hover_color
 
         self.top = tkinter.Toplevel()
         self.top.geometry("300x{}".format(self.height))
