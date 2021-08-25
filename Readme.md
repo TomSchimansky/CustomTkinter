@@ -21,7 +21,7 @@ To use CustomTkinter, just place the /customtkinter folder from this repository
 next to your program, or **install the module with pip**:
 
 ```
-pip install customtkinter
+pip3 install customtkinter
 ```
 PyPI: https://pypi.org/project/customtkinter/
 

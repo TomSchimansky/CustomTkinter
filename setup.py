@@ -1,6 +1,14 @@
 from setuptools import setup
 import os
 
+# Update in pypi:
+#
+# 1. delete old /dist
+# 2. python3 -m pip install --upgrade build
+# 3. python3 -m build
+# 4. python3 -m twine upload dist/*
+#
+
 
 def read(filename):
     try:

@@ -62,6 +62,10 @@ class App(tkinter.Tk):
                                                 corner_radius=8)
         self.button_3.place(relx=0.5, y=150, anchor=tkinter.CENTER)
 
+        self.check_box_1 = customtkinter.CTkCheckBox(master=self.frame_left,
+                                                     text="CTkCheckBox")
+        self.check_box_1.place(relx=0.5, rely=0.92, anchor=tkinter.CENTER)
+
         # ============ frame_right ============
 
         self.frame_info = customtkinter.CTkFrame(master=self.frame_right,
