@@ -6,6 +6,8 @@ from .customtkinter_color_manager import CTkColorManager
 
 
 class CTkProgressBar(tkinter.Frame):
+    """ tkinter custom progressbar, always horizontal, values are from 0 to 1 """
+
     def __init__(self,
                  bg_color=None,
                  border_color=CTkColorManager.PROGRESS_BG,

@@ -285,6 +285,8 @@ slider = customtkinter.CTkSlider(master=root_tk,
                                  width=160,
                                  height=16,
                                  border_width=5.5,
+                                 from_=0,
+                                 to=100,
                                  command=slider_event)
 slider.place(relx=0.5, rely=0.5, anchor=tkinter.CENTER)
 ```
@@ -297,6 +299,8 @@ master | root, tkinter.Frame or CTkFrame
 command | callback function, gest called when slider gets changed
 width | slider width in px
 height | slider height in px
+from_ | lower slider value
+to | upper slider value
 border_width | space around the slider rail in px
 fg_color | forground color, tuple: (light_color, dark_color) or single color
 bg_color | background color, tuple: (light_color, dark_color) or single color

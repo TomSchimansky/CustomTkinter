@@ -28,6 +28,8 @@ class CTkButton(tkinter.Frame):
                  *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+        AppearanceModeTracker.add(self.set_appearance_mode)
+
         if bg_color is None:
             if isinstance(self.master, CTkFrame):
                 self.bg_color = self.master.fg_color
@@ -35,8 +37,6 @@ class CTkButton(tkinter.Frame):
                 self.bg_color = self.master.cget("bg")
         else:
             self.bg_color = bg_color
-
-        AppearanceModeTracker.add(self.set_appearance_mode)
 
         self.fg_color = self.bg_color if fg_color is None else fg_color
         self.hover_color = self.bg_color if hover_color is None else hover_color

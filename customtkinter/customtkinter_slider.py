@@ -7,12 +7,16 @@ from .customtkinter_color_manager import CTkColorManager
 
 
 class CTkSlider(tkinter.Frame):
+    """ tkinter custom slider, always horizontal """
+
     def __init__(self,
                  bg_color=None,
                  border_color=None,
                  fg_color=CTkColorManager.SLIDER_BG,
                  button_color=CTkColorManager.MAIN,
                  button_hover_color=CTkColorManager.MAIN_HOVER,
+                 from_=0,
+                 to=1,
                  width=160,
                  height=16,
                  border_width=5.5,
@@ -34,7 +38,6 @@ class CTkSlider(tkinter.Frame):
         self.fg_color = fg_color
         self.button_color = self.bg_color if button_color is None else button_color
         self.button_hover_color = self.bg_color if button_hover_color is None else button_hover_color
-
         self.appearance_mode = AppearanceModeTracker.get_mode()  # 0: "Light" 1: "Dark"
 
         self.width = width
@@ -43,6 +46,9 @@ class CTkSlider(tkinter.Frame):
         self.callback_function = command
         self.value = 0.5
         self.hover_state = False
+        self.from_ = from_
+        self.to = to
+        self.output_value = self.from_ + (self.value * (self.to - self.from_))
 
         self.configure(width=self.width, height=self.height)
         if sys.platform == "darwin":
@@ -91,28 +97,16 @@ class CTkSlider(tkinter.Frame):
         self.button_parts.append(self.canvas.create_oval(self.value*self.width - self.height/2, 0,
                                                          self.value*self.width + self.height/2, self.height))
 
-        if type(self.bg_color) == tuple:
-            self.canvas.configure(bg=self.bg_color[self.appearance_mode])
-        else:
-            self.canvas.configure(bg=self.bg_color)
+        self.canvas.configure(bg=CTkColorManager.single_color(self.bg_color, self.appearance_mode))
 
         for part in self.border_parts:
-            if type(self.border_color) == tuple:
-                self.canvas.itemconfig(part, fill=self.border_color[self.appearance_mode], width=0)
-            else:
-                self.canvas.itemconfig(part, fill=self.border_color, width=0)
+            self.canvas.itemconfig(part, fill=CTkColorManager.single_color(self.border_color, self.appearance_mode), width=0)
 
         for part in self.fg_parts:
-            if type(self.fg_color) == tuple:
-                self.canvas.itemconfig(part, fill=self.fg_color[self.appearance_mode], width=0)
-            else:
-                self.canvas.itemconfig(part, fill=self.fg_color, width=0)
+            self.canvas.itemconfig(part, fill=CTkColorManager.single_color(self.fg_color, self.appearance_mode), width=0)
 
         for part in self.button_parts:
-            if type(self.button_color) == tuple:
-                self.canvas.itemconfig(part, fill=self.button_color[self.appearance_mode], width=0)
-            else:
-                self.canvas.itemconfig(part, fill=self.button_color, width=0)
+            self.canvas.itemconfig(part, fill=CTkColorManager.single_color(self.button_color, self.appearance_mode), width=0)
 
     def clicked(self, event=0):
         self.value = event.x / self.width
@@ -122,10 +116,12 @@ class CTkSlider(tkinter.Frame):
         if self.value < 0:
             self.value = 0
 
+        self.output_value = self.from_ + (self.value * (self.to - self.from_))
+
         self.update()
 
         if self.callback_function is not None:
-            self.callback_function(self.value)
+            self.callback_function(self.output_value)
 
     def update(self):
         for part in self.button_parts:
@@ -136,41 +132,30 @@ class CTkSlider(tkinter.Frame):
 
         for part in self.button_parts:
             if self.hover_state is True:
-                if type(self.button_hover_color) == tuple:
-                    self.canvas.itemconfig(part, fill=self.button_hover_color[self.appearance_mode], width=0)
-                else:
-                    self.canvas.itemconfig(part, fill=self.button_hover_color, width=0)
+                self.canvas.itemconfig(part, fill=CTkColorManager.single_color(self.button_hover_color, self.appearance_mode), width=0)
             else:
-                if type(self.button_color) == tuple:
-                    self.canvas.itemconfig(part, fill=self.button_color[self.appearance_mode], width=0)
-                else:
-                    self.canvas.itemconfig(part, fill=self.button_color, width=0)
+                self.canvas.itemconfig(part, fill=CTkColorManager.single_color(self.button_color, self.appearance_mode), width=0)
 
     def on_enter(self, event=0):
         self.hover_state = True
         for part in self.button_parts:
-            if type(self.button_hover_color) == tuple:
-                self.canvas.itemconfig(part, fill=self.button_hover_color[self.appearance_mode], width=0)
-            else:
-                self.canvas.itemconfig(part, fill=self.button_hover_color, width=0)
+            self.canvas.itemconfig(part, fill=CTkColorManager.single_color(self.button_hover_color, self.appearance_mode), width=0)
 
     def on_leave(self, event=0):
         self.hover_state = False
         for part in self.button_parts:
-            if type(self.button_color) == tuple:
-                self.canvas.itemconfig(part, fill=self.button_color[self.appearance_mode], width=0)
-            else:
-                self.canvas.itemconfig(part, fill=self.button_color, width=0)
+            self.canvas.itemconfig(part, fill=CTkColorManager.single_color(self.button_color, self.appearance_mode), width=0)
 
     def get(self):
-        return self.value
+        return self.output_value
 
-    def set(self, value):
-        self.value = value
+    def set(self, output_value):
+        self.output_value = output_value
+        self.value = (self.output_value - self.from_) / (self.to - self.from_)
         self.update()
 
         if self.callback_function is not None:
-            self.callback_function(self.value)
+            self.callback_function(self.output_value)
 
     def change_appearance_mode(self, mode_string):
         if mode_string.lower() == "dark":

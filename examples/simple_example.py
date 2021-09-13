@@ -11,11 +11,15 @@ root_tk.title("CustomTkinter Test")
 
 
 def button_function():
-    print("CheckBox value:", checkbox_1.get())
+    print("Button click")
 
 
 def slider_function(value):
     progressbar_1.set(value)
+
+
+def check_box_function():
+    print("checkbox_1:", checkbox_1.get())
 
 
 frame_1 = customtkinter.CTkFrame(master=root_tk, width=300, height=260, corner_radius=15)
@@ -31,13 +35,14 @@ button_1 = customtkinter.CTkButton(master=frame_1, corner_radius=10, command=but
 button_1.place(relx=0.5, rely=0.4, anchor=tkinter.CENTER)
 # button_1.configure(state="disabled")
 
-slider_1 = customtkinter.CTkSlider(master=frame_1, command=slider_function)
+slider_1 = customtkinter.CTkSlider(master=frame_1, command=slider_function, from_=0, to=2)
 slider_1.place(relx=0.5, rely=0.55, anchor=tkinter.CENTER)
+slider_1.set(1.5)
 
 entry_1 = customtkinter.CTkEntry(master=frame_1)
 entry_1.place(relx=0.5, rely=0.75, anchor=tkinter.CENTER)
 
-checkbox_1 = customtkinter.CTkCheckBox(master=frame_1)
+checkbox_1 = customtkinter.CTkCheckBox(master=frame_1, command=check_box_function)
 checkbox_1.place(relx=0.5, rely=0.9, anchor=tkinter.CENTER)
 
 root_tk.mainloop()

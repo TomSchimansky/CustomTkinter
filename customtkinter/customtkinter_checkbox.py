@@ -22,9 +22,12 @@ class CTkCheckBox(tkinter.Frame):
                  text_color=CTkColorManager.TEXT,
                  text="CTkCheckBox",
                  hover=True,
+                 command=None,
                  state=tkinter.NORMAL,
                  *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+        AppearanceModeTracker.add(self.set_appearance_mode)
 
         if bg_color is None:
             if isinstance(self.master, CTkFrame):
@@ -33,8 +36,6 @@ class CTkCheckBox(tkinter.Frame):
                 self.bg_color = self.master.cget("bg")
         else:
             self.bg_color = bg_color
-
-        AppearanceModeTracker.add(self.set_appearance_mode)
 
         self.fg_color = CTkColorManager.MAIN if fg_color is None else fg_color
         self.hover_color = CTkColorManager.MAIN_HOVER if hover_color is None else hover_color
@@ -71,6 +72,7 @@ class CTkCheckBox(tkinter.Frame):
         else:
             self.text_font = text_font
 
+        self.function = command
         self.state = state
         self.hover = hover
         self.check_state = False
@@ -293,6 +295,9 @@ class CTkCheckBox(tkinter.Frame):
                     else:
                         self.canvas.itemconfig(part, fill=self.fg_color, width=0)
 
+            if self.function is not None:
+                self.function()
+
     def select(self):
         self.check_state = True
         for part in self.canvas_fg_parts:
@@ -301,6 +306,9 @@ class CTkCheckBox(tkinter.Frame):
             else:
                 self.canvas.itemconfig(part, fill=self.fg_color, width=0)
 
+        if self.function is not None:
+            self.function()
+
     def deselect(self):
         self.check_state = False
         for part in self.canvas_fg_parts:
@@ -308,6 +316,9 @@ class CTkCheckBox(tkinter.Frame):
                 self.canvas.itemconfig(part, fill=self.bg_color[self.appearance_mode], width=0)
             else:
                 self.canvas.itemconfig(part, fill=self.bg_color, width=0)
+
+        if self.function is not None:
+            self.function()
 
     def get(self):
         return 1 if self.check_state is True else 0

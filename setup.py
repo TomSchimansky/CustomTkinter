@@ -1,7 +1,7 @@
 from setuptools import setup
 import os
 
-# Update in pypi:
+# Update on pypi:
 #
 # 1. delete old /dist
 # 2. python3 -m pip install --upgrade build
