@@ -38,6 +38,7 @@ class CTkSlider(tkinter.Frame):
         self.fg_color = fg_color
         self.button_color = self.bg_color if button_color is None else button_color
         self.button_hover_color = self.bg_color if button_hover_color is None else button_hover_color
+
         self.appearance_mode = AppearanceModeTracker.get_mode()  # 0: "Light" 1: "Dark"
 
         self.width = width

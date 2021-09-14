@@ -298,7 +298,7 @@ class CTkButton(tkinter.Frame):
     def set_text(self, text):
         self.text = text
         if self.text_label is not None:
-            self.text_label.configure(text=self.text, width=len(self.text))
+            self.text_label.configure(text=self.text)  #, width=len(self.text))
         else:
             sys.stderr.write("ERROR (CTkButton): Cant change text because button has no text.")
 

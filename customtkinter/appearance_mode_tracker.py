@@ -58,7 +58,7 @@ class SystemAppearanceModeListener(Thread):
             sleep(0.5)
 
 
-class SystemAppearanceModeListenerNoThread():
+class SystemAppearanceModeListenerNoThread:
     def __init__(self, callback):
         self.appearance_mode = self.detect_appearance_mode()
         self.callback_function = callback
