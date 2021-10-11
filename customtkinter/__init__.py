@@ -24,7 +24,7 @@ def enable_macos_darkmode():
             os.system("defaults write -g NSRequiresAquaSystemAppearance -bool No")
 
             sys.stderr.write("WARNING (customtkinter.enable_macos_darkmode): " +
-                             "This command forces macOS dark-mode on all programs." +
+                             "This command forces macOS dark-mode on all programs. " +
                              "This can cause bugs on some other programs.\n" +
                              "Disable it by calling customtkinter.disable_macos_darkmode() at the end of the program.\n")
         else:
@@ -69,7 +69,7 @@ def update_appearance_mode():
     if isinstance(AppearanceModeTracker.system_mode_listener, SystemAppearanceModeListenerNoThread):
         AppearanceModeTracker.system_mode_listener.update()
     else:
-        sys.stderr.write("WARNING (customtkinter.update_theme): no need to call update_theme, because " +
+        sys.stderr.write("WARNING (customtkinter.update_theme): no need to call update_appearance_mode, because " +
                          "customtkinter is constantly searching for a mode change in a background thread.\n")
 
 

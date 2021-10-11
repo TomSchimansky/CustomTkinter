@@ -80,9 +80,11 @@ class CTkCheckBox(tkinter.Frame):
         self.canvas = tkinter.Canvas(master=self,
                                      highlightthicknes=0,
                                      width=self.width,
-                                     height=self.height,
-                                     cursor="pointinghand")
+                                     height=self.height)
         self.canvas.pack(side='left')
+
+        if sys.platform == "darwin" and self.state == tkinter.NORMAL:
+            self.canvas.configure(cursor="pointinghand")
 
         if self.hover is True:
             self.canvas.bind("<Enter>", self.on_enter)
