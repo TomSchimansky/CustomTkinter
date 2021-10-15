@@ -23,6 +23,9 @@ next to your program, or **install the module with pip**:
 ```
 pip3 install customtkinter
 ```
+**Update existing installation:** ```pip3 install customtkinter --upgrade```\
+(from time to time bugs are getting fixed and new features are added)
+
 PyPI: https://pypi.org/project/customtkinter/
 
 ### Example program (simple button):

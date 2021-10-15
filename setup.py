@@ -18,7 +18,7 @@ def read(filename):
 
 
 setup(name="customtkinter",
-      version="1.2",
+      version="1.3",
       author="Tom Schimansky",
       license="Creative Commons Zero v1.0 Universal",
       url="https://github.com/TomSchimansky/CustomTkinter",
