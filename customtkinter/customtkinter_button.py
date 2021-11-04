@@ -30,6 +30,8 @@ class CTkButton(tkinter.Frame):
 
         AppearanceModeTracker.add(self.set_appearance_mode)
 
+        self.gridConfigure()
+
         if bg_color is None:
             if isinstance(self.master, CTkFrame):
                 self.bg_color = self.master.fg_color
@@ -49,10 +51,10 @@ class CTkButton(tkinter.Frame):
         self.width = width
         self.height = height
 
-        if corner_radius*2 > self.height:
-            self.corner_radius = self.height/2
-        elif corner_radius*2 > self.width:
-            self.corner_radius = self.width/2
+        if corner_radius * 2 > self.height:
+            self.corner_radius = self.height / 2
+        elif corner_radius * 2 > self.width:
+            self.corner_radius = self.width / 2
         else:
             self.corner_radius = corner_radius
 
@@ -89,7 +91,7 @@ class CTkButton(tkinter.Frame):
                                      highlightthicknes=0,
                                      width=self.width,
                                      height=self.height)
-        self.canvas.place(x=0, y=0)
+        self.canvas.grid(row=0, column=0)
 
         if self.hover is True:
             self.canvas.bind("<Enter>", self.on_enter)
@@ -103,6 +105,20 @@ class CTkButton(tkinter.Frame):
         self.text_label = None
         self.image_label = None
 
+        # Each time an item is resized due to pack position mode, the binding Configure is called on the widget
+        self.bind('<Configure>', self.updateDimensions)
+        self.draw()
+
+    def gridConfigure(self):
+        # Configuration of a basic grid  in which all elements of CTkButtons are centered on one row and one column
+        self.grid_rowconfigure(0, weight=1)
+        self.grid_columnconfigure(0, weight=1)
+
+    def updateDimensions(self, event):
+        # We update the dimensions of the internal elements of CTkButton Widget
+        self.canvas.config(width=event.width, height=event.height)
+        self.width = event.width
+        self.height = event.height
         self.draw()
 
     def draw(self):
@@ -200,7 +216,7 @@ class CTkButton(tkinter.Frame):
             self.text_label = tkinter.Label(master=self,
                                             text=self.text,
                                             font=self.text_font)
-            self.text_label.place(relx=0.5, rely=0.5, anchor=tkinter.CENTER)
+            self.text_label.grid(row=0, column=0)
 
             self.text_label.bind("<Enter>", self.on_enter)
             self.text_label.bind("<Leave>", self.on_leave)
@@ -230,7 +246,7 @@ class CTkButton(tkinter.Frame):
         else:
             self.image_label = tkinter.Label(master=self,
                                              image=self.image)
-            self.image_label.place(relx=0.5, rely=0.5, anchor=tkinter.CENTER)
+            self.image_label.grid(row=0, column=0)
 
             self.image_label.bind("<Enter>", self.on_enter)
             self.image_label.bind("<Leave>", self.on_leave)
@@ -362,4 +378,3 @@ class CTkButton(tkinter.Frame):
             self.appearance_mode = 0
 
         self.draw()
-
