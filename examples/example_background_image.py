@@ -11,7 +11,7 @@ PATH = os.path.dirname(os.path.realpath(__file__))
 
 class App(tkinter.Tk):
 
-    APP_NAME = "CustomTkinter complex example"
+    APP_NAME = "CustomTkinter background gardient"
     WIDTH = 900
     HEIGHT = 600
 
