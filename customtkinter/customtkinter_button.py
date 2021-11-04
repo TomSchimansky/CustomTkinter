@@ -216,7 +216,7 @@ class CTkButton(tkinter.Frame):
             self.text_label = tkinter.Label(master=self,
                                             text=self.text,
                                             font=self.text_font)
-            self.text_label.grid(row=0, column=0)
+            self.text_label.grid(row=0, column=0, padx=self.corner_radius)
 
             self.text_label.bind("<Enter>", self.on_enter)
             self.text_label.bind("<Leave>", self.on_leave)
