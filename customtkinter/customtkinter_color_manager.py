@@ -27,11 +27,11 @@ class CTkColorManager:
             return color
 
     @staticmethod
-    def rgb2hex(rgb_color: tuple):
+    def rgb2hex(rgb_color: tuple) -> str:
         return "#{:02x}{:02x}{:02x}".format(round(rgb_color[0]), round(rgb_color[1]), round(rgb_color[2]))
 
     @staticmethod
-    def hex2rgb(hex_color: str):
+    def hex2rgb(hex_color: str) -> tuple:
         return tuple(int(hex_color.strip("#")[i:i+2], 16) for i in (0, 2, 4))
 
     @staticmethod

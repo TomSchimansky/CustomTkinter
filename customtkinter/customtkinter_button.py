@@ -24,11 +24,13 @@ class CTkButton(tkinter.Frame):
                  text="CTkButton",
                  hover=True,
                  image=None,
+                 compound=tkinter.LEFT,
                  state=tkinter.NORMAL,
                  *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         AppearanceModeTracker.add(self.set_appearance_mode)
+        self.appearance_mode = AppearanceModeTracker.get_mode()  # 0: "Light" 1: "Dark"
 
         self.configure_basic_grid()
 
@@ -40,13 +42,10 @@ class CTkButton(tkinter.Frame):
         else:
             self.bg_color = bg_color
 
-        self.fg_color = self.bg_color if fg_color is None else fg_color
         self.hover_color = self.bg_color if hover_color is None else hover_color
-
+        self.fg_color = self.bg_color if fg_color is None else fg_color
         self.fg_color = self.bg_color if self.fg_color is None else self.fg_color
-
         self.border_color = border_color
-        self.appearance_mode = AppearanceModeTracker.get_mode()  # 0: "Light" 1: "Dark"
 
         self.width = width
         self.height = height
@@ -81,17 +80,18 @@ class CTkButton(tkinter.Frame):
         self.state = state
         self.hover = hover
         self.image = image
+        self.compound = compound
 
         self.configure(width=self.width, height=self.height)
 
         if sys.platform == "darwin" and self.function is not None:
-            self.configure(cursor="pointinghand")
+            self.configure(cursor="pointinghand")  # other cursor when hovering over button with command
 
         self.canvas = tkinter.Canvas(master=self,
                                      highlightthicknes=0,
                                      width=self.width,
                                      height=self.height)
-        self.canvas.grid(row=0, column=0)
+        self.canvas.grid(row=0, column=0, rowspan=2, columnspan=2)
 
         if self.hover is True:
             self.canvas.bind("<Enter>", self.on_enter)
@@ -110,9 +110,11 @@ class CTkButton(tkinter.Frame):
         self.draw()
 
     def configure_basic_grid(self):
-        # Configuration of a basic grid  in which all elements of CTkButtons are centered on one row and one column
+        # Configuration of a basic grid (2x2) in which all elements of CTkButtons are centered on one row and one column
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
+        self.grid_rowconfigure(1, weight=1)
+        self.grid_columnconfigure(1, weight=1)
 
     def update_dimensions(self, event):
         # We update the dimensions of the internal elements of CTkButton Widget
@@ -125,15 +127,10 @@ class CTkButton(tkinter.Frame):
         self.canvas.delete("all")
         self.canvas_fg_parts = []
         self.canvas_border_parts = []
+        self.canvas.configure(bg=CTkColorManager.single_color(self.bg_color, self.appearance_mode))
 
-        if type(self.bg_color) == tuple and len(self.bg_color) == 2:
-            self.canvas.configure(bg=self.bg_color[self.appearance_mode])
-        else:
-            self.canvas.configure(bg=self.bg_color)
-
-        # border button parts
+        # create border button parts
         if self.border_width > 0:
-
             if self.corner_radius > 0:
                 self.canvas_border_parts.append(self.canvas.create_oval(0,
                                                                         0,
@@ -161,8 +158,7 @@ class CTkButton(tkinter.Frame):
                                                                          self.width - self.corner_radius,
                                                                          self.height))
 
-        # inner button parts
-
+        # create inner button parts
         if self.corner_radius > 0:
             self.canvas_fg_parts.append(self.canvas.create_oval(self.border_width,
                                                                 self.border_width,
@@ -190,80 +186,76 @@ class CTkButton(tkinter.Frame):
                                                                  self.width - self.border_width,
                                                                  self.height - self.inner_corner_radius - self.border_width))
 
+        # set color for inner button parts
         for part in self.canvas_fg_parts:
-            if type(self.fg_color) == tuple and len(self.fg_color) == 2:
-                if self.state == tkinter.DISABLED:
-                    self.canvas.itemconfig(part,
-                                           fill=CTkColorManager.darken_hex_color(self.fg_color[self.appearance_mode]), width=0)
-                else:
-                    self.canvas.itemconfig(part, fill=self.fg_color[self.appearance_mode], width=0)
+            if self.state == tkinter.DISABLED:
+                self.canvas.itemconfig(part,
+                                       fill=CTkColorManager.darken_hex_color(CTkColorManager.single_color(self.fg_color, self.appearance_mode)),
+                                       width=0)
             else:
-                if self.state == tkinter.DISABLED:
-                    self.canvas.itemconfig(part,
-                                           fill=CTkColorManager.darken_hex_color(self.fg_color),
-                                           outline=self.fg_color, width=0)
-                else:
-                    self.canvas.itemconfig(part, fill=self.fg_color, outline=self.fg_color, width=0)
+                self.canvas.itemconfig(part, fill=CTkColorManager.single_color(self.fg_color, self.appearance_mode), width=0)
 
+        # set color for the button border parts (outline)
         for part in self.canvas_border_parts:
-            if type(self.border_color) == tuple and len(self.border_color) == 2:
-                self.canvas.itemconfig(part, fill=self.border_color[self.appearance_mode], width=0)
-            else:
-                self.canvas.itemconfig(part, fill=self.border_color, outline=self.border_color, width=0)
+            self.canvas.itemconfig(part, fill=CTkColorManager.single_color(self.border_color, self.appearance_mode), width=0)
 
-        # no image provided
-        if self.image is None:
-            self.text_label = tkinter.Label(master=self,
-                                            text=self.text,
-                                            font=self.text_font)
-            self.text_label.grid(row=0, column=0, padx=self.corner_radius)
+        # create text label if text given
+        if self.text is not None and self.text != "":
+            self.text_label = tkinter.Label(master=self, text=self.text, font=self.text_font)
 
             self.text_label.bind("<Enter>", self.on_enter)
             self.text_label.bind("<Leave>", self.on_leave)
-
             self.text_label.bind("<Button-1>", self.clicked)
             self.text_label.bind("<Button-1>", self.clicked)
 
-            if type(self.text_color) == tuple and len(self.text_color) == 2:
-                self.text_label.configure(fg=self.text_color[self.appearance_mode])
-            else:
-                self.text_label.configure(fg=self.text_color)
+            # set text_label fg color (text color)
+            self.text_label.configure(fg=CTkColorManager.single_color(self.text_color, self.appearance_mode))
 
-            if type(self.fg_color) == tuple and len(self.fg_color) == 2:
-                if self.state == tkinter.DISABLED:
-                    self.text_label.configure(bg=CTkColorManager.darken_hex_color(self.fg_color[self.appearance_mode]))
-                else:
-                    self.text_label.configure(bg=self.fg_color[self.appearance_mode])
+            # set text_label bg color (label color)
+            if self.state == tkinter.DISABLED:
+                self.text_label.configure(bg=CTkColorManager.darken_hex_color(CTkColorManager.single_color(self.fg_color, self.appearance_mode)))
             else:
-                if self.state == tkinter.DISABLED:
-                    self.text_label.configure(bg=CTkColorManager.darken_hex_color(self.fg_color))
-                else:
-                    self.text_label.configure(bg=self.fg_color)
+                self.text_label.configure(bg=CTkColorManager.single_color(self.fg_color, self.appearance_mode))
 
             self.set_text(self.text)
 
-        # use image for button
-        else:
-            self.image_label = tkinter.Label(master=self,
-                                             image=self.image)
-            self.image_label.grid(row=0, column=0)
+        # use image for button if given
+        if self.image is not None:
+            self.image_label = tkinter.Label(master=self, image=self.image)
 
             self.image_label.bind("<Enter>", self.on_enter)
             self.image_label.bind("<Leave>", self.on_leave)
-
             self.image_label.bind("<Button-1>", self.clicked)
             self.image_label.bind("<Button-1>", self.clicked)
 
-            if type(self.fg_color) == tuple and len(self.fg_color) == 2:
-                if self.state == tkinter.DISABLED:
-                    self.image_label.configure(bg=CTkColorManager.darken_hex_color(self.fg_color[self.appearance_mode]))
-                else:
-                    self.image_label.configure(bg=self.fg_color[self.appearance_mode])
+            # set image_label bg color (background color of label)
+            if self.state == tkinter.DISABLED:
+                self.image_label.configure(bg=CTkColorManager.darken_hex_color(CTkColorManager.single_color(self.fg_color, self.appearance_mode)))
             else:
-                if self.state == tkinter.DISABLED:
-                    self.image_label.configure(bg=CTkColorManager.darken_hex_color(self.fg_color))
-                else:
-                    self.image_label.configure(bg=self.fg_color)
+                self.image_label.configure(bg=CTkColorManager.single_color(self.fg_color, self.appearance_mode))
+
+        # create grid layout with just an image given
+        if self.image_label is not None and self.text_label is None:
+            self.image_label.grid(row=0, column=0, rowspan=2, columnspan=2)
+
+        # create grid layout with just text given
+        if self.image_label is None and self.text_label is not None:
+            self.text_label.grid(row=0, column=0, padx=self.corner_radius, rowspan=2, columnspan=2)
+
+        # create grid layout of image and text label in 2x2 grid system with given compound
+        if self.image_label is not None and self.text_label is not None:
+            if self.compound == tkinter.LEFT or self.compound == "left":
+                self.image_label.grid(row=0, column=0, padx=self.corner_radius, sticky="e", rowspan=2)
+                self.text_label.grid(row=0, column=1, padx=self.corner_radius, sticky="w", rowspan=2)
+            elif self.compound == tkinter.TOP or self.compound == "top":
+                self.image_label.grid(row=0, column=0, padx=self.corner_radius, sticky="s", columnspan=2)
+                self.text_label.grid(row=1, column=0, padx=self.corner_radius, sticky="n", columnspan=2)
+            elif self.compound == tkinter.RIGHT or self.compound == "right":
+                self.image_label.grid(row=0, column=1, padx=self.corner_radius, sticky="w", rowspan=2)
+                self.text_label.grid(row=0, column=0, padx=self.corner_radius, sticky="e", rowspan=2)
+            elif self.compound == tkinter.BOTTOM or self.compound == "bottom":
+                self.image_label.grid(row=1, column=0, padx=self.corner_radius, sticky="n", columnspan=2)
+                self.text_label.grid(row=0, column=0, padx=self.corner_radius, sticky="s", columnspan=2)
 
     def configure_color(self, bg_color=None, fg_color=None, hover_color=None, text_color=None):
         if bg_color is not None:

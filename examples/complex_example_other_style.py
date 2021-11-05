@@ -117,20 +117,20 @@ class App(tkinter.Tk):
         self.slider_1 = customtkinter.CTkSlider(master=self.frame_right,
                                                 button_color=App.MAIN_COLOR,
                                                 button_hover_color=App.MAIN_HOVER,
-                                               width=160,
-                                               height=16,
-                                               border_width=5.5,
-                                               command=self.progressbar.set)
+                                                width=160,
+                                                height=16,
+                                                border_width=5.5,
+                                                command=self.progressbar.set)
         self.slider_1.place(x=20, rely=0.6, anchor=tkinter.W)
         self.slider_1.set(0.3)
 
         self.slider_2 = customtkinter.CTkSlider(master=self.frame_right,
                                                 button_color=App.MAIN_COLOR,
                                                 button_hover_color=App.MAIN_HOVER,
-                                               width=160,
-                                               height=16,
-                                               border_width=5.5,
-                                               command=self.progressbar.set)
+                                                width=160,
+                                                height=16,
+                                                border_width=5.5,
+                                                command=self.progressbar.set)
         self.slider_2.place(x=20, rely=0.7, anchor=tkinter.W)
         self.slider_2.set(0.7)
 
