@@ -30,7 +30,7 @@ class CTkButton(tkinter.Frame):
 
         AppearanceModeTracker.add(self.set_appearance_mode)
 
-        self.gridConfigure()
+        self.configure_basic_grid()
 
         if bg_color is None:
             if isinstance(self.master, CTkFrame):
@@ -106,15 +106,15 @@ class CTkButton(tkinter.Frame):
         self.image_label = None
 
         # Each time an item is resized due to pack position mode, the binding Configure is called on the widget
-        self.bind('<Configure>', self.updateDimensions)
+        self.bind('<Configure>', self.update_dimensions)
         self.draw()
 
-    def gridConfigure(self):
+    def configure_basic_grid(self):
         # Configuration of a basic grid  in which all elements of CTkButtons are centered on one row and one column
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
 
-    def updateDimensions(self, event):
+    def update_dimensions(self, event):
         # We update the dimensions of the internal elements of CTkButton Widget
         self.canvas.config(width=event.width, height=event.height)
         self.width = event.width
