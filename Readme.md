@@ -167,14 +167,15 @@ compound | set image orientation if image and text are given ("top", "left", "bo
 state | tkinter.NORMAL (standard) or tkinter.DISABLED (not clickable, darker color)
 
 CTkButton Methods:
+
 ```python
 CTkButton.set_text(new_text)
-CTkButton.change_image(new_image)
-CTkButton.configure_color(bg_color=new_bg_color,
-                          fg_color=new_fg_color,
-                          hover_color=new_hover_color,
-                          text_color=new_text_color)
-
+CTkButton.set_image(new_image)
+CTkButton.configure(text=new_text)
+CTkButton.configure(bg_color=new_bg_color,
+                    fg_color=new_fg_color,
+                    hover_color=new_hover_color,
+                    text_color=new_text_color)
 CTkButton.configure(state=tkinter.DISABLED)
 CTkButton.configure(state=tkinter.NORMAL)
 button_state = CTkButton.state
@@ -203,7 +204,7 @@ width | label width in px
 height | label height in px
 corner_radius | corner radius in px
 fg_color | forground color, tuple: (light_color, dark_color) or single color
-bg_color | background color, tuple: (light_color, dark_color) or single color
+bg_color | background color, tuple: (light_color, dark_color) or single color, None for transparent bg
 text_color | label text color, tuple: (light_color, dark_color) or single color
 text_font | label text font, tuple: (font_name, size)
 </details>
@@ -265,15 +266,14 @@ state | tkinter.NORMAL (standard) or tkinter.DISABLED (not clickable, darker col
 CTkCheckBox Methods:
 ```python
 CTkCheckBox.get()  # 1 or 0 (checked or not checked)
-CTkCheckBox.set_text(new_text)
 CTkCheckBox.select()  # turns on checkbox
 CTkCheckBox.deselect()  # turns off checkbox
 CTkCheckBox.toggle()  # change check state of checkbox
-CTkCheckBox.configure_color(bg_color=new_bg_color,
-                            fg_color=new_fg_color,
-                            hover_color=new_hover_color,
-                            text_color=new_text_color)
-
+CTkCheckBox.configure(text=new_text)
+CTkCheckBox.configure(bg_color=new_bg_color,
+                      fg_color=new_fg_color,
+                      hover_color=new_hover_color,
+                      text_color=new_text_color)
 CTkCheckBox.configure(state=tkinter.DISABLED)
 CTkCheckBox.configure(state=tkinter.NORMAL)
 checkbox_state = CTkCheckBox.state

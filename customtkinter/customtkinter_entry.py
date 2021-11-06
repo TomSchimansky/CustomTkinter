@@ -19,18 +19,11 @@ class CTkEntry(tkinter.Frame):
         super().__init__(master=master)
 
         AppearanceModeTracker.add(self.change_appearance_mode)
-
-        if bg_color is None:
-            if isinstance(self.master, CTkFrame):
-                self.bg_color = self.master.fg_color
-            else:
-                self.bg_color = self.master.cget("bg")
-        else:
-            self.bg_color = bg_color
-
-        self.fg_color = fg_color
-        self.text_color = text_color
         self.appearance_mode = AppearanceModeTracker.get_mode()  # 0: "Light" 1: "Dark"
+
+        self.bg_color = self.detect_color_of_master() if bg_color is None else bg_color
+        self.fg_color = self.bg_color if fg_color is None else fg_color
+        self.text_color = text_color
 
         self.width = width
         self.height = height
@@ -53,6 +46,12 @@ class CTkEntry(tkinter.Frame):
         self.fg_parts = []
 
         self.draw()
+
+    def detect_color_of_master(self):
+        if isinstance(self.master, CTkFrame):
+            return self.master.fg_color
+        else:
+            return self.master.cget("bg")
 
     def draw(self):
         self.canvas.delete("all")

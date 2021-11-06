@@ -20,20 +20,12 @@ class CTkProgressBar(tkinter.Frame):
         super().__init__(*args, **kwargs)
 
         AppearanceModeTracker.add(self.change_appearance_mode)
+        self.appearance_mode = AppearanceModeTracker.get_mode()  # 0: "Light" 1: "Dark"
 
-        if bg_color is None:
-            if isinstance(self.master, CTkFrame):
-                self.bg_color = self.master.fg_color
-            else:
-                self.bg_color = self.master.cget("bg")
-        else:
-            self.bg_color = bg_color
-
+        self.bg_color = self.detect_color_of_master() if bg_color is None else bg_color
         self.border_color = border_color
         self.fg_color = fg_color
         self.progress_color = CTkColorManager.MAIN if progress_color is None else progress_color
-
-        self.appearance_mode = AppearanceModeTracker.get_mode()  # 0: "Light" 1: "Dark"
 
         self.width = width
         self.height = height
@@ -53,6 +45,12 @@ class CTkProgressBar(tkinter.Frame):
         self.progress_parts = []
 
         self.draw()
+
+    def detect_color_of_master(self):
+        if isinstance(self.master, CTkFrame):
+            return self.master.fg_color
+        else:
+            return self.master.cget("bg")
 
     def draw(self):
         self.canvas.delete("all")

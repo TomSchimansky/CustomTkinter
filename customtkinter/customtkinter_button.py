@@ -34,17 +34,10 @@ class CTkButton(tkinter.Frame):
 
         self.configure_basic_grid()
 
-        if bg_color is None:
-            if isinstance(self.master, CTkFrame):
-                self.bg_color = self.master.fg_color
-            else:
-                self.bg_color = self.master.cget("bg")
-        else:
-            self.bg_color = bg_color
-
-        self.hover_color = self.bg_color if hover_color is None else hover_color
+        self.bg_color = self.detect_color_of_master() if bg_color is None else bg_color
         self.fg_color = self.bg_color if fg_color is None else fg_color
         self.fg_color = self.bg_color if self.fg_color is None else self.fg_color
+        self.hover_color = self.fg_color if hover_color is None else hover_color
         self.border_color = border_color
 
         self.width = width
@@ -72,7 +65,7 @@ class CTkButton(tkinter.Frame):
             elif "win" in sys.platform:  # Windows
                 self.text_font = ("Century Gothic", 11)
             else:
-                self.text_font = ("TkDefaultFont")
+                self.text_font = "TkDefaultFont"
         else:
             self.text_font = text_font
 
@@ -123,6 +116,12 @@ class CTkButton(tkinter.Frame):
         self.height = event.height
         self.draw()
 
+    def detect_color_of_master(self):
+        if isinstance(self.master, CTkFrame):
+            return self.master.fg_color
+        else:
+            return self.master.cget("bg")
+
     def draw(self):
         self.canvas.delete("all")
         self.canvas_fg_parts = []
@@ -132,19 +131,24 @@ class CTkButton(tkinter.Frame):
         # create border button parts
         if self.border_width > 0:
             if self.corner_radius > 0:
-                self.canvas_border_parts.append(self.canvas.create_oval(0,
+                self.canvas_border_parts.append(self.canvas.create_oval(0, 0, 0, 0))
+                self.canvas_border_parts.append(self.canvas.create_oval(0, 0, 0, 0))
+                self.canvas_border_parts.append(self.canvas.create_oval(0, 0, 0, 0))
+                #self.canvas_border_parts.append(self.canvas.create_oval(0, 0, 0, 0))
+
+                self.canvas.itemconfig(self.canvas_border_parts[0], (0,
                                                                         0,
                                                                         self.corner_radius * 2,
                                                                         self.corner_radius * 2))
-                self.canvas_border_parts.append(self.canvas.create_oval(self.width - self.corner_radius * 2,
+                self.canvas.itemconfig(self.canvas_border_parts[0], (self.width - self.corner_radius * 2,
                                                                         0,
                                                                         self.width,
                                                                         self.corner_radius * 2))
-                self.canvas_border_parts.append(self.canvas.create_oval(0,
+                self.canvas.itemconfig(self.canvas_border_parts[0], (0,
                                                                         self.height - self.corner_radius * 2,
                                                                         self.corner_radius * 2,
                                                                         self.height))
-                self.canvas_border_parts.append(self.canvas.create_oval(self.width - self.corner_radius * 2,
+                self.canvas.itemconfig(self.canvas_border_parts[0], (self.width - self.corner_radius * 2,
                                                                         self.height - self.corner_radius * 2,
                                                                         self.width,
                                                                         self.height))
@@ -219,7 +223,7 @@ class CTkButton(tkinter.Frame):
 
             self.set_text(self.text)
 
-        # use image for button if given
+        # create image label if image given
         if self.image is not None:
             self.image_label = tkinter.Label(master=self, image=self.image)
 
@@ -257,27 +261,12 @@ class CTkButton(tkinter.Frame):
                 self.image_label.grid(row=1, column=0, padx=self.corner_radius, sticky="n", columnspan=2)
                 self.text_label.grid(row=0, column=0, padx=self.corner_radius, sticky="s", columnspan=2)
 
-    def configure_color(self, bg_color=None, fg_color=None, hover_color=None, text_color=None):
-        if bg_color is not None:
-            self.bg_color = bg_color
-        else:
-            self.bg_color = self.master.cget("bg")
-
-        if fg_color is not None:
-            self.fg_color = fg_color
-
-        if hover_color is not None:
-            self.hover_color = hover_color
-
-        if text_color is not None:
-            self.text_color = text_color
-
-        self.draw()
-
     def config(self, *args, **kwargs):
         self.configure(*args, **kwargs)
 
     def configure(self, *args, **kwargs):
+        require_redraw = False  # some attribute changes require a call of self.draw() at the end
+
         if "text" in kwargs:
             self.set_text(kwargs["text"])
             del kwargs["text"]
@@ -286,7 +275,37 @@ class CTkButton(tkinter.Frame):
             self.set_state(kwargs["state"])
             del kwargs["state"]
 
+        if "image" in kwargs:
+            self.set_image(kwargs["image"])
+            del kwargs["image"]
+
+        if "fg_color" in kwargs:
+            self.fg_color = kwargs["fg_color"]
+            require_redraw = True
+            del kwargs["fg_color"]
+
+        if "bg_color" in kwargs:
+            if kwargs["bg_color"] is None:
+                self.bg_color = self.detect_color_of_master()
+            else:
+                self.bg_color = kwargs["bg_color"]
+            require_redraw = True
+            del kwargs["bg_color"]
+
+        if "hover_color" in kwargs:
+            self.hover_color = kwargs["hover_color"]
+            require_redraw = True
+            del kwargs["hover_color"]
+
+        if "text_color" in kwargs:
+            self.text_color = kwargs["text_color"]
+            require_redraw = True
+            del kwargs["text_color"]
+
         super().configure(*args, **kwargs)
+
+        if require_redraw:
+            self.draw()
 
     def set_state(self, state):
         self.state = state
@@ -310,7 +329,7 @@ class CTkButton(tkinter.Frame):
         else:
             sys.stderr.write("ERROR (CTkButton): Cant change text because button has no text.")
 
-    def change_image(self, image):
+    def set_image(self, image):
         if self.image_label is not None:
             self.image = image
             self.image_label.configure(image=self.image)
@@ -319,43 +338,31 @@ class CTkButton(tkinter.Frame):
 
     def on_enter(self, event=0):
         if self.hover is True:
+            # set color of inner button parts to hover color
             for part in self.canvas_fg_parts:
-                if type(self.hover_color) == tuple and len(self.hover_color) == 2:
-                    self.canvas.itemconfig(part, fill=self.hover_color[self.appearance_mode], width=0)
-                else:
-                    self.canvas.itemconfig(part, fill=self.hover_color, width=0)
+                self.canvas.itemconfig(part, fill=CTkColorManager.single_color(self.hover_color, self.appearance_mode), width=0)
 
+            # set text_label bg color to button hover color
             if self.text_label is not None:
-                if type(self.hover_color) == tuple and len(self.hover_color) == 2:
-                    self.text_label.configure(bg=self.hover_color[self.appearance_mode])
-                else:
-                    self.text_label.configure(bg=self.hover_color)
+                self.text_label.configure(bg=CTkColorManager.single_color(self.hover_color, self.appearance_mode))
 
+            # set image_label bg color to button hover color
             if self.image_label is not None:
-                if type(self.hover_color) == tuple and len(self.hover_color) == 2:
-                    self.image_label.configure(bg=self.hover_color[self.appearance_mode])
-                else:
-                    self.image_label.configure(bg=self.hover_color)
+                self.image_label.configure(bg=CTkColorManager.single_color(self.hover_color, self.appearance_mode))
 
     def on_leave(self, event=0):
         if self.hover is True:
+            # set color of inner button parts
             for part in self.canvas_fg_parts:
-                if type(self.fg_color) == tuple and len(self.fg_color) == 2:
-                    self.canvas.itemconfig(part, fill=self.fg_color[self.appearance_mode], width=0)
-                else:
-                    self.canvas.itemconfig(part, fill=self.fg_color, width=0)
+                self.canvas.itemconfig(part, fill=CTkColorManager.single_color(self.fg_color, self.appearance_mode), width=0)
 
+            # set text_label bg color (label color)
             if self.text_label is not None:
-                if type(self.fg_color) == tuple and len(self.fg_color) == 2:
-                    self.text_label.configure(bg=self.fg_color[self.appearance_mode])
-                else:
-                    self.text_label.configure(bg=self.fg_color)
+                self.text_label.configure(bg=CTkColorManager.single_color(self.fg_color, self.appearance_mode))
 
+            # set image_label bg color (image bg color)
             if self.image_label is not None:
-                if type(self.fg_color) == tuple and len(self.fg_color) == 2:
-                    self.image_label.configure(bg=self.fg_color[self.appearance_mode])
-                else:
-                    self.image_label.configure(bg=self.fg_color)
+                self.image_label.configure(bg=CTkColorManager.single_color(self.fg_color, self.appearance_mode))
 
     def clicked(self, event=0):
         if self.function is not None:

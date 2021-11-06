@@ -28,20 +28,12 @@ class CTkCheckBox(tkinter.Frame):
         super().__init__(*args, **kwargs)
 
         AppearanceModeTracker.add(self.set_appearance_mode)
+        self.appearance_mode = AppearanceModeTracker.get_mode()  # 0: "Light" 1: "Dark"
 
-        if bg_color is None:
-            if isinstance(self.master, CTkFrame):
-                self.bg_color = self.master.fg_color
-            else:
-                self.bg_color = self.master.cget("bg")
-        else:
-            self.bg_color = bg_color
-
+        self.bg_color = self.detect_color_of_master() if bg_color is None else bg_color
         self.fg_color = CTkColorManager.MAIN if fg_color is None else fg_color
         self.hover_color = CTkColorManager.MAIN_HOVER if hover_color is None else hover_color
         self.border_color = border_color
-
-        self.appearance_mode = AppearanceModeTracker.get_mode()  # 0: "Light" 1: "Dark"
 
         self.width = width
         self.height = height
@@ -99,6 +91,12 @@ class CTkCheckBox(tkinter.Frame):
         self.text_label = None
 
         self.draw()
+
+    def detect_color_of_master(self):
+        if isinstance(self.master, CTkFrame):
+            return self.master.fg_color
+        else:
+            return self.master.cget("bg")
 
     def draw(self):
         self.canvas.delete("all")
@@ -195,7 +193,7 @@ class CTkCheckBox(tkinter.Frame):
         else:
             self.text_label.configure(fg=self.text_color)
 
-        if type(self.bg_color) == tuple and len(self.text_color) == 2:
+        if type(self.bg_color) == tuple and len(self.bg_color) == 2:
             self.configure(bg=self.bg_color[self.appearance_mode])
             self.text_label.configure(bg=self.bg_color[self.appearance_mode])
         else:
@@ -204,27 +202,12 @@ class CTkCheckBox(tkinter.Frame):
 
         self.set_text(self.text)
 
-    def configure_color(self, bg_color=None, fg_color=None, hover_color=None, text_color=None):
-        if bg_color is not None:
-            self.bg_color = bg_color
-        else:
-            self.bg_color = self.master.cget("bg")
-
-        if fg_color is not None:
-            self.fg_color = fg_color
-
-        if hover_color is not None:
-            self.hover_color = hover_color
-
-        if text_color is not None:
-            self.text_color = text_color
-
-        self.draw()
-
     def config(self, *args, **kwargs):
         self.configure(*args, **kwargs)
 
     def configure(self, *args, **kwargs):
+        require_redraw = False  # some attribute changes require a call of self.draw()
+
         if "text" in kwargs:
             self.set_text(kwargs["text"])
             del kwargs["text"]
@@ -233,7 +216,38 @@ class CTkCheckBox(tkinter.Frame):
             self.set_state(kwargs["state"])
             del kwargs["state"]
 
+        if "fg_color" in kwargs:
+            self.fg_color = kwargs["fg_color"]
+            require_redraw = True
+            del kwargs["fg_color"]
+
+        if "bg_color" in kwargs:
+            if kwargs["bg_color"] is None:
+                self.bg_color = self.detect_color_of_master()
+            else:
+                self.bg_color = kwargs["bg_color"]
+            require_redraw = True
+            del kwargs["bg_color"]
+
+        if "hover_color" in kwargs:
+            self.hover_color = kwargs["hover_color"]
+            require_redraw = True
+            del kwargs["hover_color"]
+
+        if "text_color" in kwargs:
+            self.text_color = kwargs["text_color"]
+            require_redraw = True
+            del kwargs["text_color"]
+
+        if "border_color" in kwargs:
+            self.border_color = kwargs["border_color"]
+            require_redraw = True
+            del kwargs["border_color"]
+
         super().configure(*args, **kwargs)
+
+        if require_redraw:
+            self.draw()
 
     def set_state(self, state):
         self.state = state

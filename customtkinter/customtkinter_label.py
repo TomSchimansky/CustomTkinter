@@ -22,18 +22,11 @@ class CTkLabel(tkinter.Frame):
         super().__init__(master=master)
 
         AppearanceModeTracker.add(self.change_appearance_mode)
+        self.appearance_mode = AppearanceModeTracker.get_mode()  # 0: "Light" 1: "Dark"
 
-        if bg_color is None:
-            if isinstance(self.master, CTkFrame):
-                self.bg_color = self.master.fg_color
-            else:
-                self.bg_color = self.master.cget("bg")
-        else:
-            self.bg_color = bg_color
-
+        self.bg_color = self.detect_color_of_master() if bg_color is None else bg_color
         self.fg_color = self.bg_color if fg_color is None else fg_color
         self.text_color = text_color
-        self.appearance_mode = AppearanceModeTracker.get_mode()  # 0: "Light" 1: "Dark"
 
         self.width = width
         self.height = height
@@ -68,6 +61,12 @@ class CTkLabel(tkinter.Frame):
         self.fg_parts = []
 
         self.draw()
+
+    def detect_color_of_master(self):
+        if isinstance(self.master, CTkFrame):
+            return self.master.fg_color
+        else:
+            return self.master.cget("bg")
 
     def draw(self):
         self.canvas.delete("all")
@@ -120,6 +119,36 @@ class CTkLabel(tkinter.Frame):
             self.text_color = text_color
 
         self.draw()
+
+    def configure(self, *args, **kwargs):
+        require_redraw = False  # some attribute changes require a call of self.draw() at the end
+
+        if "text" in kwargs:
+            self.set_text(kwargs["text"])
+            del kwargs["text"]
+
+        if "fg_color" in kwargs:
+            self.fg_color = kwargs["fg_color"]
+            require_redraw = True
+            del kwargs["fg_color"]
+
+        if "bg_color" in kwargs:
+            if kwargs["bg_color"] is None:
+                self.bg_color = self.detect_color_of_master()
+            else:
+                self.bg_color = kwargs["bg_color"]
+            require_redraw = True
+            del kwargs["bg_color"]
+
+        if "text_color" in kwargs:
+            self.text_color = kwargs["text_color"]
+            require_redraw = True
+            del kwargs["text_color"]
+
+        super().configure(*args, **kwargs)
+
+        if require_redraw:
+            self.draw()
 
     def set_text(self, text):
         self.text = text
