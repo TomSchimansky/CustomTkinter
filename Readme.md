@@ -118,6 +118,8 @@ colors and removed the round corners, and added a border to the buttons:
 ### CTkButton with images
 It's also possible to put an image on a CTkButton. You just have to
 pass a PhotoImage object to the CTkButton with the argument ``image``.
+If you want no text at all you have to set ``text=""`` or with the ``compound``
+option you can specify how to position both the text and image at once.
 You can find an example program ( /simple_test_images.py ), where I
 created two buttons with a bell and a settings image on them:
 
