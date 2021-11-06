@@ -58,7 +58,7 @@ class App(tkinter.Tk):
                                                 text="CTkButton",
                                                 command=self.button_event,
                                                 border_width=2,
-                                                corner_radius=0)
+                                                corner_radius=10)
         self.button_1.place(relx=0.5, y=50, anchor=tkinter.CENTER)
 
         self.button_2 = customtkinter.CTkButton(master=self.frame_left,

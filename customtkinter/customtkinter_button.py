@@ -112,9 +112,12 @@ class CTkButton(tkinter.Frame):
     def update_dimensions(self, event):
         # We update the dimensions of the internal elements of CTkButton Widget
         self.canvas.config(width=event.width, height=event.height)
-        self.width = event.width
-        self.height = event.height
-        self.draw()
+
+        # only redraw if dimensions changed (for performance)
+        if self.width != event.width or self.height != event.height:
+            self.width = event.width
+            self.height = event.height
+            self.draw(no_color_updates=True, no_label_updates=True)  # fast drawing without color and label changes
 
     def detect_color_of_master(self):
         if isinstance(self.master, CTkFrame):
@@ -122,144 +125,170 @@ class CTkButton(tkinter.Frame):
         else:
             return self.master.cget("bg")
 
-    def draw(self):
-        self.canvas.delete("all")
-        self.canvas_fg_parts = []
-        self.canvas_border_parts = []
+    def draw(self, no_color_updates=False, no_label_updates=False):
         self.canvas.configure(bg=CTkColorManager.single_color(self.bg_color, self.appearance_mode))
 
         # create border button parts
         if self.border_width > 0:
             if self.corner_radius > 0:
-                self.canvas_border_parts.append(self.canvas.create_oval(0, 0, 0, 0))
-                self.canvas_border_parts.append(self.canvas.create_oval(0, 0, 0, 0))
-                self.canvas_border_parts.append(self.canvas.create_oval(0, 0, 0, 0))
-                #self.canvas_border_parts.append(self.canvas.create_oval(0, 0, 0, 0))
+                # create canvas border corner parts if not already created
+                if not self.canvas.find_withtag("border_oval_1"):
+                    self.canvas.create_oval(0, 0, 0, 0, tags=("border_oval_1", "border_corner_part"))
+                    self.canvas.create_oval(0, 0, 0, 0, tags=("border_oval_2", "border_corner_part"))
+                    self.canvas.create_oval(0, 0, 0, 0, tags=("border_oval_3", "border_corner_part"))
+                    self.canvas.create_oval(0, 0, 0, 0, tags=("border_oval_4", "border_corner_part"))
 
-                self.canvas.itemconfig(self.canvas_border_parts[0], (0,
-                                                                        0,
-                                                                        self.corner_radius * 2,
-                                                                        self.corner_radius * 2))
-                self.canvas.itemconfig(self.canvas_border_parts[0], (self.width - self.corner_radius * 2,
-                                                                        0,
-                                                                        self.width,
-                                                                        self.corner_radius * 2))
-                self.canvas.itemconfig(self.canvas_border_parts[0], (0,
-                                                                        self.height - self.corner_radius * 2,
-                                                                        self.corner_radius * 2,
-                                                                        self.height))
-                self.canvas.itemconfig(self.canvas_border_parts[0], (self.width - self.corner_radius * 2,
-                                                                        self.height - self.corner_radius * 2,
-                                                                        self.width,
-                                                                        self.height))
+                self.canvas.coords("border_oval_1", (0,
+                                                     0,
+                                                     self.corner_radius * 2,
+                                                     self.corner_radius * 2))
+                self.canvas.coords("border_oval_2", (self.width - self.corner_radius * 2,
+                                                     0,
+                                                     self.width,
+                                                     self.corner_radius * 2))
+                self.canvas.coords("border_oval_3", (0,
+                                                     self.height - self.corner_radius * 2,
+                                                     self.corner_radius * 2,
+                                                     self.height))
+                self.canvas.coords("border_oval_4", (self.width - self.corner_radius * 2,
+                                                     self.height - self.corner_radius * 2,
+                                                     self.width,
+                                                     self.height))
+            else:
+                self.canvas.delete("border_corner_part")  # delete border corner parts if not needed
 
-            self.canvas_border_parts.append(self.canvas.create_rectangle(0,
-                                                                         self.corner_radius,
-                                                                         self.width,
-                                                                         self.height - self.corner_radius))
-            self.canvas_border_parts.append(self.canvas.create_rectangle(self.corner_radius,
-                                                                         0,
-                                                                         self.width - self.corner_radius,
-                                                                         self.height))
+            # create canvas border rectangle parts if not already created
+            if not self.canvas.find_withtag("border_rectangle_1"):
+                self.canvas.create_rectangle(0, 0, 0, 0, tags=("border_rectangle_1", "border_rectangle_part"))
+                self.canvas.create_rectangle(0, 0, 0, 0, tags=("border_rectangle_2", "border_rectangle_part"))
+
+            self.canvas.coords("border_rectangle_1", (0,
+                                                      self.corner_radius,
+                                                      self.width,
+                                                      self.height - self.corner_radius))
+            self.canvas.coords("border_rectangle_2", (self.corner_radius,
+                                                      0,
+                                                      self.width - self.corner_radius,
+                                                      self.height))
 
         # create inner button parts
         if self.corner_radius > 0:
-            self.canvas_fg_parts.append(self.canvas.create_oval(self.border_width,
-                                                                self.border_width,
-                                                                self.border_width + self.inner_corner_radius * 2,
-                                                                self.border_width + self.inner_corner_radius * 2))
-            self.canvas_fg_parts.append(self.canvas.create_oval(self.width - self.border_width - self.inner_corner_radius * 2,
-                                                                self.border_width,
-                                                                self.width - self.border_width,
-                                                                self.border_width + self.inner_corner_radius * 2))
-            self.canvas_fg_parts.append(self.canvas.create_oval(self.border_width,
-                                                                self.height - self.border_width - self.inner_corner_radius * 2,
-                                                                self.border_width + self.inner_corner_radius * 2,
-                                                                self.height-self.border_width))
-            self.canvas_fg_parts.append(self.canvas.create_oval(self.width - self.border_width - self.inner_corner_radius * 2,
-                                                                self.height - self.border_width - self.inner_corner_radius * 2,
-                                                                self.width - self.border_width,
-                                                                self.height - self.border_width))
 
-        self.canvas_fg_parts.append(self.canvas.create_rectangle(self.border_width + self.inner_corner_radius,
-                                                                 self.border_width,
-                                                                 self.width - self.border_width - self.inner_corner_radius,
-                                                                 self.height - self.border_width))
-        self.canvas_fg_parts.append(self.canvas.create_rectangle(self.border_width,
-                                                                 self.border_width + self.inner_corner_radius,
-                                                                 self.width - self.border_width,
-                                                                 self.height - self.inner_corner_radius - self.border_width))
+            # create canvas border corner parts if not already created
+            if not self.canvas.find_withtag("inner_corner_part"):
+                self.canvas.create_oval(0, 0, 0, 0, tags=("inner_oval_1", "inner_corner_part"))
+                self.canvas.create_oval(0, 0, 0, 0, tags=("inner_oval_2", "inner_corner_part"))
+                self.canvas.create_oval(0, 0, 0, 0, tags=("inner_oval_3", "inner_corner_part"))
+                self.canvas.create_oval(0, 0, 0, 0, tags=("inner_oval_4", "inner_corner_part"))
 
-        # set color for inner button parts
-        for part in self.canvas_fg_parts:
+            self.canvas.coords("inner_oval_1", (self.border_width,
+                                                self.border_width,
+                                                self.border_width + self.inner_corner_radius * 2,
+                                                self.border_width + self.inner_corner_radius * 2))
+            self.canvas.coords("inner_oval_2", (self.width - self.border_width - self.inner_corner_radius * 2,
+                                                self.border_width,
+                                                self.width - self.border_width,
+                                                self.border_width + self.inner_corner_radius * 2))
+            self.canvas.coords("inner_oval_3", (self.border_width,
+                                                self.height - self.border_width - self.inner_corner_radius * 2,
+                                                self.border_width + self.inner_corner_radius * 2,
+                                                self.height-self.border_width))
+            self.canvas.coords("inner_oval_4", (self.width - self.border_width - self.inner_corner_radius * 2,
+                                                self.height - self.border_width - self.inner_corner_radius * 2,
+                                                self.width - self.border_width,
+                                                self.height - self.border_width))
+        else:
+            self.canvas.delete("inner_corner_part")  # delete inner corner parts if not needed
+
+        # create canvas inner rectangle parts if not already created
+        if not self.canvas.find_withtag("inner_rectangle_part"):
+            self.canvas.create_rectangle(0, 0, 0, 0, tags=("inner_rectangle_1", "inner_rectangle_part"))
+            self.canvas.create_rectangle(0, 0, 0, 0, tags=("inner_rectangle_2", "inner_rectangle_part"))
+
+        self.canvas.coords("inner_rectangle_1", (self.border_width + self.inner_corner_radius,
+                                                 self.border_width,
+                                                 self.width - self.border_width - self.inner_corner_radius,
+                                                 self.height - self.border_width))
+        self.canvas.coords("inner_rectangle_2", (self.border_width,
+                                                 self.border_width + self.inner_corner_radius,
+                                                 self.width - self.border_width,
+                                                 self.height - self.inner_corner_radius - self.border_width))
+
+        if no_color_updates is False:
+            # set color for inner button parts
             if self.state == tkinter.DISABLED:
-                self.canvas.itemconfig(part,
+                self.canvas.itemconfig("inner_corner_part",
+                                       fill=CTkColorManager.darken_hex_color(CTkColorManager.single_color(self.fg_color, self.appearance_mode)),
+                                       width=0)
+                self.canvas.itemconfig("inner_rectangle_part",
                                        fill=CTkColorManager.darken_hex_color(CTkColorManager.single_color(self.fg_color, self.appearance_mode)),
                                        width=0)
             else:
-                self.canvas.itemconfig(part, fill=CTkColorManager.single_color(self.fg_color, self.appearance_mode), width=0)
+                self.canvas.itemconfig("inner_corner_part", fill=CTkColorManager.single_color(self.fg_color, self.appearance_mode), width=0)
+                self.canvas.itemconfig("inner_rectangle_part", fill=CTkColorManager.single_color(self.fg_color, self.appearance_mode), width=0)
 
-        # set color for the button border parts (outline)
-        for part in self.canvas_border_parts:
-            self.canvas.itemconfig(part, fill=CTkColorManager.single_color(self.border_color, self.appearance_mode), width=0)
+            # set color for the button border parts (outline)
+            self.canvas.itemconfig("border_corner_part", fill=CTkColorManager.single_color(self.border_color, self.appearance_mode), width=0)
+            self.canvas.itemconfig("border_rectangle_part", fill=CTkColorManager.single_color(self.border_color, self.appearance_mode), width=0)
 
-        # create text label if text given
-        if self.text is not None and self.text != "":
-            self.text_label = tkinter.Label(master=self, text=self.text, font=self.text_font)
+        if no_label_updates is False:
+            # create text label if text given
+            if self.text is not None and self.text != "":
+                self.text_label = tkinter.Label(master=self, text=self.text, font=self.text_font)
 
-            self.text_label.bind("<Enter>", self.on_enter)
-            self.text_label.bind("<Leave>", self.on_leave)
-            self.text_label.bind("<Button-1>", self.clicked)
-            self.text_label.bind("<Button-1>", self.clicked)
+                self.text_label.bind("<Enter>", self.on_enter)
+                self.text_label.bind("<Leave>", self.on_leave)
+                self.text_label.bind("<Button-1>", self.clicked)
+                self.text_label.bind("<Button-1>", self.clicked)
 
-            # set text_label fg color (text color)
-            self.text_label.configure(fg=CTkColorManager.single_color(self.text_color, self.appearance_mode))
+                # set text_label fg color (text color)
+                self.text_label.configure(fg=CTkColorManager.single_color(self.text_color, self.appearance_mode))
 
-            # set text_label bg color (label color)
-            if self.state == tkinter.DISABLED:
-                self.text_label.configure(bg=CTkColorManager.darken_hex_color(CTkColorManager.single_color(self.fg_color, self.appearance_mode)))
-            else:
-                self.text_label.configure(bg=CTkColorManager.single_color(self.fg_color, self.appearance_mode))
+                # set text_label bg color (label color)
+                if self.state == tkinter.DISABLED:
+                    self.text_label.configure(bg=CTkColorManager.darken_hex_color(CTkColorManager.single_color(self.fg_color, self.appearance_mode)))
+                else:
+                    self.text_label.configure(bg=CTkColorManager.single_color(self.fg_color, self.appearance_mode))
 
-            self.set_text(self.text)
+                self.set_text(self.text)
 
-        # create image label if image given
-        if self.image is not None:
-            self.image_label = tkinter.Label(master=self, image=self.image)
+            # create image label if image given
+            if self.image is not None:
+                self.image_label = tkinter.Label(master=self, image=self.image)
 
-            self.image_label.bind("<Enter>", self.on_enter)
-            self.image_label.bind("<Leave>", self.on_leave)
-            self.image_label.bind("<Button-1>", self.clicked)
-            self.image_label.bind("<Button-1>", self.clicked)
+                self.image_label.bind("<Enter>", self.on_enter)
+                self.image_label.bind("<Leave>", self.on_leave)
+                self.image_label.bind("<Button-1>", self.clicked)
+                self.image_label.bind("<Button-1>", self.clicked)
 
-            # set image_label bg color (background color of label)
-            if self.state == tkinter.DISABLED:
-                self.image_label.configure(bg=CTkColorManager.darken_hex_color(CTkColorManager.single_color(self.fg_color, self.appearance_mode)))
-            else:
-                self.image_label.configure(bg=CTkColorManager.single_color(self.fg_color, self.appearance_mode))
+                # set image_label bg color (background color of label)
+                if self.state == tkinter.DISABLED:
+                    self.image_label.configure(bg=CTkColorManager.darken_hex_color(CTkColorManager.single_color(self.fg_color, self.appearance_mode)))
+                else:
+                    self.image_label.configure(bg=CTkColorManager.single_color(self.fg_color, self.appearance_mode))
 
-        # create grid layout with just an image given
-        if self.image_label is not None and self.text_label is None:
-            self.image_label.grid(row=0, column=0, rowspan=2, columnspan=2)
+            # create grid layout with just an image given
+            if self.image_label is not None and self.text_label is None:
+                self.image_label.grid(row=0, column=0, rowspan=2, columnspan=2)
 
-        # create grid layout with just text given
-        if self.image_label is None and self.text_label is not None:
-            self.text_label.grid(row=0, column=0, padx=self.corner_radius, rowspan=2, columnspan=2)
+            # create grid layout with just text given
+            if self.image_label is None and self.text_label is not None:
+                self.text_label.grid(row=0, column=0, padx=self.corner_radius, pady=self.border_width, rowspan=2, columnspan=2)
 
-        # create grid layout of image and text label in 2x2 grid system with given compound
-        if self.image_label is not None and self.text_label is not None:
-            if self.compound == tkinter.LEFT or self.compound == "left":
-                self.image_label.grid(row=0, column=0, padx=self.corner_radius, sticky="e", rowspan=2)
-                self.text_label.grid(row=0, column=1, padx=self.corner_radius, sticky="w", rowspan=2)
-            elif self.compound == tkinter.TOP or self.compound == "top":
-                self.image_label.grid(row=0, column=0, padx=self.corner_radius, sticky="s", columnspan=2)
-                self.text_label.grid(row=1, column=0, padx=self.corner_radius, sticky="n", columnspan=2)
-            elif self.compound == tkinter.RIGHT or self.compound == "right":
-                self.image_label.grid(row=0, column=1, padx=self.corner_radius, sticky="w", rowspan=2)
-                self.text_label.grid(row=0, column=0, padx=self.corner_radius, sticky="e", rowspan=2)
-            elif self.compound == tkinter.BOTTOM or self.compound == "bottom":
-                self.image_label.grid(row=1, column=0, padx=self.corner_radius, sticky="n", columnspan=2)
-                self.text_label.grid(row=0, column=0, padx=self.corner_radius, sticky="s", columnspan=2)
+            # create grid layout of image and text label in 2x2 grid system with given compound
+            if self.image_label is not None and self.text_label is not None:
+                if self.compound == tkinter.LEFT or self.compound == "left":
+                    self.image_label.grid(row=0, column=0, padx=self.corner_radius, sticky="e", rowspan=2)
+                    self.text_label.grid(row=0, column=1, padx=self.corner_radius, sticky="w", rowspan=2, pady=self.border_width)
+                elif self.compound == tkinter.TOP or self.compound == "top":
+                    self.image_label.grid(row=0, column=0, padx=self.corner_radius, sticky="s", columnspan=2)
+                    self.text_label.grid(row=1, column=0, padx=self.corner_radius, sticky="n", columnspan=2, pady=self.border_width)
+                elif self.compound == tkinter.RIGHT or self.compound == "right":
+                    self.image_label.grid(row=0, column=1, padx=self.corner_radius, sticky="w", rowspan=2)
+                    self.text_label.grid(row=0, column=0, padx=self.corner_radius, sticky="e", rowspan=2, pady=self.border_width)
+                elif self.compound == tkinter.BOTTOM or self.compound == "bottom":
+                    self.image_label.grid(row=1, column=0, padx=self.corner_radius, sticky="n", columnspan=2)
+                    self.text_label.grid(row=0, column=0, padx=self.corner_radius, sticky="s", columnspan=2, pady=self.border_width)
 
     def config(self, *args, **kwargs):
         self.configure(*args, **kwargs)
@@ -339,8 +368,8 @@ class CTkButton(tkinter.Frame):
     def on_enter(self, event=0):
         if self.hover is True:
             # set color of inner button parts to hover color
-            for part in self.canvas_fg_parts:
-                self.canvas.itemconfig(part, fill=CTkColorManager.single_color(self.hover_color, self.appearance_mode), width=0)
+            self.canvas.itemconfig("inner_corner_part", fill=CTkColorManager.single_color(self.hover_color, self.appearance_mode), width=0)
+            self.canvas.itemconfig("inner_rectangle_part", fill=CTkColorManager.single_color(self.hover_color, self.appearance_mode), width=0)
 
             # set text_label bg color to button hover color
             if self.text_label is not None:
@@ -353,8 +382,8 @@ class CTkButton(tkinter.Frame):
     def on_leave(self, event=0):
         if self.hover is True:
             # set color of inner button parts
-            for part in self.canvas_fg_parts:
-                self.canvas.itemconfig(part, fill=CTkColorManager.single_color(self.fg_color, self.appearance_mode), width=0)
+            self.canvas.itemconfig("inner_corner_part", fill=CTkColorManager.single_color(self.fg_color, self.appearance_mode), width=0)
+            self.canvas.itemconfig("inner_rectangle_part", fill=CTkColorManager.single_color(self.fg_color, self.appearance_mode), width=0)
 
             # set text_label bg color (label color)
             if self.text_label is not None:
