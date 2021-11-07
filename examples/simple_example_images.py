@@ -25,7 +25,7 @@ frame_1 = customtkinter.CTkFrame(master=root_tk, width=300, height=350, corner_r
 frame_1.place(relx=0.5, rely=0.5, anchor=tkinter.CENTER)
 
 # button with settings-image and no text
-button_1 = customtkinter.CTkButton(master=frame_1, image=settings_image, text="", width=60, height=60,
+button_1 = customtkinter.CTkButton(master=frame_1, image=bell_image, text="", width=60, height=60,
                                    corner_radius=10, command=button_function)
 button_1.place(relx=0.1, rely=0.2, anchor=tkinter.W)
 
@@ -35,14 +35,16 @@ button_2 = customtkinter.CTkButton(master=frame_1, image=bell_image, width=60, h
 button_2.place(relx=0.9, rely=0.2, anchor=tkinter.E)
 
 # button with bell-image and compound="bottom"
-button_4 = customtkinter.CTkButton(master=frame_1, image=bell_image, text="bell_image", compound="bottom",
+button_3 = customtkinter.CTkButton(master=frame_1, image=bell_image, text="bell_image", compound="bottom",
                                    command=button_function, height=100)
-button_4.place(relx=0.5, rely=0.55, relwidth=0.5, anchor=tkinter.CENTER)
+button_3.place(relx=0.5, rely=0.55, relwidth=0.5, anchor=tkinter.CENTER)
 
 # button with settings-image and compound="right"
 button_4 = customtkinter.CTkButton(master=frame_1, image=settings_image, text="bell_image", compound="right",
                                    command=button_function, height=60)
 button_4.place(relx=0.5, rely=0.85, relwidth=0.5, anchor=tkinter.CENTER)
+button_4.configure(text=None)
+
 
 root_tk.mainloop()
 customtkinter.disable_macos_darkmode()

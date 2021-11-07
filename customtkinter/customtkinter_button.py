@@ -117,7 +117,7 @@ class CTkButton(tkinter.Frame):
         if self.width != event.width or self.height != event.height:
             self.width = event.width
             self.height = event.height
-            self.draw(no_color_updates=True, no_label_updates=True)  # fast drawing without color and label changes
+            self.draw(no_color_updates=True)  # fast drawing without color changes
 
     def detect_color_of_master(self):
         if isinstance(self.master, CTkFrame):
@@ -125,7 +125,7 @@ class CTkButton(tkinter.Frame):
         else:
             return self.master.cget("bg")
 
-    def draw(self, no_color_updates=False, no_label_updates=False):
+    def draw(self, no_color_updates=False):
         self.canvas.configure(bg=CTkColorManager.single_color(self.bg_color, self.appearance_mode))
 
         # create border button parts
@@ -138,6 +138,7 @@ class CTkButton(tkinter.Frame):
                     self.canvas.create_oval(0, 0, 0, 0, tags=("border_oval_3", "border_corner_part"))
                     self.canvas.create_oval(0, 0, 0, 0, tags=("border_oval_4", "border_corner_part"))
 
+                # change position of border corner parts
                 self.canvas.coords("border_oval_1", (0,
                                                      0,
                                                      self.corner_radius * 2,
@@ -162,6 +163,7 @@ class CTkButton(tkinter.Frame):
                 self.canvas.create_rectangle(0, 0, 0, 0, tags=("border_rectangle_1", "border_rectangle_part"))
                 self.canvas.create_rectangle(0, 0, 0, 0, tags=("border_rectangle_2", "border_rectangle_part"))
 
+            # change position of border rectangle parts
             self.canvas.coords("border_rectangle_1", (0,
                                                       self.corner_radius,
                                                       self.width,
@@ -181,6 +183,7 @@ class CTkButton(tkinter.Frame):
                 self.canvas.create_oval(0, 0, 0, 0, tags=("inner_oval_3", "inner_corner_part"))
                 self.canvas.create_oval(0, 0, 0, 0, tags=("inner_oval_4", "inner_corner_part"))
 
+            # change position of border corner parts
             self.canvas.coords("inner_oval_1", (self.border_width,
                                                 self.border_width,
                                                 self.border_width + self.inner_corner_radius * 2,
@@ -205,6 +208,7 @@ class CTkButton(tkinter.Frame):
             self.canvas.create_rectangle(0, 0, 0, 0, tags=("inner_rectangle_1", "inner_rectangle_part"))
             self.canvas.create_rectangle(0, 0, 0, 0, tags=("inner_rectangle_2", "inner_rectangle_part"))
 
+        # change position of inner rectangle parts
         self.canvas.coords("inner_rectangle_1", (self.border_width + self.inner_corner_radius,
                                                  self.border_width,
                                                  self.width - self.border_width - self.inner_corner_radius,
@@ -215,7 +219,8 @@ class CTkButton(tkinter.Frame):
                                                  self.height - self.inner_corner_radius - self.border_width))
 
         if no_color_updates is False:
-            # set color for inner button parts
+
+            # set color for inner button parts (depends on button state)
             if self.state == tkinter.DISABLED:
                 self.canvas.itemconfig("inner_corner_part",
                                        fill=CTkColorManager.darken_hex_color(CTkColorManager.single_color(self.fg_color, self.appearance_mode)),
@@ -231,16 +236,18 @@ class CTkButton(tkinter.Frame):
             self.canvas.itemconfig("border_corner_part", fill=CTkColorManager.single_color(self.border_color, self.appearance_mode), width=0)
             self.canvas.itemconfig("border_rectangle_part", fill=CTkColorManager.single_color(self.border_color, self.appearance_mode), width=0)
 
-        if no_label_updates is False:
-            # create text label if text given
-            if self.text is not None and self.text != "":
-                self.text_label = tkinter.Label(master=self, text=self.text, font=self.text_font)
+        # create text label if text given
+        if self.text is not None and self.text != "":
+
+            if self.text_label is None:
+                self.text_label = tkinter.Label(master=self, font=self.text_font)
 
                 self.text_label.bind("<Enter>", self.on_enter)
                 self.text_label.bind("<Leave>", self.on_leave)
                 self.text_label.bind("<Button-1>", self.clicked)
                 self.text_label.bind("<Button-1>", self.clicked)
 
+            if no_color_updates is False:
                 # set text_label fg color (text color)
                 self.text_label.configure(fg=CTkColorManager.single_color(self.text_color, self.appearance_mode))
 
@@ -250,45 +257,62 @@ class CTkButton(tkinter.Frame):
                 else:
                     self.text_label.configure(bg=CTkColorManager.single_color(self.fg_color, self.appearance_mode))
 
-                self.set_text(self.text)
+            self.text_label.configure(text=self.text)  # set text
 
-            # create image label if image given
-            if self.image is not None:
-                self.image_label = tkinter.Label(master=self, image=self.image)
+        else:
+            # delete text_label if no text given
+            if self.text_label is not None:
+                self.text_label.destroy()
+                self.text_label = None
+
+        # create image label if image given
+        if self.image is not None:
+
+            if self.image_label is None:
+                self.image_label = tkinter.Label(master=self)
 
                 self.image_label.bind("<Enter>", self.on_enter)
                 self.image_label.bind("<Leave>", self.on_leave)
                 self.image_label.bind("<Button-1>", self.clicked)
                 self.image_label.bind("<Button-1>", self.clicked)
 
+            if no_color_updates is False:
                 # set image_label bg color (background color of label)
                 if self.state == tkinter.DISABLED:
                     self.image_label.configure(bg=CTkColorManager.darken_hex_color(CTkColorManager.single_color(self.fg_color, self.appearance_mode)))
                 else:
                     self.image_label.configure(bg=CTkColorManager.single_color(self.fg_color, self.appearance_mode))
 
-            # create grid layout with just an image given
-            if self.image_label is not None and self.text_label is None:
-                self.image_label.grid(row=0, column=0, rowspan=2, columnspan=2)
+            self.image_label.configure(image=self.image)  # set image
 
-            # create grid layout with just text given
-            if self.image_label is None and self.text_label is not None:
-                self.text_label.grid(row=0, column=0, padx=self.corner_radius, pady=self.border_width, rowspan=2, columnspan=2)
+        else:
+            # delete text_label if no text given
+            if self.image_label is not None:
+                self.image_label.destroy()
+                self.image_label = None
 
-            # create grid layout of image and text label in 2x2 grid system with given compound
-            if self.image_label is not None and self.text_label is not None:
-                if self.compound == tkinter.LEFT or self.compound == "left":
-                    self.image_label.grid(row=0, column=0, padx=self.corner_radius, sticky="e", rowspan=2)
-                    self.text_label.grid(row=0, column=1, padx=self.corner_radius, sticky="w", rowspan=2, pady=self.border_width)
-                elif self.compound == tkinter.TOP or self.compound == "top":
-                    self.image_label.grid(row=0, column=0, padx=self.corner_radius, sticky="s", columnspan=2)
-                    self.text_label.grid(row=1, column=0, padx=self.corner_radius, sticky="n", columnspan=2, pady=self.border_width)
-                elif self.compound == tkinter.RIGHT or self.compound == "right":
-                    self.image_label.grid(row=0, column=1, padx=self.corner_radius, sticky="w", rowspan=2)
-                    self.text_label.grid(row=0, column=0, padx=self.corner_radius, sticky="e", rowspan=2, pady=self.border_width)
-                elif self.compound == tkinter.BOTTOM or self.compound == "bottom":
-                    self.image_label.grid(row=1, column=0, padx=self.corner_radius, sticky="n", columnspan=2)
-                    self.text_label.grid(row=0, column=0, padx=self.corner_radius, sticky="s", columnspan=2, pady=self.border_width)
+        # create grid layout with just an image given
+        if self.image_label is not None and self.text_label is None:
+            self.image_label.grid(row=0, column=0, rowspan=2, columnspan=2, sticky="")
+
+        # create grid layout with just text given
+        if self.image_label is None and self.text_label is not None:
+            self.text_label.grid(row=0, column=0, padx=self.corner_radius, pady=self.border_width, rowspan=2, columnspan=2, sticky="")
+
+        # create grid layout of image and text label in 2x2 grid system with given compound
+        if self.image_label is not None and self.text_label is not None:
+            if self.compound == tkinter.LEFT or self.compound == "left":
+                self.image_label.grid(row=0, column=0, padx=self.corner_radius, sticky="e", rowspan=2, columnspan=1)
+                self.text_label.grid(row=0, column=1, padx=self.corner_radius, sticky="w", rowspan=2, columnspan=1, pady=self.border_width)
+            elif self.compound == tkinter.TOP or self.compound == "top":
+                self.image_label.grid(row=0, column=0, padx=self.corner_radius, sticky="s", columnspan=2, rowspan=1)
+                self.text_label.grid(row=1, column=0, padx=self.corner_radius, sticky="n", columnspan=2, rowspan=1, pady=self.border_width)
+            elif self.compound == tkinter.RIGHT or self.compound == "right":
+                self.image_label.grid(row=0, column=1, padx=self.corner_radius, sticky="w", rowspan=2, columnspan=1)
+                self.text_label.grid(row=0, column=0, padx=self.corner_radius, sticky="e", rowspan=2, columnspan=1, pady=self.border_width)
+            elif self.compound == tkinter.BOTTOM or self.compound == "bottom":
+                self.image_label.grid(row=1, column=0, padx=self.corner_radius, sticky="n", columnspan=2, rowspan=1)
+                self.text_label.grid(row=0, column=0, padx=self.corner_radius, sticky="s", columnspan=2, rowspan=1, pady=self.border_width)
 
     def config(self, *args, **kwargs):
         self.configure(*args, **kwargs)
@@ -307,6 +331,11 @@ class CTkButton(tkinter.Frame):
         if "image" in kwargs:
             self.set_image(kwargs["image"])
             del kwargs["image"]
+
+        if "compound" in kwargs:
+            self.compound = kwargs["compound"]
+            require_redraw = True
+            del kwargs["compound"]
 
         if "fg_color" in kwargs:
             self.fg_color = kwargs["fg_color"]
@@ -353,17 +382,11 @@ class CTkButton(tkinter.Frame):
 
     def set_text(self, text):
         self.text = text
-        if self.text_label is not None:
-            self.text_label.configure(text=self.text)  #, width=len(self.text))
-        else:
-            sys.stderr.write("ERROR (CTkButton): Cant change text because button has no text.")
+        self.draw()
 
     def set_image(self, image):
-        if self.image_label is not None:
-            self.image = image
-            self.image_label.configure(image=self.image)
-        else:
-            sys.stderr.write("ERROR (CTkButton): Cant change image because button has no image.")
+        self.image = image
+        self.draw()
 
     def on_enter(self, event=0):
         if self.hover is True:
