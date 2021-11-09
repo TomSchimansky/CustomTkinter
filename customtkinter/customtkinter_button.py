@@ -76,15 +76,15 @@ class CTkButton(tkinter.Frame):
         self.image = image
         self.compound = compound
 
-        self.configure(width=self.width+1, height=self.height+1)
+        self.configure(width=self.width, height=self.height)
 
         if sys.platform == "darwin" and self.function is not None:
             self.configure(cursor="pointinghand")  # other cursor when hovering over button with command
 
         self.canvas = tkinter.Canvas(master=self,
                                      highlightthicknes=0,
-                                     width=self.width+1,
-                                     height=self.height+1)
+                                     width=self.width,
+                                     height=self.height)
         self.canvas.grid(row=0, column=0, rowspan=2, columnspan=2)
 
         if self.hover is True:
@@ -147,7 +147,7 @@ class CTkButton(tkinter.Frame):
         # create border button parts (only if border exists)
         if self.border_width > 0:
             if not self.canvas.find_withtag("border_line"):
-                self.canvas.create_polygon((0, 0, 0, 0), tags=("border_line"))
+                self.canvas.create_polygon((0, 0, 0, 0), tags=("border_line",))
 
             self.canvas.coords("border_line",
                                (self.corner_radius,
