@@ -30,7 +30,14 @@ class CTkLabel(tkinter.Frame):
 
         self.width = width
         self.height = height
-        self.corner_radius = corner_radius
+
+        self.corner_radius = self.calc_optimal_corner_radius(corner_radius)  # optimise for less artifacts
+
+        if self.corner_radius * 2 > self.height:
+            self.corner_radius = self.height / 2
+        elif self.corner_radius * 2 > self.width:
+            self.corner_radius = self.width / 2
+
         self.text = text
 
         if text_font is None:
@@ -68,19 +75,47 @@ class CTkLabel(tkinter.Frame):
         else:
             return self.master.cget("bg")
 
+    @staticmethod
+    def calc_optimal_corner_radius(user_corner_radius):
+        if sys.platform == "darwin":
+            return user_corner_radius  # on macOS just use given value (canvas has Antialiasing)
+        else:
+            user_corner_radius = 0.5 * round(user_corner_radius / 0.5)  # round to 0.5 steps
+
+            # make sure the value is always with .5 at the end for smoother corners
+            if user_corner_radius == 0:
+                return 0
+            elif user_corner_radius % 1 == 0:
+                return user_corner_radius + 0.5
+            else:
+                return user_corner_radius
+
     def draw(self):
         self.canvas.delete("all")
         self.fg_parts = []
 
+        if sys.platform == "darwin":
+            oval_size_corr_br = 0
+        else:
+            oval_size_corr_br = -1  # correct canvas oval draw size on bottom and right by 1 pixel (too large otherwise)
+
         # frame_border
-        self.fg_parts.append(self.canvas.create_oval(0, 0,
-                                                     self.corner_radius*2, self.corner_radius*2))
-        self.fg_parts.append(self.canvas.create_oval(self.width-self.corner_radius*2, 0,
-                                                     self.width, self.corner_radius*2))
-        self.fg_parts.append(self.canvas.create_oval(0, self.height-self.corner_radius*2,
-                                                     self.corner_radius*2, self.height))
-        self.fg_parts.append(self.canvas.create_oval(self.width-self.corner_radius*2, self.height-self.corner_radius*2,
-                                                     self.width, self.height))
+        self.fg_parts.append(self.canvas.create_oval(0,
+                                                     0,
+                                                     self.corner_radius*2 + oval_size_corr_br,
+                                                     self.corner_radius*2 + oval_size_corr_br))
+        self.fg_parts.append(self.canvas.create_oval(self.width-self.corner_radius*2,
+                                                     0,
+                                                     self.width + oval_size_corr_br,
+                                                     self.corner_radius*2 + oval_size_corr_br))
+        self.fg_parts.append(self.canvas.create_oval(0,
+                                                     self.height-self.corner_radius*2,
+                                                     self.corner_radius*2 + oval_size_corr_br,
+                                                     self.height + oval_size_corr_br))
+        self.fg_parts.append(self.canvas.create_oval(self.width-self.corner_radius*2,
+                                                     self.height-self.corner_radius*2,
+                                                     self.width + oval_size_corr_br,
+                                                     self.height + oval_size_corr_br))
 
         self.fg_parts.append(self.canvas.create_rectangle(0, self.corner_radius,
                                                           self.width, self.height-self.corner_radius))
