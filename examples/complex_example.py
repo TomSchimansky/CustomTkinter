@@ -90,27 +90,25 @@ class App(tkinter.Tk):
 
         self.progressbar = customtkinter.CTkProgressBar(master=self.frame_info,
                                                         width=250,
-                                                        height=16,
-                                                        border_color="gray10",
-                                                        progress_color="green",
-                                                        border_width=2)
+                                                        height=15,
+                                                        border_width=3)
         self.progressbar.place(relx=0.5, rely=0.85, anchor=tkinter.S)
 
         # ============ frame_right <- ============
 
         self.slider_1 = customtkinter.CTkSlider(master=self.frame_right,
-                                               width=160,
-                                               height=16,
-                                               border_width=5.5,
-                                               command=self.progressbar.set)
+                                                width=160,
+                                                height=16,
+                                                border_width=5,
+                                                command=self.progressbar.set)
         self.slider_1.place(x=20, rely=0.6, anchor=tkinter.W)
         self.slider_1.set(0.3)
 
         self.slider_2 = customtkinter.CTkSlider(master=self.frame_right,
-                                               width=160,
-                                               height=16,
-                                               border_width=5.5,
-                                               command=self.progressbar.set)
+                                                width=160,
+                                                height=16,
+                                                border_width=5,
+                                                command=self.progressbar.set)
         self.slider_2.place(x=20, rely=0.7, anchor=tkinter.W)
         self.slider_2.set(0.7)
 

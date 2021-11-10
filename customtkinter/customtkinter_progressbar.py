@@ -29,8 +29,8 @@ class CTkProgressBar(tkinter.Frame):
         self.progress_color = CTkColorManager.MAIN if progress_color is None else progress_color
 
         self.width = width
-        self.height = height
-        self.border_width = border_width
+        self.height = self.calc_optimal_height(height)
+        self.border_width = round(border_width)
         self.value = 0.5
 
         self.configure(width=self.width, height=self.height)
@@ -40,10 +40,6 @@ class CTkProgressBar(tkinter.Frame):
                                      width=self.width,
                                      height=self.height)
         self.canvas.place(x=0, y=0)
-
-        self.border_parts = []
-        self.fg_parts = []
-        self.progress_parts = []
 
         self.draw()
 
@@ -55,6 +51,19 @@ class CTkProgressBar(tkinter.Frame):
             return self.master.fg_color
         else:
             return self.master.cget("bg")
+
+    @staticmethod
+    def calc_optimal_height(user_height):
+        if sys.platform == "darwin":
+            return user_height  # on macOS just use given value (canvas has Antialiasing)
+        else:
+            # make sure the value is always with uneven for better rendering of the ovals
+            if user_height == 0:
+                return 0
+            elif user_height % 2 == 0:
+                return user_height + 1
+            else:
+                return user_height
 
     def draw(self, no_color_updates=False):
 

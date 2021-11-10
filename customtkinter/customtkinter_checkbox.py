@@ -44,7 +44,7 @@ class CTkCheckBox(tkinter.Frame):
         elif self.corner_radius*2 > self.width:
             self.corner_radius = self.width/2
 
-        self.border_width = border_width
+        self.border_width = round(border_width)
 
         if self.corner_radius >= self.border_width:
             self.inner_corner_radius = self.corner_radius - self.border_width
@@ -123,26 +123,31 @@ class CTkCheckBox(tkinter.Frame):
         else:
             self.canvas.configure(bg=self.bg_color)
 
+        if sys.platform == "darwin":
+            oval_size_corr_br = 0
+        else:
+            oval_size_corr_br = -1
+
         # border button parts
         if self.border_width > 0:
 
             if self.corner_radius > 0:
                 self.canvas_border_parts.append(self.canvas.create_oval(0,
                                                                         0,
-                                                                        self.corner_radius * 2,
-                                                                        self.corner_radius * 2))
+                                                                        self.corner_radius * 2 + oval_size_corr_br,
+                                                                        self.corner_radius * 2 + oval_size_corr_br))
                 self.canvas_border_parts.append(self.canvas.create_oval(self.width - self.corner_radius * 2,
                                                                         0,
-                                                                        self.width,
-                                                                        self.corner_radius * 2))
+                                                                        self.width + oval_size_corr_br,
+                                                                        self.corner_radius * 2 + oval_size_corr_br))
                 self.canvas_border_parts.append(self.canvas.create_oval(0,
                                                                         self.height - self.corner_radius * 2,
-                                                                        self.corner_radius * 2,
-                                                                        self.height))
+                                                                        self.corner_radius * 2 + oval_size_corr_br,
+                                                                        self.height + oval_size_corr_br))
                 self.canvas_border_parts.append(self.canvas.create_oval(self.width - self.corner_radius * 2,
                                                                         self.height - self.corner_radius * 2,
-                                                                        self.width,
-                                                                        self.height))
+                                                                        self.width + oval_size_corr_br,
+                                                                        self.height + oval_size_corr_br))
 
             self.canvas_border_parts.append(self.canvas.create_rectangle(0,
                                                                          self.corner_radius,
@@ -158,20 +163,20 @@ class CTkCheckBox(tkinter.Frame):
         if self.corner_radius > 0:
             self.canvas_fg_parts.append(self.canvas.create_oval(self.border_width,
                                                                 self.border_width,
-                                                                self.border_width + self.inner_corner_radius * 2,
-                                                                self.border_width + self.inner_corner_radius * 2))
+                                                                self.border_width + self.inner_corner_radius * 2 + oval_size_corr_br,
+                                                                self.border_width + self.inner_corner_radius * 2 + oval_size_corr_br))
             self.canvas_fg_parts.append(self.canvas.create_oval(self.width - self.border_width - self.inner_corner_radius * 2,
                                                                 self.border_width,
-                                                                self.width - self.border_width,
-                                                                self.border_width + self.inner_corner_radius * 2))
+                                                                self.width - self.border_width + oval_size_corr_br,
+                                                                self.border_width + self.inner_corner_radius * 2 + oval_size_corr_br))
             self.canvas_fg_parts.append(self.canvas.create_oval(self.border_width,
                                                                 self.height - self.border_width - self.inner_corner_radius * 2,
-                                                                self.border_width + self.inner_corner_radius * 2,
-                                                                self.height-self.border_width))
+                                                                self.border_width + self.inner_corner_radius * 2 + oval_size_corr_br,
+                                                                self.height-self.border_width + oval_size_corr_br))
             self.canvas_fg_parts.append(self.canvas.create_oval(self.width - self.border_width - self.inner_corner_radius * 2,
                                                                 self.height - self.border_width - self.inner_corner_radius * 2,
-                                                                self.width - self.border_width,
-                                                                self.height - self.border_width))
+                                                                self.width - self.border_width + oval_size_corr_br,
+                                                                self.height - self.border_width + oval_size_corr_br))
 
         self.canvas_fg_parts.append(self.canvas.create_rectangle(self.border_width + self.inner_corner_radius,
                                                                  self.border_width,

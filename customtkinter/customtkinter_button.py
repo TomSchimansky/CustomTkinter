@@ -94,8 +94,6 @@ class CTkButton(tkinter.Frame):
         self.canvas.bind("<Button-1>", self.clicked)
         self.canvas.bind("<Button-1>", self.clicked)
 
-        self.canvas_fg_parts = []
-        self.canvas_border_parts = []
         self.text_label = None
         self.image_label = None
 

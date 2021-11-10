@@ -40,13 +40,13 @@ class App(tkinter.Tk):
         self.frame_left = customtkinter.CTkFrame(master=self,
                                                  width=200,
                                                  height=App.HEIGHT-40,
-                                                 corner_radius=0)
+                                                 corner_radius=5)
         self.frame_left.place(relx=0.32, rely=0.5, anchor=tkinter.E)
 
         self.frame_right = customtkinter.CTkFrame(master=self,
                                                   width=420,
                                                   height=App.HEIGHT-40,
-                                                  corner_radius=0)
+                                                  corner_radius=5)
         self.frame_right.place(relx=0.365, rely=0.5, anchor=tkinter.W)
 
         # ============ frame_left ============
@@ -57,8 +57,8 @@ class App(tkinter.Tk):
                                                 hover_color=App.MAIN_HOVER,
                                                 text="CTkButton",
                                                 command=self.button_event,
-                                                border_width=2,
-                                                corner_radius=0)
+                                                border_width=3,
+                                                corner_radius=5)
         self.button_1.place(relx=0.5, y=50, anchor=tkinter.CENTER)
 
         self.button_2 = customtkinter.CTkButton(master=self.frame_left,
@@ -67,8 +67,8 @@ class App(tkinter.Tk):
                                                 hover_color=App.MAIN_HOVER,
                                                 text="CTkButton",
                                                 command=self.button_event,
-                                                border_width=2,
-                                                corner_radius=0)
+                                                border_width=3,
+                                                corner_radius=5)
         self.button_2.place(relx=0.5, y=100, anchor=tkinter.CENTER)
 
         self.button_3 = customtkinter.CTkButton(master=self.frame_left,
@@ -77,8 +77,8 @@ class App(tkinter.Tk):
                                                 hover_color=App.MAIN_HOVER,
                                                 text="CTkButton",
                                                 command=self.button_event,
-                                                border_width=2,
-                                                corner_radius=0)
+                                                border_width=3,
+                                                corner_radius=5)
         self.button_3.place(relx=0.5, y=150, anchor=tkinter.CENTER)
 
         # ============ frame_right ============
@@ -86,7 +86,7 @@ class App(tkinter.Tk):
         self.frame_info = customtkinter.CTkFrame(master=self.frame_right,
                                                  width=380,
                                                  height=200,
-                                                 corner_radius=0)
+                                                 corner_radius=5)
         self.frame_info.place(relx=0.5, y=20, anchor=tkinter.N)
 
         # ============ frame_right -> frame_info ============
@@ -98,7 +98,7 @@ class App(tkinter.Tk):
                                                         "invidunt ut labore",
                                                    width=250,
                                                    height=100,
-                                                   corner_radius=0,
+                                                   corner_radius=5,
                                                    fg_color=("white", "gray20"),
                                                    text_color=App.MAIN_COLOR,
                                                    justify=tkinter.LEFT)
@@ -108,7 +108,7 @@ class App(tkinter.Tk):
                                                         progress_color=App.MAIN_COLOR,
                                                         width=250,
                                                         height=15,
-                                                        border_width=0)
+                                                        border_width=3)
         self.progressbar.place(relx=0.5, rely=0.85, anchor=tkinter.S)
         self.progressbar.set(0.65)
 
@@ -119,7 +119,7 @@ class App(tkinter.Tk):
                                                 button_hover_color=App.MAIN_HOVER,
                                                 width=160,
                                                 height=16,
-                                                border_width=5.5,
+                                                border_width=5,
                                                 command=self.progressbar.set)
         self.slider_1.place(x=20, rely=0.6, anchor=tkinter.W)
         self.slider_1.set(0.3)
@@ -129,7 +129,7 @@ class App(tkinter.Tk):
                                                 button_hover_color=App.MAIN_HOVER,
                                                 width=160,
                                                 height=16,
-                                                border_width=5.5,
+                                                border_width=5,
                                                 command=self.progressbar.set)
         self.slider_2.place(x=20, rely=0.7, anchor=tkinter.W)
         self.slider_2.set(0.7)
@@ -148,14 +148,14 @@ class App(tkinter.Tk):
                                                 height=28,
                                                 text="CTkButton",
                                                 command=self.button_event,
-                                                border_width=2,
-                                                corner_radius=0)
+                                                border_width=3,
+                                                corner_radius=5)
         self.button_4.place(x=310, rely=0.7, anchor=tkinter.CENTER)
 
         self.entry = customtkinter.CTkEntry(master=self.frame_right,
                                             width=120,
                                             height=28,
-                                            corner_radius=0)
+                                            corner_radius=5)
         self.entry.place(relx=0.33, rely=0.92, anchor=tkinter.CENTER)
         self.entry.insert(0, "CTkEntry")
 
@@ -166,8 +166,8 @@ class App(tkinter.Tk):
                                                 height=28,
                                                 text="CTkButton",
                                                 command=self.button_event,
-                                                border_width=2,
-                                                corner_radius=0)
+                                                border_width=3,
+                                                corner_radius=5)
         self.button_5.place(relx=0.66, rely=0.92, anchor=tkinter.CENTER)
 
     def button_event(self):

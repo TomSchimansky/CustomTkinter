@@ -28,14 +28,14 @@ class CTkSlider(tkinter.Frame):
         self.appearance_mode = AppearanceModeTracker.get_mode()  # 0: "Light" 1: "Dark"
 
         self.bg_color = self.detect_color_of_master() if bg_color is None else bg_color
-        self.border_color = border_color
+        self.border_color = self.bg_color if border_color is None else border_color
         self.fg_color = fg_color
         self.button_color = self.bg_color if button_color is None else button_color
         self.button_hover_color = self.bg_color if button_hover_color is None else button_hover_color
 
         self.width = width
-        self.height = height
-        self.border_width = border_width
+        self.height = self.calc_optimal_height(height)
+        self.border_width = round(border_width)
         self.callback_function = command
         self.value = 0.5  # initial value of slider in percent
         self.hover_state = False
@@ -58,10 +58,6 @@ class CTkSlider(tkinter.Frame):
         self.canvas.bind("<Button-1>", self.clicked)
         self.canvas.bind("<B1-Motion>", self.clicked)
 
-        self.border_parts = []
-        self.fg_parts = []
-        self.button_parts = []
-
         self.draw()
 
     def detect_color_of_master(self):
@@ -70,42 +66,137 @@ class CTkSlider(tkinter.Frame):
         else:
             return self.master.cget("bg")
 
-    def draw(self):
-        self.canvas.delete("all")
-        self.border_parts = []
-        self.fg_parts = []
-        self.button_parts = []
+    @staticmethod
+    def calc_optimal_height(user_height):
+        if sys.platform == "darwin":
+            return user_height  # on macOS just use given value (canvas has Antialiasing)
+        else:
+            # make sure the value is always with uneven for better rendering of the ovals
+            if user_height == 0:
+                return 0
+            elif user_height % 2 == 0:
+                return user_height + 1
+            else:
+                return user_height
+
+    def draw(self, no_color_updates=False):
+
+        # decide the drawing method
+        if sys.platform == "darwin":
+            # on macOS draw button with polygons (positions are more accurate, macOS has Antialiasing)
+            self.draw_with_polygon_shapes()
+        else:
+            # on Windows and other draw with ovals (corner_radius can be optimised to look better than with polygons)
+            self.draw_with_ovals_and_rects()
+
+        if no_color_updates is False:
+            self.canvas.configure(bg=CTkColorManager.single_color(self.bg_color, self.appearance_mode))
+            print(self.border_color)
+            self.canvas.itemconfig("border_parts", fill=CTkColorManager.single_color(self.border_color, self.appearance_mode))
+            self.canvas.itemconfig("inner_parts", fill=CTkColorManager.single_color(self.fg_color, self.appearance_mode))
+            self.canvas.itemconfig("button_parts", fill=CTkColorManager.single_color(self.button_color, self.appearance_mode))
+
+    def draw_with_polygon_shapes(self):
+        """ draw the slider parts with just three polygons that have a rounded border """
+
+        coordinate_shift = -1
+        width_reduced = -1
+
+        # create border parts
+        if self.border_width > 0:
+            if not self.canvas.find_withtag("border_parts"):
+                self.canvas.create_line((0, 0, 0, 0), tags=("border_line_1", "border_parts"))
+
+            self.canvas.coords("border_line_1",
+                               (self.height / 2,
+                                self.height / 2,
+                                self.width - self.height / 2 + coordinate_shift,
+                                self.height / 2))
+            self.canvas.itemconfig("border_line_1",
+                                   capstyle=tkinter.ROUND,
+                                   width=self.height + width_reduced)
+
+        # create inner button parts
+        if not self.canvas.find_withtag("inner_parts"):
+            self.canvas.create_line((0, 0, 0, 0), tags=("inner_line_1", "inner_parts"))
+
+        self.canvas.coords("inner_line_1",
+                           (self.height / 2,
+                            self.height / 2,
+                            self.width - self.height / 2 + coordinate_shift,
+                            self.height / 2))
+        self.canvas.itemconfig("inner_line_1",
+                               capstyle=tkinter.ROUND,
+                               width=self.height - self.border_width * 2 + width_reduced)
+
+        # button parts
+        if not self.canvas.find_withtag("button_parts"):
+            self.canvas.create_line((0, 0, 0, 0), tags=("button_line_1", "button_parts"))
+
+        self.canvas.coords("button_line_1",
+                           (self.height / 2 + (self.width + coordinate_shift - self.height) * self.value,
+                            self.height / 2,
+                            self.height / 2 + (self.width + coordinate_shift - self.height) * self.value,
+                            self.height / 2))
+        self.canvas.itemconfig("button_line_1",
+                               capstyle=tkinter.ROUND,
+                               width=self.height + width_reduced)
+
+    def draw_with_ovals_and_rects(self):
+        """ draw the progress bar parts with ovals and rectangles """
+
+        # ovals and rects are always rendered too large and need to be made smaller by -1
+        oval_bottom_right_shift = -1
+        rect_bottom_right_shift = -1
 
         # frame_border
-        self.border_parts.append(self.canvas.create_oval(0, 0,
-                                                         self.height, self.height))
-        self.border_parts.append(self.canvas.create_rectangle(self.height/2, 0,
-                                                              self.width-(self.height/2), self.height))
-        self.border_parts.append(self.canvas.create_oval(self.width-self.height, 0,
-                                                         self.width, self.height))
+        if self.border_width > 0:
+            if not self.canvas.find_withtag("border_parts"):
+                self.canvas.create_oval((0, 0, 0, 0), tags=("border_oval_1", "border_parts"), width=0)
+                self.canvas.create_rectangle((0, 0, 0, 0), tags=("border_rect_1", "border_parts"), width=0)
+                self.canvas.create_oval((0, 0, 0, 0), tags=("border_oval_2", "border_parts"), width=0)
+
+            self.canvas.coords("border_oval_1", (0,
+                                                 0,
+                                                 self.height + oval_bottom_right_shift,
+                                                 self.height + oval_bottom_right_shift))
+            self.canvas.coords("border_rect_1", (self.height/2,
+                                                 0,
+                                                 self.width-(self.height/2) + rect_bottom_right_shift,
+                                                 self.height + rect_bottom_right_shift))
+            self.canvas.coords("border_oval_2", (self.width-self.height,
+                                                 0,
+                                                 self.width + oval_bottom_right_shift,
+                                                 self.height + oval_bottom_right_shift))
 
         # foreground
-        self.fg_parts.append(self.canvas.create_oval(self.border_width, self.border_width,
-                                                     self.height-self.border_width, self.height-self.border_width))
-        self.fg_parts.append(self.canvas.create_rectangle(self.height/2, self.border_width,
-                                                          self.width-(self.height/2), self.height-self.border_width))
-        self.fg_parts.append(self.canvas.create_oval(self.width-self.height+self.border_width, self.border_width,
-                                                     self.width-self.border_width, self.height-self.border_width))
+        if not self.canvas.find_withtag("inner_parts"):
+            self.canvas.create_oval((0, 0, 0, 0), tags=("inner_oval_1", "inner_parts"), width=0)
+            self.canvas.create_rectangle((0, 0, 0, 0), tags=("inner_rect_1", "inner_parts"), width=0)
+            self.canvas.create_oval((0, 0, 0, 0), tags=("inner_oval_2", "inner_parts"), width=0)
 
-        # button
-        self.button_parts.append(self.canvas.create_oval(self.value*self.width - self.height/2, 0,
-                                                         self.value*self.width + self.height/2, self.height))
+        self.canvas.coords("inner_oval_1", (self.border_width,
+                                            self.border_width,
+                                            self.height-self.border_width + oval_bottom_right_shift,
+                                            self.height-self.border_width + oval_bottom_right_shift))
+        self.canvas.coords("inner_rect_1", (self.height/2,
+                                            self.border_width,
+                                            self.width-(self.height/2 + rect_bottom_right_shift),
+                                            self.height-self.border_width + rect_bottom_right_shift))
+        self.canvas.coords("inner_oval_2", (self.width-self.height+self.border_width,
+                                            self.border_width,
+                                            self.width-self.border_width + oval_bottom_right_shift,
+                                            self.height-self.border_width + oval_bottom_right_shift))
 
-        self.canvas.configure(bg=CTkColorManager.single_color(self.bg_color, self.appearance_mode))
+        # progress parts
+        if not self.canvas.find_withtag("button_parts"):
+            self.canvas.create_oval((0, 0, 0, 0), tags=("button_oval_1", "button_parts"), width=0)
 
-        for part in self.border_parts:
-            self.canvas.itemconfig(part, fill=CTkColorManager.single_color(self.border_color, self.appearance_mode), width=0)
-
-        for part in self.fg_parts:
-            self.canvas.itemconfig(part, fill=CTkColorManager.single_color(self.fg_color, self.appearance_mode), width=0)
-
-        for part in self.button_parts:
-            self.canvas.itemconfig(part, fill=CTkColorManager.single_color(self.button_color, self.appearance_mode), width=0)
+        self.canvas.coords("button_oval_1",
+                           ((self.width - self.height) * self.value,
+                            0,
+                            self.height + (self.width - self.height) * self.value + oval_bottom_right_shift,
+                            self.height + oval_bottom_right_shift))
 
     def clicked(self, event=None):
         self.value = event.x / self.width
@@ -117,33 +208,18 @@ class CTkSlider(tkinter.Frame):
 
         self.output_value = self.from_ + (self.value * (self.to - self.from_))
 
-        self.update()
+        self.draw(no_color_updates=True)
 
         if self.callback_function is not None:
             self.callback_function(self.output_value)
 
-    def update(self):
-        for part in self.button_parts:
-            self.canvas.delete(part)
-
-        self.button_parts.append(self.canvas.create_oval(self.value * (self.width-self.height), 0,
-                                                         self.value * (self.width-self.height) + self.height, self.height))
-
-        for part in self.button_parts:
-            if self.hover_state is True:
-                self.canvas.itemconfig(part, fill=CTkColorManager.single_color(self.button_hover_color, self.appearance_mode), width=0)
-            else:
-                self.canvas.itemconfig(part, fill=CTkColorManager.single_color(self.button_color, self.appearance_mode), width=0)
-
     def on_enter(self, event=0):
         self.hover_state = True
-        for part in self.button_parts:
-            self.canvas.itemconfig(part, fill=CTkColorManager.single_color(self.button_hover_color, self.appearance_mode), width=0)
+        self.canvas.itemconfig("button_parts", fill=CTkColorManager.single_color(self.button_hover_color, self.appearance_mode))
 
     def on_leave(self, event=0):
         self.hover_state = False
-        for part in self.button_parts:
-            self.canvas.itemconfig(part, fill=CTkColorManager.single_color(self.button_color, self.appearance_mode), width=0)
+        self.canvas.itemconfig("button_parts", fill=CTkColorManager.single_color(self.button_color, self.appearance_mode))
 
     def get(self):
         return self.output_value
@@ -151,7 +227,8 @@ class CTkSlider(tkinter.Frame):
     def set(self, output_value):
         self.output_value = output_value
         self.value = (self.output_value - self.from_) / (self.to - self.from_)
-        self.update()
+
+        self.draw(no_color_updates=True)
 
         if self.callback_function is not None:
             self.callback_function(self.output_value)
