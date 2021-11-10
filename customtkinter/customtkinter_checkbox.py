@@ -17,7 +17,7 @@ class CTkCheckBox(tkinter.Frame):
                  border_width=3,
                  width=25,
                  height=25,
-                 corner_radius=5,
+                 corner_radius=4,
                  text_font=None,
                  text_color=CTkColorManager.TEXT,
                  text="CTkCheckBox",

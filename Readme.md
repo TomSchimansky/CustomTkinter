@@ -116,6 +116,24 @@ colors and removed the round corners, and added a border to the buttons:
 
 ![](documentation_images/complex_example_other_style.png)
 
+### Customtkinter on Windows/Linux
+
+All elements of Customtkinter are drawn on the ```tkinter.Canvas```.
+But the Tkinter canvas supports antialiasing only on macOS, so on Windows
+and Linux the elements are rendered in a much worse quality. So you have
+to experiment with the ```corner_radius``` and look when the rounded corners
+look best. I tried to design the too complex example programs so that they
+also look acceptable on Windows. Maybe you can use the parameters for
+```corner_radius``` and ```width``` for your program as well.
+
+Example 1:```examples/complex_example.py```
+
+![](documentation_images/Windows_light.png)
+
+Example 2: ```examples/complex_example_other_style.py```
+
+![](documentation_images/Windows_dark.png)
+
 ### CTkButton with images
 It's also possible to put an image on a CTkButton. You just have to
 pass a PhotoImage object to the CTkButton with the argument ``image``.

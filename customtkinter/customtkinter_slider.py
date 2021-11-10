@@ -147,7 +147,7 @@ class CTkSlider(tkinter.Frame):
 
         # ovals and rects are always rendered too large and need to be made smaller by -1
         oval_bottom_right_shift = -1
-        rect_bottom_right_shift = -1
+        rect_bottom_right_shift = 0
 
         # frame_border
         if self.border_width > 0:

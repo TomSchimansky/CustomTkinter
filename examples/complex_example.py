@@ -130,7 +130,7 @@ class App(tkinter.Tk):
         self.entry = customtkinter.CTkEntry(master=self.frame_right,
                                             width=120,
                                             height=25,
-                                            corner_radius=10)
+                                            corner_radius=8)
         self.entry.place(relx=0.33, rely=0.92, anchor=tkinter.CENTER)
         self.entry.insert(0, "CTkEntry")
 
