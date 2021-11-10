@@ -144,61 +144,29 @@ class CTkButton(tkinter.Frame):
     def draw(self, no_color_updates=False):
         self.canvas.configure(bg=CTkColorManager.single_color(self.bg_color, self.appearance_mode))
 
-        # create border button parts (only if border exists)
-        if self.border_width > 0:
-            if not self.canvas.find_withtag("border_line"):
-                self.canvas.create_polygon((0, 0, 0, 0), tags=("border_line",))
-
-            self.canvas.coords("border_line",
-                               (self.corner_radius,
-                                self.corner_radius,
-                                self.width - self.corner_radius,
-                                self.corner_radius,
-                                self.width - self.corner_radius,
-                                self.height - self.corner_radius,
-                                self.corner_radius,
-                                self.height - self.corner_radius))
-            self.canvas.itemconfig("border_line",
-                                   joinstyle=tkinter.ROUND,
-                                   width=self.corner_radius*2)
-
-        # create inner button parts
-        if not self.canvas.find_withtag("inner_line"):
-            self.canvas.create_polygon((0, 0, 0, 0), tags=("inner_line",))
-
-        if self.corner_radius <= self.border_width:
-            bottom_right_shift = -1  # weird canvas rendering inaccuracy that has to be corrected in some cases
+        # decide the drawing method
+        if sys.platform == "darwin":
+            # on macOS draw button with polygons (positions are more accurate, macOS has Antialiasing)
+            self.draw_with_polygon_shapes()
         else:
-            bottom_right_shift = 0
-
-        self.canvas.coords("inner_line",
-                           (self.border_width + self.inner_corner_radius,
-                            self.border_width + self.inner_corner_radius,
-                            self.width - (self.border_width + self.inner_corner_radius) + bottom_right_shift,
-                            self.border_width + self.inner_corner_radius,
-                            self.width - (self.border_width + self.inner_corner_radius) + bottom_right_shift,
-                            self.height - (self.border_width + self.inner_corner_radius) + bottom_right_shift,
-                            self.border_width + self.inner_corner_radius,
-                            self.height - (self.border_width + self.inner_corner_radius) + bottom_right_shift))
-        self.canvas.itemconfig("inner_line",
-                               joinstyle=tkinter.ROUND,
-                               width=self.inner_corner_radius * 2)
+            # on Windows and other draw with ovals (corner_radius can be optimised to look better than with polygons)
+            self.draw_with_ovals_and_rects()
 
         if no_color_updates is False:
 
             # set color for the button border parts (outline)
-            self.canvas.itemconfig("border_line",
+            self.canvas.itemconfig("border_parts",
                                    outline=CTkColorManager.single_color(self.border_color, self.appearance_mode),
                                    fill=CTkColorManager.single_color(self.border_color, self.appearance_mode))
 
             # set color for inner button parts (depends on button state)
             if self.state == tkinter.DISABLED:
-                self.canvas.itemconfig("inner_line",
+                self.canvas.itemconfig("inner_parts",
                                        outline=CTkColorManager.darken_hex_color(CTkColorManager.single_color(self.fg_color, self.appearance_mode)),
                                        fill=CTkColorManager.darken_hex_color(CTkColorManager.single_color(self.fg_color, self.appearance_mode)))
 
             else:
-                self.canvas.itemconfig("inner_line",
+                self.canvas.itemconfig("inner_parts",
                                        outline=CTkColorManager.single_color(self.fg_color, self.appearance_mode),
                                        fill=CTkColorManager.single_color(self.fg_color, self.appearance_mode))
 
@@ -280,6 +248,148 @@ class CTkButton(tkinter.Frame):
                 self.image_label.grid(row=1, column=0, padx=self.corner_radius, sticky="n", columnspan=2, rowspan=1)
                 self.text_label.grid(row=0, column=0, padx=self.corner_radius, sticky="s", columnspan=2, rowspan=1, pady=self.border_width)
 
+    def draw_with_polygon_shapes(self):
+        """ draw the button parts with just two polygons that have a rounded border """
+
+        # create border button parts (only if border exists)
+        if self.border_width > 0:
+            if not self.canvas.find_withtag("border_parts"):
+                self.canvas.create_polygon((0, 0, 0, 0), tags=("border_line_1", "border_parts"))
+
+            self.canvas.coords("border_line_1",
+                               (self.corner_radius,
+                                self.corner_radius,
+                                self.width - self.corner_radius,
+                                self.corner_radius,
+                                self.width - self.corner_radius,
+                                self.height - self.corner_radius,
+                                self.corner_radius,
+                                self.height - self.corner_radius))
+            self.canvas.itemconfig("border_line_1",
+                                   joinstyle=tkinter.ROUND,
+                                   width=self.corner_radius * 2)
+
+        # create inner button parts
+        if not self.canvas.find_withtag("inner_parts"):
+            self.canvas.create_polygon((0, 0, 0, 0), tags=("inner_line_1", "inner_parts"))
+
+        if self.corner_radius <= self.border_width:
+            bottom_right_shift = -1  # weird canvas rendering inaccuracy that has to be corrected in some cases
+        else:
+            bottom_right_shift = 0
+
+        self.canvas.coords("inner_line_1",
+                           (self.border_width + self.inner_corner_radius,
+                            self.border_width + self.inner_corner_radius,
+                            self.width - (self.border_width + self.inner_corner_radius) + bottom_right_shift,
+                            self.border_width + self.inner_corner_radius,
+                            self.width - (self.border_width + self.inner_corner_radius) + bottom_right_shift,
+                            self.height - (self.border_width + self.inner_corner_radius) + bottom_right_shift,
+                            self.border_width + self.inner_corner_radius,
+                            self.height - (self.border_width + self.inner_corner_radius) + bottom_right_shift))
+        self.canvas.itemconfig("inner_line_1",
+                               joinstyle=tkinter.ROUND,
+                               width=self.inner_corner_radius * 2)
+
+    def draw_with_ovals_and_rects(self):
+        """ draw the button parts with ovals at the corner and rectangles in the middle """
+
+        if sys.platform == "darwin":
+            oval_bottom_right_shift = 0
+        else:
+            # ovals are always rendered too large on Windows and need to be made smaller by -1
+            oval_bottom_right_shift = -1
+
+        # create border button parts
+        if self.border_width > 0:
+            if self.corner_radius > 0:
+                # create canvas border corner parts if not already created
+                if not self.canvas.find_withtag("border_oval_1"):
+                    self.canvas.create_oval(0, 0, 0, 0, tags=("border_oval_1", "border_corner_part", "border_parts"))
+                    self.canvas.create_oval(0, 0, 0, 0, tags=("border_oval_2", "border_corner_part", "border_parts"))
+                    self.canvas.create_oval(0, 0, 0, 0, tags=("border_oval_3", "border_corner_part", "border_parts"))
+                    self.canvas.create_oval(0, 0, 0, 0, tags=("border_oval_4", "border_corner_part", "border_parts"))
+
+                # change position of border corner parts
+                self.canvas.coords("border_oval_1", (0,
+                                                     0,
+                                                     self.corner_radius * 2 + oval_bottom_right_shift,
+                                                     self.corner_radius * 2 + oval_bottom_right_shift))
+                self.canvas.coords("border_oval_2", (self.width - self.corner_radius * 2,
+                                                     0,
+                                                     self.width + oval_bottom_right_shift,
+                                                     self.corner_radius * 2 + oval_bottom_right_shift))
+                self.canvas.coords("border_oval_3", (0,
+                                                     self.height - self.corner_radius * 2,
+                                                     self.corner_radius * 2 + oval_bottom_right_shift,
+                                                     self.height + oval_bottom_right_shift))
+                self.canvas.coords("border_oval_4", (self.width - self.corner_radius * 2,
+                                                     self.height - self.corner_radius * 2,
+                                                     self.width + oval_bottom_right_shift,
+                                                     self.height + oval_bottom_right_shift))
+            else:
+                self.canvas.delete("border_corner_part")  # delete border corner parts if not needed
+
+            # create canvas border rectangle parts if not already created
+            if not self.canvas.find_withtag("border_rectangle_1"):
+                self.canvas.create_rectangle(0, 0, 0, 0, tags=("border_rectangle_1", "border_rectangle_part", "border_parts"))
+                self.canvas.create_rectangle(0, 0, 0, 0, tags=("border_rectangle_2", "border_rectangle_part", "border_parts"))
+
+            # change position of border rectangle parts
+            self.canvas.coords("border_rectangle_1", (0,
+                                                      self.corner_radius,
+                                                      self.width,
+                                                      self.height - self.corner_radius))
+            self.canvas.coords("border_rectangle_2", (self.corner_radius,
+                                                      0,
+                                                      self.width - self.corner_radius,
+                                                      self.height))
+
+        # create inner button parts
+        if self.corner_radius > 0:
+
+            # create canvas border corner parts if not already created
+            if not self.canvas.find_withtag("inner_corner_part"):
+                self.canvas.create_oval(0, 0, 0, 0, tags=("inner_oval_1", "inner_corner_part", "inner_parts"))
+                self.canvas.create_oval(0, 0, 0, 0, tags=("inner_oval_2", "inner_corner_part", "inner_parts"))
+                self.canvas.create_oval(0, 0, 0, 0, tags=("inner_oval_3", "inner_corner_part", "inner_parts"))
+                self.canvas.create_oval(0, 0, 0, 0, tags=("inner_oval_4", "inner_corner_part", "inner_parts"))
+
+            # change position of border corner parts
+            self.canvas.coords("inner_oval_1", (self.border_width,
+                                                self.border_width,
+                                                self.border_width + self.inner_corner_radius * 2 + oval_bottom_right_shift,
+                                                self.border_width + self.inner_corner_radius * 2 + oval_bottom_right_shift))
+            self.canvas.coords("inner_oval_2", (self.width - self.border_width - self.inner_corner_radius * 2,
+                                                self.border_width,
+                                                self.width - self.border_width + oval_bottom_right_shift,
+                                                self.border_width + self.inner_corner_radius * 2 + oval_bottom_right_shift))
+            self.canvas.coords("inner_oval_3", (self.border_width,
+                                                self.height - self.border_width - self.inner_corner_radius * 2,
+                                                self.border_width + self.inner_corner_radius * 2 + oval_bottom_right_shift,
+                                                self.height - self.border_width + oval_bottom_right_shift))
+            self.canvas.coords("inner_oval_4", (self.width - self.border_width - self.inner_corner_radius * 2,
+                                                self.height - self.border_width - self.inner_corner_radius * 2,
+                                                self.width - self.border_width + oval_bottom_right_shift,
+                                                self.height - self.border_width + oval_bottom_right_shift))
+        else:
+            self.canvas.delete("inner_corner_part")  # delete inner corner parts if not needed
+
+        # create canvas inner rectangle parts if not already created
+        if not self.canvas.find_withtag("inner_rectangle_part"):
+            self.canvas.create_rectangle(0, 0, 0, 0, tags=("inner_rectangle_1", "inner_rectangle_part", "inner_parts"))
+            self.canvas.create_rectangle(0, 0, 0, 0, tags=("inner_rectangle_2", "inner_rectangle_part", "inner_parts"))
+
+        # change position of inner rectangle parts
+        self.canvas.coords("inner_rectangle_1", (self.border_width + self.inner_corner_radius,
+                                                 self.border_width,
+                                                 self.width - self.border_width - self.inner_corner_radius,
+                                                 self.height - self.border_width))
+        self.canvas.coords("inner_rectangle_2", (self.border_width,
+                                                 self.border_width + self.inner_corner_radius,
+                                                 self.width - self.border_width,
+                                                 self.height - self.inner_corner_radius - self.border_width))
+
     def config(self, *args, **kwargs):
         self.configure(*args, **kwargs)
 
@@ -357,7 +467,7 @@ class CTkButton(tkinter.Frame):
     def on_enter(self, event=0):
         if self.hover is True:
             # set color of inner button parts to hover color
-            self.canvas.itemconfig("inner_line",
+            self.canvas.itemconfig("inner_parts",
                                    outline=CTkColorManager.single_color(self.hover_color, self.appearance_mode),
                                    fill=CTkColorManager.single_color(self.hover_color, self.appearance_mode))
 
@@ -372,7 +482,7 @@ class CTkButton(tkinter.Frame):
     def on_leave(self, event=0):
         if self.hover is True:
             # set color of inner button parts
-            self.canvas.itemconfig("inner_line",
+            self.canvas.itemconfig("inner_parts",
                                    outline=CTkColorManager.single_color(self.fg_color, self.appearance_mode),
                                    fill=CTkColorManager.single_color(self.fg_color, self.appearance_mode))
 
