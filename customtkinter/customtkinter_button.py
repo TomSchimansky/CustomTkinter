@@ -51,7 +51,7 @@ class CTkButton(tkinter.Frame):
         elif self.corner_radius * 2 > self.width:
             self.corner_radius = self.width / 2
 
-        self.border_width = border_width
+        self.border_width = round(border_width)  # round border_width (inner parts not centered otherwise)
 
         if self.corner_radius >= self.border_width:
             self.inner_corner_radius = self.corner_radius - self.border_width
@@ -296,9 +296,11 @@ class CTkButton(tkinter.Frame):
 
         if sys.platform == "darwin":
             oval_bottom_right_shift = 0
+            rect_bottom_right_shift = 0
         else:
-            # ovals are always rendered too large on Windows and need to be made smaller by -1
+            # ovals and rects are always rendered too large on Windows and need to be made smaller by -1
             oval_bottom_right_shift = -1
+            rect_bottom_right_shift = -1
 
         # create border button parts
         if self.border_width > 0:
@@ -338,15 +340,15 @@ class CTkButton(tkinter.Frame):
             # change position of border rectangle parts
             self.canvas.coords("border_rectangle_1", (0,
                                                       self.corner_radius,
-                                                      self.width,
-                                                      self.height - self.corner_radius))
+                                                      self.width + rect_bottom_right_shift,
+                                                      self.height - self.corner_radius + rect_bottom_right_shift))
             self.canvas.coords("border_rectangle_2", (self.corner_radius,
                                                       0,
-                                                      self.width - self.corner_radius,
-                                                      self.height))
+                                                      self.width - self.corner_radius + rect_bottom_right_shift,
+                                                      self.height + rect_bottom_right_shift))
 
         # create inner button parts
-        if self.corner_radius > 0:
+        if self.inner_corner_radius > 0:
 
             # create canvas border corner parts if not already created
             if not self.canvas.find_withtag("inner_corner_part"):
@@ -383,12 +385,12 @@ class CTkButton(tkinter.Frame):
         # change position of inner rectangle parts
         self.canvas.coords("inner_rectangle_1", (self.border_width + self.inner_corner_radius,
                                                  self.border_width,
-                                                 self.width - self.border_width - self.inner_corner_radius,
-                                                 self.height - self.border_width))
+                                                 self.width - self.border_width - self.inner_corner_radius + rect_bottom_right_shift,
+                                                 self.height - self.border_width + rect_bottom_right_shift))
         self.canvas.coords("inner_rectangle_2", (self.border_width,
                                                  self.border_width + self.inner_corner_radius,
-                                                 self.width - self.border_width,
-                                                 self.height - self.inner_corner_radius - self.border_width))
+                                                 self.width - self.border_width + rect_bottom_right_shift,
+                                                 self.height - self.inner_corner_radius - self.border_width + rect_bottom_right_shift))
 
     def config(self, *args, **kwargs):
         self.configure(*args, **kwargs)
