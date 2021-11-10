@@ -90,8 +90,10 @@ class App(tkinter.Tk):
 
         self.progressbar = customtkinter.CTkProgressBar(master=self.frame_info,
                                                         width=250,
-                                                        height=15,
-                                                        border_width=0)
+                                                        height=16,
+                                                        border_color="gray10",
+                                                        progress_color="green",
+                                                        border_width=2)
         self.progressbar.place(relx=0.5, rely=0.85, anchor=tkinter.S)
 
         # ============ frame_right <- ============
@@ -142,7 +144,7 @@ class App(tkinter.Tk):
                                                 corner_radius=8)
         self.button_5.place(relx=0.66, rely=0.92, anchor=tkinter.CENTER)
 
-        self.progressbar.set(0.65)
+        #self.progressbar.set(0.65)
 
     def button_event(self):
         print("Button pressed")

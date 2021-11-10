@@ -44,9 +44,9 @@ class CTkLabel(tkinter.Frame):
             if sys.platform == "darwin":  # macOS
                 self.text_font = ("Avenir", 13)
             elif "win" in sys.platform:  # Windows
-                self.text_font = ("Century Gothic", 11)
+                self.text_font = ("Century Gothic", 10)
             else:
-                self.text_font = ("TkDefaultFont", 11)
+                self.text_font = ("TkDefaultFont", 10)
         else:
             self.text_font = text_font
         self.configure(width=self.width, height=self.height)
@@ -143,17 +143,8 @@ class CTkLabel(tkinter.Frame):
         else:
             self.text_label.configure(bg=self.fg_color)
 
-    def configure_color(self, bg_color=None, fg_color=None, text_color=None):
-        if bg_color is not None:
-            self.bg_color = bg_color
-
-        if fg_color is not None:
-            self.fg_color = fg_color
-
-        if text_color is not None:
-            self.text_color = text_color
-
-        self.draw()
+    def config(self, *args, **kwargs):
+        self.configure(*args, **kwargs)
 
     def configure(self, *args, **kwargs):
         require_redraw = False  # some attribute changes require a call of self.draw() at the end

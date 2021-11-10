@@ -107,7 +107,7 @@ class CTkSlider(tkinter.Frame):
         for part in self.button_parts:
             self.canvas.itemconfig(part, fill=CTkColorManager.single_color(self.button_color, self.appearance_mode), width=0)
 
-    def clicked(self, event=0):
+    def clicked(self, event=None):
         self.value = event.x / self.width
 
         if self.value > 1:

@@ -132,6 +132,12 @@ class CTkEntry(tkinter.Frame):
             self.entry.configure(fg=self.text_color,
                                  insertbackground=self.text_color)
 
+    def config(self, *args, **kwargs):
+        self.configure(*args, **kwargs)
+
+    def configure(self, *args, **kwargs):
+        super().configure(*args, **kwargs)
+
     def change_appearance_mode(self, mode_string):
         if mode_string.lower() == "dark":
             self.appearance_mode = 1
