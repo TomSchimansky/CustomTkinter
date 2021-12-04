@@ -116,7 +116,7 @@ colors and removed the round corners, and added a border to the buttons:
 
 ![](documentation_images/complex_example_other_style.png)
 
-### Customtkinter on Windows/Linux
+### CustomTkinter on Windows/Linux
 
 All elements of Customtkinter are drawn on the ```tkinter.Canvas```.
 But the Tkinter canvas supports antialiasing only on macOS, so on Windows
@@ -226,6 +226,16 @@ fg_color | forground color, tuple: (light_color, dark_color) or single color
 bg_color | background color, tuple: (light_color, dark_color) or single color, None for transparent bg
 text_color | label text color, tuple: (light_color, dark_color) or single color
 text_font | label text font, tuple: (font_name, size)
+
+CTkLabel Methods:
+
+```python
+CTkLabel.configure(text=new_text)
+CTkLabel.configure(fg_color=new_fg_color,
+                   bg_color=new_bg_color,
+                   text_color=new_text_color)
+```
+
 </details>
 
 ### CTkEntry
@@ -252,6 +262,15 @@ fg_color | forground color, tuple: (light_color, dark_color) or single color
 bg_color | background color, tuple: (light_color, dark_color) or single color
 text_color | entry text color, tuple: (light_color, dark_color) or single color
 text_font | entry text font, tuple: (font_name, size)
+
+CTkEntry Methods:
+
+```python
+CTkEntry.delete(...)  # standard tkinter Entry...
+CTkEntry.insert(...)
+text = CTkEntry.get()
+```
+
 </details>
 
 ### CTkCheckBox
@@ -332,6 +351,13 @@ bg_color | background color, tuple: (light_color, dark_color) or single color
 border_color | slider border color, normally transparent (None)
 button_color | color of the slider button, tuple: (light_color, dark_color) or single color
 button_hover_color | hover color, tuple: (light_color, dark_color) or single color
+
+CTkSlider Methods:
+```python
+value = CTkSlider.get()
+CTkSlider.set(value)
+```
+
 </details>
 
 ### CTkProgressBar

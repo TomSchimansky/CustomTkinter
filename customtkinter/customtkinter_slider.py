@@ -19,7 +19,7 @@ class CTkSlider(tkinter.Frame):
                  to=1,
                  width=160,
                  height=16,
-                 border_width=5.5,
+                 border_width=5,
                  command=None,
                  *args, **kwargs):
         super().__init__(*args, **kwargs)

@@ -142,7 +142,7 @@ class App(tkinter.Tk):
                                                 corner_radius=8)
         self.button_5.place(relx=0.66, rely=0.92, anchor=tkinter.CENTER)
 
-        #self.progressbar.set(0.65)
+        self.progressbar.set(0.65)
 
     def button_event(self):
         print("Button pressed")
