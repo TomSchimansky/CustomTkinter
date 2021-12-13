@@ -13,6 +13,7 @@ class CTkSlider(tkinter.Frame):
                  bg_color=None,
                  border_color=None,
                  fg_color=CTkColorManager.SLIDER_BG,
+                 progress_color=None,
                  button_color=CTkColorManager.MAIN,
                  button_hover_color=CTkColorManager.MAIN_HOVER,
                  from_=0,
@@ -30,6 +31,7 @@ class CTkSlider(tkinter.Frame):
         self.bg_color = self.detect_color_of_master() if bg_color is None else bg_color
         self.border_color = self.bg_color if border_color is None else border_color
         self.fg_color = fg_color
+        self.progress_color = progress_color if progress_color is not None else fg_color
         self.button_color = self.bg_color if button_color is None else button_color
         self.button_hover_color = self.bg_color if button_hover_color is None else button_hover_color
 
@@ -91,9 +93,9 @@ class CTkSlider(tkinter.Frame):
 
         if no_color_updates is False:
             self.canvas.configure(bg=CTkColorManager.single_color(self.bg_color, self.appearance_mode))
-            print(self.border_color)
             self.canvas.itemconfig("border_parts", fill=CTkColorManager.single_color(self.border_color, self.appearance_mode))
             self.canvas.itemconfig("inner_parts", fill=CTkColorManager.single_color(self.fg_color, self.appearance_mode))
+            self.canvas.itemconfig("progress_parts", fill=CTkColorManager.single_color(self.progress_color, self.appearance_mode))
             self.canvas.itemconfig("button_parts", fill=CTkColorManager.single_color(self.button_color, self.appearance_mode))
 
     def draw_with_polygon_shapes(self):
@@ -120,12 +122,26 @@ class CTkSlider(tkinter.Frame):
         if not self.canvas.find_withtag("inner_parts"):
             self.canvas.create_line((0, 0, 0, 0), tags=("inner_line_1", "inner_parts"))
 
+            if self.progress_color != self.fg_color:
+                self.canvas.create_line((0, 0, 0, 0), tags=("inner_line_progress", "progress_parts"))
+
         self.canvas.coords("inner_line_1",
                            (self.height / 2,
                             self.height / 2,
                             self.width - self.height / 2 + coordinate_shift,
                             self.height / 2))
-        self.canvas.itemconfig("inner_line_1",
+
+        if self.progress_color != self.fg_color:
+            self.canvas.coords("inner_line_progress",
+                               (self.height / 2,
+                                self.height / 2,
+                                ((self.width + coordinate_shift - self.height) * self.value + self.height / 2),
+                                self.height / 2))
+
+        self.canvas.itemconfig("inner_parts",
+                               capstyle=tkinter.ROUND,
+                               width=self.height - self.border_width * 2 + width_reduced)
+        self.canvas.itemconfig("progress_parts",
                                capstyle=tkinter.ROUND,
                                width=self.height - self.border_width * 2 + width_reduced)
 
@@ -171,18 +187,34 @@ class CTkSlider(tkinter.Frame):
 
         # foreground
         if not self.canvas.find_withtag("inner_parts"):
-            self.canvas.create_oval((0, 0, 0, 0), tags=("inner_oval_1", "inner_parts"), width=0)
-            self.canvas.create_rectangle((0, 0, 0, 0), tags=("inner_rect_1", "inner_parts"), width=0)
+            self.canvas.create_rectangle((0, 0, 0, 0), tags=("inner_rect_2", "inner_parts"), width=0)
             self.canvas.create_oval((0, 0, 0, 0), tags=("inner_oval_2", "inner_parts"), width=0)
+
+            if self.progress_color != self.fg_color:
+                self.canvas.create_oval((0, 0, 0, 0), tags=("inner_oval_1", "progress_parts"), width=0)
+                self.canvas.create_rectangle((0, 0, 0, 0), tags=("inner_rect_1", "progress_parts"), width=0)
+            else:
+                self.canvas.create_oval((0, 0, 0, 0), tags=("inner_oval_1", "inner_parts"), width=0)
+
+        if self.progress_color != self.fg_color:
+            self.canvas.coords("inner_rect_1", (self.height / 2,
+                                                self.border_width,
+                                                (self.width - self.height) * self.value + (self.height / 2 + rect_bottom_right_shift),
+                                                self.height - self.border_width + rect_bottom_right_shift))
+            self.canvas.coords("inner_rect_2", ((self.width - self.height) * self.value + (self.height / 2 + rect_bottom_right_shift),
+                                                self.border_width,
+                                                self.width - (self.height / 2 + rect_bottom_right_shift),
+                                                self.height - self.border_width + rect_bottom_right_shift))
+        else:
+            self.canvas.coords("inner_rect_2", (self.height/2,
+                                                self.border_width,
+                                                self.width-(self.height/2 + rect_bottom_right_shift),
+                                                self.height-self.border_width + rect_bottom_right_shift))
 
         self.canvas.coords("inner_oval_1", (self.border_width,
                                             self.border_width,
-                                            self.height-self.border_width + oval_bottom_right_shift,
-                                            self.height-self.border_width + oval_bottom_right_shift))
-        self.canvas.coords("inner_rect_1", (self.height/2,
-                                            self.border_width,
-                                            self.width-(self.height/2 + rect_bottom_right_shift),
-                                            self.height-self.border_width + rect_bottom_right_shift))
+                                            self.height - self.border_width + oval_bottom_right_shift,
+                                            self.height - self.border_width + oval_bottom_right_shift))
         self.canvas.coords("inner_oval_2", (self.width-self.height+self.border_width,
                                             self.border_width,
                                             self.width-self.border_width + oval_bottom_right_shift,

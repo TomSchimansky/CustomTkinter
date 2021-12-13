@@ -35,7 +35,7 @@ button_1 = customtkinter.CTkButton(master=frame_1, corner_radius=10, command=but
 button_1.place(relx=0.5, rely=0.4, anchor=tkinter.CENTER)
 # button_1.configure(state="disabled")
 
-slider_1 = customtkinter.CTkSlider(master=frame_1, command=slider_function, from_=0, to=2)
+slider_1 = customtkinter.CTkSlider(master=frame_1, command=slider_function, from_=0, to=2, progress_color="gray40")
 slider_1.place(relx=0.5, rely=0.55, anchor=tkinter.CENTER)
 slider_1.set(1.5)
 
