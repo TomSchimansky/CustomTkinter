@@ -347,6 +347,7 @@ from_ | lower slider value
 to | upper slider value
 border_width | space around the slider rail in px
 fg_color | forground color, tuple: (light_color, dark_color) or single color
+progress_color | tuple: (light_color, dark_color) or single color, colors the slider line before the round button and is set to fg_color by default
 bg_color | background color, tuple: (light_color, dark_color) or single color
 border_color | slider border color, normally transparent (None)
 button_color | color of the slider button, tuple: (light_color, dark_color) or single color
