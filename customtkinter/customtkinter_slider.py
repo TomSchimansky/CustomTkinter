@@ -18,6 +18,7 @@ class CTkSlider(tkinter.Frame):
                  button_hover_color=CTkColorManager.MAIN_HOVER,
                  from_=0,
                  to=1,
+                 number_of_steps=None,
                  width=160,
                  height=16,
                  border_width=5,
@@ -43,6 +44,7 @@ class CTkSlider(tkinter.Frame):
         self.hover_state = False
         self.from_ = from_
         self.to = to
+        self.number_of_steps = number_of_steps
         self.output_value = self.from_ + (self.value * (self.to - self.from_))
 
         self.configure(width=self.width, height=self.height)
@@ -238,7 +240,8 @@ class CTkSlider(tkinter.Frame):
         if self.value < 0:
             self.value = 0
 
-        self.output_value = self.from_ + (self.value * (self.to - self.from_))
+        self.output_value = self.round_to_step_size(self.from_ + (self.value * (self.to - self.from_)))
+        self.value = (self.output_value - self.from_) / (self.to - self.from_)
 
         self.draw(no_color_updates=True)
 
@@ -253,11 +256,19 @@ class CTkSlider(tkinter.Frame):
         self.hover_state = False
         self.canvas.itemconfig("button_parts", fill=CTkColorManager.single_color(self.button_color, self.appearance_mode))
 
+    def round_to_step_size(self, value):
+        if self.number_of_steps is not None:
+            step_size = (self.to - self.from_) / self.number_of_steps
+            value = self.to - (round((self.to - value) / step_size) * step_size)
+            return value
+        else:
+            return value
+
     def get(self):
         return self.output_value
 
     def set(self, output_value):
-        self.output_value = output_value
+        self.output_value = self.round_to_step_size(output_value)
         self.value = (self.output_value - self.from_) / (self.to - self.from_)
 
         self.draw(no_color_updates=True)

@@ -1,6 +1,6 @@
 # CustomTkinter
 
-![macOS darkmode](https://raw.githubusercontent.com/TomSchimansky/CustomTkinter/master/documentation_images/customtkinter_mode_switch.gif)
+![](https://raw.githubusercontent.com/TomSchimansky/CustomTkinter/master/documentation_images/customtkinter_mode_switch.gif)
 
 With CustomTkinter you can create modern looking user
 interfaces in python with tkinter. CustomTkinter is a

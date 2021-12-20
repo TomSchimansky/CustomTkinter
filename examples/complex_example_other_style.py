@@ -119,6 +119,7 @@ class App(tkinter.Tk):
                                                 button_hover_color=App.MAIN_HOVER,
                                                 width=160,
                                                 height=16,
+                                                number_of_steps=3,
                                                 border_width=5,
                                                 command=self.progressbar.set)
         self.slider_1.place(x=20, rely=0.6, anchor=tkinter.W)

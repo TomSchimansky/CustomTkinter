@@ -345,6 +345,7 @@ width | slider width in px
 height | slider height in px
 from_ | lower slider value
 to | upper slider value
+number_of_steps | number of steps in which the slider can be positioned
 border_width | space around the slider rail in px
 fg_color | forground color, tuple: (light_color, dark_color) or single color
 progress_color | tuple: (light_color, dark_color) or single color, colors the slider line before the round button and is set to fg_color by default
