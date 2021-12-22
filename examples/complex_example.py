@@ -104,6 +104,8 @@ class App(tkinter.Tk):
                                                 width=160,
                                                 height=16,
                                                 border_width=5,
+                                                from_=1,
+                                                to=0,
                                                 number_of_steps=3,
                                                 command=self.progressbar.set)
         self.slider_1.place(x=20, rely=0.6, anchor=tkinter.W)
@@ -113,6 +115,7 @@ class App(tkinter.Tk):
                                                 width=160,
                                                 height=16,
                                                 border_width=5,
+                                                progress_color=("gray65", "gray40"),
                                                 command=self.progressbar.set)
         self.slider_2.place(x=20, rely=0.7, anchor=tkinter.W)
         self.slider_2.set(0.7)

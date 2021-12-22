@@ -52,7 +52,7 @@ class CTkSlider(tkinter.Frame):
             self.configure(cursor="pointinghand")
 
         self.canvas = tkinter.Canvas(master=self,
-                                     highlightthicknes=0,
+                                     highlightthickness=0,
                                      width=self.width,
                                      height=self.height)
         self.canvas.place(x=0, y=0)
@@ -268,6 +268,11 @@ class CTkSlider(tkinter.Frame):
         return self.output_value
 
     def set(self, output_value):
+        if output_value > self.to:
+            output_value = self.to
+        elif output_value < self.from_:
+            output_value = self.from_
+
         self.output_value = self.round_to_step_size(output_value)
         self.value = (self.output_value - self.from_) / (self.to - self.from_)
 
@@ -275,6 +280,71 @@ class CTkSlider(tkinter.Frame):
 
         if self.callback_function is not None:
             self.callback_function(self.output_value)
+
+    def config(self, *args, **kwargs):
+        self.configure(*args, **kwargs)
+
+    def configure(self, *args, **kwargs):
+        require_redraw = False  # some attribute changes require a call of self.draw() at the end
+
+        if "fg_color" in kwargs:
+            self.fg_color = kwargs["fg_color"]
+            require_redraw = True
+            del kwargs["fg_color"]
+
+        if "bg_color" in kwargs:
+            if kwargs["bg_color"] is None:
+                self.bg_color = self.detect_color_of_master()
+            else:
+                self.bg_color = kwargs["bg_color"]
+            require_redraw = True
+            del kwargs["bg_color"]
+
+        if "progress_color" in kwargs:
+            self.progress_color = kwargs["progress_color"]
+            require_redraw = True
+            del kwargs["progress_color"]
+
+        if "button_color" in kwargs:
+            self.button_color = kwargs["button_color"]
+            require_redraw = True
+            del kwargs["button_color"]
+
+        if "button_hover_color" in kwargs:
+            self.button_hover_color = kwargs["button_hover_color"]
+            require_redraw = True
+            del kwargs["button_hover_color"]
+
+        if "border_color" in kwargs:
+            self.border_color = kwargs["border_color"]
+            require_redraw = True
+            del kwargs["border_color"]
+
+        if "border_width" in kwargs:
+            self.border_width = kwargs["border_width"]
+            require_redraw = True
+            del kwargs["border_width"]
+
+        if "from_" in kwargs:
+            self.from_ = kwargs["from_"]
+            del kwargs["from_"]
+
+        if "to" in kwargs:
+            self.to = kwargs["to"]
+            del kwargs["to"]
+
+        if "number_of_steps" in kwargs:
+            self.number_of_steps = kwargs["number_of_steps"]
+            del kwargs["number_of_steps"]
+
+        if "command" in kwargs:
+            self.callback_function = kwargs["command"]
+            del kwargs["command"]
+
+        super().configure(*args, **kwargs)
+
+        if require_redraw:
+            self.draw()
 
     def change_appearance_mode(self, mode_string):
         if mode_string.lower() == "dark":
