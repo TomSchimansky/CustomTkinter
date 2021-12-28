@@ -3,7 +3,6 @@ import customtkinter  # <- import the CustomTkinter module
 
 customtkinter.enable_macos_darkmode()
 customtkinter.set_appearance_mode("System")  # Other: "Dark", "Light"
-# customtkinter.set_theme_color(("red2", "red3"), ("red3", "red4"))
 
 root_tk = tkinter.Tk()  # create the Tk window like you normally do
 root_tk.geometry("400x300")
@@ -35,7 +34,7 @@ button_1 = customtkinter.CTkButton(master=frame_1, corner_radius=10, command=but
 button_1.place(relx=0.5, rely=0.4, anchor=tkinter.CENTER)
 # button_1.configure(state="disabled")
 
-slider_1 = customtkinter.CTkSlider(master=frame_1, command=slider_function, from_=0, to=1, progress_color=("gray65", "gray40"))
+slider_1 = customtkinter.CTkSlider(master=frame_1, command=slider_function, from_=0, to=1)
 slider_1.place(relx=0.5, rely=0.55, anchor=tkinter.CENTER)
 slider_1.set(1.5)
 

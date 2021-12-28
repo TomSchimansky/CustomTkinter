@@ -86,7 +86,7 @@ class CTkSlider(tkinter.Frame):
     def draw(self, no_color_updates=False):
 
         # decide the drawing method
-        if sys.platform == "darwin":
+        if sys.platform == "darwin" and 1==2:
             # on macOS draw button with polygons (positions are more accurate, macOS has Antialiasing)
             self.draw_with_polygon_shapes()
         else:

@@ -4,7 +4,7 @@ import customtkinter
 from PIL import Image, ImageTk
 import os
 
-customtkinter.set_appearance_mode("System")  # Other: "Light", "Dark"
+customtkinter.set_appearance_mode("Dark")  # Other: "Light", "System"
 
 PATH = os.path.dirname(os.path.realpath(__file__))
 
