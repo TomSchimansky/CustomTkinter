@@ -1,6 +1,7 @@
 import tkinter
 import tkinter.messagebox
 import customtkinter
+import sys
 
 customtkinter.set_appearance_mode("System")  # Other: "Light", "Dark"
 
@@ -16,14 +17,21 @@ class App(tkinter.Tk):
 
         tkinter.Tk.__init__(self, *args, **kwargs)
 
+        # color the background of the Tk window if mode is not System
+        if customtkinter.get_appearance_mode() == "Dark":
+            self.configure(bg="#323232")  # set window background to dark color
+        elif customtkinter.get_appearance_mode() == "Light":
+            self.configure(bg="#ECECEC")  # set window background to dark color
+
         self.title(App.APP_NAME)
         self.geometry(str(App.WIDTH) + "x" + str(App.HEIGHT))
         self.minsize(App.WIDTH, App.HEIGHT)
 
         self.protocol("WM_DELETE_WINDOW", self.on_closing)
-        self.bind("<Command-q>", self.on_closing)
-        self.bind("<Command-w>", self.on_closing)
-        self.createcommand('tk::mac::Quit', self.on_closing)
+        if sys.platform == "darwin":
+            self.bind("<Command-q>", self.on_closing)
+            self.bind("<Command-w>", self.on_closing)
+            self.createcommand('tk::mac::Quit', self.on_closing)
 
         # ============ create two CTkFrames ============
 

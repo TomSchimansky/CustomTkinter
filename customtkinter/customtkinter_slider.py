@@ -124,8 +124,12 @@ class CTkSlider(tkinter.Frame):
         if not self.canvas.find_withtag("inner_parts"):
             self.canvas.create_line((0, 0, 0, 0), tags=("inner_line_1", "inner_parts"))
 
-            if self.progress_color != self.fg_color:
+        if self.progress_color != self.fg_color:
+            if not self.canvas.find_withtag("progress_parts"):
                 self.canvas.create_line((0, 0, 0, 0), tags=("inner_line_progress", "progress_parts"))
+                self.canvas.tag_raise("button_parts")
+        else:
+            self.canvas.delete("progress_parts")
 
         self.canvas.coords("inner_line_1",
                            (self.height / 2,
@@ -191,6 +195,10 @@ class CTkSlider(tkinter.Frame):
         if not self.canvas.find_withtag("inner_parts"):
             self.canvas.create_rectangle((0, 0, 0, 0), tags=("inner_rect_2", "inner_parts"), width=0)
             self.canvas.create_oval((0, 0, 0, 0), tags=("inner_oval_2", "inner_parts"), width=0)
+
+        # progress parts
+        if not self.canvas.find_withtag("inner_oval_1"):
+            self.canvas.delete("inner_oval_1", "inner_rect_1")
 
             if self.progress_color != self.fg_color:
                 self.canvas.create_oval((0, 0, 0, 0), tags=("inner_oval_1", "progress_parts"), width=0)
@@ -301,7 +309,10 @@ class CTkSlider(tkinter.Frame):
             del kwargs["bg_color"]
 
         if "progress_color" in kwargs:
-            self.progress_color = kwargs["progress_color"]
+            if kwargs["progress_color"] is None:
+                self.progress_color = self.fg_color
+            else:
+                self.progress_color = kwargs["progress_color"]
             require_redraw = True
             del kwargs["progress_color"]
 
