@@ -1,4 +1,4 @@
-__version__ = "1.4"
+__version__ = "1.5"
 
 from .customtkinter_button import CTkButton
 from .customtkinter_slider import CTkSlider
@@ -8,6 +8,7 @@ from .customtkinter_label import CTkLabel
 from .customtkinter_entry import CTkEntry
 from .customtkinter_dialog import CTkDialog
 from .customtkinter_checkbox import CTkCheckBox
+from .customtkinter_tk import CTk
 
 from .appearance_mode_tracker import AppearanceModeTracker, SystemAppearanceModeListenerNoThread
 from .customtkinter_color_manager import CTkColorManager

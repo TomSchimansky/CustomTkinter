@@ -1,10 +1,9 @@
 import tkinter
 import customtkinter  # <- import the CustomTkinter module
 
-customtkinter.enable_macos_darkmode()
 customtkinter.set_appearance_mode("System")  # Other: "Dark", "Light"
 
-root_tk = tkinter.Tk()  # create the Tk window like you normally do
+root_tk = customtkinter.CTk()  # create CTk window like you do with the Tk window (you can also use normal tkinter.Tk window)
 root_tk.geometry("400x240")
 root_tk.title("CustomTkinter Test")
 
@@ -32,4 +31,3 @@ button_2 = customtkinter.CTkButton(master=frame_1, text="Button_2",
 button_2.place(relx=0.5, rely=0.7, anchor=tkinter.CENTER)
 
 root_tk.mainloop()
-customtkinter.disable_macos_darkmode()

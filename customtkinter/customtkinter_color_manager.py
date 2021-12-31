@@ -3,6 +3,7 @@ import sys
 
 class CTkColorManager:
 
+    WINDOW_BG = ("#ECECEC", "#323232")  # macOS standard light and dark window bg colors
     MAIN = ("#1C94CF", "#1C94CF")
     MAIN_HOVER = ("#5FB4DD", "#5FB4DD")
     ENTRY = ("white", "#222222")

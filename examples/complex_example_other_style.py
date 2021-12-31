@@ -7,7 +7,7 @@ import sys
 customtkinter.set_appearance_mode("Dark")  # Other: "Light", "System"
 
 
-class App(tkinter.Tk):
+class App(customtkinter.CTk):
 
     APP_NAME = "CustomTkinter complex example"
     WIDTH = 700
@@ -18,15 +18,7 @@ class App(tkinter.Tk):
     MAIN_HOVER = "#458577"
 
     def __init__(self, *args, **kwargs):
-        customtkinter.enable_macos_darkmode()
-
-        tkinter.Tk.__init__(self, *args, **kwargs)
-
-        # color the background of the Tk window if mode is not System
-        if customtkinter.get_appearance_mode() == "Dark":
-            self.configure(bg="#323232")  # set window background to dark color
-        elif customtkinter.get_appearance_mode() == "Light":
-            self.configure(bg="#ECECEC")  # set window background to dark color
+        super().__init__(self, *args, **kwargs)
 
         self.title(App.APP_NAME)
         self.geometry(str(App.WIDTH) + "x" + str(App.HEIGHT))
@@ -178,7 +170,6 @@ class App(tkinter.Tk):
         print("Button pressed")
 
     def on_closing(self, event=0):
-        customtkinter.disable_macos_darkmode()
         self.destroy()
 
     def start(self):

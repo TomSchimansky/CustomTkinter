@@ -9,16 +9,14 @@ customtkinter.set_appearance_mode("Dark")  # Other: "Light", "System"
 PATH = os.path.dirname(os.path.realpath(__file__))
 
 
-class App(tkinter.Tk):
+class App(customtkinter.CTk):
 
     APP_NAME = "CustomTkinter background gardient"
     WIDTH = 900
     HEIGHT = 600
 
     def __init__(self, *args, **kwargs):
-        customtkinter.enable_macos_darkmode()
-
-        tkinter.Tk.__init__(self, *args, **kwargs)
+        super().__init__(self, *args, **kwargs)
 
         self.title(App.APP_NAME)
         self.geometry(str(App.WIDTH) + "x" + str(App.HEIGHT))
@@ -54,7 +52,6 @@ class App(tkinter.Tk):
         print("Button pressed")
 
     def on_closing(self, event=0):
-        customtkinter.disable_macos_darkmode()
         self.destroy()
 
     def start(self):

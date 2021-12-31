@@ -1,9 +1,7 @@
 import tkinter
 import customtkinter  # <- import the CustomTkinter module
 
-customtkinter.enable_macos_darkmode()
-
-root_tk = tkinter.Tk()  # create the Tk window like you normally do
+root_tk = customtkinter.CTk()  # create CTk window like you do with the Tk window (you can also use normal tkinter.Tk window)
 root_tk.geometry("400x300")
 root_tk.title("CustomTkinter Test")
 
@@ -46,4 +44,3 @@ checkbox_1 = customtkinter.CTkCheckBox(master=frame_1, command=check_box_functio
 checkbox_1.place(relx=0.5, rely=0.9, anchor=tkinter.CENTER)
 
 root_tk.mainloop()
-customtkinter.disable_macos_darkmode()

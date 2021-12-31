@@ -5,10 +5,9 @@ import os
 
 PATH = os.path.dirname(os.path.realpath(__file__))
 
-customtkinter.enable_macos_darkmode()
 customtkinter.set_appearance_mode("System")  # Other: "Dark", "Light"
 
-root_tk = tkinter.Tk()  # create the Tk window like you normally do
+root_tk = customtkinter.CTk()  # create CTk window like you do with the Tk window (you can also use normal tkinter.Tk window)
 root_tk.geometry("400x400")
 root_tk.title("CustomTkinter Test")
 
@@ -47,4 +46,3 @@ button_4.configure(text=None)
 
 
 root_tk.mainloop()
-customtkinter.disable_macos_darkmode()
