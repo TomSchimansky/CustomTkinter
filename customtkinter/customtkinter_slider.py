@@ -64,6 +64,10 @@ class CTkSlider(tkinter.Frame):
 
         self.draw()
 
+    def destroy(self):
+        AppearanceModeTracker.remove(self.change_appearance_mode)
+        super().destroy()
+
     def detect_color_of_master(self):
         if isinstance(self.master, CTkFrame):
             return self.master.fg_color

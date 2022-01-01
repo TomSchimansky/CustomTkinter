@@ -35,7 +35,7 @@ To test customtkinter you can try this simple example with only a single button:
 import tkinter
 import customtkinter  # <- import the CustomTkinter module
 
-root_tk = tkinter.Tk()  # create the Tk window like you normally do
+root_tk = customtkinter.CTk()  # create CTk window like you do with the Tk window (you can also use normal tkinter.Tk window)
 root_tk.geometry("400x240")
 root_tk.title("CustomTkinter Test")
 
@@ -69,23 +69,25 @@ button = customtkinter.CTkButton(master=root_tk,
 button.place(relx=0.5, rely=0.5, anchor=tkinter.CENTER)
 ```
 
-### How to use macOS dark mode?
-If you have a python version with Tcl/Tk >= 8.6.9, then you can enable the macOS
-darkmode. Currently only the anaconda python versions have Tcl/Tk >= 8.6.9.
-So if you want a dark window titlebar, you have to install anaconda python version
+### Dark mode and dark title-bar on macOS
+If you have a python version with Tcl/Tk >= 8.6.9, then you automatically get
+a dark title bar with macOS dark-mode on, if you use the `customtkinter.Ctk` class to create
+the window instead of the normal `tkinterTk` class. Currently, only the anaconda python versions have Tcl/Tk >= 8.6.9.
+So if you want a dark window title-bar, you have to install anaconda python version
 or miniconda.
 ```python
 import tkinter
 import customtkinter
 
-customtkinter.enable_macos_darkmode()
 customtkinter.set_appearance_mode("System")
+root_tk = customtkinter.CTk()
 
 ... the program ...
 
-customtkinter.disable_macos_darkmode()
+root_tk.mainloop()
+
 ```
-which gives the following with the above simple button program:
+The above results in a window with a black title-bar with macOS dark-mode turned on:
 
 ![](documentation_images/simple_macOS_darkmode_test.png)
 
@@ -96,14 +98,14 @@ the System mode:
 
 ### Advanced example with multiple CTkFrames
 
-Here I used the ``customtkinter.enable_macos_darkmode()`` command to
-enable the macOS darkmode, and used multpiple CTkFrames. It has some
+Here I used the ``customtkinter.CTk()`` class to create the main window with two CTkFrame's and 
+set the appearance mode to `System`. It has some
 kind of a menu on the left side, and I used all CustomTkinter elements
 there are at the moment.Maybe this is a good reference if you want to
 create your own application with this library.
 (Code: /complex_example.py)
 
-With macOS darkmode turned on, it looks like this:
+With macOS dark-mode turned on, it looks like this:
 
 ![](documentation_images/complex_example_dark.png)
 
@@ -146,6 +148,37 @@ created two buttons with a bell and a settings image on them:
 
 
 ## Documentation - CustomTkinter Elements
+
+### CTk
+You can use the normal ``kinter.Tk`` class to create the root window,
+but if you want a background color that changes with the appearance mode and a dark title-bar on macOS,
+you should use the `customtkinter.CTk` class which behaves exactly like the normal Tk
+class, except that you can also set a tuple color as bg color.
+
+Example Code:
+
+```python
+root_tk = customtkinter.CTk()
+
+... program ...
+
+root_tk.mainloop()
+```
+<details>
+<summary>Show all arguments:</summary>
+
+argument | value
+--- | ---
+bg_color or bg | tuple: (light_color, dark_color) or single color
+
+CTk Methods:
+
+```python
+root_tk = customtkinter.CTk()
+# configure bg color with single or tuple color
+root_tk.configure(bg_color="gray20")
+root_tk.configure(bg_color=(<light-mode color>, <dark-mode color>))
+```
 
 ### CTkButton
 Examle Code:

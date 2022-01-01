@@ -30,6 +30,7 @@ class CTk(tkinter.Tk):
         super().configure(bg=CTkColorManager.single_color(self.bg_color, self.appearance_mode))
 
     def destroy(self):
+        AppearanceModeTracker.remove(self.set_appearance_mode)
         self.disable_macos_dark_title_bar()
         super().destroy()
 
@@ -64,7 +65,5 @@ class CTk(tkinter.Tk):
             self.appearance_mode = 1
         elif mode_string.lower() == "light":
             self.appearance_mode = 0
-
-        print("set",self.bg_color)
 
         super().configure(bg=CTkColorManager.single_color(self.bg_color, self.appearance_mode))

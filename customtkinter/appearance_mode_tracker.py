@@ -120,6 +120,10 @@ class AppearanceModeTracker():
         cls.callback_list.append(callback)
 
     @classmethod
+    def remove(cls, callback):
+        cls.callback_list.remove(callback)
+
+    @classmethod
     def get_mode(cls):
         return cls.appearance_mode
 
@@ -141,10 +145,19 @@ class AppearanceModeTracker():
 
         if cls.appearance_mode == 0:
             for callback in cls.callback_list:
-                callback("Light")
+                try:
+                    callback("Light")
+                except Exception:
+                    print("error callback")
+                    continue
+
         elif cls.appearance_mode == 1:
             for callback in cls.callback_list:
-                callback("Dark")
+                try:
+                    callback("Dark")
+                except Exception:
+                    print("error callback")
+                    continue
 
 
 AppearanceModeTracker.init_listener_function()

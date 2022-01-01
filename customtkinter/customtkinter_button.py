@@ -101,6 +101,10 @@ class CTkButton(tkinter.Frame):
         self.bind('<Configure>', self.update_dimensions)
         self.draw()
 
+    def destroy(self):
+        AppearanceModeTracker.remove(self.set_appearance_mode)
+        super().destroy()
+
     def configure_basic_grid(self):
         # Configuration of a basic grid (2x2) in which all elements of CTkButtons are centered on one row and one column
         self.grid_rowconfigure(0, weight=1)
