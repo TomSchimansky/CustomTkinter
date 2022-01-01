@@ -150,7 +150,7 @@ created two buttons with a bell and a settings image on them:
 ## Documentation - CustomTkinter Elements
 
 ### CTk
-You can use the normal ``kinter.Tk`` class to create the root window,
+You can use the normal ``tkinter.Tk`` class to create the root window,
 but if you want a background color that changes with the appearance mode and a dark title-bar on macOS,
 you should use the `customtkinter.CTk` class which behaves exactly like the normal Tk
 class, except that you can also set a tuple color as bg color.
