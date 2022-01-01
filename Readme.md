@@ -179,6 +179,7 @@ root_tk = customtkinter.CTk()
 root_tk.configure(bg_color="gray20")
 root_tk.configure(bg_color=(<light-mode color>, <dark-mode color>))
 ```
+</details>
 
 ### CTkButton
 Examle Code:
