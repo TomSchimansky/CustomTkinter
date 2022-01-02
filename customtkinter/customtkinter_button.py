@@ -501,8 +501,8 @@ class CTkButton(tkinter.Frame):
     def clicked(self, event=0):
         if self.function is not None:
             if self.state is not tkinter.DISABLED:
-                self.function()
                 self.on_leave()
+                self.function()
 
     def set_appearance_mode(self, mode_string):
         if mode_string.lower() == "dark":
