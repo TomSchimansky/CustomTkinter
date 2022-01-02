@@ -109,11 +109,7 @@ With macOS dark-mode turned on, it looks like this:
 
 ![](documentation_images/complex_example_dark.png)
 
-Otherwise it looks like this:
-
-![](documentation_images/complex_example_light.png)
-
-But can also customize it by yourself. Here I changed the main
+But you can also customize it by yourself. Here I changed the main
 colors and removed the round corners, and added a border to the buttons:
 
 ![](documentation_images/complex_example_other_style.png)
@@ -146,8 +142,17 @@ created two buttons with a bell and a settings image on them:
 
 ![](documentation_images/CTkButton_with_images.png)
 
+### Integration of TkinterMapView widget
+In the following example I used a TkinterMapView which integrates
+well with a CustomTkinter program. It's a tile based map widget which displays
+OpenStreetMap or other tile based maps:
 
-## Documentation - CustomTkinter Elements
+![](documentation_images/customtkinter_example.gif)
+
+You can find the TkinterMapView library and the example program here:
+https://github.com/TomSchimansky/TkinterMapView
+
+# Documentation - CustomTkinter Elements
 
 ### CTk
 You can use the normal ``tkinter.Tk`` class to create the root window,
@@ -179,6 +184,27 @@ root_tk = customtkinter.CTk()
 root_tk.configure(bg_color="gray20")
 root_tk.configure(bg_color=(<light-mode color>, <dark-mode color>))
 ```
+</details>
+
+### CTkFrame
+Example Code:
+```python
+frame = customtkinter.CTkFrame(master=root_tk,
+                               width=200,
+                               height=200,
+                               corner_radius=10)
+frame.place(relx=0.5, rely=0.5, anchor=tkinter.CENTER)
+```
+<details>
+<summary>Show all arguments:</summary>
+
+argument | value
+--- | ---
+master | root, tkinter.Frame or CTkFrame
+width | slider width in px
+height | slider height in px
+fg_color | forground color, tuple: (light_color, dark_color) or single color
+bg_color | background color, tuple: (light_color, dark_color) or single color
 </details>
 
 ### CTkButton
@@ -422,27 +448,6 @@ border_color | slider border color, tuple: (light_color, dark_color) or single c
 progress_color | progress color, tuple: (light_color, dark_color) or single color
 </details>
 
-### CTkFrame
-Example Code:
-```python
-frame = customtkinter.CTkFrame(master=root_tk,
-                               width=200,
-                               height=200,
-                               corner_radius=10)
-frame.place(relx=0.5, rely=0.5, anchor=tkinter.CENTER)
-```
-<details>
-<summary>Show all arguments:</summary>
-
-argument | value
---- | ---
-master | root, tkinter.Frame or CTkFrame
-width | slider width in px
-height | slider height in px
-fg_color | forground color, tuple: (light_color, dark_color) or single color
-bg_color | background color, tuple: (light_color, dark_color) or single color
-</details>
-
 ### Special commands
 Change appearance mode:
 ```python
@@ -453,7 +458,7 @@ customtkinter.set_appearance_mode("System")
 print(customtkinter.get_appearance_mode())
 ```
 
-Use macOS darkmode window style:
+Use macOS darkmode window style without using the `customtkinter.Ctk` class:
 ```python
 customtkinter.enable_macos_darkmode()  # get darkmode window style
 customtkinter.disable_macos_darkmode()  # disable darkmode (important!)
