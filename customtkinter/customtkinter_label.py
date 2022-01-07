@@ -11,8 +11,8 @@ class CTkLabel(tkinter.Frame):
     def __init__(self,
                  master=None,
                  bg_color=None,
-                 fg_color=None,
-                 text_color=CTkColorManager.TEXT,
+                 fg_color="CTkColorManager",
+                 text_color="CTkColorManager",
                  corner_radius=8,
                  width=120,
                  height=25,
@@ -47,8 +47,8 @@ class CTkLabel(tkinter.Frame):
         self.appearance_mode = AppearanceModeTracker.get_mode()  # 0: "Light" 1: "Dark"
 
         self.bg_color = self.detect_color_of_master() if bg_color is None else bg_color
-        self.fg_color = self.bg_color if fg_color is None else fg_color
-        self.text_color = text_color
+        self.fg_color = CTkColorManager.LABEL_BG if fg_color == "CTkColorManager" else fg_color
+        self.text_color = CTkColorManager.TEXT if text_color == "CTkColorManager" else text_color
 
         self.width = width
         self.height = height
@@ -153,21 +153,26 @@ class CTkLabel(tkinter.Frame):
         else:
             self.canvas.configure(bg=self.bg_color)
 
+        if self.fg_color is None:
+            new_fg_color = self.bg_color
+        else:
+            new_fg_color = self.fg_color
+
         for part in self.fg_parts:
-            if type(self.fg_color) == tuple:
-                self.canvas.itemconfig(part, fill=self.fg_color[self.appearance_mode], width=0)
+            if type(new_fg_color) == tuple:
+                self.canvas.itemconfig(part, fill=new_fg_color[self.appearance_mode], width=0)
             else:
-                self.canvas.itemconfig(part, fill=self.fg_color, width=0)
+                self.canvas.itemconfig(part, fill=new_fg_color, width=0)
 
         if type(self.text_color) == tuple:
             self.text_label.configure(fg=self.text_color[self.appearance_mode])
         else:
             self.text_label.configure(fg=self.text_color)
 
-        if type(self.fg_color) == tuple:
-            self.text_label.configure(bg=self.fg_color[self.appearance_mode])
+        if type(new_fg_color) == tuple:
+            self.text_label.configure(bg=new_fg_color[self.appearance_mode])
         else:
-            self.text_label.configure(bg=self.fg_color)
+            self.text_label.configure(bg=new_fg_color)
 
     def config(self, *args, **kwargs):
         self.configure(*args, **kwargs)

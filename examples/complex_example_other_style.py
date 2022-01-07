@@ -131,6 +131,7 @@ class App(customtkinter.CTk):
 
         self.label_info_2 = customtkinter.CTkLabel(master=self.frame_right,
                                                    text="CTkLabel: Lorem ipsum",
+                                                   fg_color=None,
                                                    width=180,
                                                    height=20,
                                                    justify=tkinter.CENTER)

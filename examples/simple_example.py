@@ -2,11 +2,12 @@ import time
 import tkinter
 import customtkinter  # <- import the CustomTkinter module
 
+customtkinter.set_appearance_mode("System")  # Other: "Dark", "Light"
+customtkinter.set_default_color_theme("blue")  # Themes: "blue" (standard), "green", "dark-blue"
+
 root_tk = customtkinter.CTk()  # create CTk window like you do with the Tk window (you can also use normal tkinter.Tk window)
 root_tk.geometry("400x300")
 root_tk.title("CustomTkinter Test")
-
-customtkinter.set_appearance_mode("System")  # Other: "Dark", "Light"
 
 
 def button_function():
@@ -34,9 +35,9 @@ button_1 = customtkinter.CTkButton(master=frame_1, corner_radius=10, command=but
 button_1.place(relx=0.5, rely=0.4, anchor=tkinter.CENTER)
 # button_1.configure(state="disabled")
 
-slider_1 = customtkinter.CTkSlider(master=frame_1, command=slider_function, from_=0, to=1, progress_color="gray20")
+slider_1 = customtkinter.CTkSlider(master=frame_1, command=slider_function, from_=0, to=1)
 slider_1.place(relx=0.5, rely=0.55, anchor=tkinter.CENTER)
-slider_1.set(1.5)
+slider_1.set(0.5)
 
 entry_1 = customtkinter.CTkEntry(master=frame_1)
 entry_1.place(relx=0.5, rely=0.75, anchor=tkinter.CENTER)

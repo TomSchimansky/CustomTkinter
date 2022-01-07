@@ -11,8 +11,8 @@ class CTkEntry(tkinter.Frame):
     def __init__(self,
                  master=None,
                  bg_color=None,
-                 fg_color=CTkColorManager.ENTRY,
-                 text_color=CTkColorManager.TEXT,
+                 fg_color="CTkColorManager",
+                 text_color="CTkColorManager",
                  corner_radius=8,
                  width=120,
                  height=30,
@@ -45,8 +45,8 @@ class CTkEntry(tkinter.Frame):
         self.appearance_mode = AppearanceModeTracker.get_mode()  # 0: "Light" 1: "Dark"
 
         self.bg_color = self.detect_color_of_master() if bg_color is None else bg_color
-        self.fg_color = self.bg_color if fg_color is None else fg_color
-        self.text_color = text_color
+        self.fg_color = CTkColorManager.ENTRY if fg_color == "CTkColorManager" else fg_color
+        self.text_color = CTkColorManager.TEXT if text_color == "CTkColorManager" else text_color
 
         self.width = width
         self.height = height

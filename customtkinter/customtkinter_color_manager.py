@@ -3,18 +3,68 @@ import sys
 
 class CTkColorManager:
 
-    WINDOW_BG = ("#ECECEC", "#323232")  # macOS standard light and dark window bg colors
-    MAIN = ("#1C94CF", "#1C94CF")
-    MAIN_HOVER = ("#5FB4DD", "#5FB4DD")
-    ENTRY = ("white", "#222222")
-    TEXT = ("black", "white")
-    SLIDER_BG = ("#6B6B6B", "#222222")
-    PROGRESS_BG = ("#6B6B6B", "#222222")
-    FRAME = ("#D4D5D6", "#3F3F3F")
-    FRAME_2 = ("#BFBEC1", "#505050")
-    CHECKBOX_LINES = ("black", "#ededed")
+    WINDOW_BG = None
+    MAIN = None
+    MAIN_HOVER = None
+    ENTRY = None
+    TEXT = None
+    LABEL_BG = None
+    SLIDER_BG = None
+    SLIDER_PROGRESS = None
+    PROGRESS_BG = None
+    FRAME = None
+    FRAME_2 = None
+    CHECKBOX_LINES = None
+    DARKEN_COLOR_FACTOR = None
 
-    DARKEN_COLOR_FACTOR = 0.8  # used to generate color for disabled button
+    @classmethod
+    def initialize_color_theme(cls, theme_name):
+        print("set theme", theme_name)
+
+        if theme_name.lower() == "blue":
+            cls.WINDOW_BG = ("#ECECEC", "#323232")  # macOS standard light and dark window bg colors
+            cls.MAIN = ("#1C94CF", "#1C94CF")
+            cls.MAIN_HOVER = ("#5FB4DD", "#5FB4DD")
+            cls.ENTRY = ("white", "#222222")
+            cls.TEXT = ("black", "white")
+            cls.LABEL_BG = ("white", "#626061")
+            cls.SLIDER_BG = ("#6B6B6B", "#222222")
+            cls.SLIDER_PROGRESS = ("#A5A6A5", "#555555")
+            cls.PROGRESS_BG = ("#6B6B6B", "#222222")
+            cls.FRAME = ("#D4D5D6", "#3F3F3F")
+            cls.FRAME_2 = ("#BFBEC1", "#505050")
+            cls.CHECKBOX_LINES = ("black", "#ededed")
+            cls.DARKEN_COLOR_FACTOR = 0.8  # used to generate color for disabled button
+
+        elif theme_name.lower() == "green":
+            cls.WINDOW_BG = ("#ECECEC", "#323232")  # macOS standard light and dark window bg colors
+            cls.MAIN = ("#29B57E", "#29B57E")
+            cls.MAIN_HOVER = ("#6ACBA5", "#6ACBA5")
+            cls.ENTRY = ("#656565", "#222223")
+            cls.TEXT = ("black", "white")
+            cls.LABEL_BG = ("white", "#626061")
+            cls.SLIDER_BG = ("#636363", "#0D1321")
+            cls.SLIDER_PROGRESS = ("white", "#727578")
+            cls.PROGRESS_BG = ("#636363", "#0D1321")
+            cls.FRAME = ("#D4D5D6", "#3F3F3F")
+            cls.FRAME_2 = ("#BFBEC1", "#505050")
+            cls.CHECKBOX_LINES = ("#414141", "#EDEDED")
+            cls.DARKEN_COLOR_FACTOR = 0.8  # used to generate color for disabled button
+
+        elif theme_name.lower() == "dark-blue":
+            cls.WINDOW_BG = ("#F1F1F1", "#192026")  # macOS standard light and dark window bg colors
+            cls.MAIN = ("#608BD5", "#395E9C")
+            cls.MAIN_HOVER = ("#A4BDE6", "#748BB3")
+            cls.ENTRY = ("#FCFCFC", "#111116")
+            cls.TEXT = ("black", "white")
+            cls.LABEL_BG = ("white", "#444444")
+            cls.SLIDER_BG = ("#444444", "#444444")
+            cls.SLIDER_PROGRESS = ("white", "#AAAAAA")
+            cls.PROGRESS_BG = ("#636363", "#0D1321")
+            cls.FRAME = ("#DADADA", "#2B2C2E")
+            cls.FRAME_2 = ("#C4C4C4", "#383838")
+            cls.CHECKBOX_LINES = ("#313131", "white")
+            cls.DARKEN_COLOR_FACTOR = 0.8  # used to generate color for disabled button
 
     @staticmethod
     def single_color(color, appearance_mode: int) -> str:
@@ -48,17 +98,9 @@ class CTkColorManager:
             return hex_color
 
     @classmethod
-    def set_theme_color(cls, hex_color: str, hex_color_hover: str):
-        cls.MAIN = hex_color
-        cls.MAIN_HOVER = hex_color_hover
+    def set_main_color(cls, main_color, main_color_hover):
+        cls.MAIN = main_color
+        cls.MAIN_HOVER = main_color_hover
 
-    @classmethod
-    def set_theme(cls, main_color: str):
-        if main_color.lower() == "green":
-            cls.set_theme_color("#2EDEA4", "#82FCD4")
 
-        elif main_color.lower() == "blue":
-            cls.set_theme_color("#1C94CF", "#5FB4DD")
-
-        else:
-            sys.stderr.write("WARNING (CTkColorManager): No such color theme available: {}\n".format(main_color))
+CTkColorManager.initialize_color_theme("blue")

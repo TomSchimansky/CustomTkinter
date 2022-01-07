@@ -13,10 +13,10 @@ class CTkSlider(tkinter.Frame):
     def __init__(self,
                  bg_color=None,
                  border_color=None,
-                 fg_color=CTkColorManager.SLIDER_BG,
-                 progress_color=None,
-                 button_color=CTkColorManager.MAIN,
-                 button_hover_color=CTkColorManager.MAIN_HOVER,
+                 fg_color="CTkColorManager",
+                 progress_color="CTkColorManager",
+                 button_color="CTkColorManager",
+                 button_hover_color="CTkColorManager",
                  from_=0,
                  to=1,
                  number_of_steps=None,
@@ -53,10 +53,10 @@ class CTkSlider(tkinter.Frame):
 
         self.bg_color = self.detect_color_of_master() if bg_color is None else bg_color
         self.border_color = border_color
-        self.fg_color = fg_color
-        self.progress_color = progress_color
-        self.button_color = self.bg_color if button_color is None else button_color
-        self.button_hover_color = self.bg_color if button_hover_color is None else button_hover_color
+        self.fg_color = CTkColorManager.SLIDER_BG if fg_color == "CTkColorManager" else fg_color
+        self.progress_color = CTkColorManager.SLIDER_PROGRESS if progress_color == "CTkColorManager" else progress_color
+        self.button_color = CTkColorManager.MAIN if button_color == "CTkColorManager" else button_color
+        self.button_hover_color = CTkColorManager.MAIN if button_hover_color == "CTkColorManager" else button_hover_color
 
         self.width = width
         self.height = self.calc_optimal_height(height)

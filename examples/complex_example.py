@@ -4,6 +4,7 @@ import customtkinter
 import sys
 
 customtkinter.set_appearance_mode("System")  # Other: "Light", "Dark"
+customtkinter.set_default_color_theme("dark-blue")  # Themes: "blue" (standard), "green", "dark-blue"
 
 
 class App(customtkinter.CTk):
@@ -114,13 +115,13 @@ class App(customtkinter.CTk):
                                                 width=160,
                                                 height=16,
                                                 border_width=5,
-                                                progress_color=("gray65", "gray40"),
                                                 command=self.progressbar.set)
         self.slider_2.place(x=20, rely=0.7, anchor=tkinter.W)
         self.slider_2.set(0.7)
 
         self.label_info_2 = customtkinter.CTkLabel(master=self.frame_right,
                                                    text="CTkLabel: Lorem ipsum",
+                                                   fg_color=None,
                                                    width=180,
                                                    height=20,
                                                    justify=tkinter.CENTER)

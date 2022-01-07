@@ -13,8 +13,8 @@ class CTkButton(tkinter.Frame):
 
     def __init__(self,
                  bg_color=None,
-                 fg_color=CTkColorManager.MAIN,
-                 hover_color=CTkColorManager.MAIN_HOVER,
+                 fg_color="CTkColorManager",
+                 hover_color="CTkColorManager",
                  border_color=None,
                  border_width=0,
                  command=None,
@@ -22,7 +22,7 @@ class CTkButton(tkinter.Frame):
                  height=30,
                  corner_radius=8,
                  text_font=None,
-                 text_color=CTkColorManager.TEXT,
+                 text_color="CTkColorManager",
                  text="CTkButton",
                  hover=True,
                  image=None,
@@ -58,8 +58,8 @@ class CTkButton(tkinter.Frame):
         self.configure_basic_grid()
 
         self.bg_color = self.detect_color_of_master() if bg_color is None else bg_color
-        self.fg_color = fg_color
-        self.hover_color = self.fg_color if hover_color is None else hover_color
+        self.fg_color = CTkColorManager.MAIN if fg_color == "CTkColorManager" else fg_color
+        self.hover_color = CTkColorManager.MAIN_HOVER if hover_color == "CTkColorManager" else hover_color
         self.border_color = border_color
 
         self.width = width
@@ -80,7 +80,7 @@ class CTkButton(tkinter.Frame):
             self.inner_corner_radius = 0
 
         self.text = text
-        self.text_color = text_color
+        self.text_color = CTkColorManager.TEXT if text_color == "CTkColorManager" else text_color
         if text_font is None:
             if sys.platform == "darwin":  # macOS
                 self.text_font = ("Avenir", 13)
@@ -516,18 +516,23 @@ class CTkButton(tkinter.Frame):
 
     def on_enter(self, event=0):
         if self.hover is True:
+            if self.hover_color is None:
+                inner_parts_color = self.fg_color
+            else:
+                inner_parts_color = self.hover_color
+
             # set color of inner button parts to hover color
             self.canvas.itemconfig("inner_parts",
-                                   outline=CTkColorManager.single_color(self.hover_color, self.appearance_mode),
-                                   fill=CTkColorManager.single_color(self.hover_color, self.appearance_mode))
+                                   outline=CTkColorManager.single_color(inner_parts_color, self.appearance_mode),
+                                   fill=CTkColorManager.single_color(inner_parts_color, self.appearance_mode))
 
             # set text_label bg color to button hover color
             if self.text_label is not None:
-                self.text_label.configure(bg=CTkColorManager.single_color(self.hover_color, self.appearance_mode))
+                self.text_label.configure(bg=CTkColorManager.single_color(inner_parts_color, self.appearance_mode))
 
             # set image_label bg color to button hover color
             if self.image_label is not None:
-                self.image_label.configure(bg=CTkColorManager.single_color(self.hover_color, self.appearance_mode))
+                self.image_label.configure(bg=CTkColorManager.single_color(inner_parts_color, self.appearance_mode))
 
     def on_leave(self, event=0):
         if self.hover is True:

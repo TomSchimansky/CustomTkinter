@@ -12,8 +12,8 @@ class CTkDialog:
                  master=None,
                  title="CTkDialog",
                  text="CTkDialog",
-                 fg_color=CTkColorManager.MAIN,
-                 hover_color=CTkColorManager.MAIN_HOVER):
+                 fg_color="CTkColorManager",
+                 hover_color="CTkColorManager"):
         self.master = master
 
         self.user_input = None
@@ -21,8 +21,8 @@ class CTkDialog:
 
         self.height = len(text.split("\n"))*20 + 150
 
-        self.fg_color = CTkColorManager.MAIN if fg_color is None else fg_color
-        self.hover_color = CTkColorManager.MAIN_HOVER if hover_color is None else hover_color
+        self.fg_color = CTkColorManager.MAIN if fg_color == "CTkColorManager" else fg_color
+        self.hover_color = CTkColorManager.MAIN_HOVER if hover_color == "CTkColorManager" else hover_color
 
         self.top = tkinter.Toplevel()
         self.top.geometry(f"280x{self.height}")

@@ -9,7 +9,7 @@ from .customtkinter_color_manager import CTkColorManager
 class CTkFrame(tkinter.Frame):
     def __init__(self, *args,
                  bg_color=None,
-                 fg_color=None,
+                 fg_color="CTkColorManager",
                  corner_radius=10,
                  width=200,
                  height=200,
@@ -42,7 +42,7 @@ class CTkFrame(tkinter.Frame):
 
         self.bg_color = self.detect_color_of_master() if bg_color is None else bg_color
 
-        if fg_color is None:
+        if fg_color == "CTkColorManager":
             if isinstance(self.master, CTkFrame):
                 if self.master.fg_color == CTkColorManager.FRAME:
                     self.fg_color = CTkColorManager.FRAME_2

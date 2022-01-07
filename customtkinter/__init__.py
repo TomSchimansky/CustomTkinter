@@ -55,26 +55,5 @@ def get_appearance_mode():
         return "Dark"
 
 
-def deactivate_threading():
-    AppearanceModeTracker.init_listener_function(no_thread=True)
-    sys.stderr.write("WARNING (customtkinter.deactivate_threading): Automatic threaded search for a change of the " +
-                     "system appearance mode is deativated now.\nYou have to update the appearance mode manually " +
-                     "in your mainloop by calling customtkinter.update_appearance_mode() every time.\n")
-
-
-def activate_threading():
-    AppearanceModeTracker.init_listener_function()
-
-
-def update_appearance_mode():
-    if isinstance(AppearanceModeTracker.system_mode_listener, SystemAppearanceModeListenerNoThread):
-        AppearanceModeTracker.system_mode_listener.update()
-    else:
-        sys.stderr.write("WARNING (customtkinter.update_theme): no need to call update_appearance_mode, because " +
-                         "customtkinter is constantly searching for a mode change in a background thread.\n")
-
-
-
-
-
-
+def set_default_color_theme(color_string):
+    CTkColorManager.initialize_color_theme(color_string)

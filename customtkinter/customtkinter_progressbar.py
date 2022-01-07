@@ -12,9 +12,9 @@ class CTkProgressBar(tkinter.Frame):
 
     def __init__(self,
                  bg_color=None,
-                 border_color=CTkColorManager.PROGRESS_BG,
-                 fg_color=CTkColorManager.PROGRESS_BG,
-                 progress_color=CTkColorManager.MAIN,
+                 border_color="CTkColorManager",
+                 fg_color="CTkColorManager",
+                 progress_color="CTkColorManager",
                  width=160,
                  height=10,
                  border_width=0,
@@ -46,9 +46,9 @@ class CTkProgressBar(tkinter.Frame):
         self.appearance_mode = AppearanceModeTracker.get_mode()  # 0: "Light" 1: "Dark"
 
         self.bg_color = self.detect_color_of_master() if bg_color is None else bg_color
-        self.border_color = border_color
-        self.fg_color = fg_color
-        self.progress_color = CTkColorManager.MAIN if progress_color is None else progress_color
+        self.border_color = CTkColorManager.PROGRESS_BG if border_color == "CTkColorManager" else border_color
+        self.fg_color = CTkColorManager.PROGRESS_BG if fg_color == "CTkColorManager" else fg_color
+        self.progress_color = CTkColorManager.MAIN if progress_color == "CTkColorManager" else progress_color
 
         self.width = width
         self.height = self.calc_optimal_height(height)

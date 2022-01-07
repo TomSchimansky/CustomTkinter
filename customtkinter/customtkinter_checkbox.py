@@ -12,15 +12,15 @@ class CTkCheckBox(tkinter.Frame):
 
     def __init__(self,
                  bg_color=None,
-                 fg_color=CTkColorManager.MAIN,
-                 hover_color=CTkColorManager.MAIN_HOVER,
-                 border_color=CTkColorManager.CHECKBOX_LINES,
+                 fg_color="CTkColorManager",
+                 hover_color="CTkColorManager",
+                 border_color="CTkColorManager",
                  border_width=3,
                  width=25,
                  height=25,
                  corner_radius=4,
                  text_font=None,
-                 text_color=CTkColorManager.TEXT,
+                 text_color="CTkColorManager",
                  text="CTkCheckBox",
                  hover=True,
                  command=None,
@@ -53,9 +53,9 @@ class CTkCheckBox(tkinter.Frame):
         self.appearance_mode = AppearanceModeTracker.get_mode()  # 0: "Light" 1: "Dark"
 
         self.bg_color = self.detect_color_of_master() if bg_color is None else bg_color
-        self.fg_color = CTkColorManager.MAIN if fg_color is None else fg_color
-        self.hover_color = CTkColorManager.MAIN_HOVER if hover_color is None else hover_color
-        self.border_color = border_color
+        self.fg_color = CTkColorManager.MAIN if fg_color == "CTkColorManager" else fg_color
+        self.hover_color = CTkColorManager.MAIN_HOVER if hover_color == "CTkColorManager" else hover_color
+        self.border_color = CTkColorManager.CHECKBOX_LINES if border_color == "CTkColorManager" else border_color
 
         self.width = width
         self.height = height
@@ -74,7 +74,7 @@ class CTkCheckBox(tkinter.Frame):
             self.inner_corner_radius = 0
 
         self.text = text
-        self.text_color = text_color
+        self.text_color = CTkColorManager.TEXT if text_color == "CTkColorManager" else text_color
         if text_font is None:
             if sys.platform == "darwin":  # macOS
                 self.text_font = ("Avenir", 13)

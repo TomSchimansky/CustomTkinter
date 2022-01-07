@@ -10,13 +10,14 @@ from .customtkinter_color_manager import CTkColorManager
 
 class CTk(tkinter.Tk):
     def __init__(self, *args,
-                 fg_color=CTkColorManager.WINDOW_BG,
+                 fg_color="CTkColorManager",
                  **kwargs):
 
         self.enable_macos_dark_title_bar()
         self.appearance_mode = AppearanceModeTracker.get_mode()  # 0: "Light" 1: "Dark"
 
-        self.fg_color = fg_color
+        self.fg_color = CTkColorManager.WINDOW_BG if fg_color == "CTkColorManager" else fg_color
+
         if "bg" in kwargs:
             self.fg_color = kwargs["bg"]
             del kwargs["bg"]

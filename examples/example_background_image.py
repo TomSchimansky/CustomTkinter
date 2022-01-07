@@ -5,6 +5,7 @@ from PIL import Image, ImageTk
 import os
 
 customtkinter.set_appearance_mode("Dark")  # Other: "Light", "System"
+customtkinter.set_default_color_theme("blue")  # Themes: "blue" (standard), "green", "dark-blue"
 
 PATH = os.path.dirname(os.path.realpath(__file__))
 
