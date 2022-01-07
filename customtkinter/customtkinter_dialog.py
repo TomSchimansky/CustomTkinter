@@ -25,9 +25,12 @@ class CTkDialog:
         self.hover_color = CTkColorManager.MAIN_HOVER if hover_color is None else hover_color
 
         self.top = tkinter.Toplevel()
-        self.top.geometry("300x{}".format(self.height))
+        self.top.geometry(f"280x{self.height}")
         self.top.resizable(False, False)
         self.top.title(title)
+        self.top.lift()
+        self.top.focus_force()
+        self.top.grab_set()
 
         self.label_frame = tkinter.Frame(master=self.top,
                                          width=300,
@@ -46,22 +49,24 @@ class CTkDialog:
         self.myLabel.place(relx=0.5, rely=0.5, anchor=tkinter.CENTER)
 
         self.entry = CTkEntry(master=self.button_and_entry_frame,
-                              width=180)
+                              width=230)
         self.entry.place(relx=0.5, rely=0.15, anchor=tkinter.CENTER)
 
         self.ok_button = CTkButton(master=self.button_and_entry_frame,
                                    text='Ok',
+                                   width=100,
                                    command=self.ok_event,
                                    fg_color=self.fg_color,
                                    hover_color=self.hover_color)
-        self.ok_button.place(relx=0.25, rely=0.75, anchor=tkinter.CENTER)
+        self.ok_button.place(relx=0.28, rely=0.65, anchor=tkinter.CENTER)
 
         self.cancel_button = CTkButton(master=self.button_and_entry_frame,
                                        text='Cancel',
+                                       width=100,
                                        command=self.cancel_event,
                                        fg_color=self.fg_color,
                                        hover_color=self.hover_color)
-        self.cancel_button.place(relx=0.75, rely=0.75, anchor=tkinter.CENTER)
+        self.cancel_button.place(relx=0.72, rely=0.65, anchor=tkinter.CENTER)
 
     def ok_event(self):
         self.user_input = self.entry.get()

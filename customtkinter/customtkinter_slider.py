@@ -1,6 +1,7 @@
 import tkinter
 import sys
 
+from .customtkinter_tk import CTk
 from .customtkinter_frame import CTkFrame
 from .appearance_mode_tracker import AppearanceModeTracker
 from .customtkinter_color_manager import CTkColorManager
@@ -26,13 +27,34 @@ class CTkSlider(tkinter.Frame):
                  *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        AppearanceModeTracker.add(self.change_appearance_mode)
+        # overwrite configure methods of master when master is tkinter widget, so that bg changes get applied on child CTk widget too
+        if isinstance(self.master, (tkinter.Tk, tkinter.Frame)) and not isinstance(self.master, (CTk, CTkFrame)):
+            master_old_configure = self.master.config
+
+            def new_configure(*args, **kwargs):
+                if "bg" in kwargs:
+                    self.configure(bg_color=kwargs["bg"])
+                elif "background" in kwargs:
+                    self.configure(bg_color=kwargs["background"])
+
+                # args[0] is dict when attribute gets changed by widget[<attribut>] syntax
+                elif len(args) > 0 and type(args[0]) == dict:
+                    if "bg" in args[0]:
+                        self.configure(bg_color=args[0]["bg"])
+                    elif "background" in args[0]:
+                        self.configure(bg_color=args[0]["background"])
+                master_old_configure(*args, **kwargs)
+
+            self.master.config = new_configure
+            self.master.configure = new_configure
+
+        AppearanceModeTracker.add(self.change_appearance_mode, self)
         self.appearance_mode = AppearanceModeTracker.get_mode()  # 0: "Light" 1: "Dark"
 
         self.bg_color = self.detect_color_of_master() if bg_color is None else bg_color
-        self.border_color = self.bg_color if border_color is None else border_color
+        self.border_color = border_color
         self.fg_color = fg_color
-        self.progress_color = progress_color if progress_color is not None else fg_color
+        self.progress_color = progress_color
         self.button_color = self.bg_color if button_color is None else button_color
         self.button_hover_color = self.bg_color if button_hover_color is None else button_hover_color
 
@@ -99,9 +121,19 @@ class CTkSlider(tkinter.Frame):
 
         if no_color_updates is False:
             self.canvas.configure(bg=CTkColorManager.single_color(self.bg_color, self.appearance_mode))
-            self.canvas.itemconfig("border_parts", fill=CTkColorManager.single_color(self.border_color, self.appearance_mode))
+
+            if self.border_color is None:
+                self.canvas.itemconfig("border_parts", fill=CTkColorManager.single_color(self.bg_color, self.appearance_mode))
+            else:
+                self.canvas.itemconfig("border_parts", fill=CTkColorManager.single_color(self.border_color, self.appearance_mode))
+
             self.canvas.itemconfig("inner_parts", fill=CTkColorManager.single_color(self.fg_color, self.appearance_mode))
-            self.canvas.itemconfig("progress_parts", fill=CTkColorManager.single_color(self.progress_color, self.appearance_mode))
+
+            if self.progress_color is None:
+                self.canvas.itemconfig("progress_parts", fill=CTkColorManager.single_color(self.fg_color, self.appearance_mode))
+            else:
+                self.canvas.itemconfig("progress_parts", fill=CTkColorManager.single_color(self.progress_color, self.appearance_mode))
+
             self.canvas.itemconfig("button_parts", fill=CTkColorManager.single_color(self.button_color, self.appearance_mode))
 
     def draw_with_polygon_shapes(self):
@@ -136,7 +168,7 @@ class CTkSlider(tkinter.Frame):
             self.canvas.delete("progress_parts")
 
         self.canvas.coords("inner_line_1",
-                           (self.height / 2,
+                           (((self.width + coordinate_shift - self.height) * self.value + self.height / 2),
                             self.height / 2,
                             self.width - self.height / 2 + coordinate_shift,
                             self.height / 2))
@@ -373,4 +405,4 @@ class CTkSlider(tkinter.Frame):
             self.bg_color = self.master.cget("bg")
 
         self.draw()
-
+        self.update_idletasks()

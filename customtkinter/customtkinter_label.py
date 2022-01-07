@@ -1,6 +1,7 @@
 import tkinter
 import sys
 
+from .customtkinter_tk import CTk
 from .customtkinter_frame import CTkFrame
 from .appearance_mode_tracker import AppearanceModeTracker
 from .customtkinter_color_manager import CTkColorManager
@@ -21,7 +22,28 @@ class CTkLabel(tkinter.Frame):
                  **kwargs):
         super().__init__(master=master)
 
-        AppearanceModeTracker.add(self.change_appearance_mode)
+        # overwrite configure methods of master when master is tkinter widget, so that bg changes get applied on child CTk widget too
+        if isinstance(self.master, (tkinter.Tk, tkinter.Frame)) and not isinstance(self.master, (CTk, CTkFrame)):
+            master_old_configure = self.master.config
+
+            def new_configure(*args, **kwargs):
+                if "bg" in kwargs:
+                    self.configure(bg_color=kwargs["bg"])
+                elif "background" in kwargs:
+                    self.configure(bg_color=kwargs["background"])
+
+                # args[0] is dict when attribute gets changed by widget[<attribut>] syntax
+                elif len(args) > 0 and type(args[0]) == dict:
+                    if "bg" in args[0]:
+                        self.configure(bg_color=args[0]["bg"])
+                    elif "background" in args[0]:
+                        self.configure(bg_color=args[0]["background"])
+                master_old_configure(*args, **kwargs)
+
+            self.master.config = new_configure
+            self.master.configure = new_configure
+
+        AppearanceModeTracker.add(self.change_appearance_mode, self)
         self.appearance_mode = AppearanceModeTracker.get_mode()  # 0: "Light" 1: "Dark"
 
         self.bg_color = self.detect_color_of_master() if bg_color is None else bg_color
@@ -190,9 +212,10 @@ class CTkLabel(tkinter.Frame):
         elif mode_string.lower() == "light":
             self.appearance_mode = 0
 
-        if isinstance(self.master, CTkFrame):
+        if isinstance(self.master, (CTkFrame, CTk)):
             self.bg_color = self.master.fg_color
         else:
             self.bg_color = self.master.cget("bg")
 
         self.draw()
+        self.update_idletasks()

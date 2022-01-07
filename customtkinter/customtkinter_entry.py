@@ -1,6 +1,7 @@
 import tkinter
 import sys
 
+from .customtkinter_tk import CTk
 from .customtkinter_frame import CTkFrame
 from .appearance_mode_tracker import AppearanceModeTracker
 from .customtkinter_color_manager import CTkColorManager
@@ -12,14 +13,35 @@ class CTkEntry(tkinter.Frame):
                  bg_color=None,
                  fg_color=CTkColorManager.ENTRY,
                  text_color=CTkColorManager.TEXT,
-                 corner_radius=10,
+                 corner_radius=8,
                  width=120,
-                 height=25,
+                 height=30,
                  *args,
                  **kwargs):
         super().__init__(master=master)
 
-        AppearanceModeTracker.add(self.change_appearance_mode)
+        # overwrite configure methods of master when master is tkinter widget, so that bg changes get applied on child CTk widget too
+        if isinstance(self.master, (tkinter.Tk, tkinter.Frame)) and not isinstance(self.master, (CTk, CTkFrame)):
+            master_old_configure = self.master.config
+
+            def new_configure(*args, **kwargs):
+                if "bg" in kwargs:
+                    self.configure(bg_color=kwargs["bg"])
+                elif "background" in kwargs:
+                    self.configure(bg_color=kwargs["background"])
+
+                # args[0] is dict when attribute gets changed by widget[<attribut>] syntax
+                elif len(args) > 0 and type(args[0]) == dict:
+                    if "bg" in args[0]:
+                        self.configure(bg_color=args[0]["bg"])
+                    elif "background" in args[0]:
+                        self.configure(bg_color=args[0]["background"])
+                master_old_configure(*args, **kwargs)
+
+            self.master.config = new_configure
+            self.master.configure = new_configure
+
+        AppearanceModeTracker.add(self.change_appearance_mode, self)
         self.appearance_mode = AppearanceModeTracker.get_mode()  # 0: "Light" 1: "Dark"
 
         self.bg_color = self.detect_color_of_master() if bg_color is None else bg_color
@@ -140,20 +162,32 @@ class CTkEntry(tkinter.Frame):
         self.configure(*args, **kwargs)
 
     def configure(self, *args, **kwargs):
+        require_redraw = False  # some attribute changes require a call of self.draw() at the end
+
+        if "bg_color" in kwargs:
+            self.bg_color = kwargs["bg_color"]
+            del kwargs["bg_color"]
+            require_redraw = True
+
+        if "fg_color" in kwargs:
+            self.fg_color = kwargs["fg_color"]
+            del kwargs["fg_color"]
+            require_redraw = True
+
+        if "text_color" in kwargs:
+            self.text_color = kwargs["text_color"]
+            del kwargs["text_color"]
+            require_redraw = True
+
+        if "corner_radius" in kwargs:
+            self.corner_radius = kwargs["corner_radius"]
+            del kwargs["corner_radius"]
+            require_redraw = True
+
         super().configure(*args, **kwargs)
 
-    def change_appearance_mode(self, mode_string):
-        if mode_string.lower() == "dark":
-            self.appearance_mode = 1
-        elif mode_string.lower() == "light":
-            self.appearance_mode = 0
-
-        if isinstance(self.master, CTkFrame):
-            self.bg_color = self.master.fg_color
-        else:
-            self.bg_color = self.master.cget("bg")
-
-        self.draw()
+        if require_redraw is True:
+            self.draw()
 
     def delete(self, *args, **kwargs):
         return self.entry.delete(*args, **kwargs)
@@ -163,4 +197,18 @@ class CTkEntry(tkinter.Frame):
 
     def get(self):
         return self.entry.get()
+
+    def change_appearance_mode(self, mode_string):
+        if mode_string.lower() == "dark":
+            self.appearance_mode = 1
+        elif mode_string.lower() == "light":
+            self.appearance_mode = 0
+
+        if isinstance(self.master, (CTkFrame, CTk)):
+            self.bg_color = self.master.fg_color
+        else:
+            self.bg_color = self.master.cget("bg")
+
+        self.draw()
+        self.update_idletasks()
 

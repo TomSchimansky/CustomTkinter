@@ -14,7 +14,7 @@ class CTkColorManager:
     FRAME_2 = ("#BFBEC1", "#505050")
     CHECKBOX_LINES = ("black", "#ededed")
 
-    DARKEN_COLOR_FACTOR = 0.8  # used for generate color for disabled button
+    DARKEN_COLOR_FACTOR = 0.8  # used to generate color for disabled button
 
     @staticmethod
     def single_color(color, appearance_mode: int) -> str:

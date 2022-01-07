@@ -1,6 +1,6 @@
-from threading import Thread
-from time import sleep
+import time
 import sys
+import tkinter
 from distutils.version import StrictVersion as Version
 import darkdetect
 
@@ -10,114 +10,90 @@ if Version(darkdetect.__version__) < Version("0.3.1"):
         exit()
 
 
-class SystemAppearanceModeListener(Thread):
-    """ This class checks for a system appearance change
-        in a loop, and if a change is detected, than the
-        callback function gets called. Either 'Light' or
-        'Dark' is passed in the callback function. """
-
-    def __init__(self, callback, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.setDaemon(True)
-
-        self.appearance_mode = self.detect_appearance_mode()
-        self.callback_function = callback
-
-        self.activated = True
-
-    def activate(self):
-        self.activated = True
-
-    def deactivate(self):
-        self.activated = False
-
-    def get_mode(self):
-        return self.appearance_mode
-
-    @staticmethod
-    def detect_appearance_mode():
-        try:
-            if darkdetect.theme() == "Dark":
-                return 1  # Dark
-            else:
-                return 0  # Light
-        except NameError:
-            return 0  # Light
-
-    def run(self):
-        while True:
-            if self.activated:
-                detected_mode = self.detect_appearance_mode()
-                if detected_mode != self.appearance_mode:
-                    self.appearance_mode = detected_mode
-
-                    if self.appearance_mode == 0:
-                        self.callback_function("Light", from_listener=True)
-                    else:
-                        self.callback_function("Dark", from_listener=True)
-            sleep(0.5)
-
-
-class SystemAppearanceModeListenerNoThread:
-    def __init__(self, callback):
-        self.appearance_mode = self.detect_appearance_mode()
-        self.callback_function = callback
-
-        self.activated = True
-
-    def get_mode(self):
-        return self.appearance_mode
-
-    @staticmethod
-    def detect_appearance_mode():
-        try:
-            if darkdetect.theme() == "Dark":
-                return 1  # Dark
-            else:
-                return 0  # Light
-        except NameError:
-            return 0  # Light
-
-    def update(self):
-        detected_mode = self.detect_appearance_mode()
-        if detected_mode != self.appearance_mode:
-            self.appearance_mode = detected_mode
-
-            if self.appearance_mode == 0:
-                self.callback_function("Light", from_listener=True)
-            else:
-                self.callback_function("Dark", from_listener=True)
-
-
 class AppearanceModeTracker():
-    """ This class holds a list with callback functions
-        of every customtkinter object that gets created.
-        And when either the SystemAppearanceModeListener
-        or the user changes the appearance_mode, all
-        callbacks in the list get called and the
-        new appearance_mode is passed over to the
-        customtkinter objects """
 
     callback_list = []
+    root_tk_list = []
+    update_loop_running = False
+
+    appearance_mode_set_by = "system"
     appearance_mode = 0  # Light (standard)
-    system_mode_listener = None
 
     @classmethod
-    def init_listener_function(cls, no_thread=False):
-        if isinstance(cls.system_mode_listener, SystemAppearanceModeListener):
-            cls.system_mode_listener.deactivate()
+    def init_appearance_mode(cls):
+        if cls.appearance_mode_set_by == "system":
+            new_appearance_mode = cls.detect_appearance_mode()
 
-        if no_thread is True:
-            cls.system_mode_listener = SystemAppearanceModeListenerNoThread(cls.set_appearance_mode)
-            cls.appearance_mode = cls.system_mode_listener.get_mode()
-        else:
-            cls.system_mode_listener = SystemAppearanceModeListener(cls.set_appearance_mode)
-            cls.system_mode_listener.start()
-            cls.appearance_mode = cls.system_mode_listener.get_mode()
+            if new_appearance_mode != cls.appearance_mode:
+                cls.appearance_mode = new_appearance_mode
+                cls.update_callbacks()
 
     @classmethod
-    def add(cls, callback):
+    def get_tk_root_of_widget(cls, widget):
+        current_widget = widget
+
+        while isinstance(current_widget, tkinter.Tk) is False:
+            current_widget = current_widget.master
+
+        return current_widget
+
+    @classmethod
+    def add(cls, callback, widget=None):
         cls.callback_list.append(callback)
+
+        if widget is not None:
+            root_tk = cls.get_tk_root_of_widget(widget)
+            if root_tk not in cls.root_tk_list:
+                cls.root_tk_list.append(root_tk)
+
+                if not cls.update_loop_running:
+                    root_tk.after(500, cls.update)
+                    cls.update_loop_running = True
+
+    @staticmethod
+    def detect_appearance_mode():
+        try:
+            if darkdetect.theme() == "Dark":
+                return 1  # Dark
+            else:
+                return 0  # Light
+        except NameError:
+            return 0  # Light
+
+    @classmethod
+    def update_callbacks(cls):
+        if cls.appearance_mode == 0:
+            for callback in cls.callback_list:
+                try:
+                    callback("Light")
+                except Exception:
+                    continue
+
+        elif cls.appearance_mode == 1:
+            for callback in cls.callback_list:
+                try:
+                    callback("Dark")
+                except Exception:
+                    continue
+
+    @classmethod
+    def update(cls):
+        if cls.appearance_mode_set_by == "system":
+            new_appearance_mode = cls.detect_appearance_mode()
+
+            if new_appearance_mode != cls.appearance_mode:
+                cls.appearance_mode = new_appearance_mode
+                cls.update_callbacks()
+
+        # find an existing tkinter.Tk object for the next call of .after()
+        for root_tk in cls.root_tk_list:
+            try:
+                root_tk.after(200, cls.update)
+                return
+            except Exception:
+                continue
+
+        cls.update_loop_running = False
 
     @classmethod
     def remove(cls, callback):
@@ -128,36 +104,25 @@ class AppearanceModeTracker():
         return cls.appearance_mode
 
     @classmethod
-    def set_appearance_mode(cls, mode_string, from_listener=False):
+    def set_appearance_mode(cls, mode_string):
         if mode_string.lower() == "dark":
-            cls.appearance_mode = 1
+            cls.appearance_mode_set_by = "user"
+            new_appearance_mode = 1
 
-            if not from_listener:
-                cls.system_mode_listener.deactivate()
+            if new_appearance_mode != cls.appearance_mode:
+                cls.appearance_mode = new_appearance_mode
+                cls.update_callbacks()
 
         elif mode_string.lower() == "light":
-            cls.appearance_mode = 0
-            if not from_listener:
-                cls.system_mode_listener.deactivate()
+            cls.appearance_mode_set_by = "user"
+            new_appearance_mode = 0
+
+            if new_appearance_mode != cls.appearance_mode:
+                cls.appearance_mode = new_appearance_mode
+                cls.update_callbacks()
 
         elif mode_string.lower() == "system":
-            cls.system_mode_listener.activate()
-
-        if cls.appearance_mode == 0:
-            for callback in cls.callback_list:
-                try:
-                    callback("Light")
-                except Exception:
-                    print("error callback")
-                    continue
-
-        elif cls.appearance_mode == 1:
-            for callback in cls.callback_list:
-                try:
-                    callback("Dark")
-                except Exception:
-                    print("error callback")
-                    continue
+            cls.appearance_mode_set_by = "system"
 
 
-AppearanceModeTracker.init_listener_function()
+AppearanceModeTracker.init_appearance_mode()

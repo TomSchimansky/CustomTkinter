@@ -1,6 +1,7 @@
 import sys
 import tkinter
 
+from .customtkinter_tk import CTk
 from .customtkinter_frame import CTkFrame
 from .appearance_mode_tracker import AppearanceModeTracker
 from .customtkinter_color_manager import CTkColorManager
@@ -20,7 +21,28 @@ class CTkProgressBar(tkinter.Frame):
                  *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        AppearanceModeTracker.add(self.change_appearance_mode)
+        # overwrite configure methods of master when master is tkinter widget, so that bg changes get applied on child CTk widget too
+        if isinstance(self.master, (tkinter.Tk, tkinter.Frame)) and not isinstance(self.master, (CTk, CTkFrame)):
+            master_old_configure = self.master.config
+
+            def new_configure(*args, **kwargs):
+                if "bg" in kwargs:
+                    self.configure(bg_color=kwargs["bg"])
+                elif "background" in kwargs:
+                    self.configure(bg_color=kwargs["background"])
+
+                # args[0] is dict when attribute gets changed by widget[<attribut>] syntax
+                elif len(args) > 0 and type(args[0]) == dict:
+                    if "bg" in args[0]:
+                        self.configure(bg_color=args[0]["bg"])
+                    elif "background" in args[0]:
+                        self.configure(bg_color=args[0]["background"])
+                master_old_configure(*args, **kwargs)
+
+            self.master.config = new_configure
+            self.master.configure = new_configure
+
+        AppearanceModeTracker.add(self.change_appearance_mode, self)
         self.appearance_mode = AppearanceModeTracker.get_mode()  # 0: "Light" 1: "Dark"
 
         self.bg_color = self.detect_color_of_master() if bg_color is None else bg_color
@@ -104,6 +126,7 @@ class CTkProgressBar(tkinter.Frame):
             self.canvas.itemconfig("border_line_1",
                                    capstyle=tkinter.ROUND,
                                    width=self.height + width_reduced)
+            self.canvas.lower("border_parts")
 
         # create inner button parts
         if not self.canvas.find_withtag("inner_parts"):
@@ -201,6 +224,39 @@ class CTkProgressBar(tkinter.Frame):
                             self.height / 2 + (self.width - self.height) * self.value + self.height / 2 - self.border_width + oval_bottom_right_shift,
                             self.height - self.border_width + oval_bottom_right_shift))
 
+    def configure(self, *args, **kwargs):
+        require_redraw = False  # some attribute changes require a call of self.draw() at the end
+
+        if "bg_color" in kwargs:
+            self.bg_color = kwargs["bg_color"]
+            del kwargs["bg_color"]
+            require_redraw = True
+
+        if "fg_color" in kwargs:
+            self.fg_color = kwargs["fg_color"]
+            del kwargs["fg_color"]
+            require_redraw = True
+
+        if "border_color" in kwargs:
+            self.border_color = kwargs["border_color"]
+            del kwargs["border_color"]
+            require_redraw = True
+
+        if "progress_color" in kwargs:
+            self.progress_color = kwargs["progress_color"]
+            del kwargs["progress_color"]
+            require_redraw = True
+
+        if "border_width" in kwargs:
+            self.border_width = kwargs["border_width"]
+            del kwargs["border_width"]
+            require_redraw = True
+
+        super().configure(*args, **kwargs)
+
+        if require_redraw is True:
+            self.draw()
+
     def set(self, value):
         self.value = value
 
@@ -223,3 +279,4 @@ class CTkProgressBar(tkinter.Frame):
             self.bg_color = self.master.cget("bg")
 
         self.draw()
+        self.update_idletasks()

@@ -18,7 +18,7 @@ class App(customtkinter.CTk):
     MAIN_HOVER = "#458577"
 
     def __init__(self, *args, **kwargs):
-        super().__init__(self, *args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         self.title(App.APP_NAME)
         self.geometry(str(App.WIDTH) + "x" + str(App.HEIGHT))
@@ -102,8 +102,7 @@ class App(customtkinter.CTk):
         self.progressbar = customtkinter.CTkProgressBar(master=self.frame_info,
                                                         progress_color=App.MAIN_COLOR,
                                                         width=250,
-                                                        height=15,
-                                                        border_width=3)
+                                                        height=12)
         self.progressbar.place(relx=0.5, rely=0.85, anchor=tkinter.S)
         self.progressbar.set(0.65)
 

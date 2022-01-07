@@ -1,6 +1,7 @@
 import tkinter
 import sys
 
+from .customtkinter_tk import CTk
 from .customtkinter_frame import CTkFrame
 from .appearance_mode_tracker import AppearanceModeTracker
 from .customtkinter_color_manager import CTkColorManager
@@ -27,7 +28,28 @@ class CTkCheckBox(tkinter.Frame):
                  *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        AppearanceModeTracker.add(self.set_appearance_mode)
+        # overwrite configure methods of master when master is tkinter widget, so that bg changes get applied on child CTk widget too
+        if isinstance(self.master, (tkinter.Tk, tkinter.Frame)) and not isinstance(self.master, (CTk, CTkFrame)):
+            master_old_configure = self.master.config
+
+            def new_configure(*args, **kwargs):
+                if "bg" in kwargs:
+                    self.configure(bg_color=kwargs["bg"])
+                elif "background" in kwargs:
+                    self.configure(bg_color=kwargs["background"])
+
+                # args[0] is dict when attribute gets changed by widget[<attribut>] syntax
+                elif len(args) > 0 and type(args[0]) == dict:
+                    if "bg" in args[0]:
+                        self.configure(bg_color=args[0]["bg"])
+                    elif "background" in args[0]:
+                        self.configure(bg_color=args[0]["background"])
+                master_old_configure(*args, **kwargs)
+
+            self.master.config = new_configure
+            self.master.configure = new_configure
+
+        AppearanceModeTracker.add(self.set_appearance_mode, self)
         self.appearance_mode = AppearanceModeTracker.get_mode()  # 0: "Light" 1: "Dark"
 
         self.bg_color = self.detect_color_of_master() if bg_color is None else bg_color
@@ -191,11 +213,18 @@ class CTkCheckBox(tkinter.Frame):
                                                                  self.width - self.border_width,
                                                                  self.height - self.inner_corner_radius - self.border_width))
 
-        for part in self.canvas_fg_parts:
-            if type(self.bg_color) == tuple and len(self.bg_color) == 2:
-                self.canvas.itemconfig(part, fill=self.bg_color[self.appearance_mode], width=0)
-            else:
-                self.canvas.itemconfig(part, fill=self.bg_color, outline=self.bg_color, width=0)
+        if self.check_state is False:
+            for part in self.canvas_fg_parts:
+                if type(self.bg_color) == tuple and len(self.bg_color) == 2:
+                        self.canvas.itemconfig(part, fill=self.bg_color[self.appearance_mode], width=0)
+                else:
+                        self.canvas.itemconfig(part, fill=self.bg_color, outline=self.bg_color, width=0)
+        else:
+            for part in self.canvas_fg_parts:
+                if type(self.fg_color) == tuple and len(self.fg_color) == 2:
+                        self.canvas.itemconfig(part, fill=self.fg_color[self.appearance_mode], width=0)
+                else:
+                        self.canvas.itemconfig(part, fill=self.fg_color, outline=self.bg_color, width=0)
 
         for part in self.canvas_border_parts:
             if type(self.border_color) == tuple and len(self.border_color) == 2:
@@ -368,5 +397,10 @@ class CTkCheckBox(tkinter.Frame):
         elif mode_string.lower() == "light":
             self.appearance_mode = 0
 
-        self.draw()
+        if isinstance(self.master, (CTkFrame, CTk)):
+            self.bg_color = self.master.fg_color
+        else:
+            self.bg_color = self.master.cget("bg")
 
+        self.draw()
+        self.update_idletasks()

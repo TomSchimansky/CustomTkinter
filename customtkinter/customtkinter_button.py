@@ -2,6 +2,7 @@ import tkinter
 import sys
 from math import ceil, floor
 
+from .customtkinter_tk import CTk
 from .customtkinter_frame import CTkFrame
 from .appearance_mode_tracker import AppearanceModeTracker
 from .customtkinter_color_manager import CTkColorManager
@@ -18,7 +19,7 @@ class CTkButton(tkinter.Frame):
                  border_width=0,
                  command=None,
                  width=120,
-                 height=32,
+                 height=30,
                  corner_radius=8,
                  text_font=None,
                  text_color=CTkColorManager.TEXT,
@@ -30,14 +31,34 @@ class CTkButton(tkinter.Frame):
                  *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        AppearanceModeTracker.add(self.set_appearance_mode)
+        # overwrite configure methods of master when master is tkinter widget, so that bg changes get applied on child CTk widget too
+        if isinstance(self.master, (tkinter.Tk, tkinter.Frame)) and not isinstance(self.master, (CTk, CTkFrame)):
+            master_old_configure = self.master.config
+
+            def new_configure(*args, **kwargs):
+                if "bg" in kwargs:
+                    self.configure(bg_color=kwargs["bg"])
+                elif "background" in kwargs:
+                    self.configure(bg_color=kwargs["background"])
+
+                # args[0] is dict when attribute gets changed by widget[<attribute>] syntax
+                elif len(args) > 0 and type(args[0]) == dict:
+                    if "bg" in args[0]:
+                        self.configure(bg_color=args[0]["bg"])
+                    elif "background" in args[0]:
+                        self.configure(bg_color=args[0]["background"])
+                master_old_configure(*args, **kwargs)
+
+            self.master.config = new_configure
+            self.master.configure = new_configure
+
+        AppearanceModeTracker.add(self.set_appearance_mode, self)
         self.appearance_mode = AppearanceModeTracker.get_mode()  # 0: "Light" 1: "Dark"
 
         self.configure_basic_grid()
 
         self.bg_color = self.detect_color_of_master() if bg_color is None else bg_color
-        self.fg_color = self.bg_color if fg_color is None else fg_color
-        self.fg_color = self.bg_color if self.fg_color is None else self.fg_color
+        self.fg_color = fg_color
         self.hover_color = self.fg_color if hover_color is None else hover_color
         self.border_color = border_color
 
@@ -163,14 +184,26 @@ class CTkButton(tkinter.Frame):
 
             # set color for inner button parts (depends on button state)
             if self.state == tkinter.DISABLED:
-                self.canvas.itemconfig("inner_parts",
-                                       outline=CTkColorManager.darken_hex_color(CTkColorManager.single_color(self.fg_color, self.appearance_mode)),
-                                       fill=CTkColorManager.darken_hex_color(CTkColorManager.single_color(self.fg_color, self.appearance_mode)))
+                if self.fg_color is None:
+                    self.canvas.itemconfig("inner_parts",
+                                           outline=CTkColorManager.darken_hex_color(CTkColorManager.single_color(self.bg_color, self.appearance_mode)),
+                                           fill=CTkColorManager.darken_hex_color(CTkColorManager.single_color(self.bg_color, self.appearance_mode)))
+                else:
+                    self.canvas.itemconfig("inner_parts",
+                                           outline=CTkColorManager.darken_hex_color(
+                                               CTkColorManager.single_color(self.fg_color, self.appearance_mode)),
+                                           fill=CTkColorManager.darken_hex_color(
+                                               CTkColorManager.single_color(self.fg_color, self.appearance_mode)))
 
             else:
-                self.canvas.itemconfig("inner_parts",
-                                       outline=CTkColorManager.single_color(self.fg_color, self.appearance_mode),
-                                       fill=CTkColorManager.single_color(self.fg_color, self.appearance_mode))
+                if self.fg_color is None:
+                    self.canvas.itemconfig("inner_parts",
+                                           outline=CTkColorManager.single_color(self.bg_color, self.appearance_mode),
+                                           fill=CTkColorManager.single_color(self.bg_color, self.appearance_mode))
+                else:
+                    self.canvas.itemconfig("inner_parts",
+                                           outline=CTkColorManager.single_color(self.fg_color, self.appearance_mode),
+                                           fill=CTkColorManager.single_color(self.fg_color, self.appearance_mode))
 
         # create text label if text given
         if self.text is not None and self.text != "":
@@ -189,9 +222,17 @@ class CTkButton(tkinter.Frame):
 
                 # set text_label bg color (label color)
                 if self.state == tkinter.DISABLED:
-                    self.text_label.configure(bg=CTkColorManager.darken_hex_color(CTkColorManager.single_color(self.fg_color, self.appearance_mode)))
+                    if self.fg_color is None:
+                        self.text_label.configure(
+                            bg=CTkColorManager.darken_hex_color(CTkColorManager.single_color(self.bg_color, self.appearance_mode)))
+                    else:
+                        self.text_label.configure(
+                            bg=CTkColorManager.darken_hex_color(CTkColorManager.single_color(self.fg_color, self.appearance_mode)))
                 else:
-                    self.text_label.configure(bg=CTkColorManager.single_color(self.fg_color, self.appearance_mode))
+                    if self.fg_color is None:
+                        self.text_label.configure(bg=CTkColorManager.single_color(self.bg_color, self.appearance_mode))
+                    else:
+                        self.text_label.configure(bg=CTkColorManager.single_color(self.fg_color, self.appearance_mode))
 
             self.text_label.configure(text=self.text)  # set text
 
@@ -422,6 +463,11 @@ class CTkButton(tkinter.Frame):
             require_redraw = True
             del kwargs["fg_color"]
 
+        if "border_color" in kwargs:
+            self.border_color = kwargs["border_color"]
+            require_redraw = True
+            del kwargs["border_color"]
+
         if "bg_color" in kwargs:
             if kwargs["bg_color"] is None:
                 self.bg_color = self.detect_color_of_master()
@@ -485,18 +531,23 @@ class CTkButton(tkinter.Frame):
 
     def on_leave(self, event=0):
         if self.hover is True:
+            if self.fg_color is None:
+                inner_parts_color = self.bg_color
+            else:
+                inner_parts_color = self.fg_color
+
             # set color of inner button parts
             self.canvas.itemconfig("inner_parts",
-                                   outline=CTkColorManager.single_color(self.fg_color, self.appearance_mode),
-                                   fill=CTkColorManager.single_color(self.fg_color, self.appearance_mode))
+                                   outline=CTkColorManager.single_color(inner_parts_color, self.appearance_mode),
+                                   fill=CTkColorManager.single_color(inner_parts_color, self.appearance_mode))
 
             # set text_label bg color (label color)
             if self.text_label is not None:
-                self.text_label.configure(bg=CTkColorManager.single_color(self.fg_color, self.appearance_mode))
+                self.text_label.configure(bg=CTkColorManager.single_color(inner_parts_color, self.appearance_mode))
 
             # set image_label bg color (image bg color)
             if self.image_label is not None:
-                self.image_label.configure(bg=CTkColorManager.single_color(self.fg_color, self.appearance_mode))
+                self.image_label.configure(bg=CTkColorManager.single_color(inner_parts_color, self.appearance_mode))
 
     def clicked(self, event=0):
         if self.function is not None:
@@ -510,4 +561,10 @@ class CTkButton(tkinter.Frame):
         elif mode_string.lower() == "light":
             self.appearance_mode = 0
 
+        if isinstance(self.master, (CTkFrame, CTk)):
+            self.bg_color = self.master.fg_color
+        else:
+            self.bg_color = self.master.cget("bg")
+
         self.draw()
+        self.update_idletasks()

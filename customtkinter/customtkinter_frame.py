@@ -1,6 +1,7 @@
 import tkinter
 import sys
 
+from .customtkinter_tk import CTk
 from .appearance_mode_tracker import AppearanceModeTracker
 from .customtkinter_color_manager import CTkColorManager
 
@@ -15,7 +16,28 @@ class CTkFrame(tkinter.Frame):
                  **kwargs):
         super().__init__(*args, **kwargs)
 
-        AppearanceModeTracker.add(self.change_appearance_mode)
+        # overwrite configure methods of master when master is tkinter widget, so that bg changes get applied on child CTk widget too
+        if isinstance(self.master, (tkinter.Tk, tkinter.Frame)) and not isinstance(self.master, (CTk, CTkFrame)):
+            master_old_configure = self.master.config
+
+            def new_configure(*args, **kwargs):
+                if "bg" in kwargs:
+                    self.configure(bg_color=kwargs["bg"])
+                elif "background" in kwargs:
+                    self.configure(bg_color=kwargs["background"])
+
+                # args[0] is dict when attribute gets changed by widget[<attribut>] syntax
+                elif len(args) > 0 and type(args[0]) == dict:
+                    if "bg" in args[0]:
+                        self.configure(bg_color=args[0]["bg"])
+                    elif "background" in args[0]:
+                        self.configure(bg_color=args[0]["background"])
+                master_old_configure(*args, **kwargs)
+
+            self.master.config = new_configure
+            self.master.configure = new_configure
+
+        AppearanceModeTracker.add(self.change_appearance_mode, self)
         self.appearance_mode = AppearanceModeTracker.get_mode()  # 0: "Light" 1: "Dark"
 
         self.bg_color = self.detect_color_of_master() if bg_color is None else bg_color
@@ -130,6 +152,48 @@ class CTkFrame(tkinter.Frame):
         for part in self.fg_parts:
             self.canvas.tag_lower(part)
 
+    def config(self, *args, **kwargs):
+        self.configure(*args, **kwargs)
+
+    def configure(self, *args, **kwargs):
+        require_redraw = False  # some attribute changes require a call of self.draw() at the end
+
+        if "fg_color" in kwargs:
+            self.fg_color = kwargs["fg_color"]
+            require_redraw = True
+            del kwargs["fg_color"]
+
+            # check if CTk widgets are children of the frame and change their bg_color to new frame fg_color
+            from .customtkinter_slider import CTkSlider
+            from .customtkinter_progressbar import CTkProgressBar
+            from .customtkinter_label import CTkLabel
+            from .customtkinter_entry import CTkEntry
+            from .customtkinter_checkbox import CTkCheckBox
+            from .customtkinter_button import CTkButton
+
+            for child in self.winfo_children():
+                if isinstance(child, (CTkButton, CTkLabel, CTkSlider, CTkCheckBox, CTkEntry, CTkProgressBar, CTkFrame)):
+                    child.configure(bg_color=self.fg_color)
+
+        if "bg_color" in kwargs:
+            if kwargs["bg_color"] is None:
+                self.bg_color = self.detect_color_of_master()
+            else:
+                self.bg_color = kwargs["bg_color"]
+            require_redraw = True
+
+            del kwargs["bg_color"]
+
+        if "corner_radius" in kwargs:
+            self.corner_radius = kwargs["corner_radius"]
+            require_redraw = True
+            del kwargs["corner_radius"]
+
+        super().configure(*args, **kwargs)
+
+        if require_redraw:
+            self.draw()
+
     def change_appearance_mode(self, mode_string):
         if mode_string.lower() == "dark":
             self.appearance_mode = 1
@@ -142,4 +206,3 @@ class CTkFrame(tkinter.Frame):
             self.bg_color = self.master.cget("bg")
 
         self.draw()
-

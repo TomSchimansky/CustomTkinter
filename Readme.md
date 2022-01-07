@@ -461,13 +461,8 @@ print(customtkinter.get_appearance_mode())
 Use macOS darkmode window style without using the `customtkinter.Ctk` class:
 ```python
 customtkinter.enable_macos_darkmode()  # get darkmode window style
-customtkinter.disable_macos_darkmode()  # disable darkmode (important!)
-```
 
-If you dont use ``root_tk.mainloop()``, then you have to deactivate
-the threaded search for a change of the system appearance mode, and
-do it yourself in your main loop where you call ``root_tk.update()``.
-```python
-customtkinter.deactivate_threading()  # call this at the beginning
-customtkinter.update_appearance_mode()  # then call this in the loop
+ ... program ...
+
+customtkinter.disable_macos_darkmode()  # disable darkmode (very important!)
 ```

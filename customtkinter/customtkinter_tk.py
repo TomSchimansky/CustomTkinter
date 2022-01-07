@@ -10,24 +10,24 @@ from .customtkinter_color_manager import CTkColorManager
 
 class CTk(tkinter.Tk):
     def __init__(self, *args,
-                 bg_color=CTkColorManager.WINDOW_BG,
+                 fg_color=CTkColorManager.WINDOW_BG,
                  **kwargs):
 
         self.enable_macos_dark_title_bar()
         self.appearance_mode = AppearanceModeTracker.get_mode()  # 0: "Light" 1: "Dark"
 
-        self.bg_color = bg_color
+        self.fg_color = fg_color
         if "bg" in kwargs:
-            self.bg_color = kwargs["bg"]
+            self.fg_color = kwargs["bg"]
             del kwargs["bg"]
         elif "background" in kwargs:
-            self.bg_color = kwargs["background"]
+            self.fg_color = kwargs["background"]
             del kwargs["background"]
 
         super().__init__(*args, **kwargs)
 
-        AppearanceModeTracker.add(self.set_appearance_mode)
-        super().configure(bg=CTkColorManager.single_color(self.bg_color, self.appearance_mode))
+        AppearanceModeTracker.add(self.set_appearance_mode, self)
+        super().configure(bg=CTkColorManager.single_color(self.fg_color, self.appearance_mode))
 
     def destroy(self):
         AppearanceModeTracker.remove(self.set_appearance_mode)
@@ -38,10 +38,45 @@ class CTk(tkinter.Tk):
         self.configure(*args, **kwargs)
 
     def configure(self, *args, **kwargs):
+        bg_changed = False
+
         if "bg" in kwargs:
-            self.bg_color = kwargs["bg"]
+            self.fg_color = kwargs["bg"]
+            bg_changed = True
+            kwargs["bg"] = CTkColorManager.single_color(self.fg_color, self.appearance_mode)
         elif "background" in kwargs:
-            self.bg_color = kwargs["background"]
+            self.fg_color = kwargs["background"]
+            bg_changed = True
+            kwargs["background"] = CTkColorManager.single_color(self.fg_color, self.appearance_mode)
+        elif "fg_color" in kwargs:
+            self.fg_color = kwargs["fg_color"]
+            kwargs["bg"] = CTkColorManager.single_color(self.fg_color, self.appearance_mode)
+            del kwargs["fg_color"]
+            bg_changed = True
+
+        elif len(args) > 0 and type(args[0]) == dict:
+            if "bg" in args[0]:
+                self.fg_color=args[0]["bg"]
+                bg_changed = True
+                args[0]["bg"] = CTkColorManager.single_color(self.fg_color, self.appearance_mode)
+            elif "background" in args[0]:
+                self.fg_color=args[0]["background"]
+                bg_changed = True
+                args[0]["background"] = CTkColorManager.single_color(self.fg_color, self.appearance_mode)
+
+        if bg_changed:
+            from .customtkinter_slider import CTkSlider
+            from .customtkinter_progressbar import CTkProgressBar
+            from .customtkinter_label import CTkLabel
+            from .customtkinter_frame import CTkFrame
+            from .customtkinter_entry import CTkEntry
+            from .customtkinter_checkbox import CTkCheckBox
+            from .customtkinter_button import CTkButton
+
+            for child in self.winfo_children():
+                print("tk change children:", child)
+                if isinstance(child, (CTkFrame, CTkButton, CTkLabel, CTkSlider, CTkCheckBox, CTkEntry, CTkProgressBar)):
+                    child.configure(bg_color=self.fg_color)
 
         super().configure(*args, **kwargs)
 
@@ -66,4 +101,5 @@ class CTk(tkinter.Tk):
         elif mode_string.lower() == "light":
             self.appearance_mode = 0
 
-        super().configure(bg=CTkColorManager.single_color(self.bg_color, self.appearance_mode))
+        super().configure(bg=CTkColorManager.single_color(self.fg_color, self.appearance_mode))
+        #self.update_idletasks()

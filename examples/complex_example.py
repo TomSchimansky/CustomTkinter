@@ -90,8 +90,7 @@ class App(customtkinter.CTk):
 
         self.progressbar = customtkinter.CTkProgressBar(master=self.frame_info,
                                                         width=250,
-                                                        height=15,
-                                                        border_width=3)
+                                                        height=12)
         self.progressbar.place(relx=0.5, rely=0.85, anchor=tkinter.S)
 
         # from tkintermapview import TkinterMapView
