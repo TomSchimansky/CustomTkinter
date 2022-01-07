@@ -75,7 +75,6 @@ class CTk(tkinter.Tk):
             from .customtkinter_button import CTkButton
 
             for child in self.winfo_children():
-                print("tk change children:", child)
                 if isinstance(child, (CTkFrame, CTkButton, CTkLabel, CTkSlider, CTkCheckBox, CTkEntry, CTkProgressBar)):
                     child.configure(bg_color=self.fg_color)
 
@@ -103,4 +102,3 @@ class CTk(tkinter.Tk):
             self.appearance_mode = 0
 
         super().configure(bg=CTkColorManager.single_color(self.fg_color, self.appearance_mode))
-        #self.update_idletasks()

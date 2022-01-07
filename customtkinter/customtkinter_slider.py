@@ -405,4 +405,3 @@ class CTkSlider(tkinter.Frame):
             self.bg_color = self.master.cget("bg")
 
         self.draw()
-        self.update_idletasks()

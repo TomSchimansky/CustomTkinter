@@ -85,11 +85,7 @@ root_tk = customtkinter.CTk()
 ... the program ...
 
 root_tk.mainloop()
-
 ```
-The above results in a window with a black title-bar with macOS dark-mode turned on:
-
-![](documentation_images/simple_macOS_darkmode_test.png)
 
 If you set the appearance mode to "System", it should change with
 the System mode:
@@ -113,6 +109,20 @@ But you can also customize it by yourself. Here I changed the main
 colors and removed the round corners, and added a border to the buttons:
 
 ![](documentation_images/complex_example_other_style.png)
+
+### Default color themes
+
+If you don't set any colors at all you will get the standard blue
+color theme.But you can also change the standard color theme to
+green or dark-blue with the following command before you create
+the main window:
+```python
+customtkinter.set_appearance_mode("System")
+customtkinter.set_default_color_theme("dark-blue")  # Themes: "blue" (standard), "green", "dark-blue"
+```
+The color themes look like the following in light and dark mode:
+
+![](documentation_images/themes.jpg)
 
 ### CustomTkinter on Windows/Linux
 
@@ -456,6 +466,11 @@ customtkinter.set_appearance_mode("Dark")
 customtkinter.set_appearance_mode("System")
 
 print(customtkinter.get_appearance_mode())
+```
+
+Set default color theme:
+```python
+customtkinter.set_default_color_theme("dark-blue")  # Themes: "blue" (standard), "green", "dark-blue"
 ```
 
 Use macOS darkmode window style without using the `customtkinter.Ctk` class:

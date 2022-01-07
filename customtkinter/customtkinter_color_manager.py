@@ -40,7 +40,7 @@ class CTkColorManager:
             cls.WINDOW_BG = ("#ECECEC", "#323232")  # macOS standard light and dark window bg colors
             cls.MAIN = ("#29B57E", "#29B57E")
             cls.MAIN_HOVER = ("#6ACBA5", "#6ACBA5")
-            cls.ENTRY = ("#656565", "#222223")
+            cls.ENTRY = ("gray60", "#222223")
             cls.TEXT = ("black", "white")
             cls.LABEL_BG = ("white", "#626061")
             cls.SLIDER_BG = ("#636363", "#0D1321")
