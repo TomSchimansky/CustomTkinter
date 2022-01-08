@@ -486,6 +486,10 @@ class CTkButton(tkinter.Frame):
             require_redraw = True
             del kwargs["text_color"]
 
+        if "command" in kwargs:
+            self.function = kwargs["command"]
+            del kwargs["command"]
+
         super().configure(*args, **kwargs)
 
         if require_redraw:

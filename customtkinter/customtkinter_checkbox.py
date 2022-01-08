@@ -296,6 +296,10 @@ class CTkCheckBox(tkinter.Frame):
             require_redraw = True
             del kwargs["border_color"]
 
+        if "command" in kwargs:
+            self.function = kwargs["command"]
+            del kwargs["command"]
+
         super().configure(*args, **kwargs)
 
         if require_redraw:
