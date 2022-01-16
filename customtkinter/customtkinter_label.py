@@ -8,7 +8,7 @@ from .customtkinter_color_manager import CTkColorManager
 
 
 class CTkLabel(tkinter.Frame):
-    def __init__(self,
+    def __init__(self, *args,
                  master=None,
                  bg_color=None,
                  fg_color="CTkColorManager",
@@ -18,9 +18,11 @@ class CTkLabel(tkinter.Frame):
                  height=25,
                  text="CTkLabel",
                  text_font=None,
-                 *args,
                  **kwargs):
-        super().__init__(master=master)
+        if master is None:
+            super().__init__(*args)
+        else:
+            super().__init__(*args, master=master)
 
         # overwrite configure methods of master when master is tkinter widget, so that bg changes get applied on child CTk widget too
         if isinstance(self.master, (tkinter.Tk, tkinter.Frame)) and not isinstance(self.master, (CTk, CTkFrame)):
@@ -71,7 +73,6 @@ class CTkLabel(tkinter.Frame):
                 self.text_font = ("TkDefaultFont", 10)
         else:
             self.text_font = text_font
-        self.configure(width=self.width, height=self.height)
 
         self.canvas = tkinter.Canvas(master=self,
                                      highlightthicknes=0,
@@ -84,10 +85,12 @@ class CTkLabel(tkinter.Frame):
                                         bd=0,
                                         text=self.text,
                                         font=self.text_font,
-                                        *args, **kwargs)
+                                        **kwargs)
         self.text_label.place(relx=0.5, rely=0.5, anchor=tkinter.CENTER)
 
         self.fg_parts = []
+
+        super().configure(width=self.width, height=self.height)
 
         self.draw()
 
@@ -202,7 +205,7 @@ class CTkLabel(tkinter.Frame):
             require_redraw = True
             del kwargs["text_color"]
 
-        super().configure(*args, **kwargs)
+        self.text_label.configure(*args, **kwargs)
 
         if require_redraw:
             self.draw()

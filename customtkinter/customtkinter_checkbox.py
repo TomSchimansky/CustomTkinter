@@ -10,7 +10,7 @@ from .customtkinter_color_manager import CTkColorManager
 class CTkCheckBox(tkinter.Frame):
     """ tkinter custom checkbox with border, rounded corners and hover effect """
 
-    def __init__(self,
+    def __init__(self, *args,
                  bg_color=None,
                  fg_color="CTkColorManager",
                  hover_color="CTkColorManager",
@@ -25,7 +25,11 @@ class CTkCheckBox(tkinter.Frame):
                  hover=True,
                  command=None,
                  state=tkinter.NORMAL,
-                 *args, **kwargs):
+                 onvalue=1,
+                 offvalue=0,
+                 variable=None,
+                 textvariable=None,
+                 **kwargs):
         super().__init__(*args, **kwargs)
 
         # overwrite configure methods of master when master is tkinter widget, so that bg changes get applied on child CTk widget too
@@ -89,6 +93,12 @@ class CTkCheckBox(tkinter.Frame):
         self.state = state
         self.hover = hover
         self.check_state = False
+        self.onvalue = onvalue
+        self.offvalue = offvalue
+        self.variable: tkinter.Variable = variable
+        self.variable_callback_blocked = False
+        self.textvariable = textvariable
+        self.variabel_callback_name = None
 
         self.canvas = tkinter.Canvas(master=self,
                                      highlightthicknes=0,
@@ -111,10 +121,21 @@ class CTkCheckBox(tkinter.Frame):
         self.canvas_check_parts = []
         self.text_label = None
 
-        self.draw()
+        self.draw()  # initial draw
+
+        if self.variable is not None:
+            self.variabel_callback_name = self.variable.trace_add("write", self.variable_callback)
+            if self.variable.get() == self.onvalue:
+                self.select(from_variable_callback=True)
+            elif self.variable.get() == self.offvalue:
+                self.deselect(from_variable_callback=True)
 
     def destroy(self):
         AppearanceModeTracker.remove(self.set_appearance_mode)
+
+        if self.variable is not None:
+            self.variable.trace_remove("write", self.variabel_callback_name)
+
         super().destroy()
 
     def detect_color_of_master(self):
@@ -300,6 +321,23 @@ class CTkCheckBox(tkinter.Frame):
             self.function = kwargs["command"]
             del kwargs["command"]
 
+        if "variable" in kwargs:
+            if self.variable is not None:
+                self.variable.trace_remove("write", self.variabel_callback_name)
+
+            self.variable = kwargs["variable"]
+
+            if self.variable is not None and self.variable != "":
+                self.variabel_callback_name = self.variable.trace_add("write", self.variable_callback)
+                if self.variable.get() == self.onvalue:
+                    self.select(from_variable_callback=True)
+                elif self.variable.get() == self.offvalue:
+                    self.deselect(from_variable_callback=True)
+            else:
+                self.variable = None
+
+            del kwargs["variable"]
+
         super().configure(*args, **kwargs)
 
         if require_redraw:
@@ -350,6 +388,13 @@ class CTkCheckBox(tkinter.Frame):
                     else:
                         self.canvas.itemconfig(part, fill=self.bg_color, width=0)
 
+    def variable_callback(self, var_name, index, mode):
+        if not self.variable_callback_blocked:
+            if self.variable.get() == self.onvalue:
+                self.select(from_variable_callback=True)
+            elif self.variable.get() == self.offvalue:
+                self.deselect(from_variable_callback=True)
+
     def toggle(self, event=0):
         if self.state == tkinter.NORMAL:
             if self.check_state is True:
@@ -370,7 +415,12 @@ class CTkCheckBox(tkinter.Frame):
             if self.function is not None:
                 self.function()
 
-    def select(self):
+            if self.variable is not None:
+                self.variable_callback_blocked = True
+                self.variable.set(self.onvalue if self.check_state is True else self.offvalue)
+                self.variable_callback_blocked = False
+
+    def select(self, from_variable_callback=False):
         self.check_state = True
         for part in self.canvas_fg_parts:
             if type(self.fg_color) == tuple and len(self.fg_color) == 2:
@@ -381,7 +431,12 @@ class CTkCheckBox(tkinter.Frame):
         if self.function is not None:
             self.function()
 
-    def deselect(self):
+        if self.variable is not None and not from_variable_callback:
+            self.variable_callback_blocked = True
+            self.variable.set(self.onvalue)
+            self.variable_callback_blocked = False
+
+    def deselect(self, from_variable_callback=False):
         self.check_state = False
         for part in self.canvas_fg_parts:
             if type(self.bg_color) == tuple and len(self.bg_color) == 2:
@@ -392,8 +447,13 @@ class CTkCheckBox(tkinter.Frame):
         if self.function is not None:
             self.function()
 
+        if self.variable is not None and not from_variable_callback:
+            self.variable_callback_blocked = True
+            self.variable.set(self.offvalue)
+            self.variable_callback_blocked = False
+
     def get(self):
-        return 1 if self.check_state is True else 0
+        return self.onvalue if self.check_state is True else self.offvalue
 
     def set_appearance_mode(self, mode_string):
         if mode_string.lower() == "dark":

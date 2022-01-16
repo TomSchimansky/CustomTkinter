@@ -8,7 +8,7 @@ from .customtkinter_color_manager import CTkColorManager
 
 
 class CTkEntry(tkinter.Frame):
-    def __init__(self,
+    def __init__(self, *args,
                  master=None,
                  bg_color=None,
                  fg_color="CTkColorManager",
@@ -16,9 +16,11 @@ class CTkEntry(tkinter.Frame):
                  corner_radius=8,
                  width=120,
                  height=30,
-                 *args,
                  **kwargs):
-        super().__init__(master=master)
+        if master is None:
+            super().__init__(*args)
+        else:
+            super().__init__(*args, master=master)
 
         # overwrite configure methods of master when master is tkinter widget, so that bg changes get applied on child CTk widget too
         if isinstance(self.master, (tkinter.Tk, tkinter.Frame)) and not isinstance(self.master, (CTk, CTkFrame)):
@@ -58,7 +60,7 @@ class CTkEntry(tkinter.Frame):
         elif self.corner_radius*2 > self.width:
             self.corner_radius = self.width/2
 
-        self.configure(width=self.width, height=self.height)
+        super().configure(width=self.width, height=self.height)
 
         self.canvas = tkinter.Canvas(master=self,
                                      highlightthicknes=0,
@@ -69,7 +71,7 @@ class CTkEntry(tkinter.Frame):
         self.entry = tkinter.Entry(master=self,
                                    bd=0,
                                    highlightthicknes=0,
-                                   *args, **kwargs)
+                                   **kwargs)
         self.entry.place(relx=0.5, rely=0.5, relwidth=0.8, anchor=tkinter.CENTER)
 
         self.fg_parts = []
@@ -184,7 +186,7 @@ class CTkEntry(tkinter.Frame):
             del kwargs["corner_radius"]
             require_redraw = True
 
-        super().configure(*args, **kwargs)
+        self.entry.configure(*args, **kwargs)
 
         if require_redraw is True:
             self.draw()

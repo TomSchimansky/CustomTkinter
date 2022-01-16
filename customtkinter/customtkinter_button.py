@@ -11,13 +11,14 @@ from .customtkinter_color_manager import CTkColorManager
 class CTkButton(tkinter.Frame):
     """ tkinter custom button with border, rounded corners and hover effect """
 
-    def __init__(self,
+    def __init__(self, *args,
                  bg_color=None,
                  fg_color="CTkColorManager",
                  hover_color="CTkColorManager",
                  border_color=None,
                  border_width=0,
                  command=None,
+                 textvariable=None,
                  width=120,
                  height=30,
                  corner_radius=8,
@@ -28,7 +29,7 @@ class CTkButton(tkinter.Frame):
                  image=None,
                  compound=tkinter.LEFT,
                  state=tkinter.NORMAL,
-                 *args, **kwargs):
+                 **kwargs):
         super().__init__(*args, **kwargs)
 
         # overwrite configure methods of master when master is tkinter widget, so that bg changes get applied on child CTk widget too
@@ -92,6 +93,7 @@ class CTkButton(tkinter.Frame):
             self.text_font = text_font
 
         self.function = command
+        self.textvariable = textvariable
         self.state = state
         self.hover = hover
         self.image = image
@@ -209,7 +211,7 @@ class CTkButton(tkinter.Frame):
         if self.text is not None and self.text != "":
 
             if self.text_label is None:
-                self.text_label = tkinter.Label(master=self, font=self.text_font)
+                self.text_label = tkinter.Label(master=self, font=self.text_font, textvariable=self.textvariable)
 
                 self.text_label.bind("<Enter>", self.on_enter)
                 self.text_label.bind("<Leave>", self.on_leave)
@@ -489,6 +491,12 @@ class CTkButton(tkinter.Frame):
         if "command" in kwargs:
             self.function = kwargs["command"]
             del kwargs["command"]
+
+        if "textvariable" in kwargs:
+            self.textvariable = kwargs["textvariable"]
+            if self.text_label is not None:
+                self.text_label.configure(textvariable=self.textvariable)
+            del kwargs["textvariable"]
 
         super().configure(*args, **kwargs)
 

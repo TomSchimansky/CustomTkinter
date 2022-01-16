@@ -10,7 +10,7 @@ from .customtkinter_dialog import CTkDialog
 from .customtkinter_checkbox import CTkCheckBox
 from .customtkinter_tk import CTk
 
-from .appearance_mode_tracker import AppearanceModeTracker#, SystemAppearanceModeListenerNoThread
+from .appearance_mode_tracker import AppearanceModeTracker
 from .customtkinter_color_manager import CTkColorManager
 
 from distutils.version import StrictVersion as Version

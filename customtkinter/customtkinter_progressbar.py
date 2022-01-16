@@ -10,7 +10,8 @@ from .customtkinter_color_manager import CTkColorManager
 class CTkProgressBar(tkinter.Frame):
     """ tkinter custom progressbar, always horizontal, values are from 0 to 1 """
 
-    def __init__(self,
+    def __init__(self, *args,
+                 variable=None,
                  bg_color=None,
                  border_color="CTkColorManager",
                  fg_color="CTkColorManager",
@@ -18,7 +19,7 @@ class CTkProgressBar(tkinter.Frame):
                  width=160,
                  height=10,
                  border_width=0,
-                 *args, **kwargs):
+                 **kwargs):
         super().__init__(*args, **kwargs)
 
         # overwrite configure methods of master when master is tkinter widget, so that bg changes get applied on child CTk widget too
@@ -50,6 +51,10 @@ class CTkProgressBar(tkinter.Frame):
         self.fg_color = CTkColorManager.PROGRESS_BG if fg_color == "CTkColorManager" else fg_color
         self.progress_color = CTkColorManager.MAIN if progress_color == "CTkColorManager" else progress_color
 
+        self.variable = variable
+        self.variable_callback_blocked = False
+        self.variabel_callback_name = None
+
         self.width = width
         self.height = self.calc_optimal_height(height)
         self.border_width = round(border_width)
@@ -63,13 +68,20 @@ class CTkProgressBar(tkinter.Frame):
                                      height=self.height)
         self.canvas.place(x=0, y=0)
 
-        self.draw()
+        self.draw()  # initial draw
 
-        # set progress
-        self.set(self.value)
+        if self.variable is not None:
+            self.variabel_callback_name = self.variable.trace_add("write", self.variable_callback)
+            self.variable_callback_blocked = True
+            self.set(self.variable.get(), from_variable_callback=True)
+            self.variable_callback_blocked = False
 
     def destroy(self):
         AppearanceModeTracker.remove(self.change_appearance_mode)
+
+        if self.variable is not None:
+            self.variable.trace_remove("write", self.variabel_callback_name)
+
         super().destroy()
 
     def detect_color_of_master(self):
@@ -252,12 +264,30 @@ class CTkProgressBar(tkinter.Frame):
             del kwargs["border_width"]
             require_redraw = True
 
+        if "variable" in kwargs:
+            if self.variable is not None:
+                self.variable.trace_remove("write", self.variabel_callback_name)
+
+            self.variable = kwargs["variable"]
+
+            if self.variable is not None and self.variable != "":
+                self.variabel_callback_name = self.variable.trace_add("write", self.variable_callback)
+                self.set(self.variable.get(), from_variable_callback=True)
+            else:
+                self.variable = None
+
+            del kwargs["variable"]
+
         super().configure(*args, **kwargs)
 
         if require_redraw is True:
             self.draw()
 
-    def set(self, value):
+    def variable_callback(self, var_name, index, mode):
+        if not self.variable_callback_blocked:
+            self.set(self.variable.get(), from_variable_callback=True)
+
+    def set(self, value, from_variable_callback=False):
         self.value = value
 
         if self.value > 1:
@@ -266,6 +296,11 @@ class CTkProgressBar(tkinter.Frame):
             self.value = 0
 
         self.draw(no_color_updates=True)
+
+        if self.variable is not None and not from_variable_callback:
+            self.variable_callback_blocked = True
+            self.variable.set(round(self.value) if isinstance(self.variable, tkinter.IntVar) else self.value)
+            self.variable_callback_blocked = False
 
     def change_appearance_mode(self, mode_string):
         if mode_string.lower() == "dark":

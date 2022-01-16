@@ -35,7 +35,7 @@ To test customtkinter you can try this simple example with only a single button:
 import tkinter
 import customtkinter  # <- import the CustomTkinter module
 
-root_tk = customtkinter.CTk()  # create CTk window like you do with the Tk window (you can also use normal tkinter.Tk window)
+root_tk = customtkinter.CTk()  # create CTk window like you do with the Tk window (tkinter.Tk has less functionality)
 root_tk.geometry("400x240")
 root_tk.title("CustomTkinter Test")
 
@@ -108,7 +108,7 @@ With macOS dark-mode turned on, it looks like this:
 But you can also customize it by yourself. Here I changed the main
 colors and removed the round corners, and added a border to the buttons:
 
-![](documentation_images/complex_example_other_style.png)
+![](documentation_images/complex_example_custom_colors.png)
 
 ### Default color themes
 
@@ -138,7 +138,7 @@ Example 1:```examples/complex_example.py```
 
 ![](documentation_images/Windows_light.png)
 
-Example 2: ```examples/complex_example_other_style.py```
+Example 2: ```examples/complex_example_custom_colors.py```
 
 ![](documentation_images/Windows_dark.png)
 
@@ -180,7 +180,7 @@ root_tk = customtkinter.CTk()
 root_tk.mainloop()
 ```
 <details>
-<summary>Show all arguments:</summary>
+<summary>Show all arguments and methods:</summary>
 
 argument | value
 --- | ---
@@ -206,7 +206,7 @@ frame = customtkinter.CTkFrame(master=root_tk,
 frame.place(relx=0.5, rely=0.5, anchor=tkinter.CENTER)
 ```
 <details>
-<summary>Show all arguments:</summary>
+<summary>Show all arguments and methods:</summary>
 
 argument | value
 --- | ---
@@ -233,13 +233,14 @@ button = customtkinter.CTkButton(master=root_tk,
 button.place(relx=0.5, rely=0.5, anchor=tkinter.CENTER)
 ```
 <details>
-<summary>Show all arguments:</summary>
+<summary>Show all arguments and methods:</summary>
 
 argument | value
 --- | ---
 master | root, tkinter.Frame or CTkFrame
-text | string
 command | callback function
+textvariable | tkinter.StringVar object to change text of button
+text | string
 width | button width in px
 height | button height in px
 corner_radius | corner radius in px
@@ -283,11 +284,12 @@ label = customtkinter.CTkLabel(master=root_tk,
 label.place(relx=0.5, rely=0.5, anchor=tkinter.CENTER)
 ```
 <details>
-<summary>Show all arguments:</summary>
+<summary>Show all arguments and methods:</summary>
 
 argument | value
 --- | ---
 master | root, tkinter.Frame or CTkFrame
+variable | tkinter.StringVar object
 text | string
 width | label width in px
 height | label height in px
@@ -320,11 +322,12 @@ entry.place(relx=0.5, rely=0.5, anchor=tkinter.CENTER)
 text = entry.get()
 ```
 <details>
-<summary>Show all arguments:</summary>
+<summary>Show all arguments and methods:</summary>
 
 argument | value
 --- | ---
 master | root, tkinter.Frame or CTkFrame
+variable | tkinter.StringVar object
 width | entry width in px
 height | entry height in px
 corner_radius | corner radius in px
@@ -352,7 +355,7 @@ checkbox = customtkinter.CTkCheckBox(master=root_tk,
 checkbox.place(relx=0.5, rely=0.5, anchor=tkinter.CENTER)
 ```
 <details>
-<summary>Show all arguments:</summary>
+<summary>Show all arguments and methods:</summary>
 
 argument | value
 --- | ---
@@ -405,12 +408,13 @@ slider = customtkinter.CTkSlider(master=root_tk,
 slider.place(relx=0.5, rely=0.5, anchor=tkinter.CENTER)
 ```
 <details>
-<summary>Show all arguments:</summary>
+<summary>Show all arguments and methods:</summary>
 
 argument | value
 --- | ---
 master | root, tkinter.Frame or CTkFrame
 command | callback function, gest called when slider gets changed
+variable | tkinter.IntVar or tkinter.DoubleVar object
 width | slider width in px
 height | slider height in px
 from_ | lower slider value
@@ -444,7 +448,7 @@ progressbar.place(relx=0.5, rely=0.5, anchor=tkinter.CENTER)
 progressbar.set(value)
 ```
 <details>
-<summary>Show all arguments:</summary>
+<summary>Show all arguments and methods:</summary>
 
 argument | value
 --- | ---

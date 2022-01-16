@@ -10,7 +10,7 @@ from .customtkinter_color_manager import CTkColorManager
 class CTkSlider(tkinter.Frame):
     """ tkinter custom slider, always horizontal """
 
-    def __init__(self,
+    def __init__(self, *args,
                  bg_color=None,
                  border_color=None,
                  fg_color="CTkColorManager",
@@ -24,7 +24,8 @@ class CTkSlider(tkinter.Frame):
                  height=16,
                  border_width=5,
                  command=None,
-                 *args, **kwargs):
+                 variable=None,
+                 **kwargs):
         super().__init__(*args, **kwargs)
 
         # overwrite configure methods of master when master is tkinter widget, so that bg changes get applied on child CTk widget too
@@ -56,18 +57,22 @@ class CTkSlider(tkinter.Frame):
         self.fg_color = CTkColorManager.SLIDER_BG if fg_color == "CTkColorManager" else fg_color
         self.progress_color = CTkColorManager.SLIDER_PROGRESS if progress_color == "CTkColorManager" else progress_color
         self.button_color = CTkColorManager.MAIN if button_color == "CTkColorManager" else button_color
-        self.button_hover_color = CTkColorManager.MAIN if button_hover_color == "CTkColorManager" else button_hover_color
+        self.button_hover_color = CTkColorManager.MAIN_HOVER if button_hover_color == "CTkColorManager" else button_hover_color
 
         self.width = width
         self.height = self.calc_optimal_height(height)
         self.border_width = round(border_width)
-        self.callback_function = command
         self.value = 0.5  # initial value of slider in percent
         self.hover_state = False
         self.from_ = from_
         self.to = to
         self.number_of_steps = number_of_steps
         self.output_value = self.from_ + (self.value * (self.to - self.from_))
+
+        self.callback_function = command
+        self.variable: tkinter.Variable = variable
+        self.variable_callback_blocked = False
+        self.variabel_callback_name = None
 
         self.configure(width=self.width, height=self.height)
         if sys.platform == "darwin":
@@ -84,10 +89,22 @@ class CTkSlider(tkinter.Frame):
         self.canvas.bind("<Button-1>", self.clicked)
         self.canvas.bind("<B1-Motion>", self.clicked)
 
-        self.draw()
+        self.draw()  # initial draw
+
+        if self.variable is not None:
+            self.variabel_callback_name = self.variable.trace_add("write", self.variable_callback)
+            self.variable_callback_blocked = True
+            self.set(self.variable.get(), from_variable_callback=True)
+            self.variable_callback_blocked = False
 
     def destroy(self):
+        # remove change_appearance_mode function from callback list of AppearanceModeTracker
         AppearanceModeTracker.remove(self.change_appearance_mode)
+
+        # remove variabel_callback from variable callbacks if variable exists
+        if self.variable is not None:
+            self.variable.trace_remove("write", self.variabel_callback_name)
+
         super().destroy()
 
     def detect_color_of_master(self):
@@ -292,6 +309,11 @@ class CTkSlider(tkinter.Frame):
         if self.callback_function is not None:
             self.callback_function(self.output_value)
 
+        if self.variable is not None:
+            self.variable_callback_blocked = True
+            self.variable.set(round(self.output_value) if isinstance(self.variable, tkinter.IntVar) else self.output_value)
+            self.variable_callback_blocked = False
+
     def on_enter(self, event=0):
         self.hover_state = True
         self.canvas.itemconfig("button_parts", fill=CTkColorManager.single_color(self.button_hover_color, self.appearance_mode))
@@ -311,7 +333,7 @@ class CTkSlider(tkinter.Frame):
     def get(self):
         return self.output_value
 
-    def set(self, output_value):
+    def set(self, output_value, from_variable_callback=False):
         if output_value > self.to:
             output_value = self.to
         elif output_value < self.from_:
@@ -324,6 +346,15 @@ class CTkSlider(tkinter.Frame):
 
         if self.callback_function is not None:
             self.callback_function(self.output_value)
+
+        if self.variable is not None and not from_variable_callback:
+            self.variable_callback_blocked = True
+            self.variable.set(round(self.output_value) if isinstance(self.variable, tkinter.IntVar) else self.output_value)
+            self.variable_callback_blocked = False
+
+    def variable_callback(self, var_name, index, mode):
+        if not self.variable_callback_blocked:
+            self.set(self.variable.get(), from_variable_callback=True)
 
     def config(self, *args, **kwargs):
         self.configure(*args, **kwargs)
@@ -387,6 +418,20 @@ class CTkSlider(tkinter.Frame):
         if "command" in kwargs:
             self.callback_function = kwargs["command"]
             del kwargs["command"]
+
+        if "variable" in kwargs:
+            if self.variable is not None:
+                self.variable.trace_remove("write", self.variabel_callback_name)
+
+            self.variable = kwargs["variable"]
+
+            if self.variable is not None and self.variable != "":
+                self.variabel_callback_name = self.variable.trace_add("write", self.variable_callback)
+                self.set(self.variable.get(), from_variable_callback=True)
+            else:
+                self.variable = None
+
+            del kwargs["variable"]
 
         super().configure(*args, **kwargs)
 
