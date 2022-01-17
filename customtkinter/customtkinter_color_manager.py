@@ -85,13 +85,33 @@ class CTkColorManager:
     def hex2rgb(hex_color: str) -> tuple:
         return tuple(int(hex_color.strip("#")[i:i+2], 16) for i in (0, 2, 4))
 
-    @staticmethod
-    def darken_hex_color(hex_color: str) -> str:
+    @classmethod
+    def linear_blend(cls, color_1: str, color_2: str, blend_factor: float) -> str:
+        """ Blends two hex colors linear, where blend_factor of 0
+            results in color_1 and blend_factor of 1 results in color_2. """
+
+        if color_1 is None or color_2 is None:
+            return None
+
+        rgb_1 = cls.hex2rgb(color_1)
+        rgb_2 = cls.hex2rgb(color_2)
+
+        new_rgb = (rgb_1[0] + (rgb_2[0] - rgb_1[0]) * blend_factor,
+                   rgb_1[1] + (rgb_2[1] - rgb_1[1]) * blend_factor,
+                   rgb_1[2] + (rgb_2[2] - rgb_1[2]) * blend_factor)
+
+        return cls.rgb2hex(new_rgb)
+
+    @classmethod
+    def darken_hex_color(cls, hex_color: str, darken_factor: float = None) -> str:
+        if darken_factor is None:
+            darken_factor = cls.DARKEN_COLOR_FACTOR
+
         try:
             rgb_color = CTkColorManager.hex2rgb(hex_color)
-            dark_rgb_color = (rgb_color[0] * CTkColorManager.DARKEN_COLOR_FACTOR,
-                              rgb_color[1] * CTkColorManager.DARKEN_COLOR_FACTOR,
-                              rgb_color[2] * CTkColorManager.DARKEN_COLOR_FACTOR)
+            dark_rgb_color = (rgb_color[0] * darken_factor,
+                              rgb_color[1] * darken_factor,
+                              rgb_color[2] * darken_factor)
             return CTkColorManager.rgb2hex(dark_rgb_color)
         except Exception as err:
             sys.stderr.write("ERROR (CTkColorManager): failed to darken the following color: " + str(hex_color) + " " + str(err))

@@ -46,6 +46,8 @@ class CTkEntry(tkinter.Frame):
         AppearanceModeTracker.add(self.change_appearance_mode, self)
         self.appearance_mode = AppearanceModeTracker.get_mode()  # 0: "Light" 1: "Dark"
 
+        self.configure_basic_grid()
+
         self.bg_color = self.detect_color_of_master() if bg_color is None else bg_color
         self.fg_color = CTkColorManager.ENTRY if fg_color == "CTkColorManager" else fg_color
         self.text_color = CTkColorManager.TEXT if text_color == "CTkColorManager" else text_color
@@ -66,21 +68,27 @@ class CTkEntry(tkinter.Frame):
                                      highlightthicknes=0,
                                      width=self.width,
                                      height=self.height)
-        self.canvas.place(x=0, y=0)
+        self.canvas.grid(column=0, row=0)
 
         self.entry = tkinter.Entry(master=self,
                                    bd=0,
+                                   width=1,
                                    highlightthicknes=0,
                                    **kwargs)
-        self.entry.place(relx=0.5, rely=0.5, relwidth=0.8, anchor=tkinter.CENTER)
+        self.entry.grid(column=0, row=0, sticky="we", padx=self.corner_radius if self.corner_radius >= 5 else 5)
 
         self.fg_parts = []
 
+        self.bind('<Configure>', self.update_dimensions)
         self.draw()
 
     def destroy(self):
         AppearanceModeTracker.remove(self.change_appearance_mode)
         super().destroy()
+
+    def configure_basic_grid(self):
+        self.grid_rowconfigure(0, weight=1)
+        self.grid_columnconfigure(0, weight=1)
 
     def detect_color_of_master(self):
         if isinstance(self.master, CTkFrame):
@@ -102,6 +110,15 @@ class CTkEntry(tkinter.Frame):
                 return user_corner_radius + 0.5
             else:
                 return user_corner_radius
+
+    def update_dimensions(self, event):
+        # only redraw if dimensions changed (for performance)
+        if self.width != event.width or self.height != event.height:
+            self.width = event.width
+            self.height = event.height
+
+            self.canvas.config(width=self.width, height=self.height)
+            self.draw()
 
     def draw(self):
         self.canvas.delete("all")
@@ -182,7 +199,14 @@ class CTkEntry(tkinter.Frame):
             require_redraw = True
 
         if "corner_radius" in kwargs:
-            self.corner_radius = kwargs["corner_radius"]
+            self.corner_radius = self.calc_optimal_corner_radius(kwargs["corner_radius"])  # optimise for less artifacts
+
+            if self.corner_radius * 2 > self.height:
+                self.corner_radius = self.height / 2
+            elif self.corner_radius * 2 > self.width:
+                self.corner_radius = self.width / 2
+
+            self.entry.grid(column=0, row=0, sticky="we", padx=self.corner_radius if self.corner_radius >= 5 else 5)
             del kwargs["corner_radius"]
             require_redraw = True
 

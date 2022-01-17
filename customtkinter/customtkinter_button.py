@@ -1,6 +1,5 @@
 import tkinter
 import sys
-from math import ceil, floor
 
 from .customtkinter_tk import CTk
 from .customtkinter_frame import CTkFrame
@@ -58,29 +57,34 @@ class CTkButton(tkinter.Frame):
 
         self.configure_basic_grid()
 
+        # color variables
         self.bg_color = self.detect_color_of_master() if bg_color is None else bg_color
         self.fg_color = CTkColorManager.MAIN if fg_color == "CTkColorManager" else fg_color
         self.hover_color = CTkColorManager.MAIN_HOVER if hover_color == "CTkColorManager" else hover_color
         self.border_color = border_color
 
+        # shape and size
         self.width = width
         self.height = height
-
+        self.configure(width=self.width, height=self.height)
         self.corner_radius = self.calc_optimal_corner_radius(corner_radius)  # optimise for less artifacts
+        self.border_width = round(border_width)  # round border_width (inner parts not centered otherwise)
 
         if self.corner_radius * 2 > self.height:
             self.corner_radius = self.height / 2
         elif self.corner_radius * 2 > self.width:
             self.corner_radius = self.width / 2
 
-        self.border_width = round(border_width)  # round border_width (inner parts not centered otherwise)
-
         if self.corner_radius >= self.border_width:
             self.inner_corner_radius = self.corner_radius - self.border_width
         else:
             self.inner_corner_radius = 0
 
+        # text and font and image
+        self.image = image
+        self.image_label = None
         self.text = text
+        self.text_label = None
         self.text_color = CTkColorManager.TEXT if text_color == "CTkColorManager" else text_color
         if text_font is None:
             if sys.platform == "darwin":  # macOS
@@ -92,14 +96,13 @@ class CTkButton(tkinter.Frame):
         else:
             self.text_font = text_font
 
+        # callback and hover functionality
         self.function = command
         self.textvariable = textvariable
         self.state = state
         self.hover = hover
-        self.image = image
         self.compound = compound
-
-        self.configure(width=self.width, height=self.height)
+        self.click_animation_running = False
 
         if sys.platform == "darwin" and self.function is not None:
             self.configure(cursor="pointinghand")  # other cursor when hovering over button with command
@@ -110,6 +113,7 @@ class CTkButton(tkinter.Frame):
                                      height=self.height)
         self.canvas.grid(row=0, column=0, rowspan=2, columnspan=2)
 
+        # event bindings
         if self.hover is True:
             self.canvas.bind("<Enter>", self.on_enter)
             self.canvas.bind("<Leave>", self.on_leave)
@@ -117,12 +121,10 @@ class CTkButton(tkinter.Frame):
         self.canvas.bind("<Button-1>", self.clicked)
         self.canvas.bind("<Button-1>", self.clicked)
 
-        self.text_label = None
-        self.image_label = None
-
         # Each time an item is resized due to pack position mode, the binding Configure is called on the widget
         self.bind('<Configure>', self.update_dimensions)
-        self.draw()
+
+        self.draw()  # initial draw
 
     def destroy(self):
         AppearanceModeTracker.remove(self.set_appearance_mode)
@@ -136,13 +138,12 @@ class CTkButton(tkinter.Frame):
         self.grid_columnconfigure(1, weight=1)
 
     def update_dimensions(self, event):
-        # We update the dimensions of the internal elements of CTkButton Widget
-        self.canvas.config(width=event.width, height=event.height)
-
         # only redraw if dimensions changed (for performance)
         if self.width != event.width or self.height != event.height:
             self.width = event.width
             self.height = event.height
+
+            self.canvas.config(width=self.width, height=self.height)
             self.draw(no_color_updates=True)  # fast drawing without color changes
 
     def detect_color_of_master(self):
@@ -193,9 +194,9 @@ class CTkButton(tkinter.Frame):
                 else:
                     self.canvas.itemconfig("inner_parts",
                                            outline=CTkColorManager.darken_hex_color(
-                                               CTkColorManager.single_color(self.fg_color, self.appearance_mode)),
+                                                   CTkColorManager.single_color(self.fg_color, self.appearance_mode)),
                                            fill=CTkColorManager.darken_hex_color(
-                                               CTkColorManager.single_color(self.fg_color, self.appearance_mode)))
+                                                   CTkColorManager.single_color(self.fg_color, self.appearance_mode)))
 
             else:
                 if self.fg_color is None:
@@ -226,10 +227,10 @@ class CTkButton(tkinter.Frame):
                 if self.state == tkinter.DISABLED:
                     if self.fg_color is None:
                         self.text_label.configure(
-                            bg=CTkColorManager.darken_hex_color(CTkColorManager.single_color(self.bg_color, self.appearance_mode)))
+                                bg=CTkColorManager.darken_hex_color(CTkColorManager.single_color(self.bg_color, self.appearance_mode)))
                     else:
                         self.text_label.configure(
-                            bg=CTkColorManager.darken_hex_color(CTkColorManager.single_color(self.fg_color, self.appearance_mode)))
+                                bg=CTkColorManager.darken_hex_color(CTkColorManager.single_color(self.fg_color, self.appearance_mode)))
                 else:
                     if self.fg_color is None:
                         self.text_label.configure(bg=CTkColorManager.single_color(self.bg_color, self.appearance_mode))
@@ -547,6 +548,8 @@ class CTkButton(tkinter.Frame):
                 self.image_label.configure(bg=CTkColorManager.single_color(inner_parts_color, self.appearance_mode))
 
     def on_leave(self, event=0):
+        self.click_animation_running = False
+
         if self.hover is True:
             if self.fg_color is None:
                 inner_parts_color = self.bg_color
@@ -566,10 +569,19 @@ class CTkButton(tkinter.Frame):
             if self.image_label is not None:
                 self.image_label.configure(bg=CTkColorManager.single_color(inner_parts_color, self.appearance_mode))
 
+    def click_animation(self):
+        if self.click_animation_running:
+            self.on_enter()
+
     def clicked(self, event=0):
         if self.function is not None:
             if self.state is not tkinter.DISABLED:
+
+                # click animation: change color with .on_leave() and back to normal after 100ms with click_animation()
                 self.on_leave()
+                self.click_animation_running = True
+                self.after(100, self.click_animation)
+
                 self.function()
 
     def set_appearance_mode(self, mode_string):

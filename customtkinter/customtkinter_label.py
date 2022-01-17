@@ -92,6 +92,7 @@ class CTkLabel(tkinter.Frame):
 
         super().configure(width=self.width, height=self.height)
 
+        self.bind('<Configure>', self.update_dimensions)
         self.draw()
 
     def destroy(self):
@@ -118,6 +119,15 @@ class CTkLabel(tkinter.Frame):
                 return user_corner_radius + 0.5
             else:
                 return user_corner_radius
+
+    def update_dimensions(self, event):
+        # only redraw if dimensions changed (for performance)
+        if self.width != event.width or self.height != event.height:
+            self.width = event.width
+            self.height = event.height
+
+            self.canvas.config(width=self.width, height=self.height)
+            self.draw()
 
     def draw(self):
         self.canvas.delete("all")
