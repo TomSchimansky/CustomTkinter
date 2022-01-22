@@ -136,13 +136,11 @@ also look acceptable on Windows. Maybe you can use the parameters for
 
 Example 1:```examples/complex_example.py```
 
-![](documentation_images/Windows_complex_light.png)
-
-![](documentation_images/Windows_complex_dark.png)
+![](documentation_images/Windows_complex.jpg)
 
 Example 2: ```examples/complex_example_custom_colors.py```
 
-![](documentation_images/Windows_complex_other_style.png)
+![](documentation_images/Windows_complex_other_style.jpg)
 
 ### CTkButton with images
 It's also possible to put an image on a CTkButton. You just have to
