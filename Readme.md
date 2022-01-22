@@ -3,8 +3,9 @@
 ![PyPI - License](https://img.shields.io/pypi/l/customtkinter)
 ![Total lines](https://img.shields.io/tokei/lines/github.com/tomschimansky/customtkinter?color=green&label=total%20lines)
 
-# CustomTkinter
-![](documentation_images/customtkinter_comparison.png)
+# CustomTkinter library
+
+![](documentation_images/macOS_light_dark_comparison.jpg)
 
 With CustomTkinter you can create modern looking user
 interfaces in python with tkinter. CustomTkinter is a
@@ -15,6 +16,9 @@ but can be customized with a border and round edges.
 CustomTkinter also supports a light and dark theme,
 which can either be set manually or get controlled by
 the system appearance mode.
+
+![](documentation_images/tkinter_customtkinter_comparison.png)
+
 
 ### Installation
 
@@ -50,7 +54,7 @@ root_tk.mainloop()
 ```
 which gives the following:
 
-![](documentation_images/simple_button_test.png)
+![](documentation_images/macOS_button_light.png)
 
 ### Use custom colors and shapes:
 If you don't specify any colors, customtkinter uses the standard blue color theme in the light mode.
@@ -90,7 +94,7 @@ root_tk.mainloop()
 If you set the appearance mode to "System", it should change with
 the System mode:
 
-![](documentation_images/customtkinter_mode_switch.gif)
+![](documentation_images/appearance_mode_switch.gif)
 
 ### Advanced example with multiple CTkFrames
 
@@ -103,12 +107,12 @@ create your own application with this library.
 
 With macOS dark-mode turned on, it looks like this:
 
-![](documentation_images/complex_example_dark.png)
+![](documentation_images/macOS_complex_dark.png)
 
 But you can also customize it by yourself. Here I changed the main
 colors and removed the round corners, and added a border to the buttons:
 
-![](documentation_images/complex_example_custom_colors.png)
+![](documentation_images/macOS_complex_other_style.png)
 
 ### Default color themes
 
@@ -122,7 +126,7 @@ customtkinter.set_default_color_theme("dark-blue")  # Themes: "blue" (standard),
 ```
 The color themes look like the following in light and dark mode:
 
-![](documentation_images/themes.jpg)
+![](documentation_images/theme_comparison.jpg)
 
 ### CustomTkinter on Windows/Linux
 
@@ -136,11 +140,11 @@ also look acceptable on Windows too. Maybe you can use the parameters for
 
 Example 1: ```examples/complex_example.py``` (light and dark mode)
 
-![](documentation_images/Windows_complex.jpg)
+![](documentation_images/Windows_complex_bg.jpg)
 
 Example 2: ```examples/complex_example_custom_colors.py``` (dark mode)
 
-![](documentation_images/Windows_complex_other_style.jpg)
+![](documentation_images/Windows_complex_other_style_bg.jpg)
 
 ### CTkButton with images
 It's also possible to put an image on a CTkButton. You just have to
@@ -150,14 +154,14 @@ option you can specify how to position both the text and image at once.
 You can find an example program ( /simple_test_images.py ), where I
 created two buttons with a bell and a settings image on them:
 
-![](documentation_images/CTkButton_with_images.png)
+![](documentation_images/macOS_button_images.png)
 
 ### Integration of TkinterMapView widget
 In the following example I used a TkinterMapView which integrates
 well with a CustomTkinter program. It's a tile based map widget which displays
 OpenStreetMap or other tile based maps:
 
-![](documentation_images/customtkinter_example.gif)
+![](documentation_images/tkintermapview_example.gif)
 
 You can find the TkinterMapView library and the example program here:
 https://github.com/TomSchimansky/TkinterMapView
@@ -218,7 +222,7 @@ bg_color | background color, tuple: (light_color, dark_color) or single color
 </details>
 
 ### CTkButton
-Examle Code:
+Example Code:
 ```python
 def button_event():
     print("button pressed")
