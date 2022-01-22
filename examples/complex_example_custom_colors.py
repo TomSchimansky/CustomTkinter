@@ -4,7 +4,7 @@ import customtkinter
 import sys
 
 # Set dark appearance mode:
-customtkinter.set_appearance_mode("Dark")  # Other: "Light", "System"
+customtkinter.set_appearance_mode("Dark")  # Modes: "System" (standard), "Dark", "Light"
 
 
 class App(customtkinter.CTk):

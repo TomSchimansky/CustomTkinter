@@ -101,18 +101,13 @@ the System mode:
 Here I used the ``customtkinter.CTk()`` class to create the main window with two CTkFrame's and 
 set the appearance mode to `System`. It has some
 kind of a menu on the left side, and I used all CustomTkinter elements
-there are at the moment.Maybe this is a good reference if you want to
+there are at the moment. Maybe this is a good reference if you want to
 create your own application with this library.
-(Code: /complex_example.py)
+(Code: `examples/complex_example.py`)
 
 With macOS dark-mode turned on, it looks like this:
 
 ![](documentation_images/macOS_complex_dark.png)
-
-But you can also customize it by yourself. Here I changed the main
-colors and removed the round corners, and added a border to the buttons:
-
-![](documentation_images/macOS_complex_other_style.png)
 
 ### Default color themes
 
@@ -141,6 +136,9 @@ also look acceptable on Windows too. Maybe you can use the parameters for
 Example 1: ```examples/complex_example.py``` (light and dark mode)
 
 ![](documentation_images/Windows_complex_bg.jpg)
+
+In the following example I customized the elements with new colors, chnaged the corner_radius
+and added a border to the button.
 
 Example 2: ```examples/complex_example_custom_colors.py``` (dark mode)
 
