@@ -75,7 +75,7 @@ class CTkEntry(tkinter.Frame):
                                    width=1,
                                    highlightthicknes=0,
                                    **kwargs)
-        self.entry.grid(column=0, row=0, sticky="we", padx=self.corner_radius if self.corner_radius >= 5 else 5)
+        self.entry.grid(column=0, row=0, sticky="we", padx=self.corner_radius if self.corner_radius >= 6 else 6)
 
         self.fg_parts = []
 
@@ -206,7 +206,7 @@ class CTkEntry(tkinter.Frame):
             elif self.corner_radius * 2 > self.width:
                 self.corner_radius = self.width / 2
 
-            self.entry.grid(column=0, row=0, sticky="we", padx=self.corner_radius if self.corner_radius >= 5 else 5)
+            self.entry.grid(column=0, row=0, sticky="we", padx=self.corner_radius if self.corner_radius >= 6 else 6)
             del kwargs["corner_radius"]
             require_redraw = True
 

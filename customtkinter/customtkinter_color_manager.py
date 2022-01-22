@@ -19,7 +19,6 @@ class CTkColorManager:
 
     @classmethod
     def initialize_color_theme(cls, theme_name):
-        print("set theme", theme_name)
 
         if theme_name.lower() == "blue":
             cls.WINDOW_BG = ("#ECECEC", "#323232")  # macOS standard light and dark window bg colors
