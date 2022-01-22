@@ -35,7 +35,7 @@ To test customtkinter you can try this simple example with only a single button:
 import tkinter
 import customtkinter  # <- import the CustomTkinter module
 
-root_tk = customtkinter.CTk()  # create CTk window like you do with the Tk window (tkinter.Tk has less functionality)
+root_tk = customtkinter.CTk()  # create CTk window like you do with the Tk window
 root_tk.geometry("400x240")
 root_tk.title("CustomTkinter Test")
 
@@ -53,8 +53,8 @@ which gives the following:
 ![](documentation_images/simple_button_test.png)
 
 ### Use custom colors and shapes:
-If you dont specify any colors, customtkinter uses the standard blue color in the light theme.
-You can change the color theme to dark by calling
+If you don't specify any colors, customtkinter uses the standard blue color theme in the light mode.
+You can change the color mode to dark by calling
 ```customtkinter.set_appearance_mode("Dark")```.
 If you specify custom colors for CustomTkinter elements, the you can either use a
 tuple in the form: (light_color, dark_color). Or you can set a single color
@@ -129,16 +129,16 @@ The color themes look like the following in light and dark mode:
 All elements of Customtkinter are drawn on the ```tkinter.Canvas```.
 But the Tkinter canvas supports antialiasing only on macOS, so on Windows
 and Linux the elements are rendered in a much worse quality. So you have
-to experiment with the ```corner_radius``` and look when the rounded corners
+to experiment with the ```corner_radius``` and decide when the rounded corners
 look best. I tried to design the too complex example programs so that they
-also look acceptable on Windows. Maybe you can use the parameters for
+also look acceptable on Windows too. Maybe you can use the parameters for
 ```corner_radius``` and ```width``` for your program as well.
 
-Example 1:```examples/complex_example.py```
+Example 1: ```examples/complex_example.py``` (light and dark mode)
 
 ![](documentation_images/Windows_complex.jpg)
 
-Example 2: ```examples/complex_example_custom_colors.py```
+Example 2: ```examples/complex_example_custom_colors.py``` (dark mode)
 
 ![](documentation_images/Windows_complex_other_style.jpg)
 
