@@ -54,11 +54,11 @@ which gives the following:
 
 ### Use custom colors and shapes:
 If you don't specify any colors, customtkinter uses the standard blue color theme in the light mode.
-You can change the color mode to dark by calling
+You can change the appearance mode to dark by calling
 ```customtkinter.set_appearance_mode("Dark")```.
-If you specify custom colors for CustomTkinter elements, the you can either use a
+If you specify custom colors for CustomTkinter elements, then you can either use a
 tuple in the form: (light_color, dark_color). Or you can set a single color
-which will be used in light and dark theme.
+which will be used in light and dark appearance mode.
 ```python
 customtkinter.set_appearance_mode("Dark") # Other: "Light", "System"
 
@@ -113,7 +113,7 @@ colors and removed the round corners, and added a border to the buttons:
 ### Default color themes
 
 If you don't set any colors at all you will get the standard blue
-color theme.But you can also change the standard color theme to
+color theme. But you can also change the standard color theme to
 green or dark-blue with the following command before you create
 the main window:
 ```python
