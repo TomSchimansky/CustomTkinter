@@ -14,7 +14,7 @@ class CTkButton(tkinter.Frame):
                  bg_color=None,
                  fg_color="CTkColorManager",
                  hover_color="CTkColorManager",
-                 border_color=None,
+                 border_color="CTkColorManager",
                  border_width=0,
                  command=None,
                  textvariable=None,
@@ -61,7 +61,7 @@ class CTkButton(tkinter.Frame):
         self.bg_color = self.detect_color_of_master() if bg_color is None else bg_color
         self.fg_color = CTkColorManager.MAIN if fg_color == "CTkColorManager" else fg_color
         self.hover_color = CTkColorManager.MAIN_HOVER if hover_color == "CTkColorManager" else hover_color
-        self.border_color = border_color
+        self.border_color = CTkColorManager.CHECKBOX_LINES if border_color == "CTkColorManager" else border_color
 
         # shape and size
         self.width = width
