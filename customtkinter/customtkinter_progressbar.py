@@ -68,6 +68,9 @@ class CTkProgressBar(tkinter.Frame):
                                      height=self.height)
         self.canvas.place(x=0, y=0)
 
+        # Each time an item is resized due to pack position mode, the binding Configure is called on the widget
+        self.bind('<Configure>', self.update_dimensions)
+
         self.draw()  # initial draw
 
         if self.variable is not None:
@@ -102,6 +105,14 @@ class CTkProgressBar(tkinter.Frame):
                 return user_height + 1
             else:
                 return user_height
+
+    def update_dimensions(self, event):
+        # only redraw if dimensions changed (for performance)
+        if self.width != event.width or self.height != event.height:
+            self.width = event.width
+            self.height = event.height
+
+            self.draw()
 
     def draw(self, no_color_updates=False):
 

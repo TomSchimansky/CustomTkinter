@@ -111,7 +111,7 @@ class CTkButton(tkinter.Frame):
                                      highlightthicknes=0,
                                      width=self.width,
                                      height=self.height)
-        self.canvas.grid(row=0, column=0, rowspan=2, columnspan=2)
+        self.canvas.grid(row=1, column=0, rowspan=2, columnspan=2)
 
         # event bindings
         if self.hover is True:
@@ -143,7 +143,7 @@ class CTkButton(tkinter.Frame):
             self.width = event.width
             self.height = event.height
 
-            self.canvas.config(width=self.width, height=self.height)
+            # self.canvas.config(width=self.width, height=self.height)
             self.draw(no_color_updates=True)  # fast drawing without color changes
 
     def detect_color_of_master(self):

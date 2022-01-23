@@ -114,10 +114,10 @@ class CTkEntry(tkinter.Frame):
     def update_dimensions(self, event):
         # only redraw if dimensions changed (for performance)
         if self.width != event.width or self.height != event.height:
+            # print(event.x, event.width, self.width)
             self.width = event.width
             self.height = event.height
 
-            self.canvas.config(width=self.width, height=self.height)
             self.draw()
 
     def draw(self):

@@ -5,7 +5,7 @@
 
 # CustomTkinter library
 
-![](documentation_images/macOS_light_dark_comparison.jpg)
+![](documentation_images/tkinter_customtkinter_comparison.jpg)
 
 With CustomTkinter you can create modern looking user
 interfaces in python with tkinter. CustomTkinter is a
@@ -16,9 +16,6 @@ but can be customized with a border and round edges.
 CustomTkinter also supports a light and dark theme,
 which can either be set manually or get controlled by
 the system appearance mode.
-
-![](documentation_images/tkinter_customtkinter_comparison.png)
-
 
 ### Installation
 
@@ -105,9 +102,9 @@ there are at the moment. Maybe this is a good reference if you want to
 create your own application with this library.
 (Code: `examples/complex_example.py`)
 
-With macOS dark-mode turned on, it looks like this:
+With the green theme or the blue theme it looks like this:
 
-![](documentation_images/macOS_complex_dark.png)
+![](documentation_images/macOS_light_dark_comparison.jpg)
 
 ### Default color themes
 
@@ -226,12 +223,12 @@ def button_event():
     print("button pressed")
 
 button = customtkinter.CTkButton(master=root_tk,
-                                 text="CTkButton",
-                                 command=button_event,
                                  width=120,
                                  height=32,
                                  border_width=0,
-                                 corner_radius=8)
+                                 corner_radius=8,
+                                 text="CTkButton",
+                                 command=button_event)
 button.place(relx=0.5, rely=0.5, anchor=tkinter.CENTER)
 ```
 <details>
