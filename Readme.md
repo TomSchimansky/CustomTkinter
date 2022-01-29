@@ -123,7 +123,7 @@ The color themes look like the following in light and dark mode:
 ### CustomTkinter on Windows/Linux
 
 All elements of Customtkinter are drawn on the ```tkinter.Canvas```.
-But the Tkinter canvas supports antialiasing only on macOS, so on Windows
+But the Tkinter canvas supports antialiasing only on macOS (provided by the system), so on Windows
 and Linux the elements are rendered in a much worse quality. So you have
 to experiment with the ```corner_radius``` and decide when the rounded corners
 look best. I tried to design the too complex example programs so that they

@@ -13,6 +13,7 @@ class CTkEntry(tkinter.Frame):
                  bg_color=None,
                  fg_color="CTkColorManager",
                  text_color="CTkColorManager",
+                 text_font=None,
                  corner_radius=8,
                  width=120,
                  height=30,
@@ -52,6 +53,16 @@ class CTkEntry(tkinter.Frame):
         self.fg_color = CTkColorManager.ENTRY if fg_color == "CTkColorManager" else fg_color
         self.text_color = CTkColorManager.TEXT if text_color == "CTkColorManager" else text_color
 
+        if text_font is None:
+            if sys.platform == "darwin":  # macOS
+                self.text_font = ("Avenir", 13)
+            elif "win" in sys.platform:  # Windows
+                self.text_font = ("Century Gothic", 10)
+            else:
+                self.text_font = ("TkDefaultFont", 10)
+        else:
+            self.text_font = text_font
+
         self.width = width
         self.height = height
 
@@ -74,6 +85,7 @@ class CTkEntry(tkinter.Frame):
                                    bd=0,
                                    width=1,
                                    highlightthicknes=0,
+                                   font=self.text_font,
                                    **kwargs)
         self.entry.grid(column=0, row=0, sticky="we", padx=self.corner_radius if self.corner_radius >= 6 else 6)
 
