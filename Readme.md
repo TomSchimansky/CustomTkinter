@@ -333,7 +333,10 @@ corner_radius | corner radius in px
 fg_color | forground color, tuple: (light_color, dark_color) or single color
 bg_color | background color, tuple: (light_color, dark_color) or single color
 text_color | entry text color, tuple: (light_color, dark_color) or single color
+placeholder_text_color | tuple: (light_color, dark_color) or single color
+placeholder_text | hint on the entry input (disappears when selected), default is None
 text_font | entry text font, tuple: (font_name, size)
+
 
 CTkEntry Methods:
 
