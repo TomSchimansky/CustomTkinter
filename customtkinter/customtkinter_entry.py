@@ -13,7 +13,9 @@ class CTkEntry(tkinter.Frame):
                  bg_color=None,
                  fg_color="CTkColorManager",
                  text_color="CTkColorManager",
+                 placeholder_text_color="CTkColorManager",
                  text_font=None,
+                 placeholder_text=None,
                  corner_radius=8,
                  width=120,
                  height=30,
@@ -52,6 +54,7 @@ class CTkEntry(tkinter.Frame):
         self.bg_color = self.detect_color_of_master() if bg_color is None else bg_color
         self.fg_color = CTkColorManager.ENTRY if fg_color == "CTkColorManager" else fg_color
         self.text_color = CTkColorManager.TEXT if text_color == "CTkColorManager" else text_color
+        self.placeholder_text_color = CTkColorManager.PLACEHOLDER_TEXT if placeholder_text_color == "CTkColorManager" else placeholder_text_color
 
         if text_font is None:
             if sys.platform == "darwin":  # macOS
@@ -63,9 +66,12 @@ class CTkEntry(tkinter.Frame):
         else:
             self.text_font = text_font
 
+        self.placeholder_text = placeholder_text
+        self.placeholder_text_active = False
+        self.pre_placeholder_arguments = {}  # some set arguments of the entry will be changed for placeholder and then set back
+
         self.width = width
         self.height = height
-
         self.corner_radius = self.calc_optimal_corner_radius(corner_radius)  # optimise for less artifacts
 
         if self.corner_radius*2 > self.height:
@@ -91,8 +97,12 @@ class CTkEntry(tkinter.Frame):
 
         self.fg_parts = []
 
-        self.bind('<Configure>', self.update_dimensions)
+        super().bind('<Configure>', self.update_dimensions)
+        self.entry.bind('<FocusOut>', self.set_placeholder)
+        self.entry.bind('<FocusIn>', self.clear_placeholder)
+
         self.draw()
+        self.set_placeholder()
 
     def destroy(self):
         AppearanceModeTracker.remove(self.change_appearance_mode)
@@ -131,6 +141,23 @@ class CTkEntry(tkinter.Frame):
             self.height = event.height
 
             self.draw()
+
+    def set_placeholder(self, event=None):
+        if self.placeholder_text is not None:
+            if not self.placeholder_text_active and self.entry.get() == "":
+                self.placeholder_text_active = True
+                self.pre_placeholder_arguments = {"show": self.entry.cget("show")}
+                self.entry.config(fg=CTkColorManager.single_color(self.placeholder_text_color, self.appearance_mode), show="")
+                self.entry.delete(0, tkinter.END)
+                self.entry.insert(0, self.placeholder_text)
+
+    def clear_placeholder(self, event=None):
+        if self.placeholder_text_active:
+            self.placeholder_text_active = False
+            self.entry.config(fg=CTkColorManager.single_color(self.text_color, self.appearance_mode))
+            self.entry.delete(0, tkinter.END)
+            for argument, value in self.pre_placeholder_arguments.items():
+                self.entry[argument] = value
 
     def draw(self):
         self.canvas.delete("all")
@@ -189,6 +216,9 @@ class CTkEntry(tkinter.Frame):
             self.entry.configure(fg=self.text_color,
                                  insertbackground=self.text_color)
 
+    def bind(self, *args, **kwargs):
+        self.entry.bind(*args, **kwargs)
+
     def config(self, *args, **kwargs):
         self.configure(*args, **kwargs)
 
@@ -228,13 +258,19 @@ class CTkEntry(tkinter.Frame):
             self.draw()
 
     def delete(self, *args, **kwargs):
-        return self.entry.delete(*args, **kwargs)
+        self.entry.delete(*args, **kwargs)
+        self.set_placeholder()
+        return
 
     def insert(self, *args, **kwargs):
+        self.clear_placeholder()
         return self.entry.insert(*args, **kwargs)
 
     def get(self):
-        return self.entry.get()
+        if self.placeholder_text_active:
+            return ""
+        else:
+            return self.entry.get()
 
     def change_appearance_mode(self, mode_string):
         if mode_string.lower() == "dark":

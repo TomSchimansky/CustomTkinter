@@ -8,6 +8,7 @@ class CTkColorManager:
     MAIN_HOVER = None
     ENTRY = None
     TEXT = None
+    PLACEHOLDER_TEXT = None
     LABEL_BG = None
     SLIDER_BG = None
     SLIDER_PROGRESS = None
@@ -26,6 +27,7 @@ class CTkColorManager:
             cls.MAIN_HOVER = ("#5FB4DD", "#5FB4DD")
             cls.ENTRY = ("white", "#222222")
             cls.TEXT = ("black", "white")
+            cls.PLACEHOLDER_TEXT = ("gray52", "gray62")
             cls.LABEL_BG = ("white", "#626061")
             cls.SLIDER_BG = ("#6B6B6B", "#222222")
             cls.SLIDER_PROGRESS = ("#A5A6A5", "#555555")

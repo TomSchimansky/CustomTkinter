@@ -46,13 +46,11 @@ class App(customtkinter.CTk):
                                               fg_color=("gray70", "gray20"), text="CustomTkinter\ninterface example")
         self.label_1.place(relx=0.5, rely=0.3, anchor=tkinter.CENTER)
 
-        self.entry_1 = customtkinter.CTkEntry(master=self.frame, corner_radius=20, width=200)
+        self.entry_1 = customtkinter.CTkEntry(master=self.frame, corner_radius=20, width=200, placeholder_text="username")
         self.entry_1.place(relx=0.5, rely=0.52, anchor=tkinter.CENTER)
-        self.entry_1.insert(0, "username")
 
-        self.entry_2 = customtkinter.CTkEntry(master=self.frame, corner_radius=20, width=200, show="*")
+        self.entry_2 = customtkinter.CTkEntry(master=self.frame, corner_radius=20, width=200, show="*", placeholder_text="password")
         self.entry_2.place(relx=0.5, rely=0.6, anchor=tkinter.CENTER)
-        self.entry_2.insert(0, "password")
 
         self.button_2 = customtkinter.CTkButton(master=self.frame, text="Login",
                                                 corner_radius=6, command=self.button_event, width=200)

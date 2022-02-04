@@ -10,7 +10,7 @@ root_tk.title("CustomTkinter Test")
 
 
 def button_function():
-    print("Button click")
+    print("Button click", label_1.text_label.cget("text"))
 
 
 def slider_function(value):
@@ -40,7 +40,7 @@ slider_1 = customtkinter.CTkSlider(master=frame_1, command=slider_function, from
 slider_1.pack(pady=y_padding, padx=10)
 slider_1.set(0.5)
 
-entry_1 = customtkinter.CTkEntry(master=frame_1)
+entry_1 = customtkinter.CTkEntry(master=frame_1, placeholder_text="CTkEntry")
 entry_1.pack(pady=y_padding, padx=10)
 
 checkbox_1 = customtkinter.CTkCheckBox(master=frame_1, command=check_box_function)
