@@ -85,7 +85,7 @@ class CTkEntry(tkinter.Frame):
                                      highlightthicknes=0,
                                      width=self.width,
                                      height=self.height)
-        self.canvas.grid(column=0, row=0)
+        self.canvas.grid(column=0, row=0, sticky="we")
 
         self.entry = tkinter.Entry(master=self,
                                    bd=0,

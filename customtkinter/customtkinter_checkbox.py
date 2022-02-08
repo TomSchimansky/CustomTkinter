@@ -258,8 +258,11 @@ class CTkCheckBox(tkinter.Frame):
 
         self.text_label = tkinter.Label(master=self,
                                         text=self.text,
+                                        justify=tkinter.LEFT,
+                                        width=len(self.text_color),
                                         font=self.text_font)
-        self.text_label.pack(side='right', padx="4")
+        self.text_label.pack(side='right', padx=6)
+        self.text_label["anchor"] = "w"
 
         if type(self.text_color) == tuple and len(self.text_color) == 2:
             self.text_label.configure(fg=self.text_color[self.appearance_mode])

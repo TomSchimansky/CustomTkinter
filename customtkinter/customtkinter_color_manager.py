@@ -39,10 +39,11 @@ class CTkColorManager:
 
         elif theme_name.lower() == "green":
             cls.WINDOW_BG = ("#ECECEC", "#323232")  # macOS standard light and dark window bg colors
-            cls.MAIN = ("#29B57E", "#29B57E")
-            cls.MAIN_HOVER = ("#6ACBA5", "#6ACBA5")
+            cls.MAIN = ("#13C995", "#1ABE87")
+            cls.MAIN_HOVER = ("#6ACBA5", "#81E4B2")
             cls.ENTRY = ("gray60", "#222223")
-            cls.TEXT = ("black", "white")
+            cls.TEXT = ("gray25", "gray92")
+            cls.PLACEHOLDER_TEXT = ("gray32", "gray55")
             cls.LABEL_BG = ("white", "#626061")
             cls.SLIDER_BG = ("#636363", "#0D1321")
             cls.SLIDER_PROGRESS = ("white", "#727578")
@@ -58,6 +59,7 @@ class CTkColorManager:
             cls.MAIN_HOVER = ("#A4BDE6", "#748BB3")
             cls.ENTRY = ("#FCFCFC", "#111116")
             cls.TEXT = ("black", "white")
+            cls.PLACEHOLDER_TEXT = ("gray52", "gray62")
             cls.LABEL_BG = ("white", "#444444")
             cls.SLIDER_BG = ("#444444", "#444444")
             cls.SLIDER_PROGRESS = ("white", "#AAAAAA")

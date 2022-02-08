@@ -4,7 +4,7 @@ import customtkinter
 import sys
 
 customtkinter.set_appearance_mode("System")  # Modes: "System" (standard), "Dark", "Light"
-customtkinter.set_default_color_theme("green")  # Themes: "blue" (standard), "green", "dark-blue"
+customtkinter.set_default_color_theme("dark-blue")  # Themes: "blue" (standard), "green", "dark-blue"
 
 
 class App(customtkinter.CTk):
@@ -94,10 +94,6 @@ class App(customtkinter.CTk):
                                                         height=12)
         self.progressbar.place(relx=0.5, rely=0.85, anchor=tkinter.S)
 
-        # from tkintermapview import TkinterMapView
-        # self.map_widget = TkinterMapView(self.frame_info, width=380, height=200, corner_radius=10)
-        # self.map_widget.place(relx=0.5, rely=0.5, anchor=tkinter.CENTER)
-
         # ============ frame_right <- ============
 
         self.slider_1 = customtkinter.CTkSlider(master=self.frame_right,
@@ -138,9 +134,9 @@ class App(customtkinter.CTk):
         self.entry = customtkinter.CTkEntry(master=self.frame_right,
                                             width=120,
                                             height=25,
-                                            corner_radius=8)
+                                            corner_radius=8,
+                                            placeholder_text="CTkEntry")
         self.entry.place(relx=0.33, rely=0.92, anchor=tkinter.CENTER)
-        self.entry.insert(0, "CTkEntry")
 
         self.button_5 = customtkinter.CTkButton(master=self.frame_right,
                                                 height=25,

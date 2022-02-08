@@ -111,7 +111,7 @@ class CTkButton(tkinter.Frame):
                                      highlightthicknes=0,
                                      width=self.width,
                                      height=self.height)
-        self.canvas.grid(row=1, column=0, rowspan=2, columnspan=2)
+        self.canvas.grid(row=0, column=0, rowspan=2, columnspan=2, sticky="nsew")
 
         # event bindings
         if self.hover is True:

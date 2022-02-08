@@ -212,7 +212,7 @@ argument | value
 master | root, tkinter.Frame or CTkFrame
 width | slider width in px
 height | slider height in px
-fg_color | forground color, tuple: (light_color, dark_color) or single color
+fg_color | foreground color, tuple: (light_color, dark_color) or single color
 bg_color | background color, tuple: (light_color, dark_color) or single color
 </details>
 
@@ -293,7 +293,7 @@ text | string
 width | label width in px
 height | label height in px
 corner_radius | corner radius in px
-fg_color | forground color, tuple: (light_color, dark_color) or single color
+fg_color | foreground color, tuple: (light_color, dark_color) or single color
 bg_color | background color, tuple: (light_color, dark_color) or single color, None for transparent bg
 text_color | label text color, tuple: (light_color, dark_color) or single color
 text_font | label text font, tuple: (font_name, size)
@@ -313,6 +313,7 @@ CTkLabel.configure(fg_color=new_fg_color,
 Example Code:
 ```python
 entry = customtkinter.CTkEntry(master=root_tk,
+                               placeholder_text="CTkEntry",
                                width=120,
                                height=25,
                                corner_radius=10)
@@ -330,7 +331,7 @@ variable | tkinter.StringVar object
 width | entry width in px
 height | entry height in px
 corner_radius | corner radius in px
-fg_color | forground color, tuple: (light_color, dark_color) or single color
+fg_color | foreground color, tuple: (light_color, dark_color) or single color
 bg_color | background color, tuple: (light_color, dark_color) or single color
 text_color | entry text color, tuple: (light_color, dark_color) or single color
 placeholder_text_color | tuple: (light_color, dark_color) or single color
@@ -341,7 +342,7 @@ text_font | entry text font, tuple: (font_name, size)
 CTkEntry Methods:
 
 ```python
-CTkEntry.delete(...)  # standard tkinter Entry...
+CTkEntry.delete(...)  # like the standard tkinter Entry...
 CTkEntry.insert(...)
 text = CTkEntry.get()
 ```
@@ -367,7 +368,7 @@ width | box width in px
 height | box height in px
 corner_radius | corner radius in px
 border_width | box border width in px
-fg_color | forground (inside) color, tuple: (light_color, dark_color) or single color
+fg_color | foreground (inside) color, tuple: (light_color, dark_color) or single color
 bg_color | background color, tuple: (light_color, dark_color) or single color
 border_color | border color, tuple: (light_color, dark_color) or single color
 hover_color | hover color, tuple: (light_color, dark_color) or single color
@@ -423,7 +424,7 @@ from_ | lower slider value
 to | upper slider value
 number_of_steps | number of steps in which the slider can be positioned
 border_width | space around the slider rail in px
-fg_color | forground color, tuple: (light_color, dark_color) or single color
+fg_color | foreground color, tuple: (light_color, dark_color) or single color
 progress_color | tuple: (light_color, dark_color) or single color, colors the slider line before the round button and is set to fg_color by default
 bg_color | background color, tuple: (light_color, dark_color) or single color
 border_color | slider border color, normally transparent (None)
@@ -458,7 +459,7 @@ master | root, tkinter.Frame or CTkFrame
 width | slider width in px
 height | slider height in px
 border_width | border width in px
-fg_color | forground color, tuple: (light_color, dark_color) or single color
+fg_color | foreground color, tuple: (light_color, dark_color) or single color
 bg_color | background color, tuple: (light_color, dark_color) or single color
 border_color | slider border color, tuple: (light_color, dark_color) or single color
 progress_color | progress color, tuple: (light_color, dark_color) or single color
