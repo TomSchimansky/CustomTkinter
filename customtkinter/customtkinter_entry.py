@@ -116,7 +116,12 @@ class CTkEntry(tkinter.Frame):
         if isinstance(self.master, CTkFrame):
             return self.master.fg_color
         else:
-            return self.master.cget("bg")
+            try:
+                return self.master.cget("bg")
+            except:
+                pass
+                #print(self.master["style"])
+                #return self.master.cget("background")
 
     @staticmethod
     def calc_optimal_corner_radius(user_corner_radius):

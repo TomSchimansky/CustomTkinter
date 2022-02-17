@@ -3,6 +3,7 @@ from distutils.version import StrictVersion as Version
 import sys
 import os
 import platform
+import ctypes
 
 from .appearance_mode_tracker import AppearanceModeTracker
 from .customtkinter_color_manager import CTkColorManager
@@ -29,6 +30,12 @@ class CTk(tkinter.Tk):
 
         AppearanceModeTracker.add(self.set_appearance_mode, self)
         super().configure(bg=CTkColorManager.single_color(self.fg_color, self.appearance_mode))
+
+        if sys.platform.startswith("win"):
+            if self.appearance_mode == 1:
+                self.windows_set_titlebar_color(self, "dark")
+            else:
+                self.windows_set_titlebar_color(self, "light")
 
     def destroy(self):
         AppearanceModeTracker.remove(self.set_appearance_mode)
@@ -95,10 +102,46 @@ class CTk(tkinter.Tk):
                     os.system("defaults delete -g NSRequiresAquaSystemAppearance")
                     # This command reverts the dark-mode setting for all programs.
 
+    @staticmethod
+    def windows_set_titlebar_color(window, color_mode: str):
+        """
+        Set the titlebar color of the window to light or dark theme on Microsoft Windows.
+
+        Credits for this function:
+        https://stackoverflow.com/questions/23836000/can-i-change-the-title-bar-in-tkinter/70724666#70724666
+
+        MORE INFO:
+        https://docs.microsoft.com/en-us/windows/win32/api/dwmapi/ne-dwmapi-dwmwindowattribute
+        """
+
+        window.update()
+
+        if color_mode.lower() == "dark":
+            DWMWA_USE_IMMERSIVE_DARK_MODE = 20
+        elif color_mode.lower() == "light":
+            DWMWA_USE_IMMERSIVE_DARK_MODE = 19
+        else:
+            return
+
+        set_window_attribute = ctypes.windll.dwmapi.DwmSetWindowAttribute
+        get_parent = ctypes.windll.user32.GetParent
+        hwnd = get_parent(window.winfo_id())
+        rendering_policy = DWMWA_USE_IMMERSIVE_DARK_MODE
+        value = 2
+        value = ctypes.c_int(value)
+        set_window_attribute(hwnd, rendering_policy, ctypes.byref(value),
+                             ctypes.sizeof(value))
+
     def set_appearance_mode(self, mode_string):
         if mode_string.lower() == "dark":
             self.appearance_mode = 1
         elif mode_string.lower() == "light":
             self.appearance_mode = 0
+
+        if sys.platform.startswith("win"):
+            if self.appearance_mode == 1:
+                self.windows_set_titlebar_color(self, "dark")
+            else:
+                self.windows_set_titlebar_color(self, "light")
 
         super().configure(bg=CTkColorManager.single_color(self.fg_color, self.appearance_mode))
