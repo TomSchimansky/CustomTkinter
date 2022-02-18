@@ -31,16 +31,30 @@ class CTk(tkinter.Tk):
         AppearanceModeTracker.add(self.set_appearance_mode, self)
         super().configure(bg=CTkColorManager.single_color(self.fg_color, self.appearance_mode))
 
+        self.window_exists = False  # indicates if the window is already shown through .update or .mainloop
+
         if sys.platform.startswith("win"):
             if self.appearance_mode == 1:
-                self.windows_set_titlebar_color(self, "dark")
+                self.windows_set_titlebar_color("dark")
             else:
-                self.windows_set_titlebar_color(self, "light")
+                self.windows_set_titlebar_color("light")
 
     def destroy(self):
         AppearanceModeTracker.remove(self.set_appearance_mode)
         self.disable_macos_dark_title_bar()
         super().destroy()
+
+    def update(self):
+        if self.window_exists is False:
+            self.deiconify()
+            self.window_exists = True
+        super().update()
+
+    def mainloop(self, *args, **kwargs):
+        if self.window_exists is False:
+            self.deiconify()
+            self.window_exists = True
+        super().mainloop(*args, **kwargs)
 
     def config(self, *args, **kwargs):
         self.configure(*args, **kwargs)
@@ -102,8 +116,7 @@ class CTk(tkinter.Tk):
                     os.system("defaults delete -g NSRequiresAquaSystemAppearance")
                     # This command reverts the dark-mode setting for all programs.
 
-    @staticmethod
-    def windows_set_titlebar_color(window, color_mode: str):
+    def windows_set_titlebar_color(self, color_mode: str):
         """
         Set the titlebar color of the window to light or dark theme on Microsoft Windows.
 
@@ -114,7 +127,10 @@ class CTk(tkinter.Tk):
         https://docs.microsoft.com/en-us/windows/win32/api/dwmapi/ne-dwmapi-dwmwindowattribute
         """
 
-        window.update()
+        if self.window_exists is False:
+            super().withdraw()  # hide window if it not already exists to not show the .update call which is needed
+
+        super().update()
 
         if color_mode.lower() == "dark":
             DWMWA_USE_IMMERSIVE_DARK_MODE = 20
@@ -125,7 +141,7 @@ class CTk(tkinter.Tk):
 
         set_window_attribute = ctypes.windll.dwmapi.DwmSetWindowAttribute
         get_parent = ctypes.windll.user32.GetParent
-        hwnd = get_parent(window.winfo_id())
+        hwnd = get_parent(self.winfo_id())
         rendering_policy = DWMWA_USE_IMMERSIVE_DARK_MODE
         value = 2
         value = ctypes.c_int(value)
@@ -140,8 +156,8 @@ class CTk(tkinter.Tk):
 
         if sys.platform.startswith("win"):
             if self.appearance_mode == 1:
-                self.windows_set_titlebar_color(self, "dark")
+                self.windows_set_titlebar_color("dark")
             else:
-                self.windows_set_titlebar_color(self, "light")
+                self.windows_set_titlebar_color("light")
 
         super().configure(bg=CTkColorManager.single_color(self.fg_color, self.appearance_mode))
