@@ -65,7 +65,12 @@ class App(customtkinter.CTk):
 
         self.check_box_1 = customtkinter.CTkCheckBox(master=self.frame_left,
                                                      text="CTkCheckBox")
-        self.check_box_1.place(relx=0.5, rely=0.92, anchor=tkinter.CENTER)
+        self.check_box_1.place(relx=0.15, rely=0.82, anchor=tkinter.W)
+
+        self.check_box_2 = customtkinter.CTkCheckBox(master=self.frame_left,
+                                                     text="Dark Mode",
+                                                     command=self.change_mode)
+        self.check_box_2.place(relx=0.15, rely=0.92, anchor=tkinter.W)
 
         # ============ frame_right ============
 
@@ -93,6 +98,7 @@ class App(customtkinter.CTk):
                                                         width=250,
                                                         height=12)
         self.progressbar.place(relx=0.5, rely=0.85, anchor=tkinter.S)
+        self.progressbar.set(0.65)
 
         # ============ frame_right <- ============
 
@@ -146,10 +152,14 @@ class App(customtkinter.CTk):
                                                 corner_radius=8)
         self.button_5.place(relx=0.66, rely=0.92, anchor=tkinter.CENTER)
 
-        self.progressbar.set(0.65)
-
     def button_event(self):
         print("Button pressed")
+
+    def change_mode(self):
+        if self.check_box_2.get() == 1:
+            customtkinter.set_appearance_mode("dark")
+        else:
+            customtkinter.set_appearance_mode("light")
 
     def on_closing(self, event=0):
         self.destroy()

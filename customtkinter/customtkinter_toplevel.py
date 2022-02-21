@@ -4,13 +4,12 @@ import sys
 import os
 import platform
 import ctypes
-import win32con
 
 from .appearance_mode_tracker import AppearanceModeTracker
 from .customtkinter_color_manager import CTkColorManager
 
 
-class CTk(tkinter.Tk):
+class CTkToplevel(tkinter.Toplevel):
     def __init__(self, *args,
                  fg_color="CTkColorManager",
                  **kwargs):
@@ -31,8 +30,6 @@ class CTk(tkinter.Tk):
         AppearanceModeTracker.add(self.set_appearance_mode, self)
         super().configure(bg=CTkColorManager.single_color(self.fg_color, self.appearance_mode))
 
-        self.window_exists = False  # indicates if the window is already shown through .update or .mainloop
-
         if sys.platform.startswith("win"):
             if self.appearance_mode == 1:
                 self.windows_set_titlebar_color("dark")
@@ -43,18 +40,6 @@ class CTk(tkinter.Tk):
         AppearanceModeTracker.remove(self.set_appearance_mode)
         self.disable_macos_dark_title_bar()
         super().destroy()
-
-    def update(self):
-        if self.window_exists is False:
-            self.deiconify()
-            self.window_exists = True
-        super().update()
-
-    def mainloop(self, *args, **kwargs):
-        if self.window_exists is False:
-            self.deiconify()
-            self.window_exists = True
-        super().mainloop(*args, **kwargs)
 
     def resizable(self, *args, **kwargs):
         super().resizable(*args, **kwargs)
@@ -139,8 +124,7 @@ class CTk(tkinter.Tk):
         if sys.platform.startswith("win"):
 
             super().withdraw()  # hide window so that it can be redrawn after the titlebar change so that the color change is visible
-            if not self.window_exists:
-                super().update()
+            super().update()
 
             if color_mode.lower() == "dark":
                 value = 1
@@ -158,7 +142,6 @@ class CTk(tkinter.Tk):
                 if ctypes.windll.dwmapi.DwmSetWindowAttribute(hwnd, DWMWA_USE_IMMERSIVE_DARK_MODE,
                                                               ctypes.byref(ctypes.c_int(value)),
                                                               ctypes.sizeof(ctypes.c_int(value))) != 0:
-
                     # try with DWMWA_USE_IMMERSIVE_DARK_MODE_BEFORE_20h1
                     ctypes.windll.dwmapi.DwmSetWindowAttribute(hwnd, DWMWA_USE_IMMERSIVE_DARK_MODE_BEFORE_20H1,
                                                                ctypes.byref(ctypes.c_int(value)),
@@ -167,8 +150,7 @@ class CTk(tkinter.Tk):
             except Exception as err:
                 print(err)
 
-            if self.window_exists:
-                self.deiconify()
+            self.deiconify()
 
     def set_appearance_mode(self, mode_string):
         if mode_string.lower() == "dark":

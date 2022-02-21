@@ -9,6 +9,8 @@ from .customtkinter_entry import CTkEntry
 from .customtkinter_dialog import CTkDialog
 from .customtkinter_checkbox import CTkCheckBox
 from .customtkinter_tk import CTk
+from .customtkinter_canvas import CTkCanvas
+from .customtkinter_toplevel import CTkToplevel
 
 from .appearance_mode_tracker import AppearanceModeTracker
 from .customtkinter_color_manager import CTkColorManager
@@ -17,6 +19,7 @@ from distutils.version import StrictVersion as Version
 import tkinter
 import os
 import sys
+from ctypes import windll, byref, create_unicode_buffer, create_string_buffer
 
 
 def enable_macos_darkmode():
@@ -57,3 +60,20 @@ def get_appearance_mode():
 
 def set_default_color_theme(color_string):
     CTkColorManager.initialize_color_theme(color_string)
+
+
+FR_PRIVATE = 0x10
+FR_NOT_ENUM = 0x20
+
+
+def loadfont(fontpath: str, private=True, enumerable=False):
+    pathbuf = create_string_buffer(bytes(fontpath, "utf-8"))
+    add_font_resource_ex = windll.gdi32.AddFontResourceExA
+    flags = (FR_PRIVATE if private else 0) | (FR_NOT_ENUM if not enumerable else 0)
+    num_fonts_added = add_font_resource_ex(byref(pathbuf), flags, 0)
+    return bool(num_fonts_added)
+
+
+# load custom font for rendering circles on the tkinter.Canvas with antialiasing
+script_directory = os.path.dirname(os.path.abspath(__file__))
+loadfont(os.path.join(script_directory, "assets", "canvas_shapes_font.otf"), private=True)
