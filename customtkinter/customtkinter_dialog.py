@@ -24,7 +24,7 @@ class CTkDialog:
         self.fg_color = CTkColorManager.MAIN if fg_color == "CTkColorManager" else fg_color
         self.hover_color = CTkColorManager.MAIN_HOVER if hover_color == "CTkColorManager" else hover_color
 
-        self.top = tkinter.Toplevel()
+        self.top = customtkinter.CTkToplevel()
         self.top.geometry(f"280x{self.height}")
         self.top.resizable(False, False)
         self.top.title(title)
@@ -32,14 +32,16 @@ class CTkDialog:
         self.top.focus_force()
         self.top.grab_set()
 
-        self.label_frame = tkinter.Frame(master=self.top,
-                                         width=300,
-                                         height=self.height-100)
+        self.label_frame = customtkinter.CTkFrame(master=self.top,
+                                                  corner_radius=0,
+                                                  width=300,
+                                                  height=self.height-100)
         self.label_frame.place(relx=0.5, rely=0, anchor=tkinter.N)
 
-        self.button_and_entry_frame = tkinter.Frame(master=self.top,
-                                                    width=300,
-                                                    height=100)
+        self.button_and_entry_frame = customtkinter.CTkFrame(master=self.top,
+                                                             corner_radius=0,
+                                                             width=300,
+                                                             height=100)
         self.button_and_entry_frame.place(relx=0.5, rely=1, anchor=tkinter.S)
 
         self.myLabel = CTkLabel(master=self.label_frame,
@@ -96,6 +98,7 @@ if __name__ == "__main__":
     customtkinter.set_appearance_mode("System")
 
     app = customtkinter.CTk()
+    app.geometry("400x300")
     app.title("CTkDialog Test")
 
     def button_click_event():
@@ -106,4 +109,3 @@ if __name__ == "__main__":
     button.place(relx=0.5, rely=0.5, anchor=tkinter.CENTER)
 
     app.mainloop()
-    customtkinter.disable_macos_darkmode()
