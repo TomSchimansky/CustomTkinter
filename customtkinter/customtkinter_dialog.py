@@ -45,6 +45,7 @@ class CTkDialog:
         self.myLabel = CTkLabel(master=self.label_frame,
                                 text=text,
                                 width=300,
+                                fg_color=None,
                                 height=self.height-100)
         self.myLabel.place(relx=0.5, rely=0.5, anchor=tkinter.CENTER)
 
@@ -68,7 +69,10 @@ class CTkDialog:
                                        hover_color=self.hover_color)
         self.cancel_button.place(relx=0.72, rely=0.65, anchor=tkinter.CENTER)
 
-    def ok_event(self):
+        self.entry.entry.focus_force()
+        self.entry.bind("<Return>", self.ok_event)
+
+    def ok_event(self, event=None):
         self.user_input = self.entry.get()
         self.running = False
 
@@ -89,14 +93,13 @@ class CTkDialog:
 
 if __name__ == "__main__":
     import customtkinter
-    customtkinter.enable_macos_darkmode()
     customtkinter.set_appearance_mode("System")
 
-    app = tkinter.Tk()
+    app = customtkinter.CTk()
     app.title("CTkDialog Test")
 
     def button_click_event():
-        dialog = CTkDialog(master=None, text="Type in a number:", title="Test", fg_color="green", hover_color="darkgreen")
+        dialog = CTkDialog(master=None, text="Type in a number:", title="Test")
         print("Number:", dialog.get_input())
 
     button = CTkButton(master=app, text="Open Dialog", command=button_click_event)

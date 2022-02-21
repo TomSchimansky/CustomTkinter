@@ -4,7 +4,6 @@ import sys
 import os
 import platform
 import ctypes
-import win32con
 
 from .appearance_mode_tracker import AppearanceModeTracker
 from .customtkinter_color_manager import CTkColorManager
