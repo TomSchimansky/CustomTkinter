@@ -106,13 +106,15 @@ class CTkButton(tkinter.Frame):
         self.compound = compound
         self.click_animation_running = False
 
-        if sys.platform == "darwin" and self.function is not None:
-            self.configure(cursor="pointinghand")  # other cursor when hovering over button with command
+        if sys.platform == "darwin" and self.function is not None and CTkSettings.hand_cursor_enabled:
+            self.configure(cursor="pointinghand")
+        elif sys.platform.startswith("win") and self.function is not None and CTkSettings.hand_cursor_enabled:
+            self.configure(cursor="hand2")
 
         self.canvas = CTkCanvas(master=self,
-                                     highlightthickness=0,
-                                     width=self.width,
-                                     height=self.height)
+                                highlightthickness=0,
+                                width=self.width,
+                                height=self.height)
         self.canvas.grid(row=0, column=0, rowspan=2, columnspan=2, sticky="nsew")
 
         # event bindings
@@ -176,14 +178,17 @@ class CTkButton(tkinter.Frame):
 
     def draw(self, no_color_updates=False):
         self.canvas.configure(bg=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
+        draw_color_update = False
 
         # decide the drawing method
         if sys.platform == "darwin":
             # on macOS draw button with polygons (positions are more accurate, macOS has Antialiasing)
             self.draw_with_polygon_shapes()
         elif sys.platform.startswith("win"):
-            # self.draw_with_ovals_and_rects()
-            draw_color_update = self.draw_with_font_shapes_and_rects()
+            if CTkSettings.circle_font_is_ready:
+                draw_color_update = self.draw_with_font_shapes_and_rects()
+            else:
+                self.draw_with_ovals_and_rects()
         else:
             # on other draw with ovals (corner_radius can be optimised to look better than with polygons)
             self.draw_with_ovals_and_rects()
@@ -619,13 +624,17 @@ class CTkButton(tkinter.Frame):
 
         if self.state == tkinter.DISABLED:
             self.hover = False
-            if sys.platform == "darwin" and self.function is not None:
+            if sys.platform == "darwin" and self.function is not None and CTkSettings.hand_cursor_enabled:
+                self.configure(cursor="arrow")
+            elif sys.platform.startswith("win") and self.function is not None and CTkSettings.hand_cursor_enabled:
                 self.configure(cursor="arrow")
 
         elif self.state == tkinter.NORMAL:
             self.hover = True
-            if sys.platform == "darwin" and self.function is not None:
+            if sys.platform == "darwin" and self.function is not None and CTkSettings.hand_cursor_enabled:
                 self.configure(cursor="pointinghand")
+            elif sys.platform.startswith("win") and self.function is not None and CTkSettings.hand_cursor_enabled:
+                self.configure(cursor="hand2")
 
         self.draw()
 

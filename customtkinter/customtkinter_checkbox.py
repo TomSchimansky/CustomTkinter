@@ -5,6 +5,8 @@ from .customtkinter_tk import CTk
 from .customtkinter_frame import CTkFrame
 from .appearance_mode_tracker import AppearanceModeTracker
 from .customtkinter_theme_manager import CTkThemeManager
+from .customtkinter_canvas import CTkCanvas
+from .customtkinter_settings import CTkSettings
 
 
 class CTkCheckBox(tkinter.Frame):
@@ -98,16 +100,18 @@ class CTkCheckBox(tkinter.Frame):
         self.variable: tkinter.Variable = variable
         self.variable_callback_blocked = False
         self.textvariable = textvariable
-        self.variabel_callback_name = None
+        self.variable_callback_name = None
 
-        self.canvas = tkinter.Canvas(master=self,
-                                     highlightthicknes=0,
-                                     width=self.width,
-                                     height=self.height)
+        self.canvas = CTkCanvas(master=self,
+                                highlightthickness=0,
+                                width=self.width,
+                                height=self.height)
         self.canvas.pack(side='left')
 
-        if sys.platform == "darwin" and self.state == tkinter.NORMAL:
+        if sys.platform == "darwin" and self.state == tkinter.NORMAL and CTkSettings.hand_cursor_enabled:
             self.canvas.configure(cursor="pointinghand")
+        elif sys.platform.startswith("win") and self.state == tkinter.NORMAL and CTkSettings.hand_cursor_enabled:
+            self.canvas.configure(cursor="hand2")
 
         if self.hover is True:
             self.canvas.bind("<Enter>", self.on_enter)
@@ -116,15 +120,12 @@ class CTkCheckBox(tkinter.Frame):
         self.canvas.bind("<Button-1>", self.toggle)
         self.canvas.bind("<Button-1>", self.toggle)
 
-        self.canvas_fg_parts = []
-        self.canvas_border_parts = []
-        self.canvas_check_parts = []
         self.text_label = None
 
         self.draw()  # initial draw
 
         if self.variable is not None:
-            self.variabel_callback_name = self.variable.trace_add("write", self.variable_callback)
+            self.variable_callback_name = self.variable.trace_add("write", self.variable_callback)
             if self.variable.get() == self.onvalue:
                 self.select(from_variable_callback=True)
             elif self.variable.get() == self.offvalue:
@@ -134,7 +135,7 @@ class CTkCheckBox(tkinter.Frame):
         AppearanceModeTracker.remove(self.set_appearance_mode)
 
         if self.variable is not None:
-            self.variable.trace_remove("write", self.variabel_callback_name)
+            self.variable.trace_remove("write", self.variable_callback_name)
 
         super().destroy()
 
@@ -160,123 +161,98 @@ class CTkCheckBox(tkinter.Frame):
                 return user_corner_radius
 
     def draw(self):
-        self.canvas.delete("all")
-        self.canvas_fg_parts = []
-        self.canvas_border_parts = []
-        self.canvas_check_parts = []
-
-        if type(self.bg_color) == tuple and len(self.bg_color) == 2:
-            self.canvas.configure(bg=self.bg_color[self.appearance_mode])
-        else:
-            self.canvas.configure(bg=self.bg_color)
-
         if sys.platform == "darwin":
-            oval_size_corr_br = 0
+            self.draw_with_ovals_and_rects()
+        elif sys.platform.startswith("win"):
+            self.draw_with_ovals_and_rects()
         else:
-            oval_size_corr_br = -1
+            self.draw_with_ovals_and_rects()
 
-        # border button parts
-        if self.border_width > 0:
-
-            if self.corner_radius > 0:
-                self.canvas_border_parts.append(self.canvas.create_oval(0,
-                                                                        0,
-                                                                        self.corner_radius * 2 + oval_size_corr_br,
-                                                                        self.corner_radius * 2 + oval_size_corr_br))
-                self.canvas_border_parts.append(self.canvas.create_oval(self.width - self.corner_radius * 2,
-                                                                        0,
-                                                                        self.width + oval_size_corr_br,
-                                                                        self.corner_radius * 2 + oval_size_corr_br))
-                self.canvas_border_parts.append(self.canvas.create_oval(0,
-                                                                        self.height - self.corner_radius * 2,
-                                                                        self.corner_radius * 2 + oval_size_corr_br,
-                                                                        self.height + oval_size_corr_br))
-                self.canvas_border_parts.append(self.canvas.create_oval(self.width - self.corner_radius * 2,
-                                                                        self.height - self.corner_radius * 2,
-                                                                        self.width + oval_size_corr_br,
-                                                                        self.height + oval_size_corr_br))
-
-            self.canvas_border_parts.append(self.canvas.create_rectangle(0,
-                                                                         self.corner_radius,
-                                                                         self.width,
-                                                                         self.height - self.corner_radius))
-            self.canvas_border_parts.append(self.canvas.create_rectangle(self.corner_radius,
-                                                                         0,
-                                                                         self.width - self.corner_radius,
-                                                                         self.height))
-
-        # inner button parts
-
-        if self.corner_radius > 0:
-            self.canvas_fg_parts.append(self.canvas.create_oval(self.border_width,
-                                                                self.border_width,
-                                                                self.border_width + self.inner_corner_radius * 2 + oval_size_corr_br,
-                                                                self.border_width + self.inner_corner_radius * 2 + oval_size_corr_br))
-            self.canvas_fg_parts.append(self.canvas.create_oval(self.width - self.border_width - self.inner_corner_radius * 2,
-                                                                self.border_width,
-                                                                self.width - self.border_width + oval_size_corr_br,
-                                                                self.border_width + self.inner_corner_radius * 2 + oval_size_corr_br))
-            self.canvas_fg_parts.append(self.canvas.create_oval(self.border_width,
-                                                                self.height - self.border_width - self.inner_corner_radius * 2,
-                                                                self.border_width + self.inner_corner_radius * 2 + oval_size_corr_br,
-                                                                self.height-self.border_width + oval_size_corr_br))
-            self.canvas_fg_parts.append(self.canvas.create_oval(self.width - self.border_width - self.inner_corner_radius * 2,
-                                                                self.height - self.border_width - self.inner_corner_radius * 2,
-                                                                self.width - self.border_width + oval_size_corr_br,
-                                                                self.height - self.border_width + oval_size_corr_br))
-
-        self.canvas_fg_parts.append(self.canvas.create_rectangle(self.border_width + self.inner_corner_radius,
-                                                                 self.border_width,
-                                                                 self.width - self.border_width - self.inner_corner_radius,
-                                                                 self.height - self.border_width))
-        self.canvas_fg_parts.append(self.canvas.create_rectangle(self.border_width,
-                                                                 self.border_width + self.inner_corner_radius,
-                                                                 self.width - self.border_width,
-                                                                 self.height - self.inner_corner_radius - self.border_width))
+        self.configure(bg=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
+        self.canvas.configure(bg=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
 
         if self.check_state is False:
-            for part in self.canvas_fg_parts:
-                if type(self.bg_color) == tuple and len(self.bg_color) == 2:
-                        self.canvas.itemconfig(part, fill=self.bg_color[self.appearance_mode], width=0)
-                else:
-                        self.canvas.itemconfig(part, fill=self.bg_color, outline=self.bg_color, width=0)
+            self.canvas.itemconfig("inner_parts",
+                                   outline=CTkThemeManager.single_color(self.bg_color, self.appearance_mode),
+                                   fill=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
         else:
-            for part in self.canvas_fg_parts:
-                if type(self.fg_color) == tuple and len(self.fg_color) == 2:
-                        self.canvas.itemconfig(part, fill=self.fg_color[self.appearance_mode], width=0)
-                else:
-                        self.canvas.itemconfig(part, fill=self.fg_color, outline=self.bg_color, width=0)
+            self.canvas.itemconfig("inner_parts",
+                                   outline=CTkThemeManager.single_color(self.fg_color, self.appearance_mode),
+                                   fill=CTkThemeManager.single_color(self.fg_color, self.appearance_mode))
 
-        for part in self.canvas_border_parts:
-            if type(self.border_color) == tuple and len(self.border_color) == 2:
-                self.canvas.itemconfig(part, fill=self.border_color[self.appearance_mode], width=0)
-            else:
-                self.canvas.itemconfig(part, fill=self.border_color, outline=self.border_color, width=0)
+        self.canvas.itemconfig("border_parts",
+                               outline=CTkThemeManager.single_color(self.border_color, self.appearance_mode),
+                               fill=CTkThemeManager.single_color(self.border_color, self.appearance_mode))
 
-        if self.text_label is not None:
-            self.text_label.pack_forget()
+        if self.text_label is None:
+            self.text_label = tkinter.Label(master=self,
+                                            text=self.text,
+                                            justify=tkinter.LEFT,
+                                            width=len(self.text_color),
+                                            font=self.text_font)
+            self.text_label.pack(side='right', padx=6)
+            self.text_label["anchor"] = "w"
 
-        self.text_label = tkinter.Label(master=self,
-                                        text=self.text,
-                                        justify=tkinter.LEFT,
-                                        width=len(self.text_color),
-                                        font=self.text_font)
-        self.text_label.pack(side='right', padx=6)
-        self.text_label["anchor"] = "w"
-
-        if type(self.text_color) == tuple and len(self.text_color) == 2:
-            self.text_label.configure(fg=self.text_color[self.appearance_mode])
-        else:
-            self.text_label.configure(fg=self.text_color)
-
-        if type(self.bg_color) == tuple and len(self.bg_color) == 2:
-            self.configure(bg=self.bg_color[self.appearance_mode])
-            self.text_label.configure(bg=self.bg_color[self.appearance_mode])
-        else:
-            self.configure(bg=self.bg_color)
-            self.text_label.configure(bg=self.bg_color)
+        self.text_label.configure(fg=CTkThemeManager.single_color(self.text_color, self.appearance_mode))
+        self.text_label.configure(bg=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
 
         self.set_text(self.text)
+
+    def draw_with_ovals_and_rects(self):
+        # border button parts
+        if self.border_width > 0:
+            if self.corner_radius > 0:
+
+                if not self.canvas.find_withtag("border_oval_1"):
+                    self.canvas.create_oval(0, 0, 0, 0, tags=("border_oval_1", "border_corner_part", "border_parts"))
+                    self.canvas.create_oval(0, 0, 0, 0, tags=("border_oval_2", "border_corner_part", "border_parts"))
+                    self.canvas.create_oval(0, 0, 0, 0, tags=("border_oval_3", "border_corner_part", "border_parts"))
+                    self.canvas.create_oval(0, 0, 0, 0, tags=("border_oval_4", "border_corner_part", "border_parts"))
+
+                self.canvas.coords("border_oval_1", 0, 0, self.corner_radius * 2 - 1, self.corner_radius * 2 - 1)
+                self.canvas.coords("border_oval_2", self.width - self.corner_radius * 2, 0, self.width - 1, self.corner_radius * 2 - 1)
+                self.canvas.coords("border_oval_3", 0, self.height - self.corner_radius * 2, self.corner_radius * 2 - 1, self.height - 1)
+                self.canvas.coords("border_oval_4", self.width - self.corner_radius * 2, self.height - self.corner_radius * 2, self.width - 1, self.height - 1)
+
+            if not self.canvas.find_withtag("border_rectangle_1"):
+                self.canvas.create_rectangle(0, 0, 0, 0, tags=("border_rectangle_1", "border_rectangle_part", "border_parts"))
+                self.canvas.create_rectangle(0, 0, 0, 0, tags=("border_rectangle_2", "border_rectangle_part", "border_parts"))
+
+            self.canvas.coords("border_rectangle_1", (0, self.corner_radius, self.width - 1, self.height - self.corner_radius - 1))
+            self.canvas.coords("border_rectangle_2", (self.corner_radius, 0, self.width - self.corner_radius - 1, self.height - 1))
+
+        # inner button parts
+        if self.inner_corner_radius > 0:
+
+            if not self.canvas.find_withtag("inner_corner_part"):
+                self.canvas.create_oval(0, 0, 0, 0, tags=("inner_oval_1", "inner_corner_part", "inner_parts"))
+                self.canvas.create_oval(0, 0, 0, 0, tags=("inner_oval_2", "inner_corner_part", "inner_parts"))
+                self.canvas.create_oval(0, 0, 0, 0, tags=("inner_oval_3", "inner_corner_part", "inner_parts"))
+                self.canvas.create_oval(0, 0, 0, 0, tags=("inner_oval_4", "inner_corner_part", "inner_parts"))
+
+            self.canvas.coords("inner_oval_1", (self.border_width, self.border_width,
+                                                self.border_width + self.inner_corner_radius * 2 - 1, self.border_width + self.inner_corner_radius * 2 - 1))
+            self.canvas.coords("inner_oval_2", (self.width - self.border_width - self.inner_corner_radius * 2, self.border_width,
+                                                self.width - self.border_width - 1, self.border_width + self.inner_corner_radius * 2 - 1))
+            self.canvas.coords("inner_oval_3", (self.border_width, self.height - self.border_width - self.inner_corner_radius * 2,
+                                                self.border_width + self.inner_corner_radius * 2 - 1, self.height - self.border_width - 1))
+            self.canvas.coords("inner_oval_4", (self.width - self.border_width - self.inner_corner_radius * 2, self.height - self.border_width - self.inner_corner_radius * 2,
+                                                self.width - self.border_width - 1, self.height - self.border_width - 1))
+        else:
+            self.canvas.delete("inner_corner_part")  # delete inner corner parts if not needed
+
+        if not self.canvas.find_withtag("inner_rectangle_part"):
+            self.canvas.create_rectangle(0, 0, 0, 0, tags=("inner_rectangle_1", "inner_rectangle_part", "inner_parts"))
+            self.canvas.create_rectangle(0, 0, 0, 0, tags=("inner_rectangle_2", "inner_rectangle_part", "inner_parts"))
+
+        self.canvas.coords("inner_rectangle_1", (self.border_width + self.inner_corner_radius,
+                                                 self.border_width,
+                                                 self.width - self.border_width - self.inner_corner_radius - 1,
+                                                 self.height - self.border_width - 1))
+        self.canvas.coords("inner_rectangle_2", (self.border_width,
+                                                 self.border_width + self.inner_corner_radius,
+                                                 self.width - self.border_width - 1,
+                                                 self.height - self.inner_corner_radius - self.border_width - 1))
 
     def config(self, *args, **kwargs):
         self.configure(*args, **kwargs)
@@ -326,12 +302,12 @@ class CTkCheckBox(tkinter.Frame):
 
         if "variable" in kwargs:
             if self.variable is not None:
-                self.variable.trace_remove("write", self.variabel_callback_name)
+                self.variable.trace_remove("write", self.variable_callback_name)
 
             self.variable = kwargs["variable"]
 
             if self.variable is not None and self.variable != "":
-                self.variabel_callback_name = self.variable.trace_add("write", self.variable_callback)
+                self.variable_callback_name = self.variable.trace_add("write", self.variable_callback)
                 if self.variable.get() == self.onvalue:
                     self.select(from_variable_callback=True)
                 elif self.variable.get() == self.offvalue:
@@ -351,13 +327,17 @@ class CTkCheckBox(tkinter.Frame):
 
         if self.state == tkinter.DISABLED:
             self.hover = False
-            if sys.platform == "darwin":
+            if sys.platform == "darwin" and CTkSettings.hand_cursor_enabled:
+                self.canvas.configure(cursor="arrow")
+            elif sys.platform.startswith("sys") and CTkSettings.hand_cursor_enabled:
                 self.canvas.configure(cursor="arrow")
 
         elif self.state == tkinter.NORMAL:
             self.hover = True
-            if sys.platform == "darwin":
+            if sys.platform == "darwin" and CTkSettings.hand_cursor_enabled:
                 self.canvas.configure(cursor="pointinghand")
+            elif sys.platform.startswith("sys") and CTkSettings.hand_cursor_enabled:
+                self.canvas.configure(cursor="hand2")
 
         self.draw()
 
@@ -370,26 +350,20 @@ class CTkCheckBox(tkinter.Frame):
 
     def on_enter(self, event=0):
         if self.hover is True:
-            for part in self.canvas_fg_parts:
-                if type(self.hover_color) == tuple and len(self.hover_color) == 2:
-                    self.canvas.itemconfig(part, fill=self.hover_color[self.appearance_mode], width=0)
-                else:
-                    self.canvas.itemconfig(part, fill=self.hover_color, width=0)
+            self.canvas.itemconfig("inner_parts",
+                                   fill=CTkThemeManager.single_color(self.hover_color, self.appearance_mode),
+                                   outline=CTkThemeManager.single_color(self.hover_color, self.appearance_mode))
 
     def on_leave(self, event=0):
         if self.hover is True:
-            if self.check_state == True:
-                for part in self.canvas_fg_parts:
-                    if type(self.fg_color) == tuple and len(self.fg_color) == 2:
-                        self.canvas.itemconfig(part, fill=self.fg_color[self.appearance_mode], width=0)
-                    else:
-                        self.canvas.itemconfig(part, fill=self.fg_color, width=0)
+            if self.check_state is True:
+                self.canvas.itemconfig("inner_parts",
+                                       fill=CTkThemeManager.single_color(self.fg_color, self.appearance_mode),
+                                       outline=CTkThemeManager.single_color(self.fg_color, self.appearance_mode))
             else:
-                for part in self.canvas_fg_parts:
-                    if type(self.bg_color) == tuple and len(self.bg_color) == 2:
-                        self.canvas.itemconfig(part, fill=self.bg_color[self.appearance_mode], width=0)
-                    else:
-                        self.canvas.itemconfig(part, fill=self.bg_color, width=0)
+                self.canvas.itemconfig("inner_parts",
+                                       fill=CTkThemeManager.single_color(self.bg_color, self.appearance_mode),
+                                       outline=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
 
     def variable_callback(self, var_name, index, mode):
         if not self.variable_callback_blocked:
@@ -402,18 +376,14 @@ class CTkCheckBox(tkinter.Frame):
         if self.state == tkinter.NORMAL:
             if self.check_state is True:
                 self.check_state = False
-                for part in self.canvas_fg_parts:
-                    if type(self.bg_color) == tuple and len(self.bg_color) == 2:
-                        self.canvas.itemconfig(part, fill=self.bg_color[self.appearance_mode], width=0)
-                    else:
-                        self.canvas.itemconfig(part, fill=self.bg_color, width=0)
+                self.canvas.itemconfig("inner_parts",
+                                       fill=CTkThemeManager.single_color(self.bg_color, self.appearance_mode),
+                                       outline=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
             else:
                 self.check_state = True
-                for part in self.canvas_fg_parts:
-                    if type(self.fg_color) == tuple and len(self.fg_color) == 2:
-                        self.canvas.itemconfig(part, fill=self.fg_color[self.appearance_mode], width=0)
-                    else:
-                        self.canvas.itemconfig(part, fill=self.fg_color, width=0)
+                self.canvas.itemconfig("inner_parts",
+                                       fill=CTkThemeManager.single_color(self.fg_color, self.appearance_mode),
+                                       outline=CTkThemeManager.single_color(self.fg_color, self.appearance_mode))
 
             if self.function is not None:
                 self.function()
@@ -425,11 +395,9 @@ class CTkCheckBox(tkinter.Frame):
 
     def select(self, from_variable_callback=False):
         self.check_state = True
-        for part in self.canvas_fg_parts:
-            if type(self.fg_color) == tuple and len(self.fg_color) == 2:
-                self.canvas.itemconfig(part, fill=self.fg_color[self.appearance_mode], width=0)
-            else:
-                self.canvas.itemconfig(part, fill=self.fg_color, width=0)
+        self.canvas.itemconfig("inner_parts",
+                               fill=CTkThemeManager.single_color(self.fg_color, self.appearance_mode),
+                               outline=CTkThemeManager.single_color(self.fg_color, self.appearance_mode))
 
         if self.function is not None:
             self.function()
@@ -441,11 +409,9 @@ class CTkCheckBox(tkinter.Frame):
 
     def deselect(self, from_variable_callback=False):
         self.check_state = False
-        for part in self.canvas_fg_parts:
-            if type(self.bg_color) == tuple and len(self.bg_color) == 2:
-                self.canvas.itemconfig(part, fill=self.bg_color[self.appearance_mode], width=0)
-            else:
-                self.canvas.itemconfig(part, fill=self.bg_color, width=0)
+        self.canvas.itemconfig("inner_parts",
+                               fill=CTkThemeManager.single_color(self.bg_color, self.appearance_mode),
+                               outline=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
 
         if self.function is not None:
             self.function()

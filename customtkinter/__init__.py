@@ -11,6 +11,7 @@ from .customtkinter_checkbox import CTkCheckBox
 from .customtkinter_tk import CTk
 from .customtkinter_canvas import CTkCanvas
 from .customtkinter_toplevel import CTkToplevel
+from .customtkinter_settings import CTkSettings
 
 from .appearance_mode_tracker import AppearanceModeTracker
 from .customtkinter_theme_manager import CTkThemeManager
@@ -78,3 +79,4 @@ if sys.platform.startswith("win"):
     # load custom font for rendering circles on the tkinter.Canvas with antialiasing
     script_directory = os.path.dirname(os.path.abspath(__file__))
     print("load_font_windows:", load_font_windows(os.path.join(script_directory, "assets", "CustomTkinter_shapes_font-Regular.otf"), private=True))
+    CTkSettings.circle_font_is_ready = True
