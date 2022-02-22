@@ -6,19 +6,19 @@ import platform
 import ctypes
 
 from .appearance_mode_tracker import AppearanceModeTracker
-from .customtkinter_color_manager import CTkColorManager
+from .customtkinter_theme_manager import CTkThemeManager
 
 
 class CTkToplevel(tkinter.Toplevel):
     def __init__(self, *args,
-                 fg_color="CTkColorManager",
+                 fg_color="default_theme",
                  **kwargs):
 
         self.enable_macos_dark_title_bar()
         super().__init__(*args, **kwargs)
         self.appearance_mode = AppearanceModeTracker.get_mode()  # 0: "Light" 1: "Dark"
 
-        self.fg_color = CTkColorManager.WINDOW_BG if fg_color == "CTkColorManager" else fg_color
+        self.fg_color = CTkThemeManager.WINDOW_BG_COLOR if fg_color == "default_theme" else fg_color
 
         if "bg" in kwargs:
             self.fg_color = kwargs["bg"]
@@ -28,7 +28,8 @@ class CTkToplevel(tkinter.Toplevel):
             del kwargs["background"]
 
         AppearanceModeTracker.add(self.set_appearance_mode, self)
-        super().configure(bg=CTkColorManager.single_color(self.fg_color, self.appearance_mode))
+        super().configure(bg=CTkThemeManager.single_color(self.fg_color, self.appearance_mode))
+        super().title("CTkToplevel")
 
         if sys.platform.startswith("win"):
             if self.appearance_mode == 1:
@@ -59,14 +60,14 @@ class CTkToplevel(tkinter.Toplevel):
         if "bg" in kwargs:
             self.fg_color = kwargs["bg"]
             bg_changed = True
-            kwargs["bg"] = CTkColorManager.single_color(self.fg_color, self.appearance_mode)
+            kwargs["bg"] = CTkThemeManager.single_color(self.fg_color, self.appearance_mode)
         elif "background" in kwargs:
             self.fg_color = kwargs["background"]
             bg_changed = True
-            kwargs["background"] = CTkColorManager.single_color(self.fg_color, self.appearance_mode)
+            kwargs["background"] = CTkThemeManager.single_color(self.fg_color, self.appearance_mode)
         elif "fg_color" in kwargs:
             self.fg_color = kwargs["fg_color"]
-            kwargs["bg"] = CTkColorManager.single_color(self.fg_color, self.appearance_mode)
+            kwargs["bg"] = CTkThemeManager.single_color(self.fg_color, self.appearance_mode)
             del kwargs["fg_color"]
             bg_changed = True
 
@@ -74,11 +75,11 @@ class CTkToplevel(tkinter.Toplevel):
             if "bg" in args[0]:
                 self.fg_color=args[0]["bg"]
                 bg_changed = True
-                args[0]["bg"] = CTkColorManager.single_color(self.fg_color, self.appearance_mode)
+                args[0]["bg"] = CTkThemeManager.single_color(self.fg_color, self.appearance_mode)
             elif "background" in args[0]:
                 self.fg_color=args[0]["background"]
                 bg_changed = True
-                args[0]["background"] = CTkColorManager.single_color(self.fg_color, self.appearance_mode)
+                args[0]["background"] = CTkThemeManager.single_color(self.fg_color, self.appearance_mode)
 
         if bg_changed:
             from .customtkinter_slider import CTkSlider
@@ -164,4 +165,4 @@ class CTkToplevel(tkinter.Toplevel):
             else:
                 self.windows_set_titlebar_color("light")
 
-        super().configure(bg=CTkColorManager.single_color(self.fg_color, self.appearance_mode))
+        super().configure(bg=CTkThemeManager.single_color(self.fg_color, self.appearance_mode))

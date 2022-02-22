@@ -32,7 +32,7 @@ label_1.pack(pady=y_padding, padx=10)
 progressbar_1 = customtkinter.CTkProgressBar(master=frame_1)
 progressbar_1.pack(pady=y_padding, padx=10)
 
-button_1 = customtkinter.CTkButton(master=frame_1, corner_radius=10, command=button_function)
+button_1 = customtkinter.CTkButton(master=frame_1, corner_radius=8, command=button_function)
 button_1.pack(pady=y_padding, padx=10)
 # button_1.configure(state="disabled")
 

@@ -65,7 +65,7 @@ class TestApp(customtkinter.CTk):
         self.frame_2 = customtkinter.CTkFrame(master=self.ctk_frame, width=200, height=60)
         self.frame_2.place(relx=0.5, y=y + 80, anchor=tkinter.CENTER)
 
-        self.button_2 = customtkinter.CTkButton(master=self.ctk_frame, border_width=3, border_color=customtkinter.CTkColorManager.MAIN_HOVER,
+        self.button_2 = customtkinter.CTkButton(master=self.ctk_frame, border_width=3, border_color=customtkinter.CTkThemeManager.MAIN_HOVER_COLOR,
                                                 )
         self.button_2.place(relx=0.5, y=y + 160, anchor=tkinter.CENTER)
 

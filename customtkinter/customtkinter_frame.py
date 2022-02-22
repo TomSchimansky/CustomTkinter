@@ -3,13 +3,13 @@ import sys
 
 from .customtkinter_tk import CTk
 from .appearance_mode_tracker import AppearanceModeTracker
-from .customtkinter_color_manager import CTkColorManager
+from .customtkinter_theme_manager import CTkThemeManager
 
 
 class CTkFrame(tkinter.Frame):
     def __init__(self, *args,
                  bg_color=None,
-                 fg_color="CTkColorManager",
+                 fg_color="default_theme",
                  corner_radius=10,
                  width=200,
                  height=200,
@@ -42,14 +42,14 @@ class CTkFrame(tkinter.Frame):
 
         self.bg_color = self.detect_color_of_master() if bg_color is None else bg_color
 
-        if fg_color == "CTkColorManager":
+        if fg_color == "default_theme":
             if isinstance(self.master, CTkFrame):
-                if self.master.fg_color == CTkColorManager.FRAME:
-                    self.fg_color = CTkColorManager.FRAME_2
+                if self.master.fg_color == CTkThemeManager.FRAME_COLOR:
+                    self.fg_color = CTkThemeManager.FRAME_2_COLOR
                 else:
-                    self.fg_color = CTkColorManager.FRAME
+                    self.fg_color = CTkThemeManager.FRAME_COLOR
             else:
-                self.fg_color = CTkColorManager.FRAME
+                self.fg_color = CTkThemeManager.FRAME_COLOR
         else:
             self.fg_color = fg_color
 

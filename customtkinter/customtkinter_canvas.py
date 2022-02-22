@@ -1,23 +1,23 @@
 import tkinter
+from .customtkinter_settings import CTkSettings
 
 
 class CTkCanvas(tkinter.Canvas):
+
+    radius_to_char = {19: 'B', 18: 'B', 17: 'B', 16: 'B', 15: 'B', 14: 'B', 13: 'B', 12: 'B', 11: 'B', 10: 'B',
+                      9: 'C', 8: 'D', 7: 'C', 6: 'E', 5: 'F', 4: 'F', 3: 'H', 2: 'H', 1: 'H', 0: 'A'}
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         self.aa_circle_canvas_ids = []
 
     def get_char_from_radius(self, radius):
-        if radius >= 10:
-            char = "B"
-        elif radius >= 6:
-            char = "D"
-        elif radius >= 3:
-            char = "H"
-        else:
-            char = "H"
-
-        return char
+        if CTkSettings.scaling_factor == 1:
+            if radius >= 20:
+                return "A"
+            else:
+                return self.radius_to_char[radius]
 
     def create_aa_circle(self, x_pos, y_pos, radius, angle=0, fill="white", tags="", anchor=tkinter.CENTER) -> str:
         # create a circle with a font element

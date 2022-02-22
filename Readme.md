@@ -195,6 +195,18 @@ root_tk.configure(bg_color=(<light-mode color>, <dark-mode color>))
 ```
 </details>
 
+### CTkToplevel
+
+CTkToplevel works exactly like the `Tkinter.Toplevel`, and should be used to create more than one window.
+
+<details>
+<summary>Show all arguments and methods:</summary>
+
+argument | value
+--- | ---
+bg_color or bg | tuple: (light_color, dark_color) or single color
+</details>
+
 ### CTkFrame
 Example Code:
 ```python
@@ -376,6 +388,7 @@ text_color | text color, tuple: (light_color, dark_color) or single color
 text_font | button text font, tuple: (font_name, size)
 hover | enable/disable hover effect: True, False
 state | tkinter.NORMAL (standard) or tkinter.DISABLED (not clickable, darker color)
+command | function will be called when the checkbox is clicked 
 
 CTkCheckBox Methods:
 ```python

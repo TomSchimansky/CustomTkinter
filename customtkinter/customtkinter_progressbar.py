@@ -4,7 +4,7 @@ import tkinter
 from .customtkinter_tk import CTk
 from .customtkinter_frame import CTkFrame
 from .appearance_mode_tracker import AppearanceModeTracker
-from .customtkinter_color_manager import CTkColorManager
+from .customtkinter_theme_manager import CTkThemeManager
 
 
 class CTkProgressBar(tkinter.Frame):
@@ -13,9 +13,9 @@ class CTkProgressBar(tkinter.Frame):
     def __init__(self, *args,
                  variable=None,
                  bg_color=None,
-                 border_color="CTkColorManager",
-                 fg_color="CTkColorManager",
-                 progress_color="CTkColorManager",
+                 border_color="default_theme",
+                 fg_color="default_theme",
+                 progress_color="default_theme",
                  width=160,
                  height=10,
                  border_width=0,
@@ -47,9 +47,9 @@ class CTkProgressBar(tkinter.Frame):
         self.appearance_mode = AppearanceModeTracker.get_mode()  # 0: "Light" 1: "Dark"
 
         self.bg_color = self.detect_color_of_master() if bg_color is None else bg_color
-        self.border_color = CTkColorManager.PROGRESS_BG if border_color == "CTkColorManager" else border_color
-        self.fg_color = CTkColorManager.PROGRESS_BG if fg_color == "CTkColorManager" else fg_color
-        self.progress_color = CTkColorManager.MAIN if progress_color == "CTkColorManager" else progress_color
+        self.border_color = CTkThemeManager.PROGRESS_BG_COLOR if border_color == "default_theme" else border_color
+        self.fg_color = CTkThemeManager.PROGRESS_BG_COLOR if fg_color == "default_theme" else fg_color
+        self.progress_color = CTkThemeManager.MAIN_COLOR if progress_color == "default_theme" else progress_color
 
         self.variable = variable
         self.variable_callback_blocked = False
@@ -125,10 +125,10 @@ class CTkProgressBar(tkinter.Frame):
             self.draw_with_ovals_and_rects()
 
         if no_color_updates is False:
-            self.canvas.configure(bg=CTkColorManager.single_color(self.bg_color, self.appearance_mode))
-            self.canvas.itemconfig("border_parts", fill=CTkColorManager.single_color(self.border_color, self.appearance_mode))
-            self.canvas.itemconfig("inner_parts", fill=CTkColorManager.single_color(self.fg_color, self.appearance_mode))
-            self.canvas.itemconfig("progress_parts", fill=CTkColorManager.single_color(self.progress_color, self.appearance_mode))
+            self.canvas.configure(bg=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
+            self.canvas.itemconfig("border_parts", fill=CTkThemeManager.single_color(self.border_color, self.appearance_mode))
+            self.canvas.itemconfig("inner_parts", fill=CTkThemeManager.single_color(self.fg_color, self.appearance_mode))
+            self.canvas.itemconfig("progress_parts", fill=CTkThemeManager.single_color(self.progress_color, self.appearance_mode))
 
     def draw_with_polygon_shapes(self):
         """ draw the progress bar parts with just three polygons that have a rounded border """

@@ -53,7 +53,7 @@ class App(customtkinter.CTk):
                                                 text="CTkButton",
                                                 command=self.button_event,
                                                 border_width=3,
-                                                corner_radius=5)
+                                                corner_radius=6)
         self.button_1.place(relx=0.5, y=50, anchor=tkinter.CENTER)
 
         self.button_2 = customtkinter.CTkButton(master=self.frame_left,
@@ -63,7 +63,7 @@ class App(customtkinter.CTk):
                                                 text="CTkButton",
                                                 command=self.button_event,
                                                 border_width=3,
-                                                corner_radius=5)
+                                                corner_radius=6)
         self.button_2.place(relx=0.5, y=100, anchor=tkinter.CENTER)
 
         self.button_3 = customtkinter.CTkButton(master=self.frame_left,
@@ -73,7 +73,7 @@ class App(customtkinter.CTk):
                                                 text="CTkButton",
                                                 command=self.button_event,
                                                 border_width=3,
-                                                corner_radius=5)
+                                                corner_radius=6)
         self.button_3.place(relx=0.5, y=150, anchor=tkinter.CENTER)
 
         # ============ frame_right ============
@@ -93,7 +93,7 @@ class App(customtkinter.CTk):
                                                         "invidunt ut labore",
                                                    width=250,
                                                    height=100,
-                                                   corner_radius=5,
+                                                   corner_radius=6,
                                                    fg_color=("white", "gray20"),
                                                    text_color=App.MAIN_COLOR,
                                                    justify=tkinter.LEFT)
@@ -145,13 +145,13 @@ class App(customtkinter.CTk):
                                                 text="CTkButton",
                                                 command=self.button_event,
                                                 border_width=3,
-                                                corner_radius=5)
+                                                corner_radius=6)
         self.button_4.place(x=310, rely=0.7, anchor=tkinter.CENTER)
 
         self.entry = customtkinter.CTkEntry(master=self.frame_right,
                                             width=120,
                                             height=28,
-                                            corner_radius=5)
+                                            corner_radius=6)
         self.entry.place(relx=0.33, rely=0.92, anchor=tkinter.CENTER)
         self.entry.insert(0, "CTkEntry")
 
@@ -163,7 +163,7 @@ class App(customtkinter.CTk):
                                                 text="CTkButton",
                                                 command=self.button_event,
                                                 border_width=3,
-                                                corner_radius=5)
+                                                corner_radius=6)
         self.button_5.place(relx=0.66, rely=0.92, anchor=tkinter.CENTER)
 
     def button_event(self):

@@ -4,7 +4,7 @@ import sys
 from .customtkinter_tk import CTk
 from .customtkinter_frame import CTkFrame
 from .appearance_mode_tracker import AppearanceModeTracker
-from .customtkinter_color_manager import CTkColorManager
+from .customtkinter_theme_manager import CTkThemeManager
 
 
 class CTkSlider(tkinter.Frame):
@@ -13,10 +13,10 @@ class CTkSlider(tkinter.Frame):
     def __init__(self, *args,
                  bg_color=None,
                  border_color=None,
-                 fg_color="CTkColorManager",
-                 progress_color="CTkColorManager",
-                 button_color="CTkColorManager",
-                 button_hover_color="CTkColorManager",
+                 fg_color="default_theme",
+                 progress_color="default_theme",
+                 button_color="default_theme",
+                 button_hover_color="default_theme",
                  from_=0,
                  to=1,
                  number_of_steps=None,
@@ -54,10 +54,10 @@ class CTkSlider(tkinter.Frame):
 
         self.bg_color = self.detect_color_of_master() if bg_color is None else bg_color
         self.border_color = border_color
-        self.fg_color = CTkColorManager.SLIDER_BG if fg_color == "CTkColorManager" else fg_color
-        self.progress_color = CTkColorManager.SLIDER_PROGRESS if progress_color == "CTkColorManager" else progress_color
-        self.button_color = CTkColorManager.MAIN if button_color == "CTkColorManager" else button_color
-        self.button_hover_color = CTkColorManager.MAIN_HOVER if button_hover_color == "CTkColorManager" else button_hover_color
+        self.fg_color = CTkThemeManager.SLIDER_BG_COLOR if fg_color == "default_theme" else fg_color
+        self.progress_color = CTkThemeManager.SLIDER_PROGRESS_COLOR if progress_color == "default_theme" else progress_color
+        self.button_color = CTkThemeManager.MAIN_COLOR if button_color == "default_theme" else button_color
+        self.button_hover_color = CTkThemeManager.MAIN_HOVER_COLOR if button_hover_color == "default_theme" else button_hover_color
 
         self.width = width
         self.height = self.calc_optimal_height(height)
@@ -148,21 +148,21 @@ class CTkSlider(tkinter.Frame):
             self.draw_with_ovals_and_rects()
 
         if no_color_updates is False:
-            self.canvas.configure(bg=CTkColorManager.single_color(self.bg_color, self.appearance_mode))
+            self.canvas.configure(bg=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
 
             if self.border_color is None:
-                self.canvas.itemconfig("border_parts", fill=CTkColorManager.single_color(self.bg_color, self.appearance_mode))
+                self.canvas.itemconfig("border_parts", fill=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
             else:
-                self.canvas.itemconfig("border_parts", fill=CTkColorManager.single_color(self.border_color, self.appearance_mode))
+                self.canvas.itemconfig("border_parts", fill=CTkThemeManager.single_color(self.border_color, self.appearance_mode))
 
-            self.canvas.itemconfig("inner_parts", fill=CTkColorManager.single_color(self.fg_color, self.appearance_mode))
+            self.canvas.itemconfig("inner_parts", fill=CTkThemeManager.single_color(self.fg_color, self.appearance_mode))
 
             if self.progress_color is None:
-                self.canvas.itemconfig("progress_parts", fill=CTkColorManager.single_color(self.fg_color, self.appearance_mode))
+                self.canvas.itemconfig("progress_parts", fill=CTkThemeManager.single_color(self.fg_color, self.appearance_mode))
             else:
-                self.canvas.itemconfig("progress_parts", fill=CTkColorManager.single_color(self.progress_color, self.appearance_mode))
+                self.canvas.itemconfig("progress_parts", fill=CTkThemeManager.single_color(self.progress_color, self.appearance_mode))
 
-            self.canvas.itemconfig("button_parts", fill=CTkColorManager.single_color(self.button_color, self.appearance_mode))
+            self.canvas.itemconfig("button_parts", fill=CTkThemeManager.single_color(self.button_color, self.appearance_mode))
 
     def draw_with_polygon_shapes(self):
         """ draw the slider parts with just three polygons that have a rounded border """
@@ -327,11 +327,11 @@ class CTkSlider(tkinter.Frame):
 
     def on_enter(self, event=0):
         self.hover_state = True
-        self.canvas.itemconfig("button_parts", fill=CTkColorManager.single_color(self.button_hover_color, self.appearance_mode))
+        self.canvas.itemconfig("button_parts", fill=CTkThemeManager.single_color(self.button_hover_color, self.appearance_mode))
 
     def on_leave(self, event=0):
         self.hover_state = False
-        self.canvas.itemconfig("button_parts", fill=CTkColorManager.single_color(self.button_color, self.appearance_mode))
+        self.canvas.itemconfig("button_parts", fill=CTkThemeManager.single_color(self.button_color, self.appearance_mode))
 
     def round_to_step_size(self, value):
         if self.number_of_steps is not None:

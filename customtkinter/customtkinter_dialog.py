@@ -4,7 +4,7 @@ import time
 from customtkinter.customtkinter_label import CTkLabel
 from customtkinter.customtkinter_button import CTkButton
 from customtkinter.customtkinter_entry import CTkEntry
-from customtkinter.customtkinter_color_manager import CTkColorManager
+from customtkinter.customtkinter_theme_manager import CTkThemeManager
 
 
 class CTkDialog:
@@ -12,8 +12,8 @@ class CTkDialog:
                  master=None,
                  title="CTkDialog",
                  text="CTkDialog",
-                 fg_color="CTkColorManager",
-                 hover_color="CTkColorManager"):
+                 fg_color="default_theme",
+                 hover_color="default_theme"):
         self.master = master
 
         self.user_input = None
@@ -21,8 +21,8 @@ class CTkDialog:
 
         self.height = len(text.split("\n"))*20 + 150
 
-        self.fg_color = CTkColorManager.MAIN if fg_color == "CTkColorManager" else fg_color
-        self.hover_color = CTkColorManager.MAIN_HOVER if hover_color == "CTkColorManager" else hover_color
+        self.fg_color = CTkThemeManager.MAIN_COLOR if fg_color == "default_theme" else fg_color
+        self.hover_color = CTkThemeManager.MAIN_HOVER_COLOR if hover_color == "default_theme" else hover_color
 
         self.top = customtkinter.CTkToplevel()
         self.top.geometry(f"280x{self.height}")

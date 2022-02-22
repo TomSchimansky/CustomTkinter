@@ -1,7 +1,13 @@
+#import tkinter.ttk as ttk
+import ctypes
+print(ctypes.windll.shcore.SetProcessDpiAwareness(ctypes.c_int(1)))
+
 import tkinter
-import tkinter.ttk as ttk
 
 app = tkinter.Tk()
+print(app.winfo_fpixels('1i'))
+#app.tk.call('tk', 'scaling', 1.0)
+print(app.winfo_fpixels('1i'))
 app.geometry("400x300")
 app.title("Standard Tkinter Test")
 
@@ -22,9 +28,9 @@ frame_1.pack(padx=60, pady=20, fill="both", expand=True)
 label_1 = tkinter.Label(master=frame_1, text="Label", bg="lightgray")
 label_1.pack(pady=y_padding, padx=10)
 
-progressbar_1 = ttk.Progressbar(master=frame_1,style='black.Horizontal.TProgressbar', length=150)
-progressbar_1.pack(pady=y_padding, padx=10)
-progressbar_1["value"] = 50
+#progressbar_1 = ttk.Progressbar(master=frame_1,style='black.Horizontal.TProgressbar', length=150)
+#progressbar_1.pack(pady=y_padding, padx=10)
+#progressbar_1["value"] = 50
 
 button_1 = tkinter.Button(master=frame_1, command=button_function, text="Button", highlightbackground="lightgray")
 button_1.pack(pady=y_padding, padx=10)

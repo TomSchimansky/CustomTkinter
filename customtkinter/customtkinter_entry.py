@@ -4,16 +4,16 @@ import sys
 from .customtkinter_tk import CTk
 from .customtkinter_frame import CTkFrame
 from .appearance_mode_tracker import AppearanceModeTracker
-from .customtkinter_color_manager import CTkColorManager
+from .customtkinter_theme_manager import CTkThemeManager
 
 
 class CTkEntry(tkinter.Frame):
     def __init__(self, *args,
                  master=None,
                  bg_color=None,
-                 fg_color="CTkColorManager",
-                 text_color="CTkColorManager",
-                 placeholder_text_color="CTkColorManager",
+                 fg_color="default_theme",
+                 text_color="default_theme",
+                 placeholder_text_color="default_theme",
                  text_font=None,
                  placeholder_text=None,
                  corner_radius=8,
@@ -52,9 +52,9 @@ class CTkEntry(tkinter.Frame):
         self.configure_basic_grid()
 
         self.bg_color = self.detect_color_of_master() if bg_color is None else bg_color
-        self.fg_color = CTkColorManager.ENTRY if fg_color == "CTkColorManager" else fg_color
-        self.text_color = CTkColorManager.TEXT if text_color == "CTkColorManager" else text_color
-        self.placeholder_text_color = CTkColorManager.PLACEHOLDER_TEXT if placeholder_text_color == "CTkColorManager" else placeholder_text_color
+        self.fg_color = CTkThemeManager.ENTRY_COLOR if fg_color == "default_theme" else fg_color
+        self.text_color = CTkThemeManager.TEXT_COLOR if text_color == "default_theme" else text_color
+        self.placeholder_text_color = CTkThemeManager.PLACEHOLDER_TEXT_COLOR if placeholder_text_color == "default_theme" else placeholder_text_color
 
         if text_font is None:
             if sys.platform == "darwin":  # macOS
@@ -152,14 +152,14 @@ class CTkEntry(tkinter.Frame):
             if not self.placeholder_text_active and self.entry.get() == "":
                 self.placeholder_text_active = True
                 self.pre_placeholder_arguments = {"show": self.entry.cget("show")}
-                self.entry.config(fg=CTkColorManager.single_color(self.placeholder_text_color, self.appearance_mode), show="")
+                self.entry.config(fg=CTkThemeManager.single_color(self.placeholder_text_color, self.appearance_mode), show="")
                 self.entry.delete(0, tkinter.END)
                 self.entry.insert(0, self.placeholder_text)
 
     def clear_placeholder(self, event=None):
         if self.placeholder_text_active:
             self.placeholder_text_active = False
-            self.entry.config(fg=CTkColorManager.single_color(self.text_color, self.appearance_mode))
+            self.entry.config(fg=CTkThemeManager.single_color(self.text_color, self.appearance_mode))
             self.entry.delete(0, tkinter.END)
             for argument, value in self.pre_placeholder_arguments.items():
                 self.entry[argument] = value

@@ -1,4 +1,3 @@
-import time
 import sys
 import tkinter
 from distutils.version import StrictVersion as Version
@@ -29,15 +28,6 @@ class AppearanceModeTracker:
                 cls.update_callbacks()
 
     @classmethod
-    def get_tk_root_of_widget(cls, widget):
-        current_widget = widget
-
-        while isinstance(current_widget, tkinter.Tk) is False:
-            current_widget = current_widget.master
-
-        return current_widget
-
-    @classmethod
     def add(cls, callback, widget=None):
         cls.callback_list.append(callback)
 
@@ -50,6 +40,10 @@ class AppearanceModeTracker:
                     root_tk.after(500, cls.update)
                     cls.update_loop_running = True
 
+    @classmethod
+    def remove(cls, callback):
+        cls.callback_list.remove(callback)
+
     @staticmethod
     def detect_appearance_mode():
         try:
@@ -59,6 +53,15 @@ class AppearanceModeTracker:
                 return 0  # Light
         except NameError:
             return 0  # Light
+
+    @classmethod
+    def get_tk_root_of_widget(cls, widget):
+        current_widget = widget
+
+        while isinstance(current_widget, tkinter.Tk) is False:
+            current_widget = current_widget.master
+
+        return current_widget
 
     @classmethod
     def update_callbacks(cls):
@@ -94,10 +97,6 @@ class AppearanceModeTracker:
                 continue
 
         cls.update_loop_running = False
-
-    @classmethod
-    def remove(cls, callback):
-        cls.callback_list.remove(callback)
 
     @classmethod
     def get_mode(cls):

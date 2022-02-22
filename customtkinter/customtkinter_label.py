@@ -4,15 +4,15 @@ import sys
 from .customtkinter_tk import CTk
 from .customtkinter_frame import CTkFrame
 from .appearance_mode_tracker import AppearanceModeTracker
-from .customtkinter_color_manager import CTkColorManager
+from .customtkinter_theme_manager import CTkThemeManager
 
 
 class CTkLabel(tkinter.Frame):
     def __init__(self, *args,
                  master=None,
                  bg_color=None,
-                 fg_color="CTkColorManager",
-                 text_color="CTkColorManager",
+                 fg_color="default_theme",
+                 text_color="default_theme",
                  corner_radius=8,
                  width=120,
                  height=25,
@@ -49,8 +49,8 @@ class CTkLabel(tkinter.Frame):
         self.appearance_mode = AppearanceModeTracker.get_mode()  # 0: "Light" 1: "Dark"
 
         self.bg_color = self.detect_color_of_master() if bg_color is None else bg_color
-        self.fg_color = CTkColorManager.LABEL_BG if fg_color == "CTkColorManager" else fg_color
-        self.text_color = CTkColorManager.TEXT if text_color == "CTkColorManager" else text_color
+        self.fg_color = CTkThemeManager.LABEL_BG_COLOR if fg_color == "default_theme" else fg_color
+        self.text_color = CTkThemeManager.TEXT_COLOR if text_color == "default_theme" else text_color
 
         self.width = width
         self.height = height

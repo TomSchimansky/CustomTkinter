@@ -13,7 +13,7 @@ from .customtkinter_canvas import CTkCanvas
 from .customtkinter_toplevel import CTkToplevel
 
 from .appearance_mode_tracker import AppearanceModeTracker
-from .customtkinter_color_manager import CTkColorManager
+from .customtkinter_theme_manager import CTkThemeManager
 
 from distutils.version import StrictVersion as Version
 import tkinter
@@ -58,7 +58,7 @@ def get_appearance_mode():
 
 
 def set_default_color_theme(color_string):
-    CTkColorManager.initialize_color_theme(color_string)
+    CTkThemeManager.initialize_color_theme(color_string)
 
 
 def load_font_windows(fontpath: str, private=True, enumerable=False):

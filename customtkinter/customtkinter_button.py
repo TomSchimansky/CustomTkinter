@@ -4,8 +4,9 @@ import sys
 from .customtkinter_tk import CTk
 from .customtkinter_frame import CTkFrame
 from .appearance_mode_tracker import AppearanceModeTracker
-from .customtkinter_color_manager import CTkColorManager
+from .customtkinter_theme_manager import CTkThemeManager
 from .customtkinter_canvas import CTkCanvas
+from .customtkinter_settings import CTkSettings
 
 
 class CTkButton(tkinter.Frame):
@@ -13,9 +14,9 @@ class CTkButton(tkinter.Frame):
 
     def __init__(self, *args,
                  bg_color=None,
-                 fg_color="CTkColorManager",
-                 hover_color="CTkColorManager",
-                 border_color="CTkColorManager",
+                 fg_color="default_theme",
+                 hover_color="default_theme",
+                 border_color="default_theme",
                  border_width=0,
                  command=None,
                  textvariable=None,
@@ -23,7 +24,7 @@ class CTkButton(tkinter.Frame):
                  height=30,
                  corner_radius=8,
                  text_font=None,
-                 text_color="CTkColorManager",
+                 text_color="default_theme",
                  text="CTkButton",
                  hover=True,
                  image=None,
@@ -60,9 +61,9 @@ class CTkButton(tkinter.Frame):
 
         # color variables
         self.bg_color = self.detect_color_of_master() if bg_color is None else bg_color
-        self.fg_color = CTkColorManager.MAIN if fg_color == "CTkColorManager" else fg_color
-        self.hover_color = CTkColorManager.MAIN_HOVER if hover_color == "CTkColorManager" else hover_color
-        self.border_color = CTkColorManager.CHECKBOX_LINES if border_color == "CTkColorManager" else border_color
+        self.fg_color = CTkThemeManager.MAIN_COLOR if fg_color == "default_theme" else fg_color
+        self.hover_color = CTkThemeManager.MAIN_HOVER_COLOR if hover_color == "default_theme" else hover_color
+        self.border_color = CTkThemeManager.CHECKBOX_LINES_COLOR if border_color == "default_theme" else border_color
 
         # shape and size
         self.width = width
@@ -86,12 +87,12 @@ class CTkButton(tkinter.Frame):
         self.image_label = None
         self.text = text
         self.text_label = None
-        self.text_color = CTkColorManager.TEXT if text_color == "CTkColorManager" else text_color
+        self.text_color = CTkThemeManager.TEXT_COLOR if text_color == "default_theme" else text_color
         if text_font is None:
             if sys.platform == "darwin":  # macOS
                 self.text_font = ("Avenir", 13)
-            elif "win" in sys.platform:  # Windows
-                self.text_font = ("Century Gothic", 11)
+            elif sys.platform.startswith("win"):  # Windows
+                self.text_font = ("Segoe UI", -14)
             else:
                 self.text_font = "TkDefaultFont"
         else:
@@ -169,52 +170,53 @@ class CTkButton(tkinter.Frame):
                     return user_corner_radius + 0.5
                 else:
                     return user_corner_radius
+
             elif draw_method == "font":
                 return round(user_corner_radius)
 
     def draw(self, no_color_updates=False):
-        self.canvas.configure(bg=CTkColorManager.single_color(self.bg_color, self.appearance_mode))
+        self.canvas.configure(bg=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
 
         # decide the drawing method
         if sys.platform == "darwin":
             # on macOS draw button with polygons (positions are more accurate, macOS has Antialiasing)
             self.draw_with_polygon_shapes()
         elif sys.platform.startswith("win"):
-            #self.draw_with_ovals_and_rects()
-            self.draw_with_font_shapes_and_rects()
+            # self.draw_with_ovals_and_rects()
+            draw_color_update = self.draw_with_font_shapes_and_rects()
         else:
-            # on Windows and other draw with ovals (corner_radius can be optimised to look better than with polygons)
+            # on other draw with ovals (corner_radius can be optimised to look better than with polygons)
             self.draw_with_ovals_and_rects()
 
-        if no_color_updates is False:
+        if no_color_updates is False or draw_color_update:
 
             # set color for the button border parts (outline)
             self.canvas.itemconfig("border_parts",
-                                   outline=CTkColorManager.single_color(self.border_color, self.appearance_mode),
-                                   fill=CTkColorManager.single_color(self.border_color, self.appearance_mode))
+                                   outline=CTkThemeManager.single_color(self.border_color, self.appearance_mode),
+                                   fill=CTkThemeManager.single_color(self.border_color, self.appearance_mode))
 
             # set color for inner button parts (depends on button state)
             if self.state == tkinter.DISABLED:
                 if self.fg_color is None:
                     self.canvas.itemconfig("inner_parts",
-                                           outline=CTkColorManager.darken_hex_color(CTkColorManager.single_color(self.bg_color, self.appearance_mode)),
-                                           fill=CTkColorManager.darken_hex_color(CTkColorManager.single_color(self.bg_color, self.appearance_mode)))
+                                           outline=CTkThemeManager.darken_hex_color(CTkThemeManager.single_color(self.bg_color, self.appearance_mode)),
+                                           fill=CTkThemeManager.darken_hex_color(CTkThemeManager.single_color(self.bg_color, self.appearance_mode)))
                 else:
                     self.canvas.itemconfig("inner_parts",
-                                           outline=CTkColorManager.darken_hex_color(
-                                                   CTkColorManager.single_color(self.fg_color, self.appearance_mode)),
-                                           fill=CTkColorManager.darken_hex_color(
-                                                   CTkColorManager.single_color(self.fg_color, self.appearance_mode)))
+                                           outline=CTkThemeManager.darken_hex_color(
+                                                   CTkThemeManager.single_color(self.fg_color, self.appearance_mode)),
+                                           fill=CTkThemeManager.darken_hex_color(
+                                                   CTkThemeManager.single_color(self.fg_color, self.appearance_mode)))
 
             else:
                 if self.fg_color is None:
                     self.canvas.itemconfig("inner_parts",
-                                           outline=CTkColorManager.single_color(self.bg_color, self.appearance_mode),
-                                           fill=CTkColorManager.single_color(self.bg_color, self.appearance_mode))
+                                           outline=CTkThemeManager.single_color(self.bg_color, self.appearance_mode),
+                                           fill=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
                 else:
                     self.canvas.itemconfig("inner_parts",
-                                           outline=CTkColorManager.single_color(self.fg_color, self.appearance_mode),
-                                           fill=CTkColorManager.single_color(self.fg_color, self.appearance_mode))
+                                           outline=CTkThemeManager.single_color(self.fg_color, self.appearance_mode),
+                                           fill=CTkThemeManager.single_color(self.fg_color, self.appearance_mode))
 
         # create text label if text given
         if self.text is not None and self.text != "":
@@ -229,21 +231,21 @@ class CTkButton(tkinter.Frame):
 
             if no_color_updates is False:
                 # set text_label fg color (text color)
-                self.text_label.configure(fg=CTkColorManager.single_color(self.text_color, self.appearance_mode))
+                self.text_label.configure(fg=CTkThemeManager.single_color(self.text_color, self.appearance_mode))
 
                 # set text_label bg color (label color)
                 if self.state == tkinter.DISABLED:
                     if self.fg_color is None:
                         self.text_label.configure(
-                                bg=CTkColorManager.darken_hex_color(CTkColorManager.single_color(self.bg_color, self.appearance_mode)))
+                                bg=CTkThemeManager.darken_hex_color(CTkThemeManager.single_color(self.bg_color, self.appearance_mode)))
                     else:
                         self.text_label.configure(
-                                bg=CTkColorManager.darken_hex_color(CTkColorManager.single_color(self.fg_color, self.appearance_mode)))
+                                bg=CTkThemeManager.darken_hex_color(CTkThemeManager.single_color(self.fg_color, self.appearance_mode)))
                 else:
                     if self.fg_color is None:
-                        self.text_label.configure(bg=CTkColorManager.single_color(self.bg_color, self.appearance_mode))
+                        self.text_label.configure(bg=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
                     else:
-                        self.text_label.configure(bg=CTkColorManager.single_color(self.fg_color, self.appearance_mode))
+                        self.text_label.configure(bg=CTkThemeManager.single_color(self.fg_color, self.appearance_mode))
 
             self.text_label.configure(text=self.text)  # set text
 
@@ -267,9 +269,9 @@ class CTkButton(tkinter.Frame):
             if no_color_updates is False:
                 # set image_label bg color (background color of label)
                 if self.state == tkinter.DISABLED:
-                    self.image_label.configure(bg=CTkColorManager.darken_hex_color(CTkColorManager.single_color(self.fg_color, self.appearance_mode)))
+                    self.image_label.configure(bg=CTkThemeManager.darken_hex_color(CTkThemeManager.single_color(self.fg_color, self.appearance_mode)))
                 else:
-                    self.image_label.configure(bg=CTkColorManager.single_color(self.fg_color, self.appearance_mode))
+                    self.image_label.configure(bg=CTkThemeManager.single_color(self.fg_color, self.appearance_mode))
 
             self.image_label.configure(image=self.image)  # set image
 
@@ -447,6 +449,7 @@ class CTkButton(tkinter.Frame):
                                                  self.height - self.inner_corner_radius - self.border_width + rect_bottom_right_shift))
 
     def draw_with_font_shapes_and_rects(self):
+        draw_color_update = False
 
         # create border button parts
         if self.border_width > 0:
@@ -457,10 +460,16 @@ class CTkButton(tkinter.Frame):
                     self.canvas.create_aa_circle(0, 0, 0, tags=("border_oval_1_b", "border_corner_part", "border_parts"), anchor=tkinter.CENTER, angle=180)
                     self.canvas.create_aa_circle(0, 0, 0, tags=("border_oval_2_a", "border_corner_part", "border_parts"), anchor=tkinter.CENTER)
                     self.canvas.create_aa_circle(0, 0, 0, tags=("border_oval_2_b", "border_corner_part", "border_parts"), anchor=tkinter.CENTER, angle=180)
+
+                if not self.canvas.find_withtag("border_oval_3_a") and round(self.corner_radius) * 2 < self.height:
                     self.canvas.create_aa_circle(0, 0, 0, tags=("border_oval_3_a", "border_corner_part", "border_parts"), anchor=tkinter.CENTER)
                     self.canvas.create_aa_circle(0, 0, 0, tags=("border_oval_3_b", "border_corner_part", "border_parts"), anchor=tkinter.CENTER, angle=180)
                     self.canvas.create_aa_circle(0, 0, 0, tags=("border_oval_4_a", "border_corner_part", "border_parts"), anchor=tkinter.CENTER)
                     self.canvas.create_aa_circle(0, 0, 0, tags=("border_oval_4_b", "border_corner_part", "border_parts"), anchor=tkinter.CENTER, angle=180)
+                    draw_color_update = True
+                    self.canvas.tag_lower("border_parts")
+                elif self.canvas.find_withtag("border_oval_3_a") and not round(self.corner_radius) * 2 < self.height:
+                    self.canvas.delete(["border_oval_3_a", "border_oval_3_b", "border_oval_4_a", "border_oval_4_b"])
 
                 # change position of border corner parts
                 self.canvas.coords("border_oval_1_a", self.corner_radius, self.corner_radius, self.corner_radius)
@@ -481,30 +490,29 @@ class CTkButton(tkinter.Frame):
                 self.canvas.create_rectangle(0, 0, 0, 0, tags=("border_rectangle_2", "border_rectangle_part", "border_parts"))
 
             # change position of border rectangle parts
-            self.canvas.coords("border_rectangle_1", (0,
-                                                      self.corner_radius,
-                                                      self.width -1,
-                                                      self.height - self.corner_radius -1))
-            self.canvas.coords("border_rectangle_2", (self.corner_radius,
-                                                      0,
-                                                      self.width - self.corner_radius -1,
-                                                      self.height -1))
+            self.canvas.coords("border_rectangle_1", (0, self.corner_radius, self.width -1, self.height - self.corner_radius -1))
+            self.canvas.coords("border_rectangle_2", (self.corner_radius, 0, self.width - self.corner_radius -1, self.height -1))
 
         # create inner button parts
         if self.inner_corner_radius > 0:
 
             # create canvas border corner parts if not already created
-            if not self.canvas.find_withtag("inner_corner_part"):
+            if not self.canvas.find_withtag("inner_oval_1_a"):
                 self.canvas.create_aa_circle(0, 0, 0, tags=("inner_oval_1_a", "inner_corner_part", "inner_parts"), anchor=tkinter.CENTER)
                 self.canvas.create_aa_circle(0, 0, 0, tags=("inner_oval_1_b", "inner_corner_part", "inner_parts"), anchor=tkinter.CENTER, angle=180)
                 self.canvas.create_aa_circle(0, 0, 0, tags=("inner_oval_2_a", "inner_corner_part", "inner_parts"), anchor=tkinter.CENTER)
                 self.canvas.create_aa_circle(0, 0, 0, tags=("inner_oval_2_b", "inner_corner_part", "inner_parts"), anchor=tkinter.CENTER, angle=180)
+
+            if not self.canvas.find_withtag("inner_oval_3_a") and round(self.inner_corner_radius) * 2 < self.height - (2 * self.border_width):
                 self.canvas.create_aa_circle(0, 0, 0, tags=("inner_oval_3_a", "inner_corner_part", "inner_parts"), anchor=tkinter.CENTER)
                 self.canvas.create_aa_circle(0, 0, 0, tags=("inner_oval_3_b", "inner_corner_part", "inner_parts"), anchor=tkinter.CENTER, angle=180)
                 self.canvas.create_aa_circle(0, 0, 0, tags=("inner_oval_4_a", "inner_corner_part", "inner_parts"), anchor=tkinter.CENTER)
                 self.canvas.create_aa_circle(0, 0, 0, tags=("inner_oval_4_b", "inner_corner_part", "inner_parts"), anchor=tkinter.CENTER, angle=180)
+                self.canvas.tag_raise("inner_parts")
+                draw_color_update = True
+            elif self.canvas.find_withtag("inner_oval_3_a") and not round(self.inner_corner_radius) * 2 < self.height - (2 * self.border_width):
+                self.canvas.delete(["inner_oval_3_a", "inner_oval_3_b", "inner_oval_4_a", "inner_oval_4_b"])
 
-            #print(self.corner_radius, self.border_width, self.inner_corner_radius)
             # change position of border corner parts
             self.canvas.coords("inner_oval_1_a", self.border_width + self.inner_corner_radius, self.border_width + self.inner_corner_radius, self.inner_corner_radius)
             self.canvas.coords("inner_oval_1_b", self.border_width + self.inner_corner_radius, self.border_width + self.inner_corner_radius, self.inner_corner_radius)
@@ -518,9 +526,15 @@ class CTkButton(tkinter.Frame):
             self.canvas.delete("inner_corner_part")  # delete inner corner parts if not needed
 
         # create canvas inner rectangle parts if not already created
-        if not self.canvas.find_withtag("inner_rectangle_part"):
+        if not self.canvas.find_withtag("inner_rectangle_1"):
             self.canvas.create_rectangle(0, 0, 0, 0, tags=("inner_rectangle_1", "inner_rectangle_part", "inner_parts"))
+
+        if not self.canvas.find_withtag("inner_rectangle_2") and self.inner_corner_radius * 2 < self.height - (self.border_width * 2):
             self.canvas.create_rectangle(0, 0, 0, 0, tags=("inner_rectangle_2", "inner_rectangle_part", "inner_parts"))
+            self.canvas.tag_raise("inner_parts")
+            draw_color_update = True
+        elif self.canvas.find_withtag("inner_rectangle_2") and not self.inner_corner_radius * 2 < self.height - (self.border_width * 2):
+            self.canvas.delete("inner_rectangle_2")
 
         # change position of inner rectangle parts
         self.canvas.coords("inner_rectangle_1", (self.border_width + self.inner_corner_radius,
@@ -531,6 +545,8 @@ class CTkButton(tkinter.Frame):
                                                  self.border_width + self.inner_corner_radius,
                                                  self.width - self.border_width -1,
                                                  self.height - self.inner_corner_radius - self.border_width -1))
+
+        return draw_color_update
 
     def config(self, *args, **kwargs):
         self.configure(*args, **kwargs)
@@ -630,16 +646,16 @@ class CTkButton(tkinter.Frame):
 
             # set color of inner button parts to hover color
             self.canvas.itemconfig("inner_parts",
-                                   outline=CTkColorManager.single_color(inner_parts_color, self.appearance_mode),
-                                   fill=CTkColorManager.single_color(inner_parts_color, self.appearance_mode))
+                                   outline=CTkThemeManager.single_color(inner_parts_color, self.appearance_mode),
+                                   fill=CTkThemeManager.single_color(inner_parts_color, self.appearance_mode))
 
             # set text_label bg color to button hover color
             if self.text_label is not None:
-                self.text_label.configure(bg=CTkColorManager.single_color(inner_parts_color, self.appearance_mode))
+                self.text_label.configure(bg=CTkThemeManager.single_color(inner_parts_color, self.appearance_mode))
 
             # set image_label bg color to button hover color
             if self.image_label is not None:
-                self.image_label.configure(bg=CTkColorManager.single_color(inner_parts_color, self.appearance_mode))
+                self.image_label.configure(bg=CTkThemeManager.single_color(inner_parts_color, self.appearance_mode))
 
     def on_leave(self, event=0):
         self.click_animation_running = False
@@ -652,16 +668,16 @@ class CTkButton(tkinter.Frame):
 
             # set color of inner button parts
             self.canvas.itemconfig("inner_parts",
-                                   outline=CTkColorManager.single_color(inner_parts_color, self.appearance_mode),
-                                   fill=CTkColorManager.single_color(inner_parts_color, self.appearance_mode))
+                                   outline=CTkThemeManager.single_color(inner_parts_color, self.appearance_mode),
+                                   fill=CTkThemeManager.single_color(inner_parts_color, self.appearance_mode))
 
             # set text_label bg color (label color)
             if self.text_label is not None:
-                self.text_label.configure(bg=CTkColorManager.single_color(inner_parts_color, self.appearance_mode))
+                self.text_label.configure(bg=CTkThemeManager.single_color(inner_parts_color, self.appearance_mode))
 
             # set image_label bg color (image bg color)
             if self.image_label is not None:
-                self.image_label.configure(bg=CTkColorManager.single_color(inner_parts_color, self.appearance_mode))
+                self.image_label.configure(bg=CTkThemeManager.single_color(inner_parts_color, self.appearance_mode))
 
     def click_animation(self):
         if self.click_animation_running:
