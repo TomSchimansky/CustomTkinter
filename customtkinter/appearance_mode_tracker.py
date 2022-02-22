@@ -10,7 +10,7 @@ if Version(darkdetect.__version__) < Version("0.3.1"):
         exit()
 
 
-class AppearanceModeTracker():
+class AppearanceModeTracker:
 
     callback_list = []
     root_tk_list = []

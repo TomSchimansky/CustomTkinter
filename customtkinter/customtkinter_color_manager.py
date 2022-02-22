@@ -23,8 +23,8 @@ class CTkColorManager:
 
         if theme_name.lower() == "blue":
             cls.WINDOW_BG = ("#ECECEC", "#323232")  # macOS standard light and dark window bg colors
-            cls.MAIN = ("#1C94CF", "#1C94CF")
-            cls.MAIN_HOVER = ("#5FB4DD", "#5FB4DD")
+            cls.MAIN = ("#64A1D2", "#1C94CF")
+            cls.MAIN_HOVER = ("#A7C2E0", "#5FB4DD")
             cls.ENTRY = ("white", "#222222")
             cls.TEXT = ("black", "white")
             cls.PLACEHOLDER_TEXT = ("gray52", "gray62")

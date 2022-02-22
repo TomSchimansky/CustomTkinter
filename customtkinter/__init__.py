@@ -61,21 +61,20 @@ def set_default_color_theme(color_string):
     CTkColorManager.initialize_color_theme(color_string)
 
 
-if sys.platform.startswith("win"):
+def load_font_windows(fontpath: str, private=True, enumerable=False):
     from ctypes import windll, byref, create_string_buffer
 
     FR_PRIVATE = 0x10
     FR_NOT_ENUM = 0x20
 
-
-    def loadfont(fontpath: str, private=True, enumerable=False):
-        pathbuf = create_string_buffer(bytes(fontpath, "utf-8"))
-        add_font_resource_ex = windll.gdi32.AddFontResourceExA
-        flags = (FR_PRIVATE if private else 0) | (FR_NOT_ENUM if not enumerable else 0)
-        num_fonts_added = add_font_resource_ex(byref(pathbuf), flags, 0)
-        return bool(num_fonts_added)
+    pathbuf = create_string_buffer(bytes(fontpath, "utf-8"))
+    add_font_resource_ex = windll.gdi32.AddFontResourceExA
+    flags = (FR_PRIVATE if private else 0) | (FR_NOT_ENUM if not enumerable else 0)
+    num_fonts_added = add_font_resource_ex(byref(pathbuf), flags, 0)
+    return bool(num_fonts_added)
 
 
+if sys.platform.startswith("win"):
     # load custom font for rendering circles on the tkinter.Canvas with antialiasing
     script_directory = os.path.dirname(os.path.abspath(__file__))
-    loadfont(os.path.join(script_directory, "assets", "canvas_shapes_font.otf"), private=True)
+    print("load_font_windows:", load_font_windows(os.path.join(script_directory, "assets", "CustomTkinter_shapes_font-Regular.otf"), private=True))

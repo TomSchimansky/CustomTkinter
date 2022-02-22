@@ -96,6 +96,7 @@ class CTkDialog:
 if __name__ == "__main__":
     import customtkinter
     customtkinter.set_appearance_mode("System")
+    customtkinter.set_default_color_theme("dark-blue")
 
     app = customtkinter.CTk()
     app.geometry("400x300")
