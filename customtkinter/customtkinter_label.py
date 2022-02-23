@@ -17,7 +17,7 @@ class CTkLabel(tkinter.Frame):
                  width=120,
                  height=25,
                  text="CTkLabel",
-                 text_font=None,
+                 text_font="default_theme",
                  **kwargs):
         if master is None:
             super().__init__(*args)
@@ -63,25 +63,16 @@ class CTkLabel(tkinter.Frame):
             self.corner_radius = self.width / 2
 
         self.text = text
-
-        if text_font is None:
-            if sys.platform == "darwin":  # macOS
-                self.text_font = ("Avenir", 13)
-            elif "win" in sys.platform:  # Windows
-                self.text_font = ("Century Gothic", 10)
-            else:
-                self.text_font = ("TkDefaultFont", 10)
-        else:
-            self.text_font = text_font
+        self.text_font = (CTkThemeManager.TEXT_FONT_NAME, CTkThemeManager.TEXT_FONT_SIZE) if text_font == "default_theme" else text_font
 
         self.canvas = tkinter.Canvas(master=self,
-                                     highlightthicknes=0,
+                                     highlightthickness=0,
                                      width=self.width,
                                      height=self.height)
         self.canvas.place(relx=0, rely=0, anchor=tkinter.NW)
 
         self.text_label = tkinter.Label(master=self,
-                                        highlightthicknes=0,
+                                        highlightthickness=0,
                                         bd=0,
                                         text=self.text,
                                         font=self.text_font,

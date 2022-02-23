@@ -82,7 +82,7 @@ class CTkEntry(tkinter.Frame):
         super().configure(width=self.width, height=self.height)
 
         self.canvas = tkinter.Canvas(master=self,
-                                     highlightthicknes=0,
+                                     highlightthickness=0,
                                      width=self.width,
                                      height=self.height)
         self.canvas.grid(column=0, row=0, sticky="we")
@@ -90,7 +90,7 @@ class CTkEntry(tkinter.Frame):
         self.entry = tkinter.Entry(master=self,
                                    bd=0,
                                    width=1,
-                                   highlightthicknes=0,
+                                   highlightthickness=0,
                                    font=self.text_font,
                                    **kwargs)
         self.entry.grid(column=0, row=0, sticky="we", padx=self.corner_radius if self.corner_radius >= 6 else 6)

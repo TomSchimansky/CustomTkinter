@@ -17,9 +17,20 @@ class CTkThemeManager:
     FRAME_2_COLOR = None
     CHECKBOX_LINES_COLOR = None
     DARKEN_COLOR_FACTOR = None
+    TEXT_FONT_NAME = None
+    TEXT_FONT_SIZE = None
 
     @classmethod
     def initialize_color_theme(cls, theme_name):
+
+        if sys.platform == "darwin":
+            cls.TEXT_FONT_NAME = "Avenir"
+        elif sys.platform.startswith("win"):
+            cls.TEXT_FONT_NAME = "Segoe UI"
+        else:
+            cls.TEXT_FONT_NAME = "TkDefaultFont"
+
+        cls.TEXT_FONT_SIZE = -14
 
         if theme_name.lower() == "blue":
             cls.WINDOW_BG_COLOR = ("#ECECEC", "#323232")  # macOS standard light and dark window bg colors

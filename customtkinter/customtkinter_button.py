@@ -23,7 +23,7 @@ class CTkButton(tkinter.Frame):
                  width=120,
                  height=30,
                  corner_radius=8,
-                 text_font=None,
+                 text_font="default_theme",
                  text_color="default_theme",
                  text="CTkButton",
                  hover=True,
@@ -88,15 +88,7 @@ class CTkButton(tkinter.Frame):
         self.text = text
         self.text_label = None
         self.text_color = CTkThemeManager.TEXT_COLOR if text_color == "default_theme" else text_color
-        if text_font is None:
-            if sys.platform == "darwin":  # macOS
-                self.text_font = ("Avenir", 13)
-            elif sys.platform.startswith("win"):  # Windows
-                self.text_font = ("Segoe UI", -14)
-            else:
-                self.text_font = "TkDefaultFont"
-        else:
-            self.text_font = text_font
+        self.text_font = (CTkThemeManager.TEXT_FONT_NAME, CTkThemeManager.TEXT_FONT_SIZE) if text_font == "default_theme" else text_font
 
         # callback and hover functionality
         self.function = command
@@ -160,21 +152,18 @@ class CTkButton(tkinter.Frame):
     def calc_optimal_corner_radius(user_corner_radius):
         if sys.platform == "darwin":
             return user_corner_radius  # on macOS just use given value (canvas has Antialiasing)
+        elif sys.platform.startswith("win"):
+            return round(user_corner_radius)
         else:
-            draw_method = "font"
-            if draw_method == "shapes":
-                user_corner_radius = 0.5 * round(user_corner_radius / 0.5)  # round to 0.5 steps
+            user_corner_radius = 0.5 * round(user_corner_radius / 0.5)  # round to 0.5 steps
 
-                # make sure the value is always with .5 at the end for smoother corners
-                if user_corner_radius == 0:
-                    return 0
-                elif user_corner_radius % 1 == 0:
-                    return user_corner_radius + 0.5
-                else:
-                    return user_corner_radius
-
-            elif draw_method == "font":
-                return round(user_corner_radius)
+            # make sure the value is always with .5 at the end for smoother corners
+            if user_corner_radius == 0:
+                return 0
+            elif user_corner_radius % 1 == 0:
+                return user_corner_radius + 0.5
+            else:
+                return user_corner_radius
 
     def draw(self, no_color_updates=False):
         self.canvas.configure(bg=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))

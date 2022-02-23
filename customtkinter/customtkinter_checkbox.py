@@ -20,8 +20,8 @@ class CTkCheckBox(tkinter.Frame):
                  border_width=3,
                  width=25,
                  height=25,
-                 corner_radius=4,
-                 text_font=None,
+                 corner_radius=6,
+                 text_font="default_theme",
                  text_color="default_theme",
                  text="CTkCheckBox",
                  hover=True,
@@ -81,15 +81,7 @@ class CTkCheckBox(tkinter.Frame):
 
         self.text = text
         self.text_color = CTkThemeManager.TEXT_COLOR if text_color == "default_theme" else text_color
-        if text_font is None:
-            if sys.platform == "darwin":  # macOS
-                self.text_font = ("Avenir", 13)
-            elif "win" in sys.platform:  # Windows
-                self.text_font = ("Century Gothic", 11)
-            else:
-                self.text_font = ("TkDefaultFont")
-        else:
-            self.text_font = text_font
+        self.text_font = (CTkThemeManager.TEXT_FONT_NAME, CTkThemeManager.TEXT_FONT_SIZE) if text_font == "default_theme" else text_font
 
         self.function = command
         self.state = state
@@ -149,6 +141,8 @@ class CTkCheckBox(tkinter.Frame):
     def calc_optimal_corner_radius(user_corner_radius):
         if sys.platform == "darwin":
             return user_corner_radius  # on macOS just use given value (canvas has Antialiasing)
+        elif sys.platform.startswith("win"):
+            return round(user_corner_radius)
         else:
             user_corner_radius = 0.5 * round(user_corner_radius / 0.5)  # round to 0.5 steps
 
@@ -164,7 +158,7 @@ class CTkCheckBox(tkinter.Frame):
         if sys.platform == "darwin":
             self.draw_with_ovals_and_rects()
         elif sys.platform.startswith("win"):
-            self.draw_with_ovals_and_rects()
+            self.draw_with_font_shapes_and_rects()
         else:
             self.draw_with_ovals_and_rects()
 
@@ -224,7 +218,7 @@ class CTkCheckBox(tkinter.Frame):
         # inner button parts
         if self.inner_corner_radius > 0:
 
-            if not self.canvas.find_withtag("inner_corner_part"):
+            if not self.canvas.find_withtag("inner_oval_1"):
                 self.canvas.create_oval(0, 0, 0, 0, tags=("inner_oval_1", "inner_corner_part", "inner_parts"))
                 self.canvas.create_oval(0, 0, 0, 0, tags=("inner_oval_2", "inner_corner_part", "inner_parts"))
                 self.canvas.create_oval(0, 0, 0, 0, tags=("inner_oval_3", "inner_corner_part", "inner_parts"))
@@ -241,9 +235,89 @@ class CTkCheckBox(tkinter.Frame):
         else:
             self.canvas.delete("inner_corner_part")  # delete inner corner parts if not needed
 
-        if not self.canvas.find_withtag("inner_rectangle_part"):
+        if not self.canvas.find_withtag("inner_rectangle_1"):
             self.canvas.create_rectangle(0, 0, 0, 0, tags=("inner_rectangle_1", "inner_rectangle_part", "inner_parts"))
             self.canvas.create_rectangle(0, 0, 0, 0, tags=("inner_rectangle_2", "inner_rectangle_part", "inner_parts"))
+
+        self.canvas.coords("inner_rectangle_1", (self.border_width + self.inner_corner_radius,
+                                                 self.border_width,
+                                                 self.width - self.border_width - self.inner_corner_radius - 1,
+                                                 self.height - self.border_width - 1))
+        self.canvas.coords("inner_rectangle_2", (self.border_width,
+                                                 self.border_width + self.inner_corner_radius,
+                                                 self.width - self.border_width - 1,
+                                                 self.height - self.inner_corner_radius - self.border_width - 1))
+
+    def draw_with_font_shapes_and_rects(self):
+        # border button parts
+        if self.border_width > 0:
+            if self.corner_radius > 0:
+
+                if not self.canvas.find_withtag("border_oval_1_a"):
+                    self.canvas.create_aa_circle(0, 0, 0, tags=("border_oval_1_a", "border_corner_part", "border_parts"))
+                    self.canvas.create_aa_circle(0, 0, 0, tags=("border_oval_1_b", "border_corner_part", "border_parts"), angle=180)
+                    self.canvas.create_aa_circle(0, 0, 0, tags=("border_oval_2_a", "border_corner_part", "border_parts"))
+                    self.canvas.create_aa_circle(0, 0, 0, tags=("border_oval_2_b", "border_corner_part", "border_parts"), angle=180)
+                    self.canvas.create_aa_circle(0, 0, 0, tags=("border_oval_3_a", "border_corner_part", "border_parts"))
+                    self.canvas.create_aa_circle(0, 0, 0, tags=("border_oval_3_b", "border_corner_part", "border_parts"), angle=180)
+                    self.canvas.create_aa_circle(0, 0, 0, tags=("border_oval_4_a", "border_corner_part", "border_parts"))
+                    self.canvas.create_aa_circle(0, 0, 0, tags=("border_oval_4_b", "border_corner_part", "border_parts"), angle=180)
+                    self.canvas.tag_lower("border_parts")
+
+                self.canvas.coords("border_oval_1_a", self.corner_radius, self.corner_radius, self.corner_radius)
+                self.canvas.coords("border_oval_1_b", self.corner_radius, self.corner_radius, self.corner_radius)
+                self.canvas.coords("border_oval_2_a", self.width - self.corner_radius, self.corner_radius, self.corner_radius)
+                self.canvas.coords("border_oval_2_b", self.width - self.corner_radius, self.corner_radius, self.corner_radius)
+                self.canvas.coords("border_oval_3_a", self.width - self.corner_radius, self.height - self.corner_radius, self.corner_radius)
+                self.canvas.coords("border_oval_3_b", self.width - self.corner_radius, self.height - self.corner_radius, self.corner_radius)
+                self.canvas.coords("border_oval_4_a", self.corner_radius, self.height - self.corner_radius, self.corner_radius)
+                self.canvas.coords("border_oval_4_b", self.corner_radius, self.height - self.corner_radius, self.corner_radius)
+
+            if not self.canvas.find_withtag("border_rectangle_1"):
+                self.canvas.create_rectangle(0, 0, 0, 0, tags=("border_rectangle_1", "border_rectangle_part", "border_parts"))
+                self.canvas.create_rectangle(0, 0, 0, 0, tags=("border_rectangle_2", "border_rectangle_part", "border_parts"))
+                self.canvas.tag_lower("border_parts")
+
+            self.canvas.coords("border_rectangle_1", (0, self.corner_radius, self.width - 1, self.height - self.corner_radius - 1))
+            self.canvas.coords("border_rectangle_2", (self.corner_radius, 0, self.width - self.corner_radius - 1, self.height - 1))
+
+        # inner button parts
+        if self.inner_corner_radius > 0:
+
+            if not self.canvas.find_withtag("inner_oval_1_a"):
+                self.canvas.create_aa_circle(0, 0, 0, tags=("inner_oval_1_a", "inner_corner_part", "inner_parts"))
+                self.canvas.create_aa_circle(0, 0, 0, tags=("inner_oval_1_b", "inner_corner_part", "inner_parts"), angle=180)
+                self.canvas.create_aa_circle(0, 0, 0, tags=("inner_oval_2_a", "inner_corner_part", "inner_parts"))
+                self.canvas.create_aa_circle(0, 0, 0, tags=("inner_oval_2_b", "inner_corner_part", "inner_parts"), angle=180)
+                self.canvas.create_aa_circle(0, 0, 0, tags=("inner_oval_3_a", "inner_corner_part", "inner_parts"))
+                self.canvas.create_aa_circle(0, 0, 0, tags=("inner_oval_3_b", "inner_corner_part", "inner_parts"), angle=180)
+                self.canvas.create_aa_circle(0, 0, 0, tags=("inner_oval_4_a", "inner_corner_part", "inner_parts"))
+                self.canvas.create_aa_circle(0, 0, 0, tags=("inner_oval_4_b", "inner_corner_part", "inner_parts"), angle=180)
+                self.canvas.tag_raise("inner_parts")
+
+            self.canvas.coords("inner_oval_1_a", self.border_width + self.inner_corner_radius, self.border_width + self.inner_corner_radius,
+                               self.inner_corner_radius)
+            self.canvas.coords("inner_oval_1_b", self.border_width + self.inner_corner_radius, self.border_width + self.inner_corner_radius,
+                               self.inner_corner_radius)
+            self.canvas.coords("inner_oval_2_a", self.width - self.border_width - self.inner_corner_radius, self.border_width + self.inner_corner_radius,
+                               self.inner_corner_radius)
+            self.canvas.coords("inner_oval_2_b", self.width - self.border_width - self.inner_corner_radius, self.border_width + self.inner_corner_radius,
+                               self.inner_corner_radius)
+            self.canvas.coords("inner_oval_3_a", self.width - self.border_width - self.inner_corner_radius,
+                               self.height - self.border_width - self.inner_corner_radius, self.inner_corner_radius)
+            self.canvas.coords("inner_oval_3_b", self.width - self.border_width - self.inner_corner_radius,
+                               self.height - self.border_width - self.inner_corner_radius, self.inner_corner_radius)
+            self.canvas.coords("inner_oval_4_a", self.border_width + self.inner_corner_radius, self.height - self.border_width - self.inner_corner_radius,
+                               self.inner_corner_radius)
+            self.canvas.coords("inner_oval_4_b", self.border_width + self.inner_corner_radius, self.height - self.border_width - self.inner_corner_radius,
+                               self.inner_corner_radius)
+        else:
+            self.canvas.delete("inner_corner_part")  # delete inner corner parts if not needed
+
+        if not self.canvas.find_withtag("inner_rectangle_1"):
+            self.canvas.create_rectangle(0, 0, 0, 0, tags=("inner_rectangle_1", "inner_rectangle_part", "inner_parts"))
+            self.canvas.create_rectangle(0, 0, 0, 0, tags=("inner_rectangle_2", "inner_rectangle_part", "inner_parts"))
+            self.canvas.tag_raise("inner_parts")
 
         self.canvas.coords("inner_rectangle_1", (self.border_width + self.inner_corner_radius,
                                                  self.border_width,

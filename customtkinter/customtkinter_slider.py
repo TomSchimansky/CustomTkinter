@@ -52,6 +52,8 @@ class CTkSlider(tkinter.Frame):
         AppearanceModeTracker.add(self.change_appearance_mode, self)
         self.appearance_mode = AppearanceModeTracker.get_mode()  # 0: "Light" 1: "Dark"
 
+        self.configure_basic_grid()
+
         self.bg_color = self.detect_color_of_master() if bg_color is None else bg_color
         self.border_color = border_color
         self.fg_color = CTkThemeManager.SLIDER_BG_COLOR if fg_color == "default_theme" else fg_color
@@ -82,7 +84,7 @@ class CTkSlider(tkinter.Frame):
                                      highlightthickness=0,
                                      width=self.width,
                                      height=self.height)
-        self.canvas.place(x=0, y=0)
+        self.canvas.grid(column=0, row=0, sticky="nswe")
 
         self.canvas.bind("<Enter>", self.on_enter)
         self.canvas.bind("<Leave>", self.on_leave)
@@ -109,6 +111,10 @@ class CTkSlider(tkinter.Frame):
             self.variable.trace_remove("write", self.variabel_callback_name)
 
         super().destroy()
+
+    def configure_basic_grid(self):
+        self.grid_rowconfigure(0, weight=1)
+        self.grid_columnconfigure(0, weight=1)
 
     def detect_color_of_master(self):
         if isinstance(self.master, CTkFrame):
@@ -345,10 +351,16 @@ class CTkSlider(tkinter.Frame):
         return self.output_value
 
     def set(self, output_value, from_variable_callback=False):
-        if output_value > self.to:
-            output_value = self.to
-        elif output_value < self.from_:
-            output_value = self.from_
+        if self.from_ < self.to:
+            if output_value > self.to:
+                output_value = self.to
+            elif output_value < self.from_:
+                output_value = self.from_
+        else:
+            if output_value < self.to:
+                output_value = self.to
+            elif output_value > self.from_:
+                output_value = self.from_
 
         self.output_value = self.round_to_step_size(output_value)
         self.value = (self.output_value - self.from_) / (self.to - self.from_)

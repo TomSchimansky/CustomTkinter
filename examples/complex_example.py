@@ -4,7 +4,7 @@ import customtkinter
 import sys
 
 customtkinter.set_appearance_mode("Light")  # Modes: "System" (standard), "Dark", "Light"
-customtkinter.set_default_color_theme("blue")  # Themes: "blue" (standard), "green", "dark-blue"
+customtkinter.set_default_color_theme("dark-blue")  # Themes: "blue" (standard), "green", "dark-blue"
 
 
 class App(customtkinter.CTk):
@@ -29,56 +29,71 @@ class App(customtkinter.CTk):
         # ============ create two CTkFrames ============
 
         self.frame_left = customtkinter.CTkFrame(master=self,
-                                                 width=200,
-                                                 height=App.HEIGHT-40,
-                                                 corner_radius=10)
-        self.frame_left.place(relx=0.32, rely=0.5, anchor=tkinter.E)
+                                                 width=180,
+                                                 corner_radius=0)
+        self.frame_left.grid(row=0, column=0, sticky="nswe")
 
         self.frame_right = customtkinter.CTkFrame(master=self,
                                                   width=420,
                                                   height=App.HEIGHT-40,
                                                   corner_radius=10)
-        self.frame_right.place(relx=0.365, rely=0.5, anchor=tkinter.W)
+        self.frame_right.grid(row=0, column=1, sticky="nswe", padx=20, pady=20)
+
+        self.grid_columnconfigure(1, weight=1)
+        self.rowconfigure(0, weight=1)
 
         # ============ frame_left ============
 
+        self.frame_left.grid_rowconfigure(0, minsize=10)
+        self.frame_left.grid_rowconfigure(5, weight=1)
+        self.frame_left.grid_rowconfigure(8, minsize=10)
+
+        self.label_1 = customtkinter.CTkLabel(master=self.frame_left,
+                                                text="CustomTkinter",
+                                              fg_color=None)
+        self.label_1.grid(row=1, column=0, pady=10, padx=10)
+
         self.button_1 = customtkinter.CTkButton(master=self.frame_left,
-                                                text="CTkButton",
+                                                text="CTkButton 1",
                                                 command=self.button_event,
                                                 border_width=0,
                                                 corner_radius=8)
-        self.button_1.place(relx=0.5, y=50, anchor=tkinter.CENTER)
+        self.button_1.grid(row=2, column=0, pady=10, padx=20)
 
         self.button_2 = customtkinter.CTkButton(master=self.frame_left,
-                                                text="CTkButton",
+                                                text="CTkButton 2",
                                                 command=self.button_event,
                                                 border_width=0,
                                                 corner_radius=8)
-        self.button_2.place(relx=0.5, y=100, anchor=tkinter.CENTER)
+        self.button_2.grid(row=3, column=0, pady=10, padx=20)
 
         self.button_3 = customtkinter.CTkButton(master=self.frame_left,
-                                                text="CTkButton",
+                                                text="CTkButton 3",
                                                 command=self.button_event,
                                                 border_width=0,
                                                 corner_radius=8)
-        self.button_3.place(relx=0.5, y=150, anchor=tkinter.CENTER)
+        self.button_3.grid(row=4, column=0, pady=10, padx=20)
 
         self.check_box_1 = customtkinter.CTkCheckBox(master=self.frame_left,
                                                      text="CTkCheckBox")
-        self.check_box_1.place(relx=0.15, rely=0.82, anchor=tkinter.W)
+        self.check_box_1.grid(row=6, column=0, pady=10, padx=20, sticky="w")
 
         self.check_box_2 = customtkinter.CTkCheckBox(master=self.frame_left,
                                                      text="Dark Mode",
                                                      command=self.change_mode)
-        self.check_box_2.place(relx=0.15, rely=0.92, anchor=tkinter.W)
+        self.check_box_2.grid(row=7, column=0, pady=10, padx=20, sticky="w")
 
         # ============ frame_right ============
+
+        self.frame_right.rowconfigure(0, weight=1)
+        self.frame_right.rowconfigure(3, weight=1)
+        self.frame_right.columnconfigure(0, weight=1)
 
         self.frame_info = customtkinter.CTkFrame(master=self.frame_right,
                                                  width=380,
                                                  height=200,
                                                  corner_radius=10)
-        self.frame_info.place(relx=0.5, y=20, anchor=tkinter.N)
+        self.frame_info.grid(row=0, column=0, columnspan=3, pady=20, padx=20, sticky="wens")
 
         # ============ frame_right -> frame_info ============
 
@@ -103,22 +118,21 @@ class App(customtkinter.CTk):
         # ============ frame_right <- ============
 
         self.slider_1 = customtkinter.CTkSlider(master=self.frame_right,
-                                                width=160,
                                                 height=16,
                                                 border_width=5,
                                                 from_=1,
                                                 to=0,
                                                 number_of_steps=3,
                                                 command=self.progressbar.set)
-        self.slider_1.place(x=20, rely=0.6, anchor=tkinter.W)
-        self.slider_1.set(0.3)
+        self.slider_1.grid(row=1, column=0, columnspan=2, pady=10, padx=20, sticky="we")
+        self.slider_1.set(0.5)
 
         self.slider_2 = customtkinter.CTkSlider(master=self.frame_right,
                                                 width=160,
                                                 height=16,
                                                 border_width=5,
                                                 command=self.progressbar.set)
-        self.slider_2.place(x=20, rely=0.7, anchor=tkinter.W)
+        self.slider_2.grid(row=2, column=0, columnspan=2, pady=10, padx=20, sticky="we")
         self.slider_2.set(0.7)
 
         self.label_info_2 = customtkinter.CTkLabel(master=self.frame_right,
@@ -127,7 +141,7 @@ class App(customtkinter.CTk):
                                                    width=180,
                                                    height=20,
                                                    justify=tkinter.CENTER)
-        self.label_info_2.place(x=310, rely=0.6, anchor=tkinter.CENTER)
+        self.label_info_2.grid(row=1, column=2, columnspan=1, pady=10, padx=20, sticky="we")
 
         self.button_4 = customtkinter.CTkButton(master=self.frame_right,
                                                 height=25,
@@ -135,14 +149,14 @@ class App(customtkinter.CTk):
                                                 command=self.button_event,
                                                 border_width=0,
                                                 corner_radius=8)
-        self.button_4.place(x=310, rely=0.7, anchor=tkinter.CENTER)
+        self.button_4.grid(row=2, column=2, columnspan=1, pady=10, padx=20, sticky="we")
 
         self.entry = customtkinter.CTkEntry(master=self.frame_right,
                                             width=120,
                                             height=25,
                                             corner_radius=8,
                                             placeholder_text="CTkEntry")
-        self.entry.place(relx=0.33, rely=0.92, anchor=tkinter.CENTER)
+        self.entry.grid(row=4, column=0, columnspan=2, pady=20, padx=20, sticky="we")
 
         self.button_5 = customtkinter.CTkButton(master=self.frame_right,
                                                 height=25,
@@ -150,7 +164,7 @@ class App(customtkinter.CTk):
                                                 command=self.button_event,
                                                 border_width=0,
                                                 corner_radius=8)
-        self.button_5.place(relx=0.66, rely=0.92, anchor=tkinter.CENTER)
+        self.button_5.grid(row=4, column=2, columnspan=1, pady=20, padx=20, sticky="we")
 
     def button_event(self):
         print("Button pressed")

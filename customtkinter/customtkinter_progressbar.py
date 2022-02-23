@@ -63,7 +63,7 @@ class CTkProgressBar(tkinter.Frame):
         self.configure(width=self.width, height=self.height)
 
         self.canvas = tkinter.Canvas(master=self,
-                                     highlightthicknes=0,
+                                     highlightthickness=0,
                                      width=self.width,
                                      height=self.height)
         self.canvas.place(x=0, y=0)
