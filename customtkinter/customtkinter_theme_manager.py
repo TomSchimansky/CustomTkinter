@@ -3,6 +3,9 @@ import sys
 
 class CTkThemeManager:
 
+    TEXT_FONT_NAME = None
+    TEXT_FONT_SIZE = None
+
     WINDOW_BG_COLOR = None
     MAIN_COLOR = None
     MAIN_HOVER_COLOR = None
@@ -17,8 +20,6 @@ class CTkThemeManager:
     FRAME_2_COLOR = None
     CHECKBOX_LINES_COLOR = None
     DARKEN_COLOR_FACTOR = None
-    TEXT_FONT_NAME = None
-    TEXT_FONT_SIZE = None
 
     @classmethod
     def initialize_color_theme(cls, theme_name):
@@ -26,11 +27,11 @@ class CTkThemeManager:
         if sys.platform == "darwin":
             cls.TEXT_FONT_NAME = "Avenir"
         elif sys.platform.startswith("win"):
-            cls.TEXT_FONT_NAME = "Segoe UI"
+            cls.TEXT_FONT_NAME = "Roboto"
         else:
-            cls.TEXT_FONT_NAME = "TkDefaultFont"
+            cls.TEXT_FONT_NAME = "Roboto"
 
-        cls.TEXT_FONT_SIZE = -14
+        cls.TEXT_FONT_SIZE = -14  # px height
 
         if theme_name.lower() == "blue":
             cls.WINDOW_BG_COLOR = ("#ECECEC", "#323232")  # macOS standard light and dark window bg colors
@@ -69,8 +70,8 @@ class CTkThemeManager:
             cls.MAIN_COLOR = ("#608BD5", "#395E9C")
             cls.MAIN_HOVER_COLOR = ("#A4BDE6", "#748BB3")
             cls.ENTRY_COLOR = ("#FCFCFC", "#111116")
-            cls.TEXT_COLOR = ("black", "white")
-            cls.PLACEHOLDER_TEXT_COLOR = ("gray52", "gray62")
+            cls.TEXT_COLOR = ("gray18", "gray75")
+            cls.PLACEHOLDER_TEXT_COLOR = ("gray52", "gray60")
             cls.LABEL_BG_COLOR = ("white", "#444444")
             cls.SLIDER_BG_COLOR = ("#444444", "#444444")
             cls.SLIDER_PROGRESS_COLOR = ("white", "#AAAAAA")

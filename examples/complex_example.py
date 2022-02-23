@@ -6,6 +6,8 @@ import sys
 customtkinter.set_appearance_mode("Light")  # Modes: "System" (standard), "Dark", "Light"
 customtkinter.set_default_color_theme("dark-blue")  # Themes: "blue" (standard), "green", "dark-blue"
 
+customtkinter.CTkSettings.preferred_drawing_method = "font_shapes"
+
 
 class App(customtkinter.CTk):
 
@@ -36,7 +38,9 @@ class App(customtkinter.CTk):
         self.frame_right = customtkinter.CTkFrame(master=self,
                                                   width=420,
                                                   height=App.HEIGHT-40,
-                                                  corner_radius=10)
+                                                  border_width=0,
+                                                  border_color=customtkinter.CTkThemeManager.MAIN_COLOR,
+                                                  corner_radius=12)
         self.frame_right.grid(row=0, column=1, sticky="nswe", padx=20, pady=20)
 
         self.grid_columnconfigure(1, weight=1)
@@ -49,7 +53,7 @@ class App(customtkinter.CTk):
         self.frame_left.grid_rowconfigure(8, minsize=10)
 
         self.label_1 = customtkinter.CTkLabel(master=self.frame_left,
-                                                text="CustomTkinter",
+                                              text="CustomTkinter",
                                               fg_color=None)
         self.label_1.grid(row=1, column=0, pady=10, padx=10)
 
@@ -159,11 +163,13 @@ class App(customtkinter.CTk):
         self.entry.grid(row=4, column=0, columnspan=2, pady=20, padx=20, sticky="we")
 
         self.button_5 = customtkinter.CTkButton(master=self.frame_right,
-                                                height=25,
+                                                height=26,
                                                 text="CTkButton",
                                                 command=self.button_event,
-                                                border_width=0,
-                                                corner_radius=8)
+                                                fg_color="gray30",
+                                                border_width=2,
+                                                border_color=("gray30", "gray50"),
+                                                corner_radius=13)
         self.button_5.grid(row=4, column=2, columnspan=1, pady=20, padx=20, sticky="we")
 
     def button_event(self):

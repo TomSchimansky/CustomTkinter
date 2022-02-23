@@ -5,6 +5,9 @@ from .customtkinter_tk import CTk
 from .customtkinter_frame import CTkFrame
 from .appearance_mode_tracker import AppearanceModeTracker
 from .customtkinter_theme_manager import CTkThemeManager
+from .customtkinter_canvas import CTkCanvas
+from .customtkinter_settings import CTkSettings
+from .customtkinter_draw_engine import DrawEngine
 
 
 class CTkLabel(tkinter.Frame):
@@ -50,12 +53,13 @@ class CTkLabel(tkinter.Frame):
 
         self.bg_color = self.detect_color_of_master() if bg_color is None else bg_color
         self.fg_color = CTkThemeManager.LABEL_BG_COLOR if fg_color == "default_theme" else fg_color
+        if self.fg_color is None:
+            self.fg_color = self.bg_color
         self.text_color = CTkThemeManager.TEXT_COLOR if text_color == "default_theme" else text_color
 
         self.width = width
         self.height = height
-
-        self.corner_radius = self.calc_optimal_corner_radius(corner_radius)  # optimise for less artifacts
+        self.corner_radius = corner_radius
 
         if self.corner_radius * 2 > self.height:
             self.corner_radius = self.height / 2
@@ -65,10 +69,10 @@ class CTkLabel(tkinter.Frame):
         self.text = text
         self.text_font = (CTkThemeManager.TEXT_FONT_NAME, CTkThemeManager.TEXT_FONT_SIZE) if text_font == "default_theme" else text_font
 
-        self.canvas = tkinter.Canvas(master=self,
-                                     highlightthickness=0,
-                                     width=self.width,
-                                     height=self.height)
+        self.canvas = CTkCanvas(master=self,
+                                highlightthickness=0,
+                                width=self.width,
+                                height=self.height)
         self.canvas.place(relx=0, rely=0, anchor=tkinter.NW)
 
         self.text_label = tkinter.Label(master=self,
@@ -79,7 +83,7 @@ class CTkLabel(tkinter.Frame):
                                         **kwargs)
         self.text_label.place(relx=0.5, rely=0.5, anchor=tkinter.CENTER)
 
-        self.fg_parts = []
+        self.draw_engine = DrawEngine(self.canvas, CTkSettings.preferred_drawing_method)
 
         super().configure(width=self.width, height=self.height)
 
@@ -96,21 +100,6 @@ class CTkLabel(tkinter.Frame):
         else:
             return self.master.cget("bg")
 
-    @staticmethod
-    def calc_optimal_corner_radius(user_corner_radius):
-        if sys.platform == "darwin":
-            return user_corner_radius  # on macOS just use given value (canvas has Antialiasing)
-        else:
-            user_corner_radius = 0.5 * round(user_corner_radius / 0.5)  # round to 0.5 steps
-
-            # make sure the value is always with .5 at the end for smoother corners
-            if user_corner_radius == 0:
-                return 0
-            elif user_corner_radius % 1 == 0:
-                return user_corner_radius + 0.5
-            else:
-                return user_corner_radius
-
     def update_dimensions(self, event):
         # only redraw if dimensions changed (for performance)
         if self.width != event.width or self.height != event.height:
@@ -121,62 +110,16 @@ class CTkLabel(tkinter.Frame):
             self.draw()
 
     def draw(self):
-        self.canvas.delete("all")
-        self.fg_parts = []
+        requires_recoloring = self.draw_engine.draw_rounded_rect_with_border(self.width, self.height, self.corner_radius, 0)
 
-        if sys.platform == "darwin":
-            oval_size_corr_br = 0
-        else:
-            oval_size_corr_br = -1  # correct canvas oval draw size on bottom and right by 1 pixel (too large otherwise)
+        self.canvas.configure(bg=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
 
-        # frame_border
-        self.fg_parts.append(self.canvas.create_oval(0,
-                                                     0,
-                                                     self.corner_radius*2 + oval_size_corr_br,
-                                                     self.corner_radius*2 + oval_size_corr_br))
-        self.fg_parts.append(self.canvas.create_oval(self.width-self.corner_radius*2,
-                                                     0,
-                                                     self.width + oval_size_corr_br,
-                                                     self.corner_radius*2 + oval_size_corr_br))
-        self.fg_parts.append(self.canvas.create_oval(0,
-                                                     self.height-self.corner_radius*2,
-                                                     self.corner_radius*2 + oval_size_corr_br,
-                                                     self.height + oval_size_corr_br))
-        self.fg_parts.append(self.canvas.create_oval(self.width-self.corner_radius*2,
-                                                     self.height-self.corner_radius*2,
-                                                     self.width + oval_size_corr_br,
-                                                     self.height + oval_size_corr_br))
+        self.canvas.itemconfig("inner_parts",
+                               fill=CTkThemeManager.single_color(self.fg_color, self.appearance_mode),
+                               outline=CTkThemeManager.single_color(self.fg_color, self.appearance_mode))
 
-        self.fg_parts.append(self.canvas.create_rectangle(0, self.corner_radius,
-                                                          self.width, self.height-self.corner_radius))
-        self.fg_parts.append(self.canvas.create_rectangle(self.corner_radius, 0,
-                                                          self.width-self.corner_radius, self.height))
-
-        if type(self.bg_color) == tuple:
-            self.canvas.configure(bg=self.bg_color[self.appearance_mode])
-        else:
-            self.canvas.configure(bg=self.bg_color)
-
-        if self.fg_color is None:
-            new_fg_color = self.bg_color
-        else:
-            new_fg_color = self.fg_color
-
-        for part in self.fg_parts:
-            if type(new_fg_color) == tuple:
-                self.canvas.itemconfig(part, fill=new_fg_color[self.appearance_mode], width=0)
-            else:
-                self.canvas.itemconfig(part, fill=new_fg_color, width=0)
-
-        if type(self.text_color) == tuple:
-            self.text_label.configure(fg=self.text_color[self.appearance_mode])
-        else:
-            self.text_label.configure(fg=self.text_color)
-
-        if type(new_fg_color) == tuple:
-            self.text_label.configure(bg=new_fg_color[self.appearance_mode])
-        else:
-            self.text_label.configure(bg=new_fg_color)
+        self.text_label.configure(fg=CTkThemeManager.single_color(self.text_color, self.appearance_mode),
+                                  bg=CTkThemeManager.single_color(self.fg_color, self.appearance_mode))
 
     def config(self, *args, **kwargs):
         self.configure(*args, **kwargs)
@@ -191,6 +134,8 @@ class CTkLabel(tkinter.Frame):
         if "fg_color" in kwargs:
             self.fg_color = kwargs["fg_color"]
             require_redraw = True
+            if self.fg_color is None:
+                self.fg_color = self.bg_color
             del kwargs["fg_color"]
 
         if "bg_color" in kwargs:

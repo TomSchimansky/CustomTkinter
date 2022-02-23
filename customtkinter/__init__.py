@@ -62,21 +62,24 @@ def set_default_color_theme(color_string):
     CTkThemeManager.initialize_color_theme(color_string)
 
 
-def load_font_windows(fontpath: str, private=True, enumerable=False):
-    from ctypes import windll, byref, create_string_buffer
+import warnings
+warnings.simplefilter("ignore", category=UserWarning)
 
-    FR_PRIVATE = 0x10
-    FR_NOT_ENUM = 0x20
-
-    pathbuf = create_string_buffer(bytes(fontpath, "utf-8"))
-    add_font_resource_ex = windll.gdi32.AddFontResourceExA
-    flags = (FR_PRIVATE if private else 0) | (FR_NOT_ENUM if not enumerable else 0)
-    num_fonts_added = add_font_resource_ex(byref(pathbuf), flags, 0)
-    return bool(num_fonts_added)
+import pyglet.font
 
 
-if sys.platform.startswith("win"):
-    # load custom font for rendering circles on the tkinter.Canvas with antialiasing
-    script_directory = os.path.dirname(os.path.abspath(__file__))
-    print("load_font_windows:", load_font_windows(os.path.join(script_directory, "assets", "CustomTkinter_shapes_font-Regular.otf"), private=True))
-    CTkSettings.circle_font_is_ready = True
+# load text fonts and custom font with circle shapes for round corner rendering
+script_directory = os.path.dirname(os.path.abspath(__file__))
+pyglet.font.add_file(os.path.join(script_directory, "assets", "CustomTkinter_shapes_font-Regular.otf"))
+pyglet.font.add_file(os.path.join(script_directory, "assets", "Roboto", "Roboto-Regular.ttf"))
+pyglet.font.add_file(os.path.join(script_directory, "assets", "Roboto", "Roboto-Medium.ttf"))
+CTkSettings.circle_font_is_ready = pyglet.font.have_font("CustomTkinter_shapes_font")
+
+warnings.simplefilter("default")
+
+# correct drawing method if font could not be loaded
+if not CTkSettings.circle_font_is_ready:
+    if CTkSettings.preferred_drawing_method == "font_shapes":
+        sys.stderr.write("WARNING (customtkinter.CTkSettings): " +
+                         "Preferred drawing method 'font_shapes' can not be used because the font file could not be loaded. Using 'circle_shapes' instead.")
+        CTkSettings.preferred_drawing_method = "circle_shapes"

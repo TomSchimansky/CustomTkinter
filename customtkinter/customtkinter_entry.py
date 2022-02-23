@@ -5,6 +5,9 @@ from .customtkinter_tk import CTk
 from .customtkinter_frame import CTkFrame
 from .appearance_mode_tracker import AppearanceModeTracker
 from .customtkinter_theme_manager import CTkThemeManager
+from .customtkinter_canvas import CTkCanvas
+from .customtkinter_settings import CTkSettings
+from .customtkinter_draw_engine import DrawEngine
 
 
 class CTkEntry(tkinter.Frame):
@@ -14,7 +17,7 @@ class CTkEntry(tkinter.Frame):
                  fg_color="default_theme",
                  text_color="default_theme",
                  placeholder_text_color="default_theme",
-                 text_font=None,
+                 text_font="default_theme",
                  placeholder_text=None,
                  corner_radius=8,
                  width=120,
@@ -55,16 +58,7 @@ class CTkEntry(tkinter.Frame):
         self.fg_color = CTkThemeManager.ENTRY_COLOR if fg_color == "default_theme" else fg_color
         self.text_color = CTkThemeManager.TEXT_COLOR if text_color == "default_theme" else text_color
         self.placeholder_text_color = CTkThemeManager.PLACEHOLDER_TEXT_COLOR if placeholder_text_color == "default_theme" else placeholder_text_color
-
-        if text_font is None:
-            if sys.platform == "darwin":  # macOS
-                self.text_font = ("Avenir", 13)
-            elif "win" in sys.platform:  # Windows
-                self.text_font = ("Century Gothic", 10)
-            else:
-                self.text_font = ("TkDefaultFont", 10)
-        else:
-            self.text_font = text_font
+        self.text_font = (CTkThemeManager.TEXT_FONT_NAME, CTkThemeManager.TEXT_FONT_SIZE) if text_font == "default_theme" else text_font
 
         self.placeholder_text = placeholder_text
         self.placeholder_text_active = False
@@ -72,7 +66,7 @@ class CTkEntry(tkinter.Frame):
 
         self.width = width
         self.height = height
-        self.corner_radius = self.calc_optimal_corner_radius(corner_radius)  # optimise for less artifacts
+        self.corner_radius = corner_radius
 
         if self.corner_radius*2 > self.height:
             self.corner_radius = self.height/2
@@ -81,10 +75,10 @@ class CTkEntry(tkinter.Frame):
 
         super().configure(width=self.width, height=self.height)
 
-        self.canvas = tkinter.Canvas(master=self,
-                                     highlightthickness=0,
-                                     width=self.width,
-                                     height=self.height)
+        self.canvas = CTkCanvas(master=self,
+                                highlightthickness=0,
+                                width=self.width,
+                                height=self.height)
         self.canvas.grid(column=0, row=0, sticky="we")
 
         self.entry = tkinter.Entry(master=self,
@@ -95,7 +89,7 @@ class CTkEntry(tkinter.Frame):
                                    **kwargs)
         self.entry.grid(column=0, row=0, sticky="we", padx=self.corner_radius if self.corner_radius >= 6 else 6)
 
-        self.fg_parts = []
+        self.draw_engine = DrawEngine(self.canvas, CTkSettings.preferred_drawing_method)
 
         super().bind('<Configure>', self.update_dimensions)
         self.entry.bind('<FocusOut>', self.set_placeholder)
@@ -122,21 +116,6 @@ class CTkEntry(tkinter.Frame):
                 pass
                 #print(self.master["style"])
                 #return self.master.cget("background")
-
-    @staticmethod
-    def calc_optimal_corner_radius(user_corner_radius):
-        if sys.platform == "darwin":
-            return user_corner_radius  # on macOS just use given value (canvas has Antialiasing)
-        else:
-            user_corner_radius = 0.5 * round(user_corner_radius / 0.5)  # round to 0.5 steps
-
-            # make sure the value is always with .5 at the end for smoother corners
-            if user_corner_radius == 0:
-                return 0
-            elif user_corner_radius % 1 == 0:
-                return user_corner_radius + 0.5
-            else:
-                return user_corner_radius
 
     def update_dimensions(self, event):
         # only redraw if dimensions changed (for performance)
@@ -165,61 +144,17 @@ class CTkEntry(tkinter.Frame):
                 self.entry[argument] = value
 
     def draw(self):
-        self.canvas.delete("all")
-        self.fg_parts = []
+        self.canvas.configure(bg=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
+        self.entry.configure(bg=CTkThemeManager.single_color(self.fg_color, self.appearance_mode),
+                             highlightcolor=CTkThemeManager.single_color(self.fg_color, self.appearance_mode),
+                             fg=CTkThemeManager.single_color(self.text_color, self.appearance_mode),
+                             insertbackground=CTkThemeManager.single_color(self.text_color, self.appearance_mode))
 
-        if sys.platform == "darwin":
-            oval_size_corr_br = 0
-        else:
-            oval_size_corr_br = -1  # correct canvas oval draw size on bottom and right by 1 pixel (too large otherwise)
+        requires_recoloring = self.draw_engine.draw_rounded_rect_with_border(self.width, self.height, self.corner_radius, 0)
 
-        # frame_border
-        self.fg_parts.append(self.canvas.create_oval(0,
-                                                     0,
-                                                     self.corner_radius*2 + oval_size_corr_br,
-                                                     self.corner_radius*2 + oval_size_corr_br))
-        self.fg_parts.append(self.canvas.create_oval(self.width-self.corner_radius*2,
-                                                     0,
-                                                     self.width + oval_size_corr_br,
-                                                     self.corner_radius*2 + oval_size_corr_br))
-        self.fg_parts.append(self.canvas.create_oval(0,
-                                                     self.height-self.corner_radius*2,
-                                                     self.corner_radius*2 + oval_size_corr_br,
-                                                     self.height + oval_size_corr_br))
-        self.fg_parts.append(self.canvas.create_oval(self.width-self.corner_radius*2,
-                                                     self.height-self.corner_radius*2,
-                                                     self.width + oval_size_corr_br,
-                                                     self.height + oval_size_corr_br))
-
-        self.fg_parts.append(self.canvas.create_rectangle(0, self.corner_radius,
-                                                          self.width, self.height-self.corner_radius))
-        self.fg_parts.append(self.canvas.create_rectangle(self.corner_radius, 0,
-                                                          self.width-self.corner_radius, self.height))
-
-        for part in self.fg_parts:
-            if type(self.fg_color) == tuple:
-                self.canvas.itemconfig(part, fill=self.fg_color[self.appearance_mode], width=0)
-            else:
-                self.canvas.itemconfig(part, fill=self.fg_color, width=0)
-
-        if type(self.bg_color) == tuple:
-            self.canvas.configure(bg=self.bg_color[self.appearance_mode])
-        else:
-            self.canvas.configure(bg=self.bg_color)
-
-        if type(self.fg_color) == tuple:
-            self.entry.configure(bg=self.fg_color[self.appearance_mode],
-                                 highlightcolor=self.fg_color[self.appearance_mode])
-        else:
-            self.entry.configure(bg=self.fg_color,
-                                 highlightcolor=self.fg_color)
-
-        if type(self.text_color) == tuple:
-            self.entry.configure(fg=self.text_color[self.appearance_mode],
-                                 insertbackground=self.text_color[self.appearance_mode])
-        else:
-            self.entry.configure(fg=self.text_color,
-                                 insertbackground=self.text_color)
+        self.canvas.itemconfig("inner_parts",
+                               fill=CTkThemeManager.single_color(self.fg_color, self.appearance_mode),
+                               outline=CTkThemeManager.single_color(self.fg_color, self.appearance_mode))
 
     def bind(self, *args, **kwargs):
         self.entry.bind(*args, **kwargs)
@@ -246,7 +181,7 @@ class CTkEntry(tkinter.Frame):
             require_redraw = True
 
         if "corner_radius" in kwargs:
-            self.corner_radius = self.calc_optimal_corner_radius(kwargs["corner_radius"])  # optimise for less artifacts
+            self.corner_radius = kwargs["corner_radius"]
 
             if self.corner_radius * 2 > self.height:
                 self.corner_radius = self.height / 2

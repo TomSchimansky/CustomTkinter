@@ -4,6 +4,8 @@ from .customtkinter_settings import CTkSettings
 
 class CTkCanvas(tkinter.Canvas):
 
+    # This dict maps a corner_radius of a circle to a specific font character, which is circle shape which fills the space
+    # of one monospace character to a specific amount from 100% to 90% (A to I).
     radius_to_char = {19: 'B', 18: 'B', 17: 'B', 16: 'B', 15: 'B', 14: 'B', 13: 'B', 12: 'B', 11: 'B', 10: 'B',
                       9: 'C', 8: 'D', 7: 'C', 6: 'E', 5: 'F', 4: 'F', 3: 'H', 2: 'H', 1: 'H', 0: 'A'}
 
