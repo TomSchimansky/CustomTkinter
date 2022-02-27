@@ -5,6 +5,9 @@ from .customtkinter_tk import CTk
 from .customtkinter_frame import CTkFrame
 from .appearance_mode_tracker import AppearanceModeTracker
 from .customtkinter_theme_manager import CTkThemeManager
+from .customtkinter_canvas import CTkCanvas
+from .customtkinter_draw_engine import DrawEngine
+from .customtkinter_settings import CTkSettings
 
 
 class CTkProgressBar(tkinter.Frame):
@@ -16,9 +19,10 @@ class CTkProgressBar(tkinter.Frame):
                  border_color="default_theme",
                  fg_color="default_theme",
                  progress_color="default_theme",
-                 width=160,
-                 height=10,
-                 border_width=0,
+                 corner_radius="default_theme",
+                 width=200,
+                 height=16,
+                 border_width="default_theme",
                  **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -47,26 +51,29 @@ class CTkProgressBar(tkinter.Frame):
         self.appearance_mode = AppearanceModeTracker.get_mode()  # 0: "Light" 1: "Dark"
 
         self.bg_color = self.detect_color_of_master() if bg_color is None else bg_color
-        self.border_color = CTkThemeManager.PROGRESS_BG_COLOR if border_color == "default_theme" else border_color
-        self.fg_color = CTkThemeManager.PROGRESS_BG_COLOR if fg_color == "default_theme" else fg_color
-        self.progress_color = CTkThemeManager.MAIN_COLOR if progress_color == "default_theme" else progress_color
+        self.border_color = CTkThemeManager.theme["color"]["progressbar_border"] if border_color == "default_theme" else border_color
+        self.fg_color = CTkThemeManager.theme["color"]["progressbar"] if fg_color == "default_theme" else fg_color
+        self.progress_color = CTkThemeManager.theme["color"]["progressbar_progress"] if progress_color == "default_theme" else progress_color
 
         self.variable = variable
         self.variable_callback_blocked = False
-        self.variabel_callback_name = None
+        self.variable_callback_name = None
 
         self.width = width
-        self.height = self.calc_optimal_height(height)
-        self.border_width = round(border_width)
+        self.height = height
+        self.corner_radius = CTkThemeManager.theme["shape"]["progressbar_corner_radius"] if corner_radius == "default_theme" else corner_radius
+        self.border_width = CTkThemeManager.theme["shape"]["progressbar_border_width"] if border_width == "default_theme" else border_width
         self.value = 0.5
 
         self.configure(width=self.width, height=self.height)
 
-        self.canvas = tkinter.Canvas(master=self,
-                                     highlightthickness=0,
-                                     width=self.width,
-                                     height=self.height)
-        self.canvas.place(x=0, y=0)
+        self.canvas = CTkCanvas(master=self,
+                                highlightthickness=0,
+                                width=self.width,
+                                height=self.height)
+        self.canvas.place(x=0, y=0, relwidth=1, relheight=1)
+
+        self.draw_engine = DrawEngine(self.canvas, CTkSettings.preferred_drawing_method)
 
         # Each time an item is resized due to pack position mode, the binding Configure is called on the widget
         self.bind('<Configure>', self.update_dimensions)
@@ -74,7 +81,7 @@ class CTkProgressBar(tkinter.Frame):
         self.draw()  # initial draw
 
         if self.variable is not None:
-            self.variabel_callback_name = self.variable.trace_add("write", self.variable_callback)
+            self.variable_callback_name = self.variable.trace_add("write", self.variable_callback)
             self.variable_callback_blocked = True
             self.set(self.variable.get(), from_variable_callback=True)
             self.variable_callback_blocked = False
@@ -83,7 +90,7 @@ class CTkProgressBar(tkinter.Frame):
         AppearanceModeTracker.remove(self.change_appearance_mode)
 
         if self.variable is not None:
-            self.variable.trace_remove("write", self.variabel_callback_name)
+            self.variable.trace_remove("write", self.variable_callback_name)
 
         super().destroy()
 
@@ -117,18 +124,26 @@ class CTkProgressBar(tkinter.Frame):
     def draw(self, no_color_updates=False):
 
         # decide the drawing method
-        if sys.platform == "darwin":
-            # on macOS draw button with polygons (positions are more accurate, macOS has Antialiasing)
-            self.draw_with_polygon_shapes()
-        else:
-            # on Windows and other draw with ovals (corner_radius can be optimised to look better than with polygons)
-            self.draw_with_ovals_and_rects()
+        #if sys.platform == "darwin":
+        #    # on macOS draw button with polygons (positions are more accurate, macOS has Antialiasing)
+        #    self.draw_with_polygon_shapes()
+        #else:
+        #    # on Windows and other draw with ovals (corner_radius can be optimised to look better than with polygons)
+        #self.draw_with_ovals_and_rects()
 
-        if no_color_updates is False:
+        requires_recoloring = self.draw_engine.draw_rounded_progress_bar_with_border(self.width, self.height, self.corner_radius, self.border_width, self.value, "w")
+
+        if no_color_updates is False or requires_recoloring:
             self.canvas.configure(bg=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
-            self.canvas.itemconfig("border_parts", fill=CTkThemeManager.single_color(self.border_color, self.appearance_mode))
-            self.canvas.itemconfig("inner_parts", fill=CTkThemeManager.single_color(self.fg_color, self.appearance_mode))
-            self.canvas.itemconfig("progress_parts", fill=CTkThemeManager.single_color(self.progress_color, self.appearance_mode))
+            self.canvas.itemconfig("border_parts",
+                                   fill=CTkThemeManager.single_color(self.border_color, self.appearance_mode),
+                                   outline=CTkThemeManager.single_color(self.border_color, self.appearance_mode))
+            self.canvas.itemconfig("inner_parts",
+                                   fill=CTkThemeManager.single_color(self.fg_color, self.appearance_mode),
+                                   outline=CTkThemeManager.single_color(self.fg_color, self.appearance_mode))
+            self.canvas.itemconfig("progress_parts",
+                                   fill=CTkThemeManager.single_color(self.progress_color, self.appearance_mode),
+                                   outline=CTkThemeManager.single_color(self.progress_color, self.appearance_mode))
 
     def draw_with_polygon_shapes(self):
         """ draw the progress bar parts with just three polygons that have a rounded border """
@@ -277,12 +292,12 @@ class CTkProgressBar(tkinter.Frame):
 
         if "variable" in kwargs:
             if self.variable is not None:
-                self.variable.trace_remove("write", self.variabel_callback_name)
+                self.variable.trace_remove("write", self.variable_callback_name)
 
             self.variable = kwargs["variable"]
 
             if self.variable is not None and self.variable != "":
-                self.variabel_callback_name = self.variable.trace_add("write", self.variable_callback)
+                self.variable_callback_name = self.variable.trace_add("write", self.variable_callback)
                 self.set(self.variable.get(), from_variable_callback=True)
             else:
                 self.variable = None

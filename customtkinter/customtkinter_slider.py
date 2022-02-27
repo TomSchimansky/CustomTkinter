@@ -22,7 +22,8 @@ class CTkSlider(tkinter.Frame):
                  number_of_steps=None,
                  width=160,
                  height=16,
-                 border_width=5,
+                 corner_radius="default_theme",
+                 border_width="default_theme",
                  command=None,
                  variable=None,
                  **kwargs):
@@ -56,14 +57,15 @@ class CTkSlider(tkinter.Frame):
 
         self.bg_color = self.detect_color_of_master() if bg_color is None else bg_color
         self.border_color = border_color
-        self.fg_color = CTkThemeManager.SLIDER_BG_COLOR if fg_color == "default_theme" else fg_color
-        self.progress_color = CTkThemeManager.SLIDER_PROGRESS_COLOR if progress_color == "default_theme" else progress_color
-        self.button_color = CTkThemeManager.MAIN_COLOR if button_color == "default_theme" else button_color
-        self.button_hover_color = CTkThemeManager.MAIN_HOVER_COLOR if button_hover_color == "default_theme" else button_hover_color
+        self.fg_color = CTkThemeManager.theme["color"]["slider"] if fg_color == "default_theme" else fg_color
+        self.progress_color = CTkThemeManager.theme["color"]["slider_progress"] if progress_color == "default_theme" else progress_color
+        self.button_color = CTkThemeManager.theme["color"]["slider_button"] if button_color == "default_theme" else button_color
+        self.button_hover_color = CTkThemeManager.theme["color"]["slider_button_hover"] if button_hover_color == "default_theme" else button_hover_color
 
         self.width = width
         self.height = self.calc_optimal_height(height)
-        self.border_width = round(border_width)
+        self.corner_radius = CTkThemeManager.theme["shape"]["button_corner_radius"] if corner_radius == "default_theme" else corner_radius
+        self.border_width = CTkThemeManager.theme["shape"]["slider_border_width"] if border_width == "default_theme" else border_width
         self.value = 0.5  # initial value of slider in percent
         self.hover_state = False
         self.from_ = from_
@@ -74,7 +76,7 @@ class CTkSlider(tkinter.Frame):
         self.callback_function = command
         self.variable: tkinter.Variable = variable
         self.variable_callback_blocked = False
-        self.variabel_callback_name = None
+        self.variable_callback_name = None
 
         self.configure(width=self.width, height=self.height)
         if sys.platform == "darwin":
@@ -97,7 +99,7 @@ class CTkSlider(tkinter.Frame):
         self.draw()  # initial draw
 
         if self.variable is not None:
-            self.variabel_callback_name = self.variable.trace_add("write", self.variable_callback)
+            self.variable_callback_name = self.variable.trace_add("write", self.variable_callback)
             self.variable_callback_blocked = True
             self.set(self.variable.get(), from_variable_callback=True)
             self.variable_callback_blocked = False
@@ -106,9 +108,9 @@ class CTkSlider(tkinter.Frame):
         # remove change_appearance_mode function from callback list of AppearanceModeTracker
         AppearanceModeTracker.remove(self.change_appearance_mode)
 
-        # remove variabel_callback from variable callbacks if variable exists
+        # remove variable_callback from variable callbacks if variable exists
         if self.variable is not None:
-            self.variable.trace_remove("write", self.variabel_callback_name)
+            self.variable.trace_remove("write", self.variable_callback_name)
 
         super().destroy()
 
@@ -444,12 +446,12 @@ class CTkSlider(tkinter.Frame):
 
         if "variable" in kwargs:
             if self.variable is not None:
-                self.variable.trace_remove("write", self.variabel_callback_name)
+                self.variable.trace_remove("write", self.variable_callback_name)
 
             self.variable = kwargs["variable"]
 
             if self.variable is not None and self.variable != "":
-                self.variabel_callback_name = self.variable.trace_add("write", self.variable_callback)
+                self.variable_callback_name = self.variable.trace_add("write", self.variable_callback)
                 self.set(self.variable.get(), from_variable_callback=True)
             else:
                 self.variable = None

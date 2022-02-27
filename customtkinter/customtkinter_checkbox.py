@@ -1,13 +1,13 @@
 import tkinter
 import sys
 
-from .customtkinter_tk import CTk
-from .customtkinter_frame import CTkFrame
-from .appearance_mode_tracker import AppearanceModeTracker
-from .customtkinter_theme_manager import CTkThemeManager
-from .customtkinter_canvas import CTkCanvas
-from .customtkinter_settings import CTkSettings
-from .customtkinter_draw_engine import DrawEngine
+from customtkinter.customtkinter_tk import CTk
+from customtkinter.customtkinter_frame import CTkFrame
+from customtkinter.appearance_mode_tracker import AppearanceModeTracker
+from customtkinter.customtkinter_theme_manager import CTkThemeManager
+from customtkinter.customtkinter_canvas import CTkCanvas
+from customtkinter.customtkinter_settings import CTkSettings
+from customtkinter.customtkinter_draw_engine import DrawEngine
 
 
 class CTkCheckBox(tkinter.Frame):
@@ -18,10 +18,10 @@ class CTkCheckBox(tkinter.Frame):
                  fg_color="default_theme",
                  hover_color="default_theme",
                  border_color="default_theme",
-                 border_width=3,
-                 width=25,
-                 height=25,
-                 corner_radius=6,
+                 border_width="default_theme",
+                 width=24,
+                 height=24,
+                 corner_radius="default_theme",
                  text_font="default_theme",
                  text_color="default_theme",
                  text="CTkCheckBox",
@@ -60,20 +60,19 @@ class CTkCheckBox(tkinter.Frame):
         self.appearance_mode = AppearanceModeTracker.get_mode()  # 0: "Light" 1: "Dark"
 
         self.bg_color = self.detect_color_of_master() if bg_color is None else bg_color
-        self.fg_color = CTkThemeManager.MAIN_COLOR if fg_color == "default_theme" else fg_color
-        self.hover_color = CTkThemeManager.MAIN_HOVER_COLOR if hover_color == "default_theme" else hover_color
-        self.border_color = CTkThemeManager.CHECKBOX_LINES_COLOR if border_color == "default_theme" else border_color
+        self.fg_color = CTkThemeManager.theme["color"]["button"] if fg_color == "default_theme" else fg_color
+        self.hover_color = CTkThemeManager.theme["color"]["button"] if hover_color == "default_theme" else hover_color
+        self.border_color = CTkThemeManager.theme["color"]["checkbox_border"] if border_color == "default_theme" else border_color
 
         self.width = width
         self.height = height
-        self.corner_radius = corner_radius
+        self.corner_radius = CTkThemeManager.theme["shape"]["checkbox_corner_radius"] if corner_radius == "default_theme" else corner_radius
+        self.border_width = CTkThemeManager.theme["shape"]["checkbox_border_width"] if border_width == "default_theme" else border_width
 
         if self.corner_radius*2 > self.height:
             self.corner_radius = self.height/2
         elif self.corner_radius*2 > self.width:
             self.corner_radius = self.width/2
-
-        self.border_width = border_width
 
         if self.corner_radius >= self.border_width:
             self.inner_corner_radius = self.corner_radius - self.border_width
@@ -81,8 +80,8 @@ class CTkCheckBox(tkinter.Frame):
             self.inner_corner_radius = 0
 
         self.text = text
-        self.text_color = CTkThemeManager.TEXT_COLOR if text_color == "default_theme" else text_color
-        self.text_font = (CTkThemeManager.TEXT_FONT_NAME, CTkThemeManager.TEXT_FONT_SIZE) if text_font == "default_theme" else text_font
+        self.text_color = CTkThemeManager.theme["color"]["text"] if text_color == "default_theme" else text_color
+        self.text_font = (CTkThemeManager.theme["text"]["font"], CTkThemeManager.theme["text"]["size"]) if text_font == "default_theme" else text_font
 
         self.function = command
         self.state = state

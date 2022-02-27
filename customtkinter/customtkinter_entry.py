@@ -20,6 +20,8 @@ class CTkEntry(tkinter.Frame):
                  text_font="default_theme",
                  placeholder_text=None,
                  corner_radius=8,
+                 border_width=0,
+                 border_color="default_theme",
                  width=120,
                  height=30,
                  **kwargs):
@@ -55,10 +57,11 @@ class CTkEntry(tkinter.Frame):
         self.configure_basic_grid()
 
         self.bg_color = self.detect_color_of_master() if bg_color is None else bg_color
-        self.fg_color = CTkThemeManager.ENTRY_COLOR if fg_color == "default_theme" else fg_color
-        self.text_color = CTkThemeManager.TEXT_COLOR if text_color == "default_theme" else text_color
-        self.placeholder_text_color = CTkThemeManager.PLACEHOLDER_TEXT_COLOR if placeholder_text_color == "default_theme" else placeholder_text_color
-        self.text_font = (CTkThemeManager.TEXT_FONT_NAME, CTkThemeManager.TEXT_FONT_SIZE) if text_font == "default_theme" else text_font
+        self.fg_color = CTkThemeManager.theme["color"]["entry"] if fg_color == "default_theme" else fg_color
+        self.text_color = CTkThemeManager.theme["color"]["text"] if text_color == "default_theme" else text_color
+        self.placeholder_text_color = CTkThemeManager.theme["color"]["entry_placeholder_text"] if placeholder_text_color == "default_theme" else placeholder_text_color
+        self.text_font = (CTkThemeManager.theme["text"]["font"], CTkThemeManager.theme["text"]["size"]) if text_font == "default_theme" else text_font
+        self.border_color = CTkThemeManager.theme["color"]["entry_border"] if border_color == "default_theme" else border_color
 
         self.placeholder_text = placeholder_text
         self.placeholder_text_active = False
@@ -66,7 +69,8 @@ class CTkEntry(tkinter.Frame):
 
         self.width = width
         self.height = height
-        self.corner_radius = corner_radius
+        self.corner_radius = CTkThemeManager.theme["shape"]["button_corner_radius"] if corner_radius == "default_theme" else corner_radius
+        self.border_width = CTkThemeManager.theme["shape"]["entry_border_width"] if border_width == "default_theme" else border_width
 
         if self.corner_radius*2 > self.height:
             self.corner_radius = self.height/2
@@ -150,11 +154,15 @@ class CTkEntry(tkinter.Frame):
                              fg=CTkThemeManager.single_color(self.text_color, self.appearance_mode),
                              insertbackground=CTkThemeManager.single_color(self.text_color, self.appearance_mode))
 
-        requires_recoloring = self.draw_engine.draw_rounded_rect_with_border(self.width, self.height, self.corner_radius, 0)
+        requires_recoloring = self.draw_engine.draw_rounded_rect_with_border(self.width, self.height, self.corner_radius, self.border_width)
 
         self.canvas.itemconfig("inner_parts",
                                fill=CTkThemeManager.single_color(self.fg_color, self.appearance_mode),
                                outline=CTkThemeManager.single_color(self.fg_color, self.appearance_mode))
+
+        self.canvas.itemconfig("border_parts",
+                               fill=CTkThemeManager.single_color(self.border_color, self.appearance_mode),
+                               outline=CTkThemeManager.single_color(self.border_color, self.appearance_mode))
 
     def bind(self, *args, **kwargs):
         self.entry.bind(*args, **kwargs)

@@ -13,7 +13,8 @@ class CTkDialog:
                  title="CTkDialog",
                  text="CTkDialog",
                  fg_color="default_theme",
-                 hover_color="default_theme"):
+                 hover_color="default_theme",
+                 border_color="default_theme"):
         self.master = master
 
         self.user_input = None
@@ -21,8 +22,9 @@ class CTkDialog:
 
         self.height = len(text.split("\n"))*20 + 150
 
-        self.fg_color = CTkThemeManager.MAIN_COLOR if fg_color == "default_theme" else fg_color
-        self.hover_color = CTkThemeManager.MAIN_HOVER_COLOR if hover_color == "default_theme" else hover_color
+        self.fg_color = CTkThemeManager.theme["color"]["button"] if fg_color == "default_theme" else fg_color
+        self.hover_color = CTkThemeManager.theme["color"]["button_hover"] if hover_color == "default_theme" else hover_color
+        self.border_color = CTkThemeManager.theme["color"]["button_hover"] if border_color == "default_theme" else border_color
 
         self.top = customtkinter.CTkToplevel()
         self.top.geometry(f"280x{self.height}")
@@ -60,7 +62,8 @@ class CTkDialog:
                                    width=100,
                                    command=self.ok_event,
                                    fg_color=self.fg_color,
-                                   hover_color=self.hover_color)
+                                   hover_color=self.hover_color,
+                                   border_color=self.border_color)
         self.ok_button.place(relx=0.28, rely=0.65, anchor=tkinter.CENTER)
 
         self.cancel_button = CTkButton(master=self.button_and_entry_frame,
@@ -68,7 +71,8 @@ class CTkDialog:
                                        width=100,
                                        command=self.cancel_event,
                                        fg_color=self.fg_color,
-                                       hover_color=self.hover_color)
+                                       hover_color=self.hover_color,
+                                       border_color=self.border_color)
         self.cancel_button.place(relx=0.72, rely=0.65, anchor=tkinter.CENTER)
 
         self.entry.entry.focus_force()

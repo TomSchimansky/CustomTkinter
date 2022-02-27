@@ -16,7 +16,7 @@ class CTkLabel(tkinter.Frame):
                  bg_color=None,
                  fg_color="default_theme",
                  text_color="default_theme",
-                 corner_radius=8,
+                 corner_radius="default_theme",
                  width=120,
                  height=25,
                  text="CTkLabel",
@@ -52,14 +52,14 @@ class CTkLabel(tkinter.Frame):
         self.appearance_mode = AppearanceModeTracker.get_mode()  # 0: "Light" 1: "Dark"
 
         self.bg_color = self.detect_color_of_master() if bg_color is None else bg_color
-        self.fg_color = CTkThemeManager.LABEL_BG_COLOR if fg_color == "default_theme" else fg_color
+        self.fg_color = CTkThemeManager.theme["color"]["label"] if fg_color == "default_theme" else fg_color
         if self.fg_color is None:
             self.fg_color = self.bg_color
-        self.text_color = CTkThemeManager.TEXT_COLOR if text_color == "default_theme" else text_color
+        self.text_color = CTkThemeManager.theme["color"]["text"] if text_color == "default_theme" else text_color
 
         self.width = width
         self.height = height
-        self.corner_radius = corner_radius
+        self.corner_radius = CTkThemeManager.theme["shape"]["label_corner_radius"] if corner_radius == "default_theme" else corner_radius
 
         if self.corner_radius * 2 > self.height:
             self.corner_radius = self.height / 2
@@ -67,7 +67,7 @@ class CTkLabel(tkinter.Frame):
             self.corner_radius = self.width / 2
 
         self.text = text
-        self.text_font = (CTkThemeManager.TEXT_FONT_NAME, CTkThemeManager.TEXT_FONT_SIZE) if text_font == "default_theme" else text_font
+        self.text_font = (CTkThemeManager.theme["text"]["font"], CTkThemeManager.theme["text"]["size"]) if text_font == "default_theme" else text_font
 
         self.canvas = CTkCanvas(master=self,
                                 highlightthickness=0,

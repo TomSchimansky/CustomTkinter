@@ -1,25 +1,30 @@
 import sys
+import os
+import json
 
 
 class CTkThemeManager:
 
-    TEXT_FONT_NAME = None
-    TEXT_FONT_SIZE = None
+    theme = {}  # contains all the theme data
+    built_in_themes = ["blue", "green", "dark_blue"]
 
-    WINDOW_BG_COLOR = None
-    MAIN_COLOR = None
-    MAIN_HOVER_COLOR = None
-    ENTRY_COLOR = None
-    TEXT_COLOR = None
-    PLACEHOLDER_TEXT_COLOR = None
-    LABEL_BG_COLOR = None
-    SLIDER_BG_COLOR = None
-    SLIDER_PROGRESS_COLOR = None
-    PROGRESS_BG_COLOR = None
-    FRAME_COLOR = None
-    FRAME_2_COLOR = None
-    CHECKBOX_LINES_COLOR = None
-    DARKEN_COLOR_FACTOR = None
+    @classmethod
+    def load_theme(cls, theme_name_or_path: str):
+        script_directory = os.path.dirname(os.path.abspath(__file__))
+
+        if theme_name_or_path in cls.built_in_themes:
+            with open(os.path.join(script_directory, "assets", "themes", f"{theme_name_or_path}.json"), "r") as f:
+                cls.theme = json.load(f)
+        else:
+            with open(theme_name_or_path, "r") as f:
+                cls.theme = json.load(f)
+
+        if sys.platform == "darwin":
+            cls.theme["text"] = cls.theme["text"]["macOS"]
+        elif sys.platform.startswith("win"):
+            cls.theme["text"] = cls.theme["text"]["Windows"]
+        else:
+            cls.theme["text"] = cls.theme["text"]["Linux"]
 
     @classmethod
     def initialize_color_theme(cls, theme_name):
@@ -37,7 +42,8 @@ class CTkThemeManager:
             cls.WINDOW_BG_COLOR = ("#ECECEC", "#323232")  # macOS standard light and dark window bg colors
             cls.MAIN_COLOR = ("#64A1D2", "#1C94CF")
             cls.MAIN_HOVER_COLOR = ("#A7C2E0", "#5FB4DD")
-            cls.ENTRY_COLOR = ("white", "#222222")
+            cls.ENTRY_COLOR = ("gray95", "#222222")
+            cls.ENTRY_BORDER_COLOR = ("gray65", "gray40")
             cls.TEXT_COLOR = ("black", "white")
             cls.PLACEHOLDER_TEXT_COLOR = ("gray52", "gray62")
             cls.LABEL_BG_COLOR = ("white", "#626061")
@@ -87,7 +93,7 @@ class CTkThemeManager:
             tuple color with (light_color, dark_color). The functions then returns
             always a single color string """
 
-        if type(color) == tuple:
+        if type(color) == tuple or type(color) == list:
             return color[appearance_mode]
         else:
             return color
@@ -138,4 +144,4 @@ class CTkThemeManager:
         cls.MAIN_HOVER_COLOR = main_color_hover
 
 
-CTkThemeManager.initialize_color_theme("blue")
+CTkThemeManager.load_theme("blue")

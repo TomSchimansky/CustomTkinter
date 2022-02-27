@@ -1,5 +1,4 @@
 import tkinter
-import sys
 
 from .customtkinter_tk import CTk
 from .appearance_mode_tracker import AppearanceModeTracker
@@ -14,8 +13,8 @@ class CTkFrame(tkinter.Frame):
                  bg_color=None,
                  fg_color="default_theme",
                  border_color="default_theme",
-                 border_width=0,
-                 corner_radius=10,
+                 border_width="default_theme",
+                 corner_radius="default_theme",
                  width=200,
                  height=200,
                  **kwargs):
@@ -46,16 +45,16 @@ class CTkFrame(tkinter.Frame):
         self.appearance_mode = AppearanceModeTracker.get_mode()  # 0: "Light" 1: "Dark"
 
         self.bg_color = self.detect_color_of_master() if bg_color is None else bg_color
-        self.border_color = CTkThemeManager.CHECKBOX_LINES_COLOR if border_color == "default_theme" else border_color
+        self.border_color = CTkThemeManager.theme["color"]["frame_border"] if border_color == "default_theme" else border_color
 
         if fg_color == "default_theme":
             if isinstance(self.master, CTkFrame):
-                if self.master.fg_color == CTkThemeManager.FRAME_COLOR:
-                    self.fg_color = CTkThemeManager.FRAME_2_COLOR
+                if self.master.fg_color == CTkThemeManager.theme["color"]["frame_low"]:
+                    self.fg_color = CTkThemeManager.theme["color"]["frame_high"]
                 else:
-                    self.fg_color = CTkThemeManager.FRAME_COLOR
+                    self.fg_color = CTkThemeManager.theme["color"]["frame_low"]
             else:
-                self.fg_color = CTkThemeManager.FRAME_COLOR
+                self.fg_color = CTkThemeManager.theme["color"]["frame_low"]
         else:
             self.fg_color = fg_color
 
@@ -63,8 +62,8 @@ class CTkFrame(tkinter.Frame):
         self.height = height
         self.configure(width=self.width, height=self.height)
 
-        self.corner_radius = corner_radius
-        self.border_width = border_width
+        self.corner_radius = CTkThemeManager.theme["shape"]["frame_corner_radius"] if corner_radius == "default_theme" else corner_radius
+        self.border_width = CTkThemeManager.theme["shape"]["frame_border_width"] if border_width == "default_theme" else border_width
 
         if self.corner_radius * 2 > self.height:
             self.corner_radius = self.height / 2
@@ -138,7 +137,7 @@ class CTkFrame(tkinter.Frame):
             from .customtkinter_progressbar import CTkProgressBar
             from .customtkinter_label import CTkLabel
             from .customtkinter_entry import CTkEntry
-            from .customtkinter_checkbox import CTkCheckBox
+            from customtkinter.customtkinter_checkbox import CTkCheckBox
             from .customtkinter_button import CTkButton
 
             for child in self.winfo_children():

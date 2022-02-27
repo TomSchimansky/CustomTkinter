@@ -101,7 +101,7 @@ class CTk(tkinter.Tk):
             from .customtkinter_label import CTkLabel
             from .customtkinter_frame import CTkFrame
             from .customtkinter_entry import CTkEntry
-            from .customtkinter_checkbox import CTkCheckBox
+            from customtkinter.customtkinter_checkbox import CTkCheckBox
             from .customtkinter_button import CTkButton
 
             for child in self.winfo_children():

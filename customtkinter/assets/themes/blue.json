@@ -1,0 +1,55 @@
+{
+  "color": {
+    "window_bg_color": ["#ECECEC", "#323232"],
+    "button": ["#64A1D2", "#1C94CF"],
+    "button_hover": ["#A7C2E0", "#5FB4DD"],
+    "button_border": ["#A7C2E0", "#5FB4DD"],
+    "checkbox_border": ["black", "#ededed"],
+    "entry": ["gray95", "#222222"],
+    "entry_border": ["gray65", "gray40"],
+    "entry_placeholder_text": ["gray52", "gray62"],
+    "frame_border": ["#A7C2E0", "#5FB4DD"],
+    "frame_low": ["#D4D5D6", "#3F3F3F"],
+    "frame_high": ["#BFBEC1", "#505050"],
+    "label": ["white", "#626061"],
+    "text": ["gray18", "gray90"],
+    "progressbar": ["#6B6B6B", "#222222"],
+    "progressbar_progress": ["red", "red"],
+    "progressbar_border": ["gray", "gray"],
+    "slider": ["#6B6B6B", "#222222"],
+    "slider_progress": ["#A5A6A5", "#555555"],
+    "slider_button": ["#64A1D2", "#1C94CF"],
+    "slider_button_hover": ["#A7C2E0", "#5FB4DD"],
+    "darken_factor": 0.8
+  },
+
+  "text": {
+    "macOS": {
+      "font": "SF Display",
+      "size": -14
+    },
+    "Windows": {
+      "font": "Roboto",
+      "size": -14
+    },
+    "Linux": {
+      "font": "Roboto",
+      "size": -14
+    }
+
+  },
+  "shape": {
+    "button_corner_radius": 8,
+    "button_border_width": 2,
+    "checkbox_corner_radius": 6,
+    "checkbox_border_width": 3,
+    "entry_border_width": 2,
+    "frame_corner_radius": 10,
+    "frame_border_width": 0,
+    "label_corner_radius": 8,
+    "progressbar_border_width": 2,
+    "progressbar_corner_radius": 1000,
+    "slider_border_width": 4,
+    "slider_corner_radius": 3
+  }
+}

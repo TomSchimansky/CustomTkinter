@@ -18,12 +18,12 @@ class CTkButton(tkinter.Frame):
                  fg_color="default_theme",
                  hover_color="default_theme",
                  border_color="default_theme",
-                 border_width=0,
+                 border_width="default_theme",
                  command=None,
                  textvariable=None,
                  width=120,
                  height=30,
-                 corner_radius=8,
+                 corner_radius="default_theme",
                  text_font="default_theme",
                  text_color="default_theme",
                  text="CTkButton",
@@ -62,16 +62,16 @@ class CTkButton(tkinter.Frame):
 
         # color variables
         self.bg_color = self.detect_color_of_master() if bg_color is None else bg_color
-        self.fg_color = CTkThemeManager.MAIN_COLOR if fg_color == "default_theme" else fg_color
-        self.hover_color = CTkThemeManager.MAIN_HOVER_COLOR if hover_color == "default_theme" else hover_color
-        self.border_color = CTkThemeManager.CHECKBOX_LINES_COLOR if border_color == "default_theme" else border_color
+        self.fg_color = CTkThemeManager.theme["color"]["button"] if fg_color == "default_theme" else fg_color
+        self.hover_color = CTkThemeManager.theme["color"]["button_hover"] if hover_color == "default_theme" else hover_color
+        self.border_color = CTkThemeManager.theme["color"]["button_hover"] if border_color == "default_theme" else border_color
 
         # shape and size
         self.width = width
         self.height = height
         self.configure(width=self.width, height=self.height)
-        self.corner_radius = corner_radius
-        self.border_width = border_width
+        self.corner_radius = CTkThemeManager.theme["shape"]["button_corner_radius"] if corner_radius == "default_theme" else corner_radius
+        self.border_width = CTkThemeManager.theme["shape"]["button_border_width"] if border_width == "default_theme" else border_width
 
         if self.corner_radius * 2 > self.height:
             self.corner_radius = self.height / 2
@@ -88,8 +88,8 @@ class CTkButton(tkinter.Frame):
         self.image_label = None
         self.text = text
         self.text_label = None
-        self.text_color = CTkThemeManager.TEXT_COLOR if text_color == "default_theme" else text_color
-        self.text_font = (CTkThemeManager.TEXT_FONT_NAME, CTkThemeManager.TEXT_FONT_SIZE) if text_font == "default_theme" else text_font
+        self.text_color = CTkThemeManager.theme["color"]["text"] if text_color == "default_theme" else text_color
+        self.text_font = (CTkThemeManager.theme["text"]["font"], CTkThemeManager.theme["text"]["size"]) if text_font == "default_theme" else text_font
 
         # callback and hover functionality
         self.function = command

@@ -6,8 +6,8 @@ from .customtkinter_frame import CTkFrame
 from .customtkinter_progressbar import CTkProgressBar
 from .customtkinter_label import CTkLabel
 from .customtkinter_entry import CTkEntry
-from .customtkinter_dialog import CTkDialog
 from .customtkinter_checkbox import CTkCheckBox
+from .customtkinter_dialog import CTkDialog
 from .customtkinter_tk import CTk
 from .customtkinter_canvas import CTkCanvas
 from .customtkinter_toplevel import CTkToplevel
@@ -62,24 +62,24 @@ def set_default_color_theme(color_string):
     CTkThemeManager.initialize_color_theme(color_string)
 
 
-import warnings
-warnings.simplefilter("ignore", category=UserWarning)
+if not sys.platform == "darwin":
+    import warnings
+    warnings.simplefilter("ignore", category=UserWarning)
 
-import pyglet.font
+    import pyglet.font
 
+    # load text fonts and custom font with circle shapes for round corner rendering
+    script_directory = os.path.dirname(os.path.abspath(__file__))
+    pyglet.font.add_file(os.path.join(script_directory, "assets", "CustomTkinter_shapes_font-Regular.otf"))
+    pyglet.font.add_file(os.path.join(script_directory, "assets", "Roboto", "Roboto-Regular.ttf"))
+    pyglet.font.add_file(os.path.join(script_directory, "assets", "Roboto", "Roboto-Medium.ttf"))
+    CTkSettings.circle_font_is_ready = pyglet.font.have_font("CustomTkinter_shapes_font")
 
-# load text fonts and custom font with circle shapes for round corner rendering
-script_directory = os.path.dirname(os.path.abspath(__file__))
-pyglet.font.add_file(os.path.join(script_directory, "assets", "CustomTkinter_shapes_font-Regular.otf"))
-pyglet.font.add_file(os.path.join(script_directory, "assets", "Roboto", "Roboto-Regular.ttf"))
-pyglet.font.add_file(os.path.join(script_directory, "assets", "Roboto", "Roboto-Medium.ttf"))
-CTkSettings.circle_font_is_ready = pyglet.font.have_font("CustomTkinter_shapes_font")
+    warnings.simplefilter("default")
 
-warnings.simplefilter("default")
-
-# correct drawing method if font could not be loaded
-if not CTkSettings.circle_font_is_ready:
-    if CTkSettings.preferred_drawing_method == "font_shapes":
-        sys.stderr.write("WARNING (customtkinter.CTkSettings): " +
-                         "Preferred drawing method 'font_shapes' can not be used because the font file could not be loaded. Using 'circle_shapes' instead.")
-        CTkSettings.preferred_drawing_method = "circle_shapes"
+    # correct drawing method if font could not be loaded
+    if not CTkSettings.circle_font_is_ready:
+        if CTkSettings.preferred_drawing_method == "font_shapes":
+            sys.stderr.write("WARNING (customtkinter.CTkSettings): " +
+                             "Preferred drawing method 'font_shapes' can not be used because the font file could not be loaded. Using 'circle_shapes' instead.")
+            CTkSettings.preferred_drawing_method = "circle_shapes"
