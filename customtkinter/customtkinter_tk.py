@@ -18,7 +18,7 @@ class CTk(tkinter.Tk):
         super().__init__(*args, **kwargs)
         self.appearance_mode = AppearanceModeTracker.get_mode()  # 0: "Light" 1: "Dark"
 
-        self.fg_color = CTkThemeManager.WINDOW_BG_COLOR if fg_color == "default_theme" else fg_color
+        self.fg_color = CTkThemeManager.theme["color"]["window_bg_color"] if fg_color == "default_theme" else fg_color
 
         if "bg" in kwargs:
             self.fg_color = kwargs["bg"]
