@@ -5,7 +5,7 @@ from .appearance_mode_tracker import AppearanceModeTracker
 from .customtkinter_theme_manager import CTkThemeManager
 from .customtkinter_canvas import CTkCanvas
 from .customtkinter_settings import CTkSettings
-from .customtkinter_draw_engine import DrawEngine
+from .customtkinter_draw_engine import CTkDrawEngine
 
 
 class CTkFrame(tkinter.Frame):
@@ -82,7 +82,7 @@ class CTkFrame(tkinter.Frame):
         self.canvas.place(x=0, y=0, relwidth=1, relheight=1)
         self.canvas.configure(bg=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
 
-        self.draw_engine = DrawEngine(self.canvas, CTkSettings.preferred_drawing_method)
+        self.draw_engine = CTkDrawEngine(self.canvas, CTkSettings.preferred_drawing_method)
 
         self.bind('<Configure>', self.update_dimensions)
 

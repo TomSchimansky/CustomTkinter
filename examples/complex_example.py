@@ -6,7 +6,7 @@ import sys
 customtkinter.set_appearance_mode("Light")  # Modes: "System" (standard), "Dark", "Light"
 customtkinter.set_default_color_theme("blue")  # Themes: "blue" (standard), "green", "dark-blue"
 
-customtkinter.CTkSettings.preferred_drawing_method = "font_shapes"
+customtkinter.CTkSettings.preferred_drawing_method = "polygon_shapes"
 
 
 class App(customtkinter.CTk):
@@ -116,7 +116,6 @@ class App(customtkinter.CTk):
 
         self.slider_1 = customtkinter.CTkSlider(master=self.frame_right,
                                                 height=16,
-                                                border_width=0,
                                                 from_=1,
                                                 to=0,
                                                 number_of_steps=3,
@@ -127,6 +126,7 @@ class App(customtkinter.CTk):
         self.slider_2 = customtkinter.CTkSlider(master=self.frame_right,
                                                 width=160,
                                                 height=16,
+                                                button_length=0,
                                                 command=self.progressbar.set)
         self.slider_2.grid(row=2, column=0, columnspan=2, pady=10, padx=20, sticky="we")
         self.slider_2.set(0.7)
@@ -165,7 +165,7 @@ class App(customtkinter.CTk):
                                                 corner_radius=13)
         self.button_5.grid(row=4, column=2, columnspan=1, pady=20, padx=20, sticky="we")
 
-        self.progressbar.set(0.2)
+        self.progressbar.set(0.5)
 
     def button_event(self):
         print("Button pressed")

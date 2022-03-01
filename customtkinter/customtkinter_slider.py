@@ -5,6 +5,9 @@ from .customtkinter_tk import CTk
 from .customtkinter_frame import CTkFrame
 from .appearance_mode_tracker import AppearanceModeTracker
 from .customtkinter_theme_manager import CTkThemeManager
+from .customtkinter_settings import CTkSettings
+from .customtkinter_draw_engine import CTkDrawEngine
+from .customtkinter_canvas import CTkCanvas
 
 
 class CTkSlider(tkinter.Frame):
@@ -23,7 +26,9 @@ class CTkSlider(tkinter.Frame):
                  width=160,
                  height=16,
                  corner_radius="default_theme",
+                 button_corner_radius="default_theme",
                  border_width="default_theme",
+                 button_length="default_theme",
                  command=None,
                  variable=None,
                  **kwargs):
@@ -63,9 +68,11 @@ class CTkSlider(tkinter.Frame):
         self.button_hover_color = CTkThemeManager.theme["color"]["slider_button_hover"] if button_hover_color == "default_theme" else button_hover_color
 
         self.width = width
-        self.height = self.calc_optimal_height(height)
-        self.corner_radius = CTkThemeManager.theme["shape"]["button_corner_radius"] if corner_radius == "default_theme" else corner_radius
+        self.height = height
+        self.corner_radius = CTkThemeManager.theme["shape"]["slider_corner_radius"] if corner_radius == "default_theme" else corner_radius
+        self.button_corner_radius = CTkThemeManager.theme["shape"]["slider_button_corner_radius"] if button_corner_radius == "default_theme" else button_corner_radius
         self.border_width = CTkThemeManager.theme["shape"]["slider_border_width"] if border_width == "default_theme" else border_width
+        self.button_length = CTkThemeManager.theme["shape"]["slider_button_length"] if button_length == "default_theme" else button_length
         self.value = 0.5  # initial value of slider in percent
         self.hover_state = False
         self.from_ = from_
@@ -81,12 +88,16 @@ class CTkSlider(tkinter.Frame):
         self.configure(width=self.width, height=self.height)
         if sys.platform == "darwin":
             self.configure(cursor="pointinghand")
+        elif sys.platform.startswith("win"):
+            self.configure(cursor="hand2")
 
-        self.canvas = tkinter.Canvas(master=self,
-                                     highlightthickness=0,
-                                     width=self.width,
-                                     height=self.height)
+        self.canvas = CTkCanvas(master=self,
+                                highlightthickness=0,
+                                width=self.width,
+                                height=self.height)
         self.canvas.grid(column=0, row=0, sticky="nswe")
+
+        self.draw_engine = CTkDrawEngine(self.canvas, CTkSettings.preferred_drawing_method)
 
         self.canvas.bind("<Enter>", self.on_enter)
         self.canvas.bind("<Leave>", self.on_leave)
@@ -147,30 +158,39 @@ class CTkSlider(tkinter.Frame):
 
     def draw(self, no_color_updates=False):
 
-        # decide the drawing method
-        if sys.platform == "darwin":
-            # on macOS draw button with polygons (positions are more accurate, macOS has Antialiasing)
-            self.draw_with_polygon_shapes()
-        else:
-            # on Windows and other draw with ovals (corner_radius can be optimised to look better than with polygons)
-            self.draw_with_ovals_and_rects()
+        # # decide the drawing method
+        # if sys.platform == "darwin":
+        #     # on macOS draw button with polygons (positions are more accurate, macOS has Antialiasing)
+        #     self.draw_with_polygon_shapes()
+        # else:
+        #     # on Windows and other draw with ovals (corner_radius can be optimised to look better than with polygons)
+        #     self.draw_with_ovals_and_rects()
 
-        if no_color_updates is False:
+        requires_recoloring = self.draw_engine.draw_rounded_slider_with_border_and_button(self.width, self.height, self.corner_radius, self.border_width,
+                                                                                          self.button_length, self.button_corner_radius, self.value, "w")
+
+        if no_color_updates is False or requires_recoloring:
             self.canvas.configure(bg=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
 
             if self.border_color is None:
-                self.canvas.itemconfig("border_parts", fill=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
+                self.canvas.itemconfig("border_parts", fill=CTkThemeManager.single_color(self.bg_color, self.appearance_mode),
+                                       outline=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
             else:
-                self.canvas.itemconfig("border_parts", fill=CTkThemeManager.single_color(self.border_color, self.appearance_mode))
+                self.canvas.itemconfig("border_parts", fill=CTkThemeManager.single_color(self.border_color, self.appearance_mode),
+                                       outline=CTkThemeManager.single_color(self.border_color, self.appearance_mode))
 
-            self.canvas.itemconfig("inner_parts", fill=CTkThemeManager.single_color(self.fg_color, self.appearance_mode))
+            self.canvas.itemconfig("inner_parts", fill=CTkThemeManager.single_color(self.fg_color, self.appearance_mode),
+                                   outline=CTkThemeManager.single_color(self.fg_color, self.appearance_mode))
 
             if self.progress_color is None:
-                self.canvas.itemconfig("progress_parts", fill=CTkThemeManager.single_color(self.fg_color, self.appearance_mode))
+                self.canvas.itemconfig("progress_parts", fill=CTkThemeManager.single_color(self.fg_color, self.appearance_mode),
+                                       outline=CTkThemeManager.single_color(self.fg_color, self.appearance_mode))
             else:
-                self.canvas.itemconfig("progress_parts", fill=CTkThemeManager.single_color(self.progress_color, self.appearance_mode))
+                self.canvas.itemconfig("progress_parts", fill=CTkThemeManager.single_color(self.progress_color, self.appearance_mode),
+                                       outline=CTkThemeManager.single_color(self.progress_color, self.appearance_mode))
 
-            self.canvas.itemconfig("button_parts", fill=CTkThemeManager.single_color(self.button_color, self.appearance_mode))
+            self.canvas.itemconfig("slider_parts", fill=CTkThemeManager.single_color(self.button_color, self.appearance_mode),
+                                   outline=CTkThemeManager.single_color(self.button_color, self.appearance_mode))
 
     def draw_with_polygon_shapes(self):
         """ draw the slider parts with just three polygons that have a rounded border """
@@ -335,11 +355,13 @@ class CTkSlider(tkinter.Frame):
 
     def on_enter(self, event=0):
         self.hover_state = True
-        self.canvas.itemconfig("button_parts", fill=CTkThemeManager.single_color(self.button_hover_color, self.appearance_mode))
+        self.canvas.itemconfig("slider_parts", fill=CTkThemeManager.single_color(self.button_hover_color, self.appearance_mode),
+                                   outline=CTkThemeManager.single_color(self.button_hover_color, self.appearance_mode))
 
     def on_leave(self, event=0):
         self.hover_state = False
-        self.canvas.itemconfig("button_parts", fill=CTkThemeManager.single_color(self.button_color, self.appearance_mode))
+        self.canvas.itemconfig("slider_parts", fill=CTkThemeManager.single_color(self.button_color, self.appearance_mode),
+                                   outline=CTkThemeManager.single_color(self.button_color, self.appearance_mode))
 
     def round_to_step_size(self, value):
         if self.number_of_steps is not None:

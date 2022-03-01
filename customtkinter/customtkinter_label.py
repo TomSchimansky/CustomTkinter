@@ -7,7 +7,7 @@ from .appearance_mode_tracker import AppearanceModeTracker
 from .customtkinter_theme_manager import CTkThemeManager
 from .customtkinter_canvas import CTkCanvas
 from .customtkinter_settings import CTkSettings
-from .customtkinter_draw_engine import DrawEngine
+from .customtkinter_draw_engine import CTkDrawEngine
 
 
 class CTkLabel(tkinter.Frame):
@@ -83,7 +83,7 @@ class CTkLabel(tkinter.Frame):
                                         **kwargs)
         self.text_label.place(relx=0.5, rely=0.5, anchor=tkinter.CENTER)
 
-        self.draw_engine = DrawEngine(self.canvas, CTkSettings.preferred_drawing_method)
+        self.draw_engine = CTkDrawEngine(self.canvas, CTkSettings.preferred_drawing_method)
 
         super().configure(width=self.width, height=self.height)
 

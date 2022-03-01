@@ -12,7 +12,7 @@ class CTkCanvas(tkinter.Canvas):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.aa_circle_canvas_ids = []
+        self.aa_circle_canvas_ids = set()
 
     def get_char_from_radius(self, radius):
         if CTkSettings.scaling_factor == 1:
@@ -26,7 +26,7 @@ class CTkCanvas(tkinter.Canvas):
         circle_1 = self.create_text(x_pos, y_pos, text=self.get_char_from_radius(radius), anchor=anchor, fill=fill,
                                     font=("CustomTkinter_shapes_font", -radius * 2), tags=tags, angle=angle)
         self.addtag_withtag("ctk_aa_circle_font_element", circle_1)
-        self.aa_circle_canvas_ids.append(circle_1)
+        self.aa_circle_canvas_ids.add(circle_1)
 
         return circle_1
 

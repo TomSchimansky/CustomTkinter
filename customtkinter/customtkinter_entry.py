@@ -7,7 +7,7 @@ from .appearance_mode_tracker import AppearanceModeTracker
 from .customtkinter_theme_manager import CTkThemeManager
 from .customtkinter_canvas import CTkCanvas
 from .customtkinter_settings import CTkSettings
-from .customtkinter_draw_engine import DrawEngine
+from .customtkinter_draw_engine import CTkDrawEngine
 
 
 class CTkEntry(tkinter.Frame):
@@ -93,7 +93,7 @@ class CTkEntry(tkinter.Frame):
                                    **kwargs)
         self.entry.grid(column=0, row=0, sticky="we", padx=self.corner_radius if self.corner_radius >= 6 else 6)
 
-        self.draw_engine = DrawEngine(self.canvas, CTkSettings.preferred_drawing_method)
+        self.draw_engine = CTkDrawEngine(self.canvas, CTkSettings.preferred_drawing_method)
 
         super().bind('<Configure>', self.update_dimensions)
         self.entry.bind('<FocusOut>', self.set_placeholder)
@@ -149,16 +149,25 @@ class CTkEntry(tkinter.Frame):
 
     def draw(self):
         self.canvas.configure(bg=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
-        self.entry.configure(bg=CTkThemeManager.single_color(self.fg_color, self.appearance_mode),
-                             highlightcolor=CTkThemeManager.single_color(self.fg_color, self.appearance_mode),
-                             fg=CTkThemeManager.single_color(self.text_color, self.appearance_mode),
-                             insertbackground=CTkThemeManager.single_color(self.text_color, self.appearance_mode))
 
         requires_recoloring = self.draw_engine.draw_rounded_rect_with_border(self.width, self.height, self.corner_radius, self.border_width)
 
-        self.canvas.itemconfig("inner_parts",
-                               fill=CTkThemeManager.single_color(self.fg_color, self.appearance_mode),
-                               outline=CTkThemeManager.single_color(self.fg_color, self.appearance_mode))
+        if CTkThemeManager.single_color(self.fg_color, self.appearance_mode) is not None:
+            self.canvas.itemconfig("inner_parts",
+                                   fill=CTkThemeManager.single_color(self.fg_color, self.appearance_mode),
+                                   outline=CTkThemeManager.single_color(self.fg_color, self.appearance_mode))
+            self.entry.configure(bg=CTkThemeManager.single_color(self.fg_color, self.appearance_mode),
+                                 highlightcolor=CTkThemeManager.single_color(self.fg_color, self.appearance_mode),
+                                 fg=CTkThemeManager.single_color(self.text_color, self.appearance_mode),
+                                 insertbackground=CTkThemeManager.single_color(self.text_color, self.appearance_mode))
+        else:
+            self.canvas.itemconfig("inner_parts",
+                                   fill=CTkThemeManager.single_color(self.bg_color, self.appearance_mode),
+                                   outline=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
+            self.entry.configure(bg=CTkThemeManager.single_color(self.bg_color, self.appearance_mode),
+                                 highlightcolor=CTkThemeManager.single_color(self.bg_color, self.appearance_mode),
+                                 fg=CTkThemeManager.single_color(self.text_color, self.appearance_mode),
+                                 insertbackground=CTkThemeManager.single_color(self.text_color, self.appearance_mode))
 
         self.canvas.itemconfig("border_parts",
                                fill=CTkThemeManager.single_color(self.border_color, self.appearance_mode),

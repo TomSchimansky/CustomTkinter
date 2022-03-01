@@ -4,8 +4,8 @@
     "button": ["#64A1D2", "#1C94CF"],
     "button_hover": ["#A7C2E0", "#5FB4DD"],
     "button_border": ["#A7C2E0", "#5FB4DD"],
-    "checkbox_border": ["black", "#ededed"],
-    "entry": ["gray95", "#222222"],
+    "checkbox_border": ["gray20", "#ededed"],
+    "entry": [null, null],
     "entry_border": ["gray65", "gray40"],
     "entry_placeholder_text": ["gray52", "gray62"],
     "frame_border": ["#A7C2E0", "#5FB4DD"],
@@ -14,7 +14,7 @@
     "label": ["white", "#626061"],
     "text": ["gray18", "gray90"],
     "progressbar": ["#6B6B6B", "#222222"],
-    "progressbar_progress": ["red", "red"],
+    "progressbar_progress": ["#64A1D2", "#1C94CF"],
     "progressbar_border": ["gray", "gray"],
     "slider": ["#6B6B6B", "#222222"],
     "slider_progress": ["#A5A6A5", "#555555"],
@@ -47,9 +47,11 @@
     "frame_corner_radius": 10,
     "frame_border_width": 0,
     "label_corner_radius": 8,
-    "progressbar_border_width": 2,
-    "progressbar_corner_radius": 1000,
-    "slider_border_width": 4,
-    "slider_corner_radius": 3
+    "progressbar_border_width": 0,
+    "progressbar_corner_radius": 100,
+    "slider_border_width": 5,
+    "slider_corner_radius": 8,
+    "slider_button_length": 4,
+    "slider_button_corner_radius": 6
   }
 }

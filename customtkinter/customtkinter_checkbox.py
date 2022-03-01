@@ -7,7 +7,7 @@ from customtkinter.appearance_mode_tracker import AppearanceModeTracker
 from customtkinter.customtkinter_theme_manager import CTkThemeManager
 from customtkinter.customtkinter_canvas import CTkCanvas
 from customtkinter.customtkinter_settings import CTkSettings
-from customtkinter.customtkinter_draw_engine import DrawEngine
+from customtkinter.customtkinter_draw_engine import CTkDrawEngine
 
 
 class CTkCheckBox(tkinter.Frame):
@@ -100,7 +100,7 @@ class CTkCheckBox(tkinter.Frame):
                                 height=self.height)
         self.canvas.pack(side='left')
 
-        self.draw_engine = DrawEngine(self.canvas, CTkSettings.preferred_drawing_method)
+        self.draw_engine = CTkDrawEngine(self.canvas, CTkSettings.preferred_drawing_method)
 
         if sys.platform == "darwin" and self.state == tkinter.NORMAL and CTkSettings.hand_cursor_enabled:
             self.canvas.configure(cursor="pointinghand")
