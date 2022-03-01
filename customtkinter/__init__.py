@@ -1,4 +1,4 @@
-__version__ = "2.3"
+__version__ = "2.4"
 
 from .customtkinter_button import CTkButton
 from .customtkinter_slider import CTkSlider

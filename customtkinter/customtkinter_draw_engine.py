@@ -98,7 +98,7 @@ class CTkDrawEngine:
 
         # create inner button parts
         if not self._canvas.find_withtag("inner_parts"):
-            self._canvas.create_polygon((0, 0, 0, 0), tags=("inner_line_1", "inner_parts"))
+            self._canvas.create_polygon((0, 0, 0, 0), tags=("inner_line_1", "inner_parts"), joinstyle=tkinter.ROUND)
             requires_recoloring = True
 
         if corner_radius <= border_width:
@@ -107,19 +107,18 @@ class CTkDrawEngine:
             bottom_right_shift = 0
 
         self._canvas.coords("inner_line_1",
-                            (border_width + inner_corner_radius,
+                            border_width + inner_corner_radius,
                             border_width + inner_corner_radius,
                             width - (border_width + inner_corner_radius) + bottom_right_shift,
                             border_width + inner_corner_radius,
                             width - (border_width + inner_corner_radius) + bottom_right_shift,
                             height - (border_width + inner_corner_radius) + bottom_right_shift,
                             border_width + inner_corner_radius,
-                            height - (border_width + inner_corner_radius) + bottom_right_shift))
+                            height - (border_width + inner_corner_radius) + bottom_right_shift)
         self._canvas.itemconfig("inner_line_1",
-                                joinstyle=tkinter.ROUND,
                                 width=inner_corner_radius * 2)
 
-        if requires_recoloring:
+        if requires_recoloring:  # new parts were added -> manage z-order
             self._canvas.tag_lower("inner_parts")
             self._canvas.tag_lower("border_parts")
 
@@ -238,7 +237,7 @@ class CTkDrawEngine:
                                                   width - border_width,
                                                   height - inner_corner_radius - border_width))
 
-        if requires_recoloring:
+        if requires_recoloring:  # new parts were added -> manage z-order
             self._canvas.tag_lower("inner_parts")
             self._canvas.tag_lower("border_parts")
 
@@ -350,7 +349,7 @@ class CTkDrawEngine:
         requires_recoloring = self._draw_rounded_rect_with_border_polygon_shapes(width, height, corner_radius, border_width, inner_corner_radius)
 
         if corner_radius <= border_width:
-            bottom_right_shift = -1  # weird canvas rendering inaccuracy that has to be corrected in some cases
+            bottom_right_shift = 0  # weird canvas rendering inaccuracy that has to be corrected in some cases
         else:
             bottom_right_shift = 0
 
@@ -503,14 +502,6 @@ class CTkDrawEngine:
         else:
             inner_corner_radius = 0
 
-        # scale slider_value to a smaller range to be the progress_value of the underlaying progressbar
-        if orientation == "w" or orientation == "e":
-            x = (button_length / width) / 2
-        else:
-            x = (button_length / height) / 2
-        print(x)
-        new_slider_value = slider_value * (1 - 2 * x) + x
-
         if self._rendering_method == "polygon_shapes" or self._rendering_method == "circle_shapes":
             return self._draw_rounded_slider_with_border_and_button_polygon_shapes(width, height, corner_radius, border_width, inner_corner_radius,
                                                                                    button_length, button_corner_radius, slider_value, orientation)
@@ -521,13 +512,14 @@ class CTkDrawEngine:
     def _draw_rounded_slider_with_border_and_button_polygon_shapes(self, width: int, height: int, corner_radius: int, border_width: int, inner_corner_radius: int,
                                                                    button_length: int, button_corner_radius: int, slider_value: float, orientation: str) -> bool:
 
+        # draw normal progressbar
         requires_recoloring = self._draw_rounded_progress_bar_with_border_polygon_shapes(width, height, corner_radius, border_width, inner_corner_radius,
                                                                                          slider_value, orientation)
 
-        # create button parts
+        # create slider button part
         if not self._canvas.find_withtag("slider_parts"):
             self._canvas.create_polygon((0, 0, 0, 0), tags=("slider_line_1", "slider_parts"), joinstyle=tkinter.ROUND)
-            self._canvas.tag_raise("slider_parts")
+            self._canvas.tag_raise("slider_parts")  # manage z-order
             requires_recoloring = True
 
         if corner_radius <= border_width:
@@ -550,9 +542,11 @@ class CTkDrawEngine:
     def _draw_rounded_slider_with_border_and_button_font_shapes(self, width: int, height: int, corner_radius: int, border_width: int, inner_corner_radius: int,
                                                                 button_length: int, button_corner_radius: int, slider_value: float, orientation: str) -> bool:
 
+        # draw normal progressbar
         requires_recoloring = self._draw_rounded_progress_bar_with_border_font_shapes(width, height, corner_radius, border_width, inner_corner_radius,
                                                                                       slider_value, orientation)
 
+        # create 4 circles (if not needed, then less)
         if not self._canvas.find_withtag("slider_oval_1_a"):
             self._canvas.create_aa_circle(0, 0, 0, tags=("slider_oval_1_a", "slider_corner_part", "slider_parts"), anchor=tkinter.CENTER)
             self._canvas.create_aa_circle(0, 0, 0, tags=("slider_oval_1_b", "slider_corner_part", "slider_parts"), anchor=tkinter.CENTER, angle=180)
@@ -579,6 +573,7 @@ class CTkDrawEngine:
         elif self._canvas.find_withtag("border_oval_3_a") and not (button_length > 0 and height > 2 * button_corner_radius):
             self._canvas.delete("slider_oval_3_a", "slider_oval_3_b")
 
+        # create the 2 rectangles (if needed)
         if not self._canvas.find_withtag("slider_rectangle_1") and button_length > 0:
             self._canvas.create_rectangle(0, 0, 0, 0, tags=("slider_rectangle_1", "slider_rectangle_part", "slider_parts"), width=0)
             requires_recoloring = True
@@ -591,6 +586,7 @@ class CTkDrawEngine:
         elif self._canvas.find_withtag("slider_rectangle_2") and not height > 2 * button_corner_radius:
             self._canvas.delete("slider_rectangle_2")
 
+        # set positions of circles and rectangles
         slider_x_position = corner_radius + (button_length / 2) + (width - 2 * corner_radius - button_length) * slider_value
         self._canvas.coords("slider_oval_1_a", slider_x_position - (button_length / 2), button_corner_radius, button_corner_radius)
         self._canvas.coords("slider_oval_1_b", slider_x_position - (button_length / 2), button_corner_radius, button_corner_radius)
@@ -608,7 +604,7 @@ class CTkDrawEngine:
                             slider_x_position - (button_length / 2) - button_corner_radius, button_corner_radius,
                             slider_x_position + (button_length / 2) + button_corner_radius, height - button_corner_radius)
 
-        if requires_recoloring:
+        if requires_recoloring:  # new parts were added -> manage z-order
             self._canvas.tag_raise("slider_parts")
 
         return requires_recoloring

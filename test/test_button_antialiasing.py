@@ -1,7 +1,7 @@
 import customtkinter
 import tkinter
 
-customtkinter.CTkSettings.preferred_drawing_method = "font_shapes"
+customtkinter.CTkSettings.preferred_drawing_method = "polygon_shapes"
 customtkinter.set_default_color_theme("blue")
 customtkinter.set_appearance_mode("dark")
 

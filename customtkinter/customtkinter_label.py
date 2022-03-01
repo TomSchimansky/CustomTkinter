@@ -69,11 +69,14 @@ class CTkLabel(tkinter.Frame):
         self.text = text
         self.text_font = (CTkThemeManager.theme["text"]["font"], CTkThemeManager.theme["text"]["size"]) if text_font == "default_theme" else text_font
 
+        self.grid_rowconfigure(0, weight=1)
+        self.grid_columnconfigure(0, weight=1)
+
         self.canvas = CTkCanvas(master=self,
                                 highlightthickness=0,
                                 width=self.width,
                                 height=self.height)
-        self.canvas.place(relx=0, rely=0, anchor=tkinter.NW)
+        self.canvas.grid(row=0, column=0, sticky="nswe")
 
         self.text_label = tkinter.Label(master=self,
                                         highlightthickness=0,
@@ -81,7 +84,7 @@ class CTkLabel(tkinter.Frame):
                                         text=self.text,
                                         font=self.text_font,
                                         **kwargs)
-        self.text_label.place(relx=0.5, rely=0.5, anchor=tkinter.CENTER)
+        self.text_label.grid(row=0, column=0, padx=self.corner_radius)
 
         self.draw_engine = CTkDrawEngine(self.canvas, CTkSettings.preferred_drawing_method)
 
@@ -134,8 +137,6 @@ class CTkLabel(tkinter.Frame):
         if "fg_color" in kwargs:
             self.fg_color = kwargs["fg_color"]
             require_redraw = True
-            if self.fg_color is None:
-                self.fg_color = self.bg_color
             del kwargs["fg_color"]
 
         if "bg_color" in kwargs:

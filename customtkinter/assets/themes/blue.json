@@ -51,7 +51,7 @@
     "progressbar_corner_radius": 100,
     "slider_border_width": 5,
     "slider_corner_radius": 8,
-    "slider_button_length": 0,
+    "slider_button_length": 10,
     "slider_button_corner_radius": 8
   }
 }

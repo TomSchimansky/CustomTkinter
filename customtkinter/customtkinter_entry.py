@@ -1,5 +1,4 @@
 import tkinter
-import sys
 
 from .customtkinter_tk import CTk
 from .customtkinter_frame import CTkFrame
@@ -19,8 +18,8 @@ class CTkEntry(tkinter.Frame):
                  placeholder_text_color="default_theme",
                  text_font="default_theme",
                  placeholder_text=None,
-                 corner_radius=8,
-                 border_width=0,
+                 corner_radius="default_theme",
+                 border_width="default_theme",
                  border_color="default_theme",
                  width=120,
                  height=30,
