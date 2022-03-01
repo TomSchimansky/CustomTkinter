@@ -1,7 +1,6 @@
 import customtkinter
 import tkinter
 
-customtkinter.CTkSettings.preferred_drawing_method = "polygon_shapes"
 customtkinter.set_default_color_theme("blue")
 customtkinter.set_appearance_mode("dark")
 
@@ -21,7 +20,7 @@ f2 = customtkinter.CTkFrame(app, fg_color="gray10", corner_radius=0)
 f2.grid(row=0, column=1, rowspan=1, columnspan=1, sticky="nsew")
 f2.grid_columnconfigure(0, weight=1)
 
-f3 = customtkinter.CTkFrame(app, fg_color="gray90", corner_radius=0)
+f3 = customtkinter.CTkFrame(app, fg_color="gray85", corner_radius=0)
 f3.grid(row=0, column=2, rowspan=1, columnspan=1, sticky="nsew")
 f3.grid_columnconfigure(0, weight=1)
 
@@ -38,8 +37,8 @@ for i in range(0, 18, 1):
                                 fg_color="#228da8")
     b.grid(row=i, column=0, pady=5, padx=15, sticky="nsew")
 
-    b = customtkinter.CTkButton(f3, corner_radius=i, height=34, border_width=3, text=f"{i} {i - 3}",
-                                fg_color=None, border_color="gray10", text_color="black")
+    b = customtkinter.CTkButton(f3, corner_radius=i, height=34, border_width=2, text=f"{i} {i-2}",
+                                fg_color=None, border_color="gray20", text_color="black")
     b.grid(row=i, column=0, pady=5, padx=15, sticky="nsew")
 
     b = customtkinter.CTkButton(f4, corner_radius=i, height=34, border_width=0, text=f"{i}",

@@ -117,12 +117,20 @@ class CTkLabel(tkinter.Frame):
 
         self.canvas.configure(bg=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
 
-        self.canvas.itemconfig("inner_parts",
-                               fill=CTkThemeManager.single_color(self.fg_color, self.appearance_mode),
-                               outline=CTkThemeManager.single_color(self.fg_color, self.appearance_mode))
+        if CTkThemeManager.single_color(self.fg_color, self.appearance_mode) is not None:
+            self.canvas.itemconfig("inner_parts",
+                                   fill=CTkThemeManager.single_color(self.fg_color, self.appearance_mode),
+                                   outline=CTkThemeManager.single_color(self.fg_color, self.appearance_mode))
 
-        self.text_label.configure(fg=CTkThemeManager.single_color(self.text_color, self.appearance_mode),
-                                  bg=CTkThemeManager.single_color(self.fg_color, self.appearance_mode))
+            self.text_label.configure(fg=CTkThemeManager.single_color(self.text_color, self.appearance_mode),
+                                      bg=CTkThemeManager.single_color(self.fg_color, self.appearance_mode))
+        else:
+            self.canvas.itemconfig("inner_parts",
+                                   fill=CTkThemeManager.single_color(self.bg_color, self.appearance_mode),
+                                   outline=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
+
+            self.text_label.configure(fg=CTkThemeManager.single_color(self.text_color, self.appearance_mode),
+                                      bg=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
 
     def config(self, *args, **kwargs):
         self.configure(*args, **kwargs)

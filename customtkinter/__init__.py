@@ -1,5 +1,6 @@
 __version__ = "2.4"
 
+from .customtkinter_dialog import CTkDialog
 from .customtkinter_button import CTkButton
 from .customtkinter_slider import CTkSlider
 from .customtkinter_frame import CTkFrame
@@ -7,7 +8,6 @@ from .customtkinter_progressbar import CTkProgressBar
 from .customtkinter_label import CTkLabel
 from .customtkinter_entry import CTkEntry
 from .customtkinter_checkbox import CTkCheckBox
-from .customtkinter_dialog import CTkDialog
 from .customtkinter_tk import CTk
 from .customtkinter_canvas import CTkCanvas
 from .customtkinter_toplevel import CTkToplevel
@@ -59,7 +59,7 @@ def get_appearance_mode():
 
 
 def set_default_color_theme(color_string):
-    CTkThemeManager.initialize_color_theme(color_string)
+    CTkThemeManager.load_theme(color_string)
 
 
 if not sys.platform == "darwin":
@@ -70,7 +70,7 @@ if not sys.platform == "darwin":
 
     # load text fonts and custom font with circle shapes for round corner rendering
     script_directory = os.path.dirname(os.path.abspath(__file__))
-    pyglet.font.add_file(os.path.join(script_directory, "assets", "CustomTkinter_shapes_font-Regular.otf"))
+    pyglet.font.add_file(os.path.join(script_directory, "assets", "CustomTkinter_shapes_font-fine.otf"))
     pyglet.font.add_file(os.path.join(script_directory, "assets", "Roboto", "Roboto-Regular.ttf"))
     pyglet.font.add_file(os.path.join(script_directory, "assets", "Roboto", "Roboto-Medium.ttf"))
     CTkSettings.circle_font_is_ready = pyglet.font.have_font("CustomTkinter_shapes_font")
@@ -81,5 +81,6 @@ if not sys.platform == "darwin":
     if not CTkSettings.circle_font_is_ready:
         if CTkSettings.preferred_drawing_method == "font_shapes":
             sys.stderr.write("WARNING (customtkinter.CTkSettings): " +
-                             "Preferred drawing method 'font_shapes' can not be used because the font file could not be loaded. Using 'circle_shapes' instead.")
+                             "Preferred drawing method 'font_shapes' can not be used because the font file could not be loaded.\n" +
+                             "Using 'circle_shapes' instead. The rendering quality will be very bad!")
             CTkSettings.preferred_drawing_method = "circle_shapes"

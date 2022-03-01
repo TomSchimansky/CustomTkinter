@@ -4,9 +4,7 @@ import customtkinter
 import sys
 
 customtkinter.set_appearance_mode("Light")  # Modes: "System" (standard), "Dark", "Light"
-customtkinter.set_default_color_theme("blue")  # Themes: "blue" (standard), "green", "dark-blue"
-
-customtkinter.CTkSettings.preferred_drawing_method = "polygon_shapes"
+customtkinter.set_default_color_theme("dark-blue")  # Themes: "blue" (standard), "green", "dark-blue"
 
 
 class App(customtkinter.CTk):
@@ -52,28 +50,29 @@ class App(customtkinter.CTk):
 
         self.label_1 = customtkinter.CTkLabel(master=self.frame_left,
                                               text="CustomTkinter",
+                                              text_font=("Roboto Medium", -16),  # font name and size in px
                                               fg_color=None)
         self.label_1.grid(row=1, column=0, pady=10, padx=10)
 
         self.button_1 = customtkinter.CTkButton(master=self.frame_left,
                                                 text="CTkButton 1",
                                                 command=self.button_event,
-                                                border_width=0,
-                                                corner_radius=8)
+                                                fg_color=None,
+                                                border_width=2)
         self.button_1.grid(row=2, column=0, pady=10, padx=20)
 
         self.button_2 = customtkinter.CTkButton(master=self.frame_left,
                                                 text="CTkButton 2",
                                                 command=self.button_event,
-                                                border_width=0,
-                                                corner_radius=8)
+                                                fg_color=None,
+                                                border_width=2)
         self.button_2.grid(row=3, column=0, pady=10, padx=20)
 
         self.button_3 = customtkinter.CTkButton(master=self.frame_left,
                                                 text="CTkButton 3",
                                                 command=self.button_event,
-                                                border_width=0,
-                                                corner_radius=8)
+                                                fg_color=None,
+                                                border_width=2)
         self.button_3.grid(row=4, column=0, pady=10, padx=20)
 
         self.check_box_1 = customtkinter.CTkCheckBox(master=self.frame_left,
@@ -103,19 +102,18 @@ class App(customtkinter.CTk):
                                                         "amet consetetur sadipscing elitr,\n" +
                                                         "sed diam nonumy eirmod tempor\n" +
                                                         "invidunt ut labore",
-                                                   width=250,
+                                                   width=240,
                                                    height=100,
                                                    fg_color=("white", "gray38"),  # <- custom tuple-color
                                                    justify=tkinter.LEFT)
         self.label_info_1.place(relx=0.5, rely=0.15, anchor=tkinter.N)
 
-        self.progressbar = customtkinter.CTkProgressBar(master=self.frame_info)
+        self.progressbar = customtkinter.CTkProgressBar(master=self.frame_info, width=240)
         self.progressbar.place(relx=0.5, rely=0.85, anchor=tkinter.S)
 
         # ============ frame_right <- ============
 
         self.slider_1 = customtkinter.CTkSlider(master=self.frame_right,
-                                                height=16,
                                                 from_=1,
                                                 to=0,
                                                 number_of_steps=3,
@@ -125,8 +123,6 @@ class App(customtkinter.CTk):
 
         self.slider_2 = customtkinter.CTkSlider(master=self.frame_right,
                                                 width=160,
-                                                height=16,
-                                                button_length=0,
                                                 command=self.progressbar.set)
         self.slider_2.grid(row=2, column=0, columnspan=2, pady=10, padx=20, sticky="we")
         self.slider_2.set(0.7)
@@ -142,27 +138,19 @@ class App(customtkinter.CTk):
         self.button_4 = customtkinter.CTkButton(master=self.frame_right,
                                                 height=25,
                                                 text="CTkButton",
-                                                command=self.button_event,
-                                                border_width=0,
-                                                corner_radius=8)
+                                                command=self.button_event)
         self.button_4.grid(row=2, column=2, columnspan=1, pady=10, padx=20, sticky="we")
 
         self.entry = customtkinter.CTkEntry(master=self.frame_right,
                                             width=120,
                                             height=30,
-                                            corner_radius=10,
-                                            border_width=2,
                                             placeholder_text="CTkEntry")
         self.entry.grid(row=4, column=0, columnspan=2, pady=20, padx=20, sticky="we")
 
         self.button_5 = customtkinter.CTkButton(master=self.frame_right,
-                                                height=26,
+                                                height=30,
                                                 text="CTkButton",
-                                                command=self.button_event,
-                                                fg_color="gray30",
-                                                border_width=2,
-                                                border_color=("gray30", "gray50"),
-                                                corner_radius=13)
+                                                command=self.button_event)
         self.button_5.grid(row=4, column=2, columnspan=1, pady=20, padx=20, sticky="we")
 
         self.progressbar.set(0.5)

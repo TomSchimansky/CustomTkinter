@@ -1,10 +1,13 @@
 import tkinter
 import time
 
-from customtkinter.customtkinter_label import CTkLabel
-from customtkinter.customtkinter_button import CTkButton
-from customtkinter.customtkinter_entry import CTkEntry
-from customtkinter.customtkinter_theme_manager import CTkThemeManager
+from .appearance_mode_tracker import AppearanceModeTracker
+from .customtkinter_theme_manager import CTkThemeManager
+from .customtkinter_label import CTkLabel
+from .customtkinter_button import CTkButton
+from .customtkinter_entry import CTkEntry
+from .customtkinter_frame import CTkFrame
+from .customtkinter_toplevel import CTkToplevel
 
 
 class CTkDialog:
@@ -15,6 +18,8 @@ class CTkDialog:
                  fg_color="default_theme",
                  hover_color="default_theme",
                  border_color="default_theme"):
+
+        self.appearance_mode = AppearanceModeTracker.get_mode()  # 0: "Light" 1: "Dark"
         self.master = master
 
         self.user_input = None
@@ -22,11 +27,12 @@ class CTkDialog:
 
         self.height = len(text.split("\n"))*20 + 150
 
+        self.window_bg_color = CTkThemeManager.theme["color"]["window_bg_color"]
         self.fg_color = CTkThemeManager.theme["color"]["button"] if fg_color == "default_theme" else fg_color
         self.hover_color = CTkThemeManager.theme["color"]["button_hover"] if hover_color == "default_theme" else hover_color
         self.border_color = CTkThemeManager.theme["color"]["button_hover"] if border_color == "default_theme" else border_color
 
-        self.top = customtkinter.CTkToplevel()
+        self.top = CTkToplevel()
         self.top.geometry(f"280x{self.height}")
         self.top.resizable(False, False)
         self.top.title(title)
@@ -34,14 +40,16 @@ class CTkDialog:
         self.top.focus_force()
         self.top.grab_set()
 
-        self.label_frame = customtkinter.CTkFrame(master=self.top,
+        self.label_frame = CTkFrame(master=self.top,
                                                   corner_radius=0,
+                                                  fg_color=CTkThemeManager.single_color(self.window_bg_color, self.appearance_mode),
                                                   width=300,
                                                   height=self.height-100)
         self.label_frame.place(relx=0.5, rely=0, anchor=tkinter.N)
 
-        self.button_and_entry_frame = customtkinter.CTkFrame(master=self.top,
+        self.button_and_entry_frame = CTkFrame(master=self.top,
                                                              corner_radius=0,
+                                                             fg_color=CTkThemeManager.single_color(self.window_bg_color, self.appearance_mode),
                                                              width=300,
                                                              height=100)
         self.button_and_entry_frame.place(relx=0.5, rely=1, anchor=tkinter.S)
@@ -95,22 +103,3 @@ class CTkDialog:
         time.sleep(0.05)
         self.top.destroy()
         return self.user_input
-
-
-if __name__ == "__main__":
-    import customtkinter
-    customtkinter.set_appearance_mode("System")
-    customtkinter.set_default_color_theme("dark-blue")
-
-    app = customtkinter.CTk()
-    app.geometry("400x300")
-    app.title("CTkDialog Test")
-
-    def button_click_event():
-        dialog = CTkDialog(master=None, text="Type in a number:", title="Test")
-        print("Number:", dialog.get_input())
-
-    button = CTkButton(master=app, text="Open Dialog", command=button_click_event)
-    button.place(relx=0.5, rely=0.5, anchor=tkinter.CENTER)
-
-    app.mainloop()

@@ -64,7 +64,7 @@ class CTkButton(tkinter.Frame):
         self.bg_color = self.detect_color_of_master() if bg_color is None else bg_color
         self.fg_color = CTkThemeManager.theme["color"]["button"] if fg_color == "default_theme" else fg_color
         self.hover_color = CTkThemeManager.theme["color"]["button_hover"] if hover_color == "default_theme" else hover_color
-        self.border_color = CTkThemeManager.theme["color"]["button_hover"] if border_color == "default_theme" else border_color
+        self.border_color = CTkThemeManager.theme["color"]["button_border"] if border_color == "default_theme" else border_color
 
         # shape and size
         self.width = width

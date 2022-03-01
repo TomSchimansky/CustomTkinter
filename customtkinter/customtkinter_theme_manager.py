@@ -6,7 +6,7 @@ import json
 class CTkThemeManager:
 
     theme = {}  # contains all the theme data
-    built_in_themes = ["blue", "green", "dark_blue"]
+    built_in_themes = ["blue", "green", "dark-blue"]
 
     @classmethod
     def load_theme(cls, theme_name_or_path: str):

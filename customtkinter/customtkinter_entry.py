@@ -117,8 +117,6 @@ class CTkEntry(tkinter.Frame):
                 return self.master.cget("bg")
             except:
                 pass
-                #print(self.master["style"])
-                #return self.master.cget("background")
 
     def update_dimensions(self, event):
         # only redraw if dimensions changed (for performance)
@@ -171,6 +169,9 @@ class CTkEntry(tkinter.Frame):
         self.canvas.itemconfig("border_parts",
                                fill=CTkThemeManager.single_color(self.border_color, self.appearance_mode),
                                outline=CTkThemeManager.single_color(self.border_color, self.appearance_mode))
+
+        if self.placeholder_text_active:
+            self.entry.config(fg=CTkThemeManager.single_color(self.placeholder_text_color, self.appearance_mode))
 
     def bind(self, *args, **kwargs):
         self.entry.bind(*args, **kwargs)
