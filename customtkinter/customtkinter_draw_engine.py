@@ -543,7 +543,7 @@ class CTkDrawEngine:
                                 slider_x_position + (button_length / 2), height - button_corner_radius,
                                 slider_x_position - (button_length / 2), height - button_corner_radius)
             self._canvas.itemconfig("slider_line_1",
-                                    width=corner_radius * 2)
+                                    width=button_corner_radius * 2)
 
         return requires_recoloring
 
