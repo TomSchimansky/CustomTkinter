@@ -94,11 +94,16 @@ class CTkCheckBox(tkinter.Frame):
         self.textvariable = textvariable
         self.variable_callback_name = None
 
+        # configure grid system
+        self.grid_columnconfigure(0, weight=0)
+        self.grid_columnconfigure(1, weight=0, minsize=6)
+        self.grid_columnconfigure(2, weight=1)
+
         self.canvas = CTkCanvas(master=self,
                                 highlightthickness=0,
                                 width=self.width,
                                 height=self.height)
-        self.canvas.pack(side='left')
+        self.canvas.grid(row=0, column=0, padx=0, pady=0, columnspan=1)
 
         self.draw_engine = CTkDrawEngine(self.canvas, CTkSettings.preferred_drawing_method)
 
@@ -160,11 +165,11 @@ class CTkCheckBox(tkinter.Frame):
 
         if self.text_label is None:
             self.text_label = tkinter.Label(master=self,
+                                            bd=0,
                                             text=self.text,
                                             justify=tkinter.LEFT,
-                                            width=len(self.text_color),
                                             font=self.text_font)
-            self.text_label.pack(side='right', padx=6)
+            self.text_label.grid(row=0, column=2, padx=0, pady=0, sticky="w")
             self.text_label["anchor"] = "w"
 
         self.text_label.configure(fg=CTkThemeManager.single_color(self.text_color, self.appearance_mode))
@@ -262,9 +267,9 @@ class CTkCheckBox(tkinter.Frame):
     def set_text(self, text):
         self.text = text
         if self.text_label is not None:
-            self.text_label.configure(text=self.text, width=len(self.text))
+            self.text_label.configure(text=self.text)
         else:
-            sys.stderr.write("ERROR (CTkButton): Cant change text because button has no text.")
+            sys.stderr.write("ERROR (CTkButton): Cant change text because checkbox has no text.")
 
     def on_enter(self, event=0):
         if self.hover is True:

@@ -9,7 +9,7 @@ customtkinter.set_default_color_theme("blue")  # Themes: "blue" (standard), "gre
 
 class App(customtkinter.CTk):
 
-    WIDTH = 700
+    WIDTH = 750
     HEIGHT = 500
 
     def __init__(self):
@@ -82,9 +82,10 @@ class App(customtkinter.CTk):
             self.frame_right.rowconfigure(i, weight=1)
         self.frame_right.rowconfigure(6, weight=10)
         self.frame_right.columnconfigure(0, weight=1)
+        self.frame_right.columnconfigure(1, weight=0)
 
         self.frame_info = customtkinter.CTkFrame(master=self.frame_right)
-        self.frame_info.grid(row=0, column=0, columnspan=2, rowspan=4, pady=20, padx=20, sticky="wens")
+        self.frame_info.grid(row=0, column=0, columnspan=1, rowspan=4, pady=20, padx=20, sticky="nsew")
 
         # ============ frame_right -> frame_info ============
 
@@ -96,37 +97,35 @@ class App(customtkinter.CTk):
                                                         "amet consetetur sadipscing elitr,\n" +
                                                         "sed diam nonumy eirmod tempor\n" +
                                                         "invidunt ut labore",
-                                                   width=240,
                                                    height=100,
                                                    fg_color=("white", "gray38"),  # <- custom tuple-color
                                                    justify=tkinter.LEFT)
         self.label_info_1.grid(column=0, row=0, sticky="nwe", padx=15, pady=15)
 
-        self.progressbar = customtkinter.CTkProgressBar(master=self.frame_info, width=240)
+        self.progressbar = customtkinter.CTkProgressBar(master=self.frame_info)
         self.progressbar.grid(row=1, column=0, sticky="ew", padx=15, pady=15)
 
         # ============ frame_right <- ============
         self.radio_var = tkinter.IntVar(value=0)
 
         self.label_radio_group = customtkinter.CTkLabel(master=self.frame_right,
-                                                        fg_color=("white", "gray30"),  # <- custom tuple-color
                                                         text="CTkRadioButton Group:")
-        self.label_radio_group.grid(row=0, column=2, columnspan=1, pady=0, padx=20, sticky="wes")
+        self.label_radio_group.grid(row=0, column=1, columnspan=1, pady=20, padx=10, sticky="")
 
         self.radio_button_1 = customtkinter.CTkRadioButton(master=self.frame_right,
-                                                      variable=self.radio_var,
-                                                      value=0)
-        self.radio_button_1.grid(row=1, column=2, pady=10, padx=20, sticky="")
+                                                           variable=self.radio_var,
+                                                           value=0)
+        self.radio_button_1.grid(row=1, column=1, pady=10, padx=20, sticky="n")
 
         self.radio_button_2 = customtkinter.CTkRadioButton(master=self.frame_right,
                                                            variable=self.radio_var,
                                                            value=1)
-        self.radio_button_2.grid(row=2, column=2, pady=10, padx=20, sticky="")
+        self.radio_button_2.grid(row=2, column=1, pady=10, padx=20, sticky="n")
 
         self.radio_button_3 = customtkinter.CTkRadioButton(master=self.frame_right,
                                                            variable=self.radio_var,
                                                            value=2)
-        self.radio_button_3.grid(row=3, column=2, pady=10, padx=20, sticky="")
+        self.radio_button_3.grid(row=3, column=1, pady=10, padx=20, sticky="n")
 
         #self.radio_button_1.select()
         #self.radio_button_1.deselect()
@@ -136,35 +135,35 @@ class App(customtkinter.CTk):
                                                 to=0,
                                                 number_of_steps=3,
                                                 command=self.progressbar.set)
-        self.slider_1.grid(row=4, column=0, columnspan=2, pady=10, padx=20, sticky="we")
+        self.slider_1.grid(row=4, column=0, columnspan=1, pady=10, padx=20, sticky="we")
         self.slider_1.set(0.7)
 
         self.slider_2 = customtkinter.CTkSlider(master=self.frame_right,
                                                 command=self.progressbar.set)
-        self.slider_2.grid(row=5, column=0, columnspan=2, pady=10, padx=20, sticky="we")
+        self.slider_2.grid(row=5, column=0, columnspan=1, pady=10, padx=20, sticky="we")
         self.slider_2.set(0.7)
 
         self.slider_button_1 = customtkinter.CTkButton(master=self.frame_right,
-                                                height=25,
-                                                text="CTkButton",
-                                                command=self.button_event)
-        self.slider_button_1.grid(row=4, column=2, columnspan=1, pady=10, padx=20, sticky="we")
+                                                       height=25,
+                                                       text="CTkButton",
+                                                       command=self.button_event)
+        self.slider_button_1.grid(row=4, column=1, columnspan=1, pady=10, padx=20, sticky="we")
 
         self.slider_button_2 = customtkinter.CTkButton(master=self.frame_right,
-                                                height=25,
-                                                text="CTkButton",
-                                                command=self.button_event)
-        self.slider_button_2.grid(row=5, column=2, columnspan=1, pady=10, padx=20, sticky="we")
+                                                       height=25,
+                                                       text="CTkButton",
+                                                       command=self.button_event)
+        self.slider_button_2.grid(row=5, column=1, columnspan=1, pady=10, padx=20, sticky="we")
 
         self.entry = customtkinter.CTkEntry(master=self.frame_right,
                                             width=120,
                                             placeholder_text="CTkEntry")
-        self.entry.grid(row=7, column=0, columnspan=2, pady=20, padx=20, sticky="we")
+        self.entry.grid(row=7, column=0, columnspan=1, pady=20, padx=20, sticky="we")
 
         self.button_5 = customtkinter.CTkButton(master=self.frame_right,
                                                 text="CTkButton",
                                                 command=self.button_event)
-        self.button_5.grid(row=7, column=2, columnspan=1, pady=20, padx=20, sticky="we")
+        self.button_5.grid(row=7, column=1, columnspan=1, pady=20, padx=20, sticky="we")
 
         self.progressbar.set(0.5)
 

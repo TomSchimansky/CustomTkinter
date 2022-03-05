@@ -46,4 +46,12 @@ entry_1.pack(pady=y_padding, padx=10)
 checkbox_1 = customtkinter.CTkCheckBox(master=frame_1, command=check_box_function)
 checkbox_1.pack(pady=y_padding, padx=10)
 
+radiobutton_var = tkinter.IntVar()
+
+radiobutton_1 = customtkinter.CTkRadioButton(master=frame_1, variable=radiobutton_var, value=1)
+radiobutton_1.pack(pady=y_padding, padx=10)
+
+radiobutton_2 = customtkinter.CTkRadioButton(master=frame_1, variable=radiobutton_var, value=2)
+radiobutton_2.pack(pady=y_padding, padx=10)
+
 root_tk.mainloop()

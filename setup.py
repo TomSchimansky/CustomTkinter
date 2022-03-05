@@ -19,15 +19,17 @@ def read(filename):
 
 
 setup(name="customtkinter",
-      version="3.0",
+      version="3.3",
       author="Tom Schimansky",
       license="Creative Commons Zero v1.0 Universal",
       url="https://github.com/TomSchimansky/CustomTkinter",
       description="Create modern looking gui with tkinter and python",
       long_description_content_type="text/markdown",
       long_description=read('Readme_pypi.md'),
+      include_package_data=True,
       packages=["customtkinter"],
       classifiers=["Operating System :: OS Independent",
                    "Programming Language :: Python :: 3",
                    "License :: CC0 1.0 Universal (CC0 1.0) Public Domain Dedication"],
-      install_requires=["darkdetect"])
+      install_requires=["darkdetect",
+                        "pyglet"])

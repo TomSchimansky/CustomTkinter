@@ -41,17 +41,17 @@ class CTkDialog:
         self.top.grab_set()
 
         self.label_frame = CTkFrame(master=self.top,
-                                                  corner_radius=0,
-                                                  fg_color=CTkThemeManager.single_color(self.window_bg_color, self.appearance_mode),
-                                                  width=300,
-                                                  height=self.height-100)
+                                    corner_radius=0,
+                                    fg_color=self.window_bg_color,
+                                    width=300,
+                                    height=self.height-100)
         self.label_frame.place(relx=0.5, rely=0, anchor=tkinter.N)
 
         self.button_and_entry_frame = CTkFrame(master=self.top,
-                                                             corner_radius=0,
-                                                             fg_color=CTkThemeManager.single_color(self.window_bg_color, self.appearance_mode),
-                                                             width=300,
-                                                             height=100)
+                                               corner_radius=0,
+                                               fg_color=self.window_bg_color,
+                                               width=300,
+                                               height=100)
         self.button_and_entry_frame.place(relx=0.5, rely=1, anchor=tkinter.S)
 
         self.myLabel = CTkLabel(master=self.label_frame,
