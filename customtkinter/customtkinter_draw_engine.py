@@ -67,7 +67,7 @@ class CTkDrawEngine:
         if self._rendering_method == "polygon_shapes":
             return self._draw_rounded_rect_with_border_polygon_shapes(width, height, corner_radius, border_width, inner_corner_radius)
         elif self._rendering_method == "font_shapes":
-            return self._draw_rounded_rect_with_border_font_shapes(width, height, corner_radius, border_width, inner_corner_radius, (), symmetric_circles=True)
+            return self._draw_rounded_rect_with_border_font_shapes(width, height, corner_radius, border_width, inner_corner_radius, ())
         elif self._rendering_method == "circle_shapes":
             return self._draw_rounded_rect_with_border_circle_shapes(width, height, corner_radius, border_width, inner_corner_radius)
 
@@ -125,33 +125,42 @@ class CTkDrawEngine:
         return requires_recoloring
 
     def _draw_rounded_rect_with_border_font_shapes(self, width: int, height: int, corner_radius: int, border_width: int, inner_corner_radius: int,
-                                                   exclude_parts: tuple, symmetric_circles: bool = True) -> bool:
+                                                   exclude_parts: tuple) -> bool:
         requires_recoloring = False
 
         # create border button parts
         if border_width > 0:
             if corner_radius > 0:
-                # create canvas border corner parts if not already created
-                if not self._canvas.find_withtag("border_oval_1_a"):
+                # create canvas border corner parts if not already created, but only if needed, and delete if not needed
+                if not self._canvas.find_withtag("border_oval_1_a") and "border_oval_1" not in exclude_parts:
                     self._canvas.create_aa_circle(0, 0, 0, tags=("border_oval_1_a", "border_corner_part", "border_parts"), anchor=tkinter.CENTER)
-                    if symmetric_circles:
-                        self._canvas.create_aa_circle(0, 0, 0, tags=("border_oval_1_b", "border_corner_part", "border_parts"), anchor=tkinter.CENTER, angle=180)
+                    self._canvas.create_aa_circle(0, 0, 0, tags=("border_oval_1_b", "border_corner_part", "border_parts"), anchor=tkinter.CENTER, angle=180)
+                    requires_recoloring = True
+                elif self._canvas.find_withtag("border_oval_1_a") and "border_oval_1" in exclude_parts:
+                    self._canvas.delete("border_oval_1_a", "border_oval_1_b")
+
+                if not self._canvas.find_withtag("border_oval_2_a") and width > 2 * corner_radius and "border_oval_2" not in exclude_parts:
                     self._canvas.create_aa_circle(0, 0, 0, tags=("border_oval_2_a", "border_corner_part", "border_parts"), anchor=tkinter.CENTER)
-                    if symmetric_circles:
-                        self._canvas.create_aa_circle(0, 0, 0, tags=("border_oval_2_b", "border_corner_part", "border_parts"), anchor=tkinter.CENTER, angle=180)
+                    self._canvas.create_aa_circle(0, 0, 0, tags=("border_oval_2_b", "border_corner_part", "border_parts"), anchor=tkinter.CENTER, angle=180)
                     requires_recoloring = True
+                elif self._canvas.find_withtag("border_oval_2_a") and (not width > 2 * corner_radius or "border_oval_2" in exclude_parts):
+                    self._canvas.delete("border_oval_2_a", "border_oval_2_b")
 
-                if not self._canvas.find_withtag("border_oval_3_a") and round(corner_radius) * 2 < height:
+                if not self._canvas.find_withtag("border_oval_3_a") and height > 2 * corner_radius \
+                        and width > 2 * corner_radius and "border_oval_3" not in exclude_parts:
                     self._canvas.create_aa_circle(0, 0, 0, tags=("border_oval_3_a", "border_corner_part", "border_parts"), anchor=tkinter.CENTER)
-                    if symmetric_circles:
-                        self._canvas.create_aa_circle(0, 0, 0, tags=("border_oval_3_b", "border_corner_part", "border_parts"), anchor=tkinter.CENTER, angle=180)
-                    self._canvas.create_aa_circle(0, 0, 0, tags=("border_oval_4_a", "border_corner_part", "border_parts"), anchor=tkinter.CENTER)
-                    if symmetric_circles:
-                        self._canvas.create_aa_circle(0, 0, 0, tags=("border_oval_4_b", "border_corner_part", "border_parts"), anchor=tkinter.CENTER, angle=180)
+                    self._canvas.create_aa_circle(0, 0, 0, tags=("border_oval_3_b", "border_corner_part", "border_parts"), anchor=tkinter.CENTER, angle=180)
                     requires_recoloring = True
+                elif self._canvas.find_withtag("border_oval_3_a") and (not (height > 2 * corner_radius
+                                                                            and width > 2 * corner_radius) or "border_oval_3" in exclude_parts):
+                    self._canvas.delete("border_oval_3_a", "border_oval_3_b")
 
-                elif self._canvas.find_withtag("border_oval_3_a") and not round(corner_radius) * 2 < height:
-                    self._canvas.delete(["border_oval_3_a", "border_oval_3_b", "border_oval_4_a", "border_oval_4_b"])
+                if not self._canvas.find_withtag("border_oval_4_a") and height > 2 * corner_radius and "border_oval_4" not in exclude_parts:
+                    self._canvas.create_aa_circle(0, 0, 0, tags=("border_oval_4_a", "border_corner_part", "border_parts"), anchor=tkinter.CENTER)
+                    self._canvas.create_aa_circle(0, 0, 0, tags=("border_oval_4_b", "border_corner_part", "border_parts"), anchor=tkinter.CENTER, angle=180)
+                    requires_recoloring = True
+                elif self._canvas.find_withtag("border_oval_4_a") and (not height > 2 * corner_radius or "border_oval_4" in exclude_parts):
+                    self._canvas.delete("border_oval_4_a", "border_oval_4_b")
 
                 # change position of border corner parts
                 self._canvas.coords("border_oval_1_a", corner_radius, corner_radius, corner_radius)
@@ -182,33 +191,35 @@ class CTkDrawEngine:
         # create inner button parts
         if inner_corner_radius > 0:
 
-            # create canvas border corner parts if not already created
+            # create canvas border corner parts if not already created, but only if they're needed and delete if not needed
             if not self._canvas.find_withtag("inner_oval_1_a") and "inner_oval_1" not in exclude_parts:
                 self._canvas.create_aa_circle(0, 0, 0, tags=("inner_oval_1_a", "inner_corner_part", "inner_parts"), anchor=tkinter.CENTER)
-                if symmetric_circles:
-                    self._canvas.create_aa_circle(0, 0, 0, tags=("inner_oval_1_b", "inner_corner_part", "inner_parts"), anchor=tkinter.CENTER, angle=180)
+                self._canvas.create_aa_circle(0, 0, 0, tags=("inner_oval_1_b", "inner_corner_part", "inner_parts"), anchor=tkinter.CENTER, angle=180)
                 requires_recoloring = True
+            elif self._canvas.find_withtag("inner_oval_1_a") and "inner_oval_1" in exclude_parts:
+                self._canvas.delete("inner_oval_1_a", "inner_oval_1_b")
 
-            if not self._canvas.find_withtag("inner_oval_2_a") and "inner_oval_2" not in exclude_parts:
+            if not self._canvas.find_withtag("inner_oval_2_a") and width - (2 * border_width) > 2 * inner_corner_radius and "inner_oval_2" not in exclude_parts:
                 self._canvas.create_aa_circle(0, 0, 0, tags=("inner_oval_2_a", "inner_corner_part", "inner_parts"), anchor=tkinter.CENTER)
-                if symmetric_circles:
-                    self._canvas.create_aa_circle(0, 0, 0, tags=("inner_oval_2_b", "inner_corner_part", "inner_parts"), anchor=tkinter.CENTER, angle=180)
+                self._canvas.create_aa_circle(0, 0, 0, tags=("inner_oval_2_b", "inner_corner_part", "inner_parts"), anchor=tkinter.CENTER, angle=180)
                 requires_recoloring = True
+            elif self._canvas.find_withtag("inner_oval_2_a") and (not width - (2 * border_width) > 2 * inner_corner_radius or "inner_oval_2" in exclude_parts):
+                self._canvas.delete("inner_oval_2_a", "inner_oval_2_b")
 
-            if not self._canvas.find_withtag("inner_oval_3_a") and round(inner_corner_radius) * 2 < height - (2 * border_width) and "inner_oval_3" not in exclude_parts:
+            if not self._canvas.find_withtag("inner_oval_3_a") and height - (2 * border_width) > 2 * inner_corner_radius \
+                    and width - (2 * border_width) > 2 * inner_corner_radius and "inner_oval_3" not in exclude_parts:
                 self._canvas.create_aa_circle(0, 0, 0, tags=("inner_oval_3_a", "inner_corner_part", "inner_parts"), anchor=tkinter.CENTER)
-                if symmetric_circles:
-                    self._canvas.create_aa_circle(0, 0, 0, tags=("inner_oval_3_b", "inner_corner_part", "inner_parts"), anchor=tkinter.CENTER, angle=180)
+                self._canvas.create_aa_circle(0, 0, 0, tags=("inner_oval_3_b", "inner_corner_part", "inner_parts"), anchor=tkinter.CENTER, angle=180)
                 requires_recoloring = True
-            elif self._canvas.find_withtag("inner_oval_3_a") and not round(inner_corner_radius) * 2 < height - (2 * border_width):
+            elif self._canvas.find_withtag("inner_oval_3_a") and (not (height - (2 * border_width) > 2 * inner_corner_radius
+                    and width - (2 * border_width) > 2 * inner_corner_radius) or "inner_oval_3" in exclude_parts):
                 self._canvas.delete("inner_oval_3_a", "inner_oval_3_b")
 
-            if not self._canvas.find_withtag("inner_oval_4_a") and round(inner_corner_radius) * 2 < height - (2 * border_width) and "inner_oval_4" not in exclude_parts:
+            if not self._canvas.find_withtag("inner_oval_4_a") and height - (2 * border_width) > 2 * inner_corner_radius and "inner_oval_4" not in exclude_parts:
                 self._canvas.create_aa_circle(0, 0, 0, tags=("inner_oval_4_a", "inner_corner_part", "inner_parts"), anchor=tkinter.CENTER)
-                if symmetric_circles:
-                    self._canvas.create_aa_circle(0, 0, 0, tags=("inner_oval_4_b", "inner_corner_part", "inner_parts"), anchor=tkinter.CENTER, angle=180)
+                self._canvas.create_aa_circle(0, 0, 0, tags=("inner_oval_4_b", "inner_corner_part", "inner_parts"), anchor=tkinter.CENTER, angle=180)
                 requires_recoloring = True
-            elif self._canvas.find_withtag("inner_oval_4_a") and not round(inner_corner_radius) * 2 < height - (2 * border_width):
+            elif self._canvas.find_withtag("inner_oval_4_a") and (not height - (2 * border_width) > 2 * inner_corner_radius or "inner_oval_4" in exclude_parts):
                 self._canvas.delete("inner_oval_4_a", "inner_oval_4_b")
 
             # change position of border corner parts

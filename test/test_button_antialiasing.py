@@ -5,7 +5,7 @@ customtkinter.set_default_color_theme("blue")
 customtkinter.set_appearance_mode("dark")
 
 app = customtkinter.CTk()
-app.geometry("600x800")
+app.geometry("600x1000")
 
 app.grid_columnconfigure(0, weight=1)
 app.grid_columnconfigure(1, weight=1)
@@ -28,7 +28,7 @@ f4 = customtkinter.CTkFrame(app, fg_color="gray90", corner_radius=0)
 f4.grid(row=0, column=3, rowspan=1, columnspan=1, sticky="nsew")
 f4.grid_columnconfigure(0, weight=1)
 
-for i in range(0, 18, 1):
+for i in range(0, 21, 1):
     b = customtkinter.CTkButton(f1, corner_radius=i, height=34, border_width=2, text=f"{i} {i-2}",
                                 border_color="white", fg_color=None, text_color="white")
     b.grid(row=i, column=0, pady=5, padx=15, sticky="nsew")
@@ -45,4 +45,5 @@ for i in range(0, 18, 1):
                                 border_color="gray10", fg_color="#228da8")
     b.grid(row=i, column=0, pady=5, padx=15, sticky="nsew")
 
+customtkinter.CTkSettings.print_settings()
 app.mainloop()

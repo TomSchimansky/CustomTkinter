@@ -8,6 +8,7 @@ from .customtkinter_progressbar import CTkProgressBar
 from .customtkinter_label import CTkLabel
 from .customtkinter_entry import CTkEntry
 from .customtkinter_checkbox import CTkCheckBox
+from .customtkinter_radiobutton import CTkRadioButton
 from .customtkinter_tk import CTk
 from .customtkinter_canvas import CTkCanvas
 from .customtkinter_toplevel import CTkToplevel
@@ -70,9 +71,9 @@ if not sys.platform == "darwin":
 
     # load text fonts and custom font with circle shapes for round corner rendering
     script_directory = os.path.dirname(os.path.abspath(__file__))
-    pyglet.font.add_file(os.path.join(script_directory, "assets", "CustomTkinter_shapes_font-fine.otf"))
-    pyglet.font.add_file(os.path.join(script_directory, "assets", "Roboto", "Roboto-Regular.ttf"))
-    pyglet.font.add_file(os.path.join(script_directory, "assets", "Roboto", "Roboto-Medium.ttf"))
+    pyglet.font.add_file(os.path.join(script_directory, "assets", "fonts", "CustomTkinter_shapes_font-fine.otf"))
+    pyglet.font.add_file(os.path.join(script_directory, "assets", "fonts", "Roboto", "Roboto-Regular.ttf"))
+    pyglet.font.add_file(os.path.join(script_directory, "assets", "fonts", "Roboto", "Roboto-Medium.ttf"))
     CTkSettings.circle_font_is_ready = pyglet.font.have_font("CustomTkinter_shapes_font")
 
     warnings.simplefilter("default")

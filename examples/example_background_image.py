@@ -42,8 +42,8 @@ class App(customtkinter.CTk):
                                             corner_radius=0)
         self.frame.place(relx=0.5, rely=0.5, anchor=tkinter.CENTER)
 
-        self.label_1 = customtkinter.CTkLabel(master=self.frame, corner_radius=6, width=200, height=60,
-                                              fg_color=("gray70", "gray20"), text="CustomTkinter\ninterface example")
+        self.label_1 = customtkinter.CTkLabel(master=self.frame, width=200, height=60,
+                                              fg_color=("gray70", "gray35"), text="CustomTkinter\ninterface example")
         self.label_1.place(relx=0.5, rely=0.3, anchor=tkinter.CENTER)
 
         self.entry_1 = customtkinter.CTkEntry(master=self.frame, corner_radius=20, width=200, placeholder_text="username")

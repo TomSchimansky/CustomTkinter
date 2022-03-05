@@ -21,7 +21,7 @@ class CTkProgressBar(tkinter.Frame):
                  progress_color="default_theme",
                  corner_radius="default_theme",
                  width=200,
-                 height=10,
+                 height=8,
                  border_width="default_theme",
                  **kwargs):
         super().__init__(*args, **kwargs)
