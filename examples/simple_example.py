@@ -5,7 +5,7 @@ customtkinter.set_appearance_mode("System")  # Modes: "System" (standard), "Dark
 customtkinter.set_default_color_theme("blue")  # Themes: "blue" (standard), "green", "dark-blue"
 
 root_tk = customtkinter.CTk()  # create CTk window like you do with the Tk window (you can also use normal tkinter.Tk window)
-root_tk.geometry("400x340")
+root_tk.geometry("400x440")
 root_tk.title("CustomTkinter Test")
 
 
