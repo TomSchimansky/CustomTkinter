@@ -10,7 +10,7 @@ from .customtkinter_frame import CTkFrame
 from .customtkinter_toplevel import CTkToplevel
 
 
-class CTkDialog:
+class CTkInputDialog:
     def __init__(self,
                  master=None,
                  title="CTkDialog",

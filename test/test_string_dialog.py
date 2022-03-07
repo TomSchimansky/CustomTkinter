@@ -1,8 +1,8 @@
 import customtkinter
 import tkinter
 
-customtkinter.set_appearance_mode("light")
-customtkinter.set_default_color_theme("dark-blue")
+customtkinter.set_appearance_mode("dark")
+customtkinter.set_default_color_theme("blue")
 
 app = customtkinter.CTk()
 app.geometry("400x300")
@@ -17,7 +17,7 @@ def change_mode():
 
 
 def button_click_event():
-    dialog = customtkinter.CTkDialog(master=None, text="Type in a number:", title="Test")
+    dialog = customtkinter.CTkInputDialog(master=None, text="Type in a number:", title="Test")
     print("Number:", dialog.get_input())
 
 

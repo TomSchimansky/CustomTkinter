@@ -1,6 +1,6 @@
 __version__ = "3.3"
 
-from .customtkinter_dialog import CTkDialog
+from .customtkinter_input_dialog import CTkInputDialog
 from .customtkinter_button import CTkButton
 from .customtkinter_slider import CTkSlider
 from .customtkinter_frame import CTkFrame
