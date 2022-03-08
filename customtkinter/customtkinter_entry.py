@@ -209,6 +209,9 @@ class CTkEntry(tkinter.Frame):
             del kwargs["corner_radius"]
             require_redraw = True
 
+        if "placeholder_text" in kwargs:
+            pass
+
         self.entry.configure(*args, **kwargs)
 
         if require_redraw is True:

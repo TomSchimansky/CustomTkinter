@@ -61,4 +61,14 @@ label_3 = customtkinter.CTkLabel(root_tk, width=200, textvariable=check_var)
 label_3.pack(pady=15)
 label_3.configure(textvariable=check_var)
 
+def switch_event():
+    print("switch event")
+
+s_var = tkinter.StringVar(value="on")
+switch_1 = customtkinter.CTkSwitch(master=root_tk, variable=s_var, textvariable=s_var, onvalue="on", offvalue="off", command=switch_event)
+switch_1.pack(pady=20, padx=10)
+switch_1 = customtkinter.CTkSwitch(master=root_tk, variable=s_var, textvariable=s_var, onvalue="on", offvalue="off")
+switch_1.pack(pady=20, padx=10)
+#switch_1.toggle()
+
 root_tk.mainloop()

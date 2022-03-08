@@ -13,13 +13,17 @@
     "frame_high": ["gray82", "gray22"],
     "label": [null, null],
     "text": ["gray20", "gray90"],
-    "progressbar": ["#6B6B6B", "#222222"],
+    "progressbar": ["#6B6B6B", "gray0"],
     "progressbar_progress": ["#3599D6", "#1C94CF"],
     "progressbar_border": ["gray", "gray"],
-    "slider": ["#6B6B6B", "#222222"],
+    "slider": ["#6B6B6B", "gray0"],
     "slider_progress": ["white", "#555555"],
     "slider_button": ["#3599D6", "#1C94CF"],
     "slider_button_hover": ["#1A89BF", "#1673A1"],
+    "switch": ["gray70", "gray35"],
+    "switch_progress": ["#1FA6E8", "#1C94CF"],
+    "switch_button": ["gray38", "gray70"],
+    "switch_button_hover": ["gray30", "gray90"],
     "darken_factor": 0.8
   },
 
@@ -55,6 +59,10 @@
     "slider_border_width": 6,
     "slider_corner_radius": 8,
     "slider_button_length": 0,
-    "slider_button_corner_radius": 1000
+    "slider_button_corner_radius": 1000,
+    "switch_border_width": 3,
+    "switch_corner_radius": 1000,
+    "switch_button_corner_radius": 1000,
+    "switch_button_length": 0
   }
 }

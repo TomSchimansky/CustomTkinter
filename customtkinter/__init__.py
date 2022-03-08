@@ -1,4 +1,4 @@
-__version__ = "3.3"
+__version__ = "3.5"
 
 from .customtkinter_input_dialog import CTkInputDialog
 from .customtkinter_button import CTkButton
@@ -11,6 +11,7 @@ from .customtkinter_checkbox import CTkCheckBox
 from .customtkinter_radiobutton import CTkRadioButton
 from .customtkinter_tk import CTk
 from .customtkinter_canvas import CTkCanvas
+from .customtkinter_switch import CTkSwitch
 from .customtkinter_toplevel import CTkToplevel
 from .customtkinter_settings import CTkSettings
 

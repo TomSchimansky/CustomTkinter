@@ -20,6 +20,10 @@
     "slider_progress": ["gray70", "gray30"],
     "slider_button": ["#608BD5", "#395E9C"],
     "slider_button_hover": ["#A4BDE6", "#748BB3"],
+    "switch": ["gray70", "gray35"],
+    "switch_progress": ["#608BD5", "#395E9C"],
+    "switch_button": ["gray38", "gray70"],
+    "switch_button_hover": ["gray30", "gray90"],
     "darken_factor": 0.8
   },
 
@@ -55,6 +59,10 @@
     "slider_border_width": 6,
     "slider_corner_radius": 8,
     "slider_button_length": 0,
-    "slider_button_corner_radius": 1000
+    "slider_button_corner_radius": 1000,
+    "switch_border_width": 3,
+    "switch_corner_radius": 1000,
+    "switch_button_corner_radius": 1000,
+    "switch_button_length": 0
   }
 }
