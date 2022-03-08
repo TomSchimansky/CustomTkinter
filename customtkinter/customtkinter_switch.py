@@ -238,6 +238,9 @@ class CTkSwitch(tkinter.Frame):
             self.variable.set(self.offvalue)
             self.variable_callback_blocked = False
 
+    def get(self):
+        return self.onvalue if self.check_state is True else self.offvalue
+
     def on_enter(self, event=0):
         self.hover_state = True
         self.canvas.itemconfig("slider_parts", fill=CTkThemeManager.single_color(self.button_hover_color, self.appearance_mode),

@@ -3,7 +3,7 @@
     "window_bg_color": ["gray92", "gray12"],
     "button": ["#1FA6E8", "#1C94CF"],
     "button_hover": ["#1A89BF", "#1673A1"],
-    "button_border": ["gray25", "gray86"],
+    "button_border": ["gray40", "gray70"],
     "checkbox_border": ["gray40", "gray60"],
     "entry": ["white", "gray24"],
     "entry_border": ["gray70", "gray32"],
@@ -22,7 +22,7 @@
     "slider_button_hover": ["#1A89BF", "#1673A1"],
     "switch": ["gray70", "gray35"],
     "switch_progress": ["#1FA6E8", "#1C94CF"],
-    "switch_button": ["gray38", "gray70"],
+    "switch_button": ["gray36", "gray75"],
     "switch_button_hover": ["gray30", "gray90"],
     "darken_factor": 0.8
   },

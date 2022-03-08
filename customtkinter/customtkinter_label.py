@@ -109,7 +109,7 @@ class CTkLabel(tkinter.Frame):
             self.width = event.width
             self.height = event.height
 
-            self.canvas.config(width=self.width, height=self.height)
+            # self.canvas.config(width=self.width, height=self.height)
             self.draw()
 
     def draw(self):
