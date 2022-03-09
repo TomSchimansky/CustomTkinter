@@ -5,6 +5,7 @@
     "button_hover": ["#A4BDE6", "#748BB3"],
     "button_border": ["gray40", "gray70"],
     "checkbox_border": ["gray40", "gray60"],
+    "checkmark": ["white", "gray90"],
     "entry": ["white", "gray24"],
     "entry_border": ["gray70", "gray32"],
     "entry_placeholder_text": ["gray52", "gray62"],

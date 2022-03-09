@@ -15,6 +15,7 @@ class CTkDrawEngine:
      - draw_rounded_rect_with_border()
      - draw_rounded_progress_bar_with_border()
      - draw_rounded_slider_with_border_and_button()
+     - draw_checkmark()
 
     """
 
@@ -625,5 +626,35 @@ class CTkDrawEngine:
 
         if requires_recoloring:  # new parts were added -> manage z-order
             self._canvas.tag_raise("slider_parts")
+
+        return requires_recoloring
+
+    def draw_checkmark(self, width: int, height: int, size: Union[int, float]) -> bool:
+        """ Draws a rounded rectangle with a corner_radius and border_width on the canvas. The border elements have a 'border_parts' tag,
+            the main foreground elements have an 'inner_parts' tag to color the elements accordingly.
+
+            returns bool if recoloring is necessary """
+
+        size = round(size)
+        requires_recoloring = False
+
+        if self._rendering_method == "polygon_shapes" or self._rendering_method == "circle_shapes":
+            x, y, radius = width / 2, height / 2, size / 2.2
+            if not self._canvas.find_withtag("checkmark"):
+                self._canvas.create_line(0, 0, 0, 0, tags=("checkmark", "create_line"), width=round(height / 8), joinstyle=tkinter.MITER, capstyle=tkinter.ROUND)
+                self._canvas.tag_raise("checkmark")
+                requires_recoloring = True
+
+            self._canvas.coords("checkmark",
+                                x + radius, y - radius,
+                                x - radius / 4, y + radius,
+                                x - radius, y + radius / 4)
+        elif self._rendering_method == "font_shapes":
+            if not self._canvas.find_withtag("checkmark"):
+                self._canvas.create_text(0, 0, text="Z", font=("CustomTkinter_shapes_font", -size), tags=("checkmark", "create_text"), anchor=tkinter.CENTER)
+                self._canvas.tag_raise("checkmark")
+                requires_recoloring = True
+
+            self._canvas.coords("checkmark", round(width / 2), round(height / 2))
 
         return requires_recoloring

@@ -19,6 +19,7 @@ class CTkCheckBox(tkinter.Frame):
                  hover_color="default_theme",
                  border_color="default_theme",
                  border_width="default_theme",
+                 checkmark_color="default_theme",
                  width=24,
                  height=24,
                  corner_radius="default_theme",
@@ -63,6 +64,7 @@ class CTkCheckBox(tkinter.Frame):
         self.fg_color = CTkThemeManager.theme["color"]["button"] if fg_color == "default_theme" else fg_color
         self.hover_color = CTkThemeManager.theme["color"]["button"] if hover_color == "default_theme" else hover_color
         self.border_color = CTkThemeManager.theme["color"]["checkbox_border"] if border_color == "default_theme" else border_color
+        self.checkmark_color = CTkThemeManager.theme["color"]["checkmark"] if checkmark_color == "default_theme" else checkmark_color
 
         self.width = width
         self.height = height
@@ -147,21 +149,33 @@ class CTkCheckBox(tkinter.Frame):
     def draw(self):
         requires_recoloring = self.draw_engine.draw_rounded_rect_with_border(self.width, self.height, self.corner_radius, self.border_width)
 
+        if self.check_state is True:
+            self.draw_engine.draw_checkmark(self.width, self.height, self.height * 0.58)
+        else:
+            self.canvas.delete("checkmark")
+
         self.canvas.configure(bg=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
         self.configure(bg=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
 
-        if self.check_state is False:
-            self.canvas.itemconfig("inner_parts",
-                                   outline=CTkThemeManager.single_color(self.bg_color, self.appearance_mode),
-                                   fill=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
-        else:
+        if self.check_state is True:
             self.canvas.itemconfig("inner_parts",
                                    outline=CTkThemeManager.single_color(self.fg_color, self.appearance_mode),
                                    fill=CTkThemeManager.single_color(self.fg_color, self.appearance_mode))
+            self.canvas.itemconfig("border_parts",
+                                   outline=CTkThemeManager.single_color(self.fg_color, self.appearance_mode),
+                                   fill=CTkThemeManager.single_color(self.fg_color, self.appearance_mode))
 
-        self.canvas.itemconfig("border_parts",
-                               outline=CTkThemeManager.single_color(self.border_color, self.appearance_mode),
-                               fill=CTkThemeManager.single_color(self.border_color, self.appearance_mode))
+            if "create_line" in self.canvas.gettags("checkmark"):
+                self.canvas.itemconfig("checkmark", fill=CTkThemeManager.single_color(self.checkmark_color, self.appearance_mode))
+            else:
+                self.canvas.itemconfig("checkmark", fill=CTkThemeManager.single_color(self.checkmark_color, self.appearance_mode))
+        else:
+            self.canvas.itemconfig("inner_parts",
+                                   outline=CTkThemeManager.single_color(self.bg_color, self.appearance_mode),
+                                   fill=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
+            self.canvas.itemconfig("border_parts",
+                                   outline=CTkThemeManager.single_color(self.border_color, self.appearance_mode),
+                                   fill=CTkThemeManager.single_color(self.border_color, self.appearance_mode))
 
         if self.text_label is None:
             self.text_label = tkinter.Label(master=self,
@@ -299,14 +313,10 @@ class CTkCheckBox(tkinter.Frame):
         if self.state == tkinter.NORMAL:
             if self.check_state is True:
                 self.check_state = False
-                self.canvas.itemconfig("inner_parts",
-                                       fill=CTkThemeManager.single_color(self.bg_color, self.appearance_mode),
-                                       outline=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
+                self.draw()
             else:
                 self.check_state = True
-                self.canvas.itemconfig("inner_parts",
-                                       fill=CTkThemeManager.single_color(self.fg_color, self.appearance_mode),
-                                       outline=CTkThemeManager.single_color(self.fg_color, self.appearance_mode))
+                self.draw()
 
             if self.function is not None:
                 self.function()
