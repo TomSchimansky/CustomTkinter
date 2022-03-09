@@ -328,9 +328,7 @@ class CTkCheckBox(tkinter.Frame):
 
     def select(self, from_variable_callback=False):
         self.check_state = True
-        self.canvas.itemconfig("inner_parts",
-                               fill=CTkThemeManager.single_color(self.fg_color, self.appearance_mode),
-                               outline=CTkThemeManager.single_color(self.fg_color, self.appearance_mode))
+        self.draw()
 
         if self.function is not None:
             self.function()
@@ -342,9 +340,7 @@ class CTkCheckBox(tkinter.Frame):
 
     def deselect(self, from_variable_callback=False):
         self.check_state = False
-        self.canvas.itemconfig("inner_parts",
-                               fill=CTkThemeManager.single_color(self.bg_color, self.appearance_mode),
-                               outline=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
+        self.draw()
 
         if self.function is not None:
             self.function()

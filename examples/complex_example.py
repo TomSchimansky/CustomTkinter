@@ -6,8 +6,6 @@ import sys
 customtkinter.set_appearance_mode("System")  # Modes: "System" (standard), "Dark", "Light"
 customtkinter.set_default_color_theme("blue")  # Themes: "blue" (standard), "green", "dark-blue"
 
-customtkinter.CTkSettings.preferred_drawing_method = "circle_shapes"
-
 
 class App(customtkinter.CTk):
 
@@ -187,6 +185,7 @@ class App(customtkinter.CTk):
         self.slider_1.set(0.2)
         self.slider_2.set(0.7)
         self.progressbar.set(0.5)
+        self.check_box_2.select()
 
     def button_event(self):
         print("Button pressed")

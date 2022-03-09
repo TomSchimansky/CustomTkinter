@@ -639,7 +639,7 @@ class CTkDrawEngine:
         requires_recoloring = False
 
         if self._rendering_method == "polygon_shapes" or self._rendering_method == "circle_shapes":
-            x, y, radius = width / 2, height / 2, size / 2.2
+            x, y, radius = width / 2, height / 2, size / 2.8
             if not self._canvas.find_withtag("checkmark"):
                 self._canvas.create_line(0, 0, 0, 0, tags=("checkmark", "create_line"), width=round(height / 8), joinstyle=tkinter.MITER, capstyle=tkinter.ROUND)
                 self._canvas.tag_raise("checkmark")
@@ -647,8 +647,8 @@ class CTkDrawEngine:
 
             self._canvas.coords("checkmark",
                                 x + radius, y - radius,
-                                x - radius / 4, y + radius,
-                                x - radius, y + radius / 4)
+                                x - radius / 4, y + radius * 0.8,
+                                x - radius, y + radius / 6)
         elif self._rendering_method == "font_shapes":
             if not self._canvas.find_withtag("checkmark"):
                 self._canvas.create_text(0, 0, text="Z", font=("CustomTkinter_shapes_font", -size), tags=("checkmark", "create_text"), anchor=tkinter.CENTER)
