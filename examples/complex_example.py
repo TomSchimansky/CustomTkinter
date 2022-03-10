@@ -3,8 +3,8 @@ import tkinter.messagebox
 import customtkinter
 import sys
 
-customtkinter.set_appearance_mode("System")  # Modes: "System" (standard), "Dark", "Light"
-customtkinter.set_default_color_theme("blue")  # Themes: "blue" (standard), "green", "dark-blue"
+customtkinter.set_appearance_mode("dark")  # Modes: "System" (standard), "Dark", "Light"
+customtkinter.set_default_color_theme("dark-blue")  # Themes: "blue" (standard), "green", "dark-blue"
 
 
 class App(customtkinter.CTk):
@@ -181,7 +181,6 @@ class App(customtkinter.CTk):
 
         # set default values
         self.radio_button_1.select()
-        #self.switch_2.select()
         self.slider_1.set(0.2)
         self.slider_2.set(0.7)
         self.progressbar.set(0.5)
