@@ -5,7 +5,7 @@
 
 # CustomTkinter UI-Library
 
-![](documentation_images/Windows_dark.png)
+![](documentation_images/Windows_manual_mode_change.png)
 | _`complex_example.py` on Windows 11 with dark mode and 'dark-blue' theme_
 
 ![](documentation_images/macOS_light.png)
