@@ -181,7 +181,7 @@ class App(customtkinter.CTk):
 
         # set default values
         self.radio_button_1.select()
-        self.switch_2.select()
+        #self.switch_2.select()
         self.slider_1.set(0.2)
         self.slider_2.set(0.7)
         self.progressbar.set(0.5)
