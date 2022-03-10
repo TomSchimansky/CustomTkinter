@@ -82,9 +82,9 @@ version to get a dark window header at all (Tcl/Tk >= 8.6.9 required).
 
 ### Button with images
 It's possible to put an image on a CTkButton. You just have to
-pass a PhotoImage object to the CTkButton with the argument ``image``.
-If you want no text at all you have to set ``text=""`` or with the ``compound``
-option you can specify how to position both the text and image at once:
+pass a PhotoImage object to the CTkButton with the ``image`` argument.
+If you want no text at all you have to set ``text=""`` or you specify
+how to position the text and image at once with the ``compound`` option:
 
 ![](documentation_images/macOS_button_images.png)
 | _`example_button_images.py` on macOS_
