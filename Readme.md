@@ -73,7 +73,7 @@ version to get a dark window header at all (Tcl/Tk >= 8.6.9 required).
 
 ![](documentation_images/macOS_system_mode_change.gif)
 | _`complex_example.py` on macOS with system mode change and standard 'blue' theme_
-
+###
 
 ### Button with images
 It's possible to put an image on a CTkButton. You just have to
@@ -83,7 +83,7 @@ option you can specify how to position both the text and image at once:
 
 ![](documentation_images/macOS_button_images.png)
 | _`example_button_images.py` on macOS_
-
+###
 
 ### Integration of TkinterMapView widget
 In the following example I used a TkinterMapView which integrates
@@ -91,6 +91,7 @@ well with a CustomTkinter program. It's a tile based map widget which displays
 OpenStreetMap or other tile based maps:
 
 ![](documentation_images/tkintermapview_example.gif)
+| _`examples/map_with_customtkinter.py` from TkinterMapView repository on macOS_
 
 You can find the TkinterMapView library and the example program here:
 https://github.com/TomSchimansky/TkinterMapView
