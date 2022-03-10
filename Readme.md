@@ -5,7 +5,7 @@
 
 # CustomTkinter UI-Library
 
-![](documentation_images/Windows_manual_mode_change.gif)
+![](documentation_images/Windows_dark.png)
 | _`complex_example.py` on Windows 11 with dark mode and 'dark-blue' theme_
 
 ![](documentation_images/macOS_light.png)
@@ -67,7 +67,12 @@ you can find further information on the appearance mode, the themes and all widg
 
 On Windows 10/11 you get a dark window header, which changes with set
 appearance mode or the system, when you use `customtkinter.CTk()`
-to create the window, and it works with all python versions.
+to create the window, and it works with all python versions:
+
+![](documentation_images/Windows_system_mode_change.gif)
+| _`complex_example.py` on Windows 11 with system mode change and standard 'blue' theme_
+###
+
 On macOS however you either need python3.10 or higher or the anaconda python
 version to get a dark window header at all (Tcl/Tk >= 8.6.9 required).
 
