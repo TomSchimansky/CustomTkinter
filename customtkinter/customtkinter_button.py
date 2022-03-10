@@ -26,6 +26,7 @@ class CTkButton(tkinter.Frame):
                  corner_radius="default_theme",
                  text_font="default_theme",
                  text_color="default_theme",
+                 text_color_disabled="default_theme",
                  text="CTkButton",
                  hover=True,
                  image=None,
@@ -89,6 +90,7 @@ class CTkButton(tkinter.Frame):
         self.text = text
         self.text_label = None
         self.text_color = CTkThemeManager.theme["color"]["text"] if text_color == "default_theme" else text_color
+        self.text_color_disabled = CTkThemeManager.theme["color"]["text_button_disabled"] if text_color_disabled == "default_theme" else text_color_disabled
         self.text_font = (CTkThemeManager.theme["text"]["font"], CTkThemeManager.theme["text"]["size"]) if text_font == "default_theme" else text_font
 
         # callback and hover functionality
@@ -99,11 +101,6 @@ class CTkButton(tkinter.Frame):
         self.compound = compound
         self.click_animation_running = False
 
-        if sys.platform == "darwin" and self.function is not None and CTkSettings.hand_cursor_enabled:
-            self.configure(cursor="pointinghand")
-        elif sys.platform.startswith("win") and self.function is not None and CTkSettings.hand_cursor_enabled:
-            self.configure(cursor="hand2")
-
         self.canvas = CTkCanvas(master=self,
                                 highlightthickness=0,
                                 width=self.width,
@@ -113,16 +110,15 @@ class CTkButton(tkinter.Frame):
         self.draw_engine = CTkDrawEngine(self.canvas, CTkSettings.preferred_drawing_method)
 
         # event bindings
-        if self.hover is True:
-            self.canvas.bind("<Enter>", self.on_enter)
-            self.canvas.bind("<Leave>", self.on_leave)
-
+        self.canvas.bind("<Enter>", self.on_enter)
+        self.canvas.bind("<Leave>", self.on_leave)
         self.canvas.bind("<Button-1>", self.clicked)
         self.canvas.bind("<Button-1>", self.clicked)
 
         # Each time an item is resized due to pack position mode, the binding Configure is called on the widget
         self.bind('<Configure>', self.update_dimensions)
 
+        self.set_cursor()
         self.draw()  # initial draw
 
     def destroy(self):
@@ -163,26 +159,15 @@ class CTkButton(tkinter.Frame):
                                    outline=CTkThemeManager.single_color(self.border_color, self.appearance_mode),
                                    fill=CTkThemeManager.single_color(self.border_color, self.appearance_mode))
 
-            # set color for inner button parts (depends on button state)
-            if self.state == tkinter.DISABLED:
-                if self.fg_color is None:
-                    self.canvas.itemconfig("inner_parts",
-                                           outline=CTkThemeManager.darken_hex_color(CTkThemeManager.single_color(self.bg_color, self.appearance_mode)),
-                                           fill=CTkThemeManager.darken_hex_color(CTkThemeManager.single_color(self.bg_color, self.appearance_mode)))
-                else:
-                    self.canvas.itemconfig("inner_parts",
-                                           outline=CTkThemeManager.darken_hex_color(CTkThemeManager.single_color(self.fg_color, self.appearance_mode)),
-                                           fill=CTkThemeManager.darken_hex_color(CTkThemeManager.single_color(self.fg_color, self.appearance_mode)))
-
+            # set color for inner button parts
+            if self.fg_color is None:
+                self.canvas.itemconfig("inner_parts",
+                                       outline=CTkThemeManager.single_color(self.bg_color, self.appearance_mode),
+                                       fill=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
             else:
-                if self.fg_color is None:
-                    self.canvas.itemconfig("inner_parts",
-                                           outline=CTkThemeManager.single_color(self.bg_color, self.appearance_mode),
-                                           fill=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
-                else:
-                    self.canvas.itemconfig("inner_parts",
-                                           outline=CTkThemeManager.single_color(self.fg_color, self.appearance_mode),
-                                           fill=CTkThemeManager.single_color(self.fg_color, self.appearance_mode))
+                self.canvas.itemconfig("inner_parts",
+                                       outline=CTkThemeManager.single_color(self.fg_color, self.appearance_mode),
+                                       fill=CTkThemeManager.single_color(self.fg_color, self.appearance_mode))
 
         # create text label if text given
         if self.text is not None and self.text != "":
@@ -199,17 +184,15 @@ class CTkButton(tkinter.Frame):
                 # set text_label fg color (text color)
                 self.text_label.configure(fg=CTkThemeManager.single_color(self.text_color, self.appearance_mode))
 
-                # set text_label bg color (label color)
                 if self.state == tkinter.DISABLED:
-                    if self.fg_color is None:
-                        self.text_label.configure(bg=CTkThemeManager.darken_hex_color(CTkThemeManager.single_color(self.bg_color, self.appearance_mode)))
-                    else:
-                        self.text_label.configure(bg=CTkThemeManager.darken_hex_color(CTkThemeManager.single_color(self.fg_color, self.appearance_mode)))
+                    self.text_label.configure(fg=(CTkThemeManager.single_color(self.text_color_disabled, self.appearance_mode)))
                 else:
-                    if self.fg_color is None:
-                        self.text_label.configure(bg=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
-                    else:
-                        self.text_label.configure(bg=CTkThemeManager.single_color(self.fg_color, self.appearance_mode))
+                    self.text_label.configure(fg=CTkThemeManager.single_color(self.text_color, self.appearance_mode))
+
+                if self.fg_color is None:
+                    self.text_label.configure(bg=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
+                else:
+                    self.text_label.configure(bg=CTkThemeManager.single_color(self.fg_color, self.appearance_mode))
 
             self.text_label.configure(text=self.text)  # set text
 
@@ -233,7 +216,7 @@ class CTkButton(tkinter.Frame):
             if no_color_updates is False:
                 # set image_label bg color (background color of label)
                 if self.state == tkinter.DISABLED:
-                    self.image_label.configure(bg=CTkThemeManager.darken_hex_color(CTkThemeManager.single_color(self.fg_color, self.appearance_mode)))
+                    self.image_label.configure(bg=CTkThemeManager.multiply_hex_color(CTkThemeManager.single_color(self.fg_color, self.appearance_mode)))
                 else:
                     self.image_label.configure(bg=CTkThemeManager.single_color(self.fg_color, self.appearance_mode))
 
@@ -279,7 +262,9 @@ class CTkButton(tkinter.Frame):
             del kwargs["text"]
 
         if "state" in kwargs:
-            self.set_state(kwargs["state"])
+            self.state = kwargs["state"]
+            self.set_cursor()
+            require_redraw = True
             del kwargs["state"]
 
         if "image" in kwargs:
@@ -334,24 +319,18 @@ class CTkButton(tkinter.Frame):
         if require_redraw:
             self.draw()
 
-    def set_state(self, state):
-        self.state = state
-
+    def set_cursor(self):
         if self.state == tkinter.DISABLED:
-            self.hover = False
             if sys.platform == "darwin" and self.function is not None and CTkSettings.hand_cursor_enabled:
                 self.configure(cursor="arrow")
             elif sys.platform.startswith("win") and self.function is not None and CTkSettings.hand_cursor_enabled:
                 self.configure(cursor="arrow")
 
         elif self.state == tkinter.NORMAL:
-            self.hover = True
             if sys.platform == "darwin" and self.function is not None and CTkSettings.hand_cursor_enabled:
                 self.configure(cursor="pointinghand")
             elif sys.platform.startswith("win") and self.function is not None and CTkSettings.hand_cursor_enabled:
                 self.configure(cursor="hand2")
-
-        self.draw()
 
     def set_text(self, text):
         self.text = text
@@ -362,7 +341,7 @@ class CTkButton(tkinter.Frame):
         self.draw()
 
     def on_enter(self, event=0):
-        if self.hover is True:
+        if self.hover is True and self.state == tkinter.NORMAL:
             if self.hover_color is None:
                 inner_parts_color = self.fg_color
             else:

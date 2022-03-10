@@ -26,6 +26,7 @@ class CTkCheckBox(tkinter.Frame):
                  text_font="default_theme",
                  text_color="default_theme",
                  text="CTkCheckBox",
+                 text_color_disabled="default_theme",
                  hover=True,
                  command=None,
                  state=tkinter.NORMAL,
@@ -62,7 +63,7 @@ class CTkCheckBox(tkinter.Frame):
 
         self.bg_color = self.detect_color_of_master() if bg_color is None else bg_color
         self.fg_color = CTkThemeManager.theme["color"]["button"] if fg_color == "default_theme" else fg_color
-        self.hover_color = CTkThemeManager.theme["color"]["button"] if hover_color == "default_theme" else hover_color
+        self.hover_color = CTkThemeManager.theme["color"]["button_hover"] if hover_color == "default_theme" else hover_color
         self.border_color = CTkThemeManager.theme["color"]["checkbox_border"] if border_color == "default_theme" else border_color
         self.checkmark_color = CTkThemeManager.theme["color"]["checkmark"] if checkmark_color == "default_theme" else checkmark_color
 
@@ -83,6 +84,7 @@ class CTkCheckBox(tkinter.Frame):
 
         self.text = text
         self.text_color = CTkThemeManager.theme["color"]["text"] if text_color == "default_theme" else text_color
+        self.text_color_disabled = CTkThemeManager.theme["color"]["text_disabled"] if text_color_disabled == "default_theme" else text_color_disabled
         self.text_font = (CTkThemeManager.theme["text"]["font"], CTkThemeManager.theme["text"]["size"]) if text_font == "default_theme" else text_font
 
         self.function = command
@@ -109,11 +111,6 @@ class CTkCheckBox(tkinter.Frame):
 
         self.draw_engine = CTkDrawEngine(self.canvas, CTkSettings.preferred_drawing_method)
 
-        if sys.platform == "darwin" and self.state == tkinter.NORMAL and CTkSettings.hand_cursor_enabled:
-            self.canvas.configure(cursor="pointinghand")
-        elif sys.platform.startswith("win") and self.state == tkinter.NORMAL and CTkSettings.hand_cursor_enabled:
-            self.canvas.configure(cursor="hand2")
-
         if self.hover is True:
             self.canvas.bind("<Enter>", self.on_enter)
             self.canvas.bind("<Leave>", self.on_leave)
@@ -123,6 +120,7 @@ class CTkCheckBox(tkinter.Frame):
 
         self.text_label = None
 
+        self.set_cursor()
         self.draw()  # initial draw
 
         if self.variable is not None:
@@ -186,7 +184,10 @@ class CTkCheckBox(tkinter.Frame):
             self.text_label.grid(row=0, column=2, padx=0, pady=0, sticky="w")
             self.text_label["anchor"] = "w"
 
-        self.text_label.configure(fg=CTkThemeManager.single_color(self.text_color, self.appearance_mode))
+        if self.state == tkinter.DISABLED:
+            self.text_label.configure(fg=(CTkThemeManager.single_color(self.text_color_disabled, self.appearance_mode)))
+        else:
+            self.text_label.configure(fg=CTkThemeManager.single_color(self.text_color, self.appearance_mode))
         self.text_label.configure(bg=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
 
         self.set_text(self.text)
@@ -202,7 +203,9 @@ class CTkCheckBox(tkinter.Frame):
             del kwargs["text"]
 
         if "state" in kwargs:
-            self.set_state(kwargs["state"])
+            self.state = kwargs["state"]
+            self.set_cursor()
+            require_redraw = True
             del kwargs["state"]
 
         if "fg_color" in kwargs:
@@ -259,24 +262,18 @@ class CTkCheckBox(tkinter.Frame):
         if require_redraw:
             self.draw()
 
-    def set_state(self, state):
-        self.state = state
-
+    def set_cursor(self):
         if self.state == tkinter.DISABLED:
-            self.hover = False
             if sys.platform == "darwin" and CTkSettings.hand_cursor_enabled:
                 self.canvas.configure(cursor="arrow")
-            elif sys.platform.startswith("sys") and CTkSettings.hand_cursor_enabled:
+            elif sys.platform.startswith("win") and CTkSettings.hand_cursor_enabled:
                 self.canvas.configure(cursor="arrow")
 
         elif self.state == tkinter.NORMAL:
-            self.hover = True
             if sys.platform == "darwin" and CTkSettings.hand_cursor_enabled:
                 self.canvas.configure(cursor="pointinghand")
-            elif sys.platform.startswith("sys") and CTkSettings.hand_cursor_enabled:
+            elif sys.platform.startswith("win") and CTkSettings.hand_cursor_enabled:
                 self.canvas.configure(cursor="hand2")
-
-        self.draw()
 
     def set_text(self, text):
         self.text = text
@@ -286,10 +283,18 @@ class CTkCheckBox(tkinter.Frame):
             sys.stderr.write("ERROR (CTkButton): Cant change text because checkbox has no text.")
 
     def on_enter(self, event=0):
-        if self.hover is True:
-            self.canvas.itemconfig("inner_parts",
-                                   fill=CTkThemeManager.single_color(self.hover_color, self.appearance_mode),
-                                   outline=CTkThemeManager.single_color(self.hover_color, self.appearance_mode))
+        if self.hover is True and self.state == tkinter.NORMAL:
+            if self.check_state is True:
+                self.canvas.itemconfig("inner_parts",
+                                       fill=CTkThemeManager.single_color(self.hover_color, self.appearance_mode),
+                                       outline=CTkThemeManager.single_color(self.hover_color, self.appearance_mode))
+                self.canvas.itemconfig("border_parts",
+                                       fill=CTkThemeManager.single_color(self.hover_color, self.appearance_mode),
+                                       outline=CTkThemeManager.single_color(self.hover_color, self.appearance_mode))
+            else:
+                self.canvas.itemconfig("inner_parts",
+                                       fill=CTkThemeManager.single_color(self.hover_color, self.appearance_mode),
+                                       outline=CTkThemeManager.single_color(self.hover_color, self.appearance_mode))
 
     def on_leave(self, event=0):
         if self.hover is True:
@@ -297,10 +302,16 @@ class CTkCheckBox(tkinter.Frame):
                 self.canvas.itemconfig("inner_parts",
                                        fill=CTkThemeManager.single_color(self.fg_color, self.appearance_mode),
                                        outline=CTkThemeManager.single_color(self.fg_color, self.appearance_mode))
+                self.canvas.itemconfig("border_parts",
+                                       fill=CTkThemeManager.single_color(self.fg_color, self.appearance_mode),
+                                       outline=CTkThemeManager.single_color(self.fg_color, self.appearance_mode))
             else:
                 self.canvas.itemconfig("inner_parts",
                                        fill=CTkThemeManager.single_color(self.bg_color, self.appearance_mode),
                                        outline=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
+                self.canvas.itemconfig("border_parts",
+                                       fill=CTkThemeManager.single_color(self.border_color, self.appearance_mode),
+                                       outline=CTkThemeManager.single_color(self.border_color, self.appearance_mode))
 
     def variable_callback(self, var_name, index, mode):
         if not self.variable_callback_blocked:

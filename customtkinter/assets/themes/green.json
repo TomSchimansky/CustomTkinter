@@ -15,6 +15,8 @@
     "frame_high": ["gray82", "gray22"],
     "label": [null, null],
     "text": ["gray20", "gray90"],
+    "text_disabled": ["gray60", "gray50"],
+    "text_button_disabled": ["gray40", "gray74"],
     "progressbar": ["#6B6B6B", "#222222"],
     "progressbar_progress": ["#72CF9F", "#11B384"],
     "progressbar_border": ["gray", "gray"],

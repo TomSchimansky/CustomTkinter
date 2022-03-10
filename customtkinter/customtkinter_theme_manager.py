@@ -26,67 +26,6 @@ class CTkThemeManager:
         else:
             cls.theme["text"] = cls.theme["text"]["Linux"]
 
-    @classmethod
-    def initialize_color_theme(cls, theme_name):
-
-        if sys.platform == "darwin":
-            cls.TEXT_FONT_NAME = "Avenir"
-        elif sys.platform.startswith("win"):
-            cls.TEXT_FONT_NAME = "Roboto"
-        else:
-            cls.TEXT_FONT_NAME = "Roboto"
-
-        cls.TEXT_FONT_SIZE = -14  # px height
-
-        if theme_name.lower() == "blue":
-            cls.WINDOW_BG_COLOR = ("#ECECEC", "#323232")  # macOS standard light and dark window bg colors
-            cls.MAIN_COLOR = ("#64A1D2", "#1C94CF")
-            cls.MAIN_HOVER_COLOR = ("#A7C2E0", "#5FB4DD")
-            cls.ENTRY_COLOR = ("gray95", "#222222")
-            cls.ENTRY_BORDER_COLOR = ("gray65", "gray40")
-            cls.TEXT_COLOR = ("black", "white")
-            cls.PLACEHOLDER_TEXT_COLOR = ("gray52", "gray62")
-            cls.LABEL_BG_COLOR = ("white", "#626061")
-            cls.SLIDER_BG_COLOR = ("#6B6B6B", "#222222")
-            cls.SLIDER_PROGRESS_COLOR = ("#A5A6A5", "#555555")
-            cls.PROGRESS_BG_COLOR = ("#6B6B6B", "#222222")
-            cls.FRAME_COLOR = ("#D4D5D6", "#3F3F3F")
-            cls.FRAME_2_COLOR = ("#BFBEC1", "#505050")
-            cls.CHECKBOX_LINES_COLOR = ("black", "#ededed")
-            cls.DARKEN_COLOR_FACTOR = 0.8  # used to generate color for disabled button
-
-        elif theme_name.lower() == "green":
-            cls.WINDOW_BG_COLOR = ("#ECECEC", "#323232")  # macOS standard light and dark window bg colors
-            cls.MAIN_COLOR = ("#13C995", "#1ABE87")
-            cls.MAIN_HOVER_COLOR = ("#6ACBA5", "#81E4B2")
-            cls.ENTRY_COLOR = ("gray60", "#222223")
-            cls.TEXT_COLOR = ("gray25", "gray92")
-            cls.PLACEHOLDER_TEXT_COLOR = ("gray32", "gray55")
-            cls.LABEL_BG_COLOR = ("white", "#626061")
-            cls.SLIDER_BG_COLOR = ("#636363", "#0D1321")
-            cls.SLIDER_PROGRESS_COLOR = ("white", "#727578")
-            cls.PROGRESS_BG_COLOR = ("#636363", "#0D1321")
-            cls.FRAME_COLOR = ("#D4D5D6", "#3F3F3F")
-            cls.FRAME_2_COLOR = ("#BFBEC1", "#505050")
-            cls.CHECKBOX_LINES_COLOR = ("#414141", "#EDEDED")
-            cls.DARKEN_COLOR_FACTOR = 0.8  # used to generate color for disabled button
-
-        elif theme_name.lower() == "dark-blue":
-            cls.WINDOW_BG_COLOR = ("#F1F1F1", "#192026")  # macOS standard light and dark window bg colors
-            cls.MAIN_COLOR = ("#608BD5", "#395E9C")
-            cls.MAIN_HOVER_COLOR = ("#A4BDE6", "#748BB3")
-            cls.ENTRY_COLOR = ("#FCFCFC", "#111116")
-            cls.TEXT_COLOR = ("gray18", "gray75")
-            cls.PLACEHOLDER_TEXT_COLOR = ("gray52", "gray60")
-            cls.LABEL_BG_COLOR = ("white", "#444444")
-            cls.SLIDER_BG_COLOR = ("#444444", "#444444")
-            cls.SLIDER_PROGRESS_COLOR = ("white", "#AAAAAA")
-            cls.PROGRESS_BG_COLOR = ("#636363", "#0D1321")
-            cls.FRAME_COLOR = ("#DADADA", "#2B2C2E")
-            cls.FRAME_2_COLOR = ("#C4C4C4", "#383838")
-            cls.CHECKBOX_LINES_COLOR = ("#313131", "white")
-            cls.DARKEN_COLOR_FACTOR = 0.8  # used to generate color for disabled button
-
     @staticmethod
     def single_color(color, appearance_mode: int) -> str:
         """ color can be either a single hex color string or a color name or it can be a
@@ -124,18 +63,25 @@ class CTkThemeManager:
         return cls.rgb2hex(new_rgb)
 
     @classmethod
-    def darken_hex_color(cls, hex_color: str, darken_factor: float = None) -> str:
-        if darken_factor is None:
-            darken_factor = cls.DARKEN_COLOR_FACTOR
+    def disabled_color(cls, hex_color: str):
+        if appearance_mode == 0:  # Light mode
+            return cls.theme["color"]["text_disabled"]
+        else:
+            return cls.multiply_hex_color(hex_color, 0.8)
+
+    @classmethod
+    def multiply_hex_color(cls, hex_color: str, factor: float = None) -> str:
+        if factor is None:
+            factor = cls.theme["color"]["darken_factor"]
 
         try:
             rgb_color = CTkThemeManager.hex2rgb(hex_color)
-            dark_rgb_color = (rgb_color[0] * darken_factor,
-                              rgb_color[1] * darken_factor,
-                              rgb_color[2] * darken_factor)
+            dark_rgb_color = (min(255, rgb_color[0] * factor),
+                              min(255, rgb_color[1] * factor),
+                              min(255, rgb_color[2] * factor))
             return CTkThemeManager.rgb2hex(dark_rgb_color)
         except Exception as err:
-            sys.stderr.write("ERROR (CTkColorManager): failed to darken the following color: " + str(hex_color) + " " + str(err))
+            # sys.stderr.write("ERROR (CTkColorManager): failed to darken the following color: " + str(hex_color) + " " + str(err))
             return hex_color
 
     @classmethod

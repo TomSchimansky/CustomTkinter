@@ -185,6 +185,9 @@ class App(customtkinter.CTk):
         self.slider_1.set(0.2)
         self.slider_2.set(0.7)
         self.progressbar.set(0.5)
+        self.slider_button_1.configure(state=tkinter.DISABLED, text="Disabled Button")
+        self.radio_button_3.configure(state=tkinter.DISABLED)
+        self.check_box_1.configure(state=tkinter.DISABLED, text="CheckBox disabled")
         self.check_box_2.select()
 
     def button_event(self):

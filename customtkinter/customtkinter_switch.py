@@ -24,7 +24,7 @@ class CTkSwitch(tkinter.Frame):
                  width=36,
                  height=18,
                  corner_radius="default_theme",
-                 button_corner_radius="default_theme",
+                 # button_corner_radius="default_theme",
                  border_width="default_theme",
                  button_length="default_theme",
                  command=None,
@@ -72,7 +72,7 @@ class CTkSwitch(tkinter.Frame):
         self.width = width
         self.height = height
         self.corner_radius = CTkThemeManager.theme["shape"]["switch_corner_radius"] if corner_radius == "default_theme" else corner_radius
-        self.button_corner_radius = CTkThemeManager.theme["shape"]["switch_button_corner_radius"] if button_corner_radius == "default_theme" else button_corner_radius
+        # self.button_corner_radius = CTkThemeManager.theme["shape"]["switch_button_corner_radius"] if button_corner_radius == "default_theme" else button_corner_radius
         self.border_width = CTkThemeManager.theme["shape"]["switch_border_width"] if border_width == "default_theme" else border_width
         self.button_length = CTkThemeManager.theme["shape"]["switch_button_length"] if button_length == "default_theme" else button_length
         self.hover_state = False
@@ -80,8 +80,8 @@ class CTkSwitch(tkinter.Frame):
         self.onvalue = onvalue
         self.offvalue = offvalue
 
-        if self.corner_radius < self.button_corner_radius:
-            self.corner_radius = self.button_corner_radius
+        #if self.corner_radius < self.button_corner_radius:
+        #    self.corner_radius = self.button_corner_radius
 
         self.callback_function = command
         self.variable: tkinter.Variable = variable
@@ -142,10 +142,10 @@ class CTkSwitch(tkinter.Frame):
 
         if self.check_state is True:
             requires_recoloring = self.draw_engine.draw_rounded_slider_with_border_and_button(self.width, self.height, self.corner_radius, self.border_width,
-                                                                                              self.button_length, self.button_corner_radius, 1, "w")
+                                                                                              self.button_length, self.corner_radius, 1, "w")
         else:
             requires_recoloring = self.draw_engine.draw_rounded_slider_with_border_and_button(self.width, self.height, self.corner_radius, self.border_width,
-                                                                                              self.button_length, self.button_corner_radius, 0, "w")
+                                                                                              self.button_length, self.corner_radius, 0, "w")
 
         if color_updates or requires_recoloring:
             self.configure(bg=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
