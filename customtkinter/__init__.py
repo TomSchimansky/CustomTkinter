@@ -1,4 +1,4 @@
-__version__ = "3.5"
+__version__ = "3.6"
 
 from .customtkinter_input_dialog import CTkInputDialog
 from .customtkinter_button import CTkButton
@@ -22,6 +22,7 @@ from distutils.version import StrictVersion as Version
 import tkinter
 import os
 import sys
+import shutil
 
 
 def enable_macos_darkmode():
@@ -64,8 +65,9 @@ def set_default_color_theme(color_string):
     CTkThemeManager.load_theme(color_string)
 
 
-if not sys.platform == "darwin":
+if sys.platform.startswith("win"):
     import warnings
+
     warnings.simplefilter("ignore", category=UserWarning)
 
     import pyglet.font
@@ -86,3 +88,27 @@ if not sys.platform == "darwin":
                              "Preferred drawing method 'font_shapes' can not be used because the font file could not be loaded.\n" +
                              "Using 'circle_shapes' instead. The rendering quality will be very bad!")
             CTkSettings.preferred_drawing_method = "circle_shapes"
+
+elif sys.platform == "linux":
+    try:
+        if not os.path.isdir(os.path.expanduser('~/.fonts/')):
+            os.mkdir(os.path.expanduser('~/.fonts/'))
+
+        script_directory = os.path.dirname(os.path.abspath(__file__))
+
+        # copy fonts in user font folder
+        shutil.copy(os.path.join(script_directory, "assets", "fonts", "Roboto", "Roboto-Regular.ttf"),
+                    os.path.expanduser("~/.fonts/"))
+        shutil.copy(os.path.join(script_directory, "assets", "fonts", "Roboto", "Roboto-Medium.ttf"),
+                    os.path.expanduser("~/.fonts/"))
+        shutil.copy(os.path.join(script_directory, "assets", "fonts", "CustomTkinter_shapes_font-fine.otf"),
+                    os.path.expanduser("~/.fonts/"))
+
+    except Exception as err:
+        sys.stderr.write(str(err) + "\n")
+        sys.stderr.write("WARNING (customtkinter.CTkSettings): " +
+                         "Preferred drawing method 'font_shapes' can not be used because the font file could not be copied to ~/.fonts/.\n" +
+                         "Using 'circle_shapes' instead. The rendering quality will be very bad!\n")
+        CTkSettings.preferred_drawing_method = "circle_shapes"
+
+
