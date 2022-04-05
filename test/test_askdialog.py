@@ -47,7 +47,7 @@ class App(customtkinter.CTk):
         self.button_output = customtkinter.CTkButton(master=self.frame_right, border_color=App.MAIN_COLOR,
                                                 fg_color=None, hover_color=App.MAIN_HOVER,
                                                 height=28, text="Output Folder", command=self.button_outputFunc,
-                                                border_width=3, corner_radius=10, text_font=('Calibri',16))
+                                                border_width=3, corner_radius=10, text_font=('Calibri',12))
         self.button_output.place(relx=0.05, rely=0.06, anchor=tkinter.NW)
         self.entry_output = customtkinter.CTkEntry(master=self.frame_right, width=320, height=38, corner_radius=5)
         self.entry_output.place(relx=0.05, rely=0.18, anchor=tkinter.NW)

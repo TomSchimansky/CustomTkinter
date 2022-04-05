@@ -65,21 +65,36 @@ def set_default_color_theme(color_string):
     CTkThemeManager.load_theme(color_string)
 
 
+# Load fonts:
 if sys.platform.startswith("win"):
-    import warnings
+    from ctypes import windll, byref, create_unicode_buffer, create_string_buffer
 
-    warnings.simplefilter("ignore", category=UserWarning)
+    FR_PRIVATE = 0x10
+    FR_NOT_ENUM = 0x20
 
-    import pyglet.font
+
+    def loadfont(fontpath, private=True, enumerable=False):
+        """ Function taken from: https://stackoverflow.com/questions/11993290/truly-custom-font-in-tkinter/30631309#30631309 """
+
+        if isinstance(fontpath, bytes):
+            pathbuf = create_string_buffer(fontpath)
+            AddFontResourceEx = windll.gdi32.AddFontResourceExA
+        elif isinstance(fontpath, str):
+            pathbuf = create_unicode_buffer(fontpath)
+            AddFontResourceEx = windll.gdi32.AddFontResourceExW
+        else:
+            raise TypeError('fontpath must be of type str or unicode')
+
+        flags = (FR_PRIVATE if private else 0) | (FR_NOT_ENUM if not enumerable else 0)
+        num_fonts_added = AddFontResourceEx(byref(pathbuf), flags, 0)
+        return bool(num_fonts_added)
+
 
     # load text fonts and custom font with circle shapes for round corner rendering
     script_directory = os.path.dirname(os.path.abspath(__file__))
-    pyglet.font.add_file(os.path.join(script_directory, "assets", "fonts", "CustomTkinter_shapes_font-fine.otf"))
-    pyglet.font.add_file(os.path.join(script_directory, "assets", "fonts", "Roboto", "Roboto-Regular.ttf"))
-    pyglet.font.add_file(os.path.join(script_directory, "assets", "fonts", "Roboto", "Roboto-Medium.ttf"))
-    CTkSettings.circle_font_is_ready = pyglet.font.have_font("CustomTkinter_shapes_font")
-
-    warnings.simplefilter("default")
+    CTkSettings.circle_font_is_ready = loadfont(os.path.join(script_directory, "assets", "fonts", "CustomTkinter_shapes_font-fine.otf"))
+    loadfont(os.path.join(script_directory, "assets", "fonts", "Roboto", "Roboto-Regular.ttf"))
+    loadfont(os.path.join(script_directory, "assets", "fonts", "Roboto", "Roboto-Medium.ttf"))
 
     # correct drawing method if font could not be loaded
     if not CTkSettings.circle_font_is_ready:
