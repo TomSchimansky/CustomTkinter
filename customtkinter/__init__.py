@@ -1,4 +1,4 @@
-__version__ = "3.8"
+__version__ = "3.9"
 
 from .customtkinter_input_dialog import CTkInputDialog
 from .customtkinter_button import CTkButton

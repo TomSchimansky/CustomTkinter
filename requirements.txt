@@ -1,2 +1,1 @@
-pyglet~=1.5.21
 darkdetect~=0.3.1
