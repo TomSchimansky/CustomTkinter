@@ -55,6 +55,7 @@ class CTkSlider(tkinter.Frame):
             self.master.config = new_configure
             self.master.configure = new_configure
 
+        # add set_appearance_mode method to callback list of AppearanceModeTracker for appearance mode changes
         AppearanceModeTracker.add(self.change_appearance_mode, self)
         self.appearance_mode = AppearanceModeTracker.get_mode()  # 0: "Light" 1: "Dark"
 

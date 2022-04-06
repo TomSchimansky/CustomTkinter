@@ -11,13 +11,6 @@ import os
 #
 
 
-def read(filename):
-    try:
-        return open(os.path.join(os.path.dirname(__file__), filename)).read()
-    except Exception as err:
-        return ""
-
-
 setup(name="customtkinter",
       version="3.9",
       author="Tom Schimansky",
@@ -25,7 +18,7 @@ setup(name="customtkinter",
       url="https://github.com/TomSchimansky/CustomTkinter",
       description="Create modern looking gui with tkinter and python",
       long_description_content_type="text/markdown",
-      long_description=read('Readme_pypi.md'),
+      long_description="# CustomTkinter\n\nDetailed Information: https://github.com/TomSchimansky/CustomTkinter",
       include_package_data=True,
       packages=["customtkinter"],
       classifiers=["Operating System :: OS Independent",

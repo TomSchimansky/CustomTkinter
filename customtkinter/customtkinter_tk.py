@@ -27,6 +27,7 @@ class CTk(tkinter.Tk):
             self.fg_color = kwargs["background"]
             del kwargs["background"]
 
+        # add set_appearance_mode method to callback list of AppearanceModeTracker for appearance mode changes
         AppearanceModeTracker.add(self.set_appearance_mode, self)
         super().configure(bg=CTkThemeManager.single_color(self.fg_color, self.appearance_mode))
         super().title("CTk")
