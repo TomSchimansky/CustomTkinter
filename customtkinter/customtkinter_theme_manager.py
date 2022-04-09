@@ -63,13 +63,6 @@ class CTkThemeManager:
         return cls.rgb2hex(new_rgb)
 
     @classmethod
-    def disabled_color(cls, hex_color: str):
-        if appearance_mode == 0:  # Light mode
-            return cls.theme["color"]["text_disabled"]
-        else:
-            return cls.multiply_hex_color(hex_color, 0.8)
-
-    @classmethod
     def multiply_hex_color(cls, hex_color: str, factor: float = None) -> str:
         if factor is None:
             factor = cls.theme["color"]["darken_factor"]
@@ -90,4 +83,4 @@ class CTkThemeManager:
         cls.MAIN_HOVER_COLOR = main_color_hover
 
 
-CTkThemeManager.load_theme("blue")
+CTkThemeManager.load_theme("blue")  # standard theme

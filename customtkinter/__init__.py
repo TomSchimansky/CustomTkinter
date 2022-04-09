@@ -83,7 +83,7 @@ if sys.platform.startswith("win"):
             pathbuf = create_unicode_buffer(fontpath)
             AddFontResourceEx = windll.gdi32.AddFontResourceExW
         else:
-            raise TypeError('fontpath must be of type str or unicode')
+            raise TypeError('fontpath must be of type bytes or str')
 
         flags = (FR_PRIVATE if private else 0) | (FR_NOT_ENUM if not enumerable else 0)
         num_fonts_added = AddFontResourceEx(byref(pathbuf), flags, 0)

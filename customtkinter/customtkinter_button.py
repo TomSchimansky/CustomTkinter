@@ -1,4 +1,5 @@
 import tkinter
+import tkinter.ttk as ttk
 import sys
 
 from .customtkinter_tk import CTk
@@ -143,10 +144,32 @@ class CTkButton(tkinter.Frame):
             self.draw(no_color_updates=True)  # fast drawing without color changes
 
     def detect_color_of_master(self):
-        if isinstance(self.master, CTkFrame):
+        """ detect color of self.master widget to set correct bg_color """
+
+        if isinstance(self.master, CTkFrame):  # master is CTkFrame
             return self.master.fg_color
-        else:
-            return self.master.cget("bg")
+
+        elif isinstance(self.master, ttk.Frame):  # master is ttk widget
+            print("button on", self.master.winfo_class())
+            try:
+                ttk_style = ttk.Style()
+                return ttk_style.lookup(self.master.winfo_class(), 'background')
+            except Exception:
+                return "#000000"
+
+        elif isinstance(self.master, ttk.LabelFrame):
+            print("button on", self.master.winfo_class())
+            try:
+                ttk_style = ttk.Style()
+                return ttk_style.lookup(self.master.winfo_class(), 'foreground')
+            except Exception:
+                return "#000000"
+
+        else:  # master is normal tkinter widget
+            try:
+                return self.master.cget("bg")  # try to get bg color by .cget() method
+            except Exception:
+                return "#000000"
 
     def draw(self, no_color_updates=False):
         requires_recoloring = self.draw_engine.draw_rounded_rect_with_border(self.width, self.height, self.corner_radius, self.border_width)
