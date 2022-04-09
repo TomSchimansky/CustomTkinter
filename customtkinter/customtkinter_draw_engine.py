@@ -1,7 +1,8 @@
 import sys
 import tkinter
 from typing import Union
-from .customtkinter_canvas import CTkCanvas
+
+from .widgets.customtkinter_canvas import CTkCanvas
 
 
 class CTkDrawEngine:

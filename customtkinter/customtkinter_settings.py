@@ -1,5 +1,4 @@
 import sys
-import platform
 
 
 class CTkSettings:

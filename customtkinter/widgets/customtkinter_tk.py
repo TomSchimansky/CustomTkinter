@@ -5,8 +5,8 @@ import os
 import platform
 import ctypes
 
-from .appearance_mode_tracker import AppearanceModeTracker
-from .customtkinter_theme_manager import CTkThemeManager
+from ..appearance_mode_tracker import AppearanceModeTracker
+from ..customtkinter_theme_manager import CTkThemeManager
 
 
 class CTk(tkinter.Tk):
@@ -102,8 +102,8 @@ class CTk(tkinter.Tk):
             from .customtkinter_label import CTkLabel
             from .customtkinter_frame import CTkFrame
             from .customtkinter_entry import CTkEntry
-            from customtkinter.customtkinter_checkbox import CTkCheckBox
-            from .customtkinter_button import CTkButton
+            from customtkinter.widgets.customtkinter_checkbox import CTkCheckBox
+            from customtkinter.widgets.customtkinter_button import CTkButton
 
             for child in self.winfo_children():
                 if isinstance(child, (CTkFrame, CTkButton, CTkLabel, CTkSlider, CTkCheckBox, CTkEntry, CTkProgressBar)):

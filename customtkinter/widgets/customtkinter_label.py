@@ -2,24 +2,30 @@ import tkinter
 import tkinter.ttk as ttk
 
 from .customtkinter_tk import CTk
-from .appearance_mode_tracker import AppearanceModeTracker
-from .customtkinter_theme_manager import CTkThemeManager
+from .customtkinter_frame import CTkFrame
 from .customtkinter_canvas import CTkCanvas
-from .customtkinter_settings import CTkSettings
-from .customtkinter_draw_engine import CTkDrawEngine
+from ..appearance_mode_tracker import AppearanceModeTracker
+from ..customtkinter_theme_manager import CTkThemeManager
+from ..customtkinter_settings import CTkSettings
+from ..customtkinter_draw_engine import CTkDrawEngine
 
 
-class CTkFrame(tkinter.Frame):
+class CTkLabel(tkinter.Frame):
     def __init__(self, *args,
+                 master=None,
                  bg_color=None,
                  fg_color="default_theme",
-                 border_color="default_theme",
-                 border_width="default_theme",
+                 text_color="default_theme",
                  corner_radius="default_theme",
-                 width=200,
-                 height=200,
+                 width=120,
+                 height=25,
+                 text="CTkLabel",
+                 text_font="default_theme",
                  **kwargs):
-        super().__init__(*args, **kwargs)
+        if master is None:
+            super().__init__(*args)
+        else:
+            super().__init__(*args, master=master)
 
         # overwrite configure methods of master when master is tkinter widget, so that bg changes get applied on child CTk widget too
         if isinstance(self.master, (tkinter.Tk, tkinter.Frame)) and not isinstance(self.master, (CTk, CTkFrame)):
@@ -47,47 +53,45 @@ class CTkFrame(tkinter.Frame):
         self.appearance_mode = AppearanceModeTracker.get_mode()  # 0: "Light" 1: "Dark"
 
         self.bg_color = self.detect_color_of_master() if bg_color is None else bg_color
-        self.border_color = CTkThemeManager.theme["color"]["frame_border"] if border_color == "default_theme" else border_color
-
-        if fg_color == "default_theme":
-            if isinstance(self.master, CTkFrame):
-                if self.master.fg_color == CTkThemeManager.theme["color"]["frame_low"]:
-                    self.fg_color = CTkThemeManager.theme["color"]["frame_high"]
-                else:
-                    self.fg_color = CTkThemeManager.theme["color"]["frame_low"]
-            else:
-                self.fg_color = CTkThemeManager.theme["color"]["frame_low"]
-        else:
-            self.fg_color = fg_color
+        self.fg_color = CTkThemeManager.theme["color"]["label"] if fg_color == "default_theme" else fg_color
+        if self.fg_color is None:
+            self.fg_color = self.bg_color
+        self.text_color = CTkThemeManager.theme["color"]["text"] if text_color == "default_theme" else text_color
 
         self.width = width
         self.height = height
-        self.configure(width=self.width, height=self.height)
-
-        self.corner_radius = CTkThemeManager.theme["shape"]["frame_corner_radius"] if corner_radius == "default_theme" else corner_radius
-        self.border_width = CTkThemeManager.theme["shape"]["frame_border_width"] if border_width == "default_theme" else border_width
+        self.corner_radius = CTkThemeManager.theme["shape"]["label_corner_radius"] if corner_radius == "default_theme" else corner_radius
 
         if self.corner_radius * 2 > self.height:
             self.corner_radius = self.height / 2
         elif self.corner_radius * 2 > self.width:
             self.corner_radius = self.width / 2
 
-        if self.corner_radius >= self.border_width:
-            self.inner_corner_radius = self.corner_radius - self.border_width
-        else:
-            self.inner_corner_radius = 0
+        self.text = text
+        self.text_font = (CTkThemeManager.theme["text"]["font"], CTkThemeManager.theme["text"]["size"]) if text_font == "default_theme" else text_font
+
+        self.grid_rowconfigure(0, weight=1)
+        self.grid_columnconfigure(0, weight=1)
 
         self.canvas = CTkCanvas(master=self,
                                 highlightthickness=0,
                                 width=self.width,
                                 height=self.height)
-        self.canvas.place(x=0, y=0, relwidth=1, relheight=1)
-        self.canvas.configure(bg=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
+        self.canvas.grid(row=0, column=0, sticky="nswe")
+
+        self.text_label = tkinter.Label(master=self,
+                                        highlightthickness=0,
+                                        bd=0,
+                                        text=self.text,
+                                        font=self.text_font,
+                                        **kwargs)
+        self.text_label.grid(row=0, column=0, padx=self.corner_radius)
 
         self.draw_engine = CTkDrawEngine(self.canvas, CTkSettings.preferred_drawing_method)
 
-        self.bind('<Configure>', self.update_dimensions)
+        super().configure(width=self.width, height=self.height)
 
+        self.bind('<Configure>', self.update_dimensions)
         self.draw()
 
     def destroy(self):
@@ -120,22 +124,28 @@ class CTkFrame(tkinter.Frame):
             self.width = event.width
             self.height = event.height
 
+            # self.canvas.config(width=self.width, height=self.height)
             self.draw()
 
     def draw(self):
+        requires_recoloring = self.draw_engine.draw_rounded_rect_with_border(self.width, self.height, self.corner_radius, 0)
 
-        requires_recoloring = self.draw_engine.draw_rounded_rect_with_border(self.width, self.height, self.corner_radius, self.border_width)
-
-        self.canvas.itemconfig("inner_parts",
-                               fill=CTkThemeManager.single_color(self.fg_color, self.appearance_mode),
-                               outline=CTkThemeManager.single_color(self.fg_color, self.appearance_mode))
-        self.canvas.itemconfig("border_parts",
-                               fill=CTkThemeManager.single_color(self.border_color, self.appearance_mode),
-                               outline=CTkThemeManager.single_color(self.border_color, self.appearance_mode))
         self.canvas.configure(bg=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
 
-        self.canvas.tag_lower("inner_parts")
-        self.canvas.tag_lower("border_parts")
+        if CTkThemeManager.single_color(self.fg_color, self.appearance_mode) is not None:
+            self.canvas.itemconfig("inner_parts",
+                                   fill=CTkThemeManager.single_color(self.fg_color, self.appearance_mode),
+                                   outline=CTkThemeManager.single_color(self.fg_color, self.appearance_mode))
+
+            self.text_label.configure(fg=CTkThemeManager.single_color(self.text_color, self.appearance_mode),
+                                      bg=CTkThemeManager.single_color(self.fg_color, self.appearance_mode))
+        else:
+            self.canvas.itemconfig("inner_parts",
+                                   fill=CTkThemeManager.single_color(self.bg_color, self.appearance_mode),
+                                   outline=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
+
+            self.text_label.configure(fg=CTkThemeManager.single_color(self.text_color, self.appearance_mode),
+                                      bg=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
 
     def config(self, *args, **kwargs):
         self.configure(*args, **kwargs)
@@ -143,22 +153,14 @@ class CTkFrame(tkinter.Frame):
     def configure(self, *args, **kwargs):
         require_redraw = False  # some attribute changes require a call of self.draw() at the end
 
+        if "text" in kwargs:
+            self.set_text(kwargs["text"])
+            del kwargs["text"]
+
         if "fg_color" in kwargs:
             self.fg_color = kwargs["fg_color"]
             require_redraw = True
             del kwargs["fg_color"]
-
-            # check if CTk widgets are children of the frame and change their bg_color to new frame fg_color
-            from .customtkinter_slider import CTkSlider
-            from .customtkinter_progressbar import CTkProgressBar
-            from .customtkinter_label import CTkLabel
-            from .customtkinter_entry import CTkEntry
-            from customtkinter.customtkinter_checkbox import CTkCheckBox
-            from .customtkinter_button import CTkButton
-
-            for child in self.winfo_children():
-                if isinstance(child, (CTkButton, CTkLabel, CTkSlider, CTkCheckBox, CTkEntry, CTkProgressBar, CTkFrame)):
-                    child.configure(bg_color=self.fg_color)
 
         if "bg_color" in kwargs:
             if kwargs["bg_color"] is None:
@@ -166,18 +168,21 @@ class CTkFrame(tkinter.Frame):
             else:
                 self.bg_color = kwargs["bg_color"]
             require_redraw = True
-
             del kwargs["bg_color"]
 
-        if "corner_radius" in kwargs:
-            self.corner_radius = kwargs["corner_radius"]
+        if "text_color" in kwargs:
+            self.text_color = kwargs["text_color"]
             require_redraw = True
-            del kwargs["corner_radius"]
+            del kwargs["text_color"]
 
-        super().configure(*args, **kwargs)
+        self.text_label.configure(*args, **kwargs)
 
         if require_redraw:
             self.draw()
+
+    def set_text(self, text):
+        self.text = text
+        self.text_label.configure(text=self.text, width=len(self.text))
 
     def change_appearance_mode(self, mode_string):
         if mode_string.lower() == "dark":
@@ -185,7 +190,7 @@ class CTkFrame(tkinter.Frame):
         elif mode_string.lower() == "light":
             self.appearance_mode = 0
 
-        if isinstance(self.master, CTkFrame):
+        if isinstance(self.master, (CTkFrame, CTk)):
             self.bg_color = self.master.fg_color
         else:
             self.bg_color = self.master.cget("bg")

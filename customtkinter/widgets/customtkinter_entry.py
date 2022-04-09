@@ -3,11 +3,11 @@ import tkinter.ttk as ttk
 
 from .customtkinter_tk import CTk
 from .customtkinter_frame import CTkFrame
-from .appearance_mode_tracker import AppearanceModeTracker
-from .customtkinter_theme_manager import CTkThemeManager
 from .customtkinter_canvas import CTkCanvas
-from .customtkinter_settings import CTkSettings
-from .customtkinter_draw_engine import CTkDrawEngine
+from ..appearance_mode_tracker import AppearanceModeTracker
+from ..customtkinter_theme_manager import CTkThemeManager
+from ..customtkinter_settings import CTkSettings
+from ..customtkinter_draw_engine import CTkDrawEngine
 
 
 class CTkEntry(tkinter.Frame):

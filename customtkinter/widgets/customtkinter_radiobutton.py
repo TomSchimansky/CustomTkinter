@@ -2,13 +2,13 @@ import tkinter
 import tkinter.ttk as ttk
 import sys
 
-from customtkinter.customtkinter_tk import CTk
-from customtkinter.customtkinter_frame import CTkFrame
-from customtkinter.appearance_mode_tracker import AppearanceModeTracker
-from customtkinter.customtkinter_theme_manager import CTkThemeManager
-from customtkinter.customtkinter_canvas import CTkCanvas
-from customtkinter.customtkinter_settings import CTkSettings
-from customtkinter.customtkinter_draw_engine import CTkDrawEngine
+from .customtkinter_tk import CTk
+from .customtkinter_frame import CTkFrame
+from .customtkinter_canvas import CTkCanvas
+from ..appearance_mode_tracker import AppearanceModeTracker
+from ..customtkinter_theme_manager import CTkThemeManager
+from ..customtkinter_settings import CTkSettings
+from ..customtkinter_draw_engine import CTkDrawEngine
 
 
 class CTkRadioButton(tkinter.Frame):

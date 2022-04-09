@@ -1,5 +1,5 @@
 import tkinter
-from .customtkinter_settings import CTkSettings
+from ..customtkinter_settings import CTkSettings
 
 
 class CTkCanvas(tkinter.Canvas):
