@@ -1,4 +1,5 @@
 import tkinter
+import tkinter.ttk as ttk
 
 from .customtkinter_tk import CTk
 from .appearance_mode_tracker import AppearanceModeTracker
@@ -94,10 +95,24 @@ class CTkFrame(tkinter.Frame):
         super().destroy()
 
     def detect_color_of_master(self):
-        if isinstance(self.master, CTkFrame):
+        """ detect color of self.master widget to set correct bg_color """
+
+        if isinstance(self.master, CTkFrame):  # master is CTkFrame
             return self.master.fg_color
-        else:
-            return self.master.cget("bg")
+
+        elif isinstance(self.master, (ttk.Frame, ttk.LabelFrame, ttk.Notebook)):  # master is ttk widget
+            print("button on", self.master.winfo_class())
+            try:
+                ttk_style = ttk.Style()
+                return ttk_style.lookup(self.master.winfo_class(), 'background')
+            except Exception:
+                return "#FFFFFF", "#000000"
+
+        else:  # master is normal tkinter widget
+            try:
+                return self.master.cget("bg")  # try to get bg color by .cget() method
+            except Exception:
+                return "#FFFFFF", "#000000"
 
     def update_dimensions(self, event):
         # only redraw if dimensions changed (for performance)
