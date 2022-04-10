@@ -2,6 +2,8 @@ import tkinter
 import tkinter.ttk as ttk
 import customtkinter
 
+customtkinter.set_appearance_mode("light")
+
 root_tk = customtkinter.CTk()
 root_tk.geometry("1400x480")
 root_tk.title("CustomTkinter TTk Compatibility Test")
@@ -25,7 +27,7 @@ button_2.pack(pady=20, padx=20)
 
 frame_3 = customtkinter.CTkFrame(master=root_tk)
 frame_3.grid(padx=20, pady=20, row=0, column=3, sticky="nsew")
-label_3 = customtkinter.CTkLabel(master=frame_3, text="CTkFrame Label", fg_color=("gray81", "gray15"))
+label_3 = customtkinter.CTkLabel(master=frame_3, text="CTkFrame Label", fg_color=("gray95", "gray15"))
 label_3.grid(row=0, column=0, columnspan=1, padx=5, pady=5, sticky="ew")
 button_3 = customtkinter.CTkButton(frame_3, text="CTkFrame")
 button_3.grid(row=1, column=0, padx=20)
