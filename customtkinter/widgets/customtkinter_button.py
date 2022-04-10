@@ -76,16 +76,6 @@ class CTkButton(tkinter.Frame):
         self.corner_radius = CTkThemeManager.theme["shape"]["button_corner_radius"] if corner_radius == "default_theme" else corner_radius
         self.border_width = CTkThemeManager.theme["shape"]["button_border_width"] if border_width == "default_theme" else border_width
 
-        if self.corner_radius * 2 > self.height:
-            self.corner_radius = self.height / 2
-        elif self.corner_radius * 2 > self.width:
-            self.corner_radius = self.width / 2
-
-        if self.corner_radius >= self.border_width:
-            self.inner_corner_radius = self.corner_radius - self.border_width
-        else:
-            self.inner_corner_radius = 0
-
         # text and font and image
         self.image = image
         self.image_label = None
@@ -150,7 +140,6 @@ class CTkButton(tkinter.Frame):
             return self.master.fg_color
 
         elif isinstance(self.master, (ttk.Frame, ttk.LabelFrame, ttk.Notebook)):  # master is ttk widget
-            print("button on", self.master.winfo_class())
             try:
                 ttk_style = ttk.Style()
                 return ttk_style.lookup(self.master.winfo_class(), 'background')
@@ -231,8 +220,8 @@ class CTkButton(tkinter.Frame):
 
             if no_color_updates is False:
                 # set image_label bg color (background color of label)
-                if self.state == tkinter.DISABLED:
-                    self.image_label.configure(bg=CTkThemeManager.multiply_hex_color(CTkThemeManager.single_color(self.fg_color, self.appearance_mode)))
+                if self.fg_color is None:
+                    self.image_label.configure(bg=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
                 else:
                     self.image_label.configure(bg=CTkThemeManager.single_color(self.fg_color, self.appearance_mode))
 
@@ -246,7 +235,7 @@ class CTkButton(tkinter.Frame):
 
         # create grid layout with just an image given
         if self.image_label is not None and self.text_label is None:
-            self.image_label.grid(row=0, column=0, rowspan=2, columnspan=2, sticky="")
+            self.image_label.grid(row=0, column=0, rowspan=2, columnspan=2, sticky="", pady=self.border_width)
 
         # create grid layout with just text given
         if self.image_label is None and self.text_label is not None:
@@ -255,17 +244,17 @@ class CTkButton(tkinter.Frame):
         # create grid layout of image and text label in 2x2 grid system with given compound
         if self.image_label is not None and self.text_label is not None:
             if self.compound == tkinter.LEFT or self.compound == "left":
-                self.image_label.grid(row=0, column=0, padx=self.corner_radius, sticky="e", rowspan=2, columnspan=1)
-                self.text_label.grid(row=0, column=1, padx=self.corner_radius, sticky="w", rowspan=2, columnspan=1, pady=self.border_width)
+                self.image_label.grid(row=0, column=0, padx=(max(self.corner_radius, self.border_width), 2), sticky="e", rowspan=2, columnspan=1, pady=self.border_width)
+                self.text_label.grid(row=0, column=1, padx=(2, max(self.corner_radius, self.border_width)), sticky="w", rowspan=2, columnspan=1, pady=self.border_width)
             elif self.compound == tkinter.TOP or self.compound == "top":
-                self.image_label.grid(row=0, column=0, padx=self.corner_radius, sticky="s", columnspan=2, rowspan=1)
-                self.text_label.grid(row=1, column=0, padx=self.corner_radius, sticky="n", columnspan=2, rowspan=1, pady=self.border_width)
+                self.image_label.grid(row=0, column=0, padx=max(self.corner_radius, self.border_width), sticky="s", columnspan=2, rowspan=1, pady=(self.border_width, 2))
+                self.text_label.grid(row=1, column=0, padx=max(self.corner_radius, self.border_width), sticky="n", columnspan=2, rowspan=1, pady=(2, self.border_width))
             elif self.compound == tkinter.RIGHT or self.compound == "right":
-                self.image_label.grid(row=0, column=1, padx=self.corner_radius, sticky="w", rowspan=2, columnspan=1)
-                self.text_label.grid(row=0, column=0, padx=self.corner_radius, sticky="e", rowspan=2, columnspan=1, pady=self.border_width)
+                self.image_label.grid(row=0, column=1, padx=(2, max(self.corner_radius, self.border_width)), sticky="w", rowspan=2, columnspan=1, pady=self.border_width)
+                self.text_label.grid(row=0, column=0, padx=(max(self.corner_radius, self.border_width), 2), sticky="e", rowspan=2, columnspan=1, pady=self.border_width)
             elif self.compound == tkinter.BOTTOM or self.compound == "bottom":
-                self.image_label.grid(row=1, column=0, padx=self.corner_radius, sticky="n", columnspan=2, rowspan=1)
-                self.text_label.grid(row=0, column=0, padx=self.corner_radius, sticky="s", columnspan=2, rowspan=1, pady=self.border_width)
+                self.image_label.grid(row=1, column=0, padx=max(self.corner_radius, self.border_width), sticky="n", columnspan=2, rowspan=1, pady=(2, self.border_width))
+                self.text_label.grid(row=0, column=0, padx=max(self.corner_radius, self.border_width), sticky="s", columnspan=2, rowspan=1, pady=(self.border_width, 2))
 
     def config(self, *args, **kwargs):
         self.configure(*args, **kwargs)

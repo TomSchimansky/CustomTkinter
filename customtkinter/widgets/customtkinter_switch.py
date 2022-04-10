@@ -141,7 +141,6 @@ class CTkSwitch(tkinter.Frame):
             return self.master.fg_color
 
         elif isinstance(self.master, (ttk.Frame, ttk.LabelFrame, ttk.Notebook)):  # master is ttk widget
-            print("button on", self.master.winfo_class())
             try:
                 ttk_style = ttk.Style()
                 return ttk_style.lookup(self.master.winfo_class(), 'background')

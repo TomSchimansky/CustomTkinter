@@ -63,10 +63,7 @@ class CTkThemeManager:
         return cls.rgb2hex(new_rgb)
 
     @classmethod
-    def multiply_hex_color(cls, hex_color: str, factor: float = None) -> str:
-        if factor is None:
-            factor = cls.theme["color"]["darken_factor"]
-
+    def multiply_hex_color(cls, hex_color: str, factor: float = 1.0) -> str:
         try:
             rgb_color = CTkThemeManager.hex2rgb(hex_color)
             dark_rgb_color = (min(255, rgb_color[0] * factor),
