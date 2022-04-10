@@ -12,13 +12,13 @@ import os
 
 
 setup(name="customtkinter",
-      version="3.9",
+      version="3.10",
       author="Tom Schimansky",
       license="Creative Commons Zero v1.0 Universal",
       url="https://github.com/TomSchimansky/CustomTkinter",
       description="Create modern looking gui with tkinter and python",
       long_description_content_type="text/markdown",
-      long_description="# CustomTkinter\n\nDetailed Information: https://github.com/TomSchimansky/CustomTkinter",
+      long_description="# CustomTkinter UI-Library\n\nDetailed Information: https://github.com/TomSchimansky/CustomTkinter",
       include_package_data=True,
       packages=["customtkinter"],
       classifiers=["Operating System :: OS Independent",
