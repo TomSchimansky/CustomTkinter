@@ -12,7 +12,7 @@ import os
 
 
 setup(name="customtkinter",
-      version="3.10",
+      version="3.11",
       author="Tom Schimansky",
       license="Creative Commons Zero v1.0 Universal",
       url="https://github.com/TomSchimansky/CustomTkinter",
@@ -20,7 +20,7 @@ setup(name="customtkinter",
       long_description_content_type="text/markdown",
       long_description="# CustomTkinter UI-Library\n\nDetailed Information: https://github.com/TomSchimansky/CustomTkinter",
       include_package_data=True,
-      packages=["customtkinter"],
+      packages=["customtkinter", "customtkinter.widgets"],
       classifiers=["Operating System :: OS Independent",
                    "Programming Language :: Python :: 3",
                    "License :: CC0 1.0 Universal (CC0 1.0) Public Domain Dedication"],

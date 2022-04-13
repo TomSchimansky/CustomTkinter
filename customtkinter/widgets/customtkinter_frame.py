@@ -94,6 +94,17 @@ class CTkFrame(tkinter.Frame):
         AppearanceModeTracker.remove(self.change_appearance_mode)
         super().destroy()
 
+    def winfo_children(self):
+        """ winfo_children of CTkFrame without self.canvas widget,
+        because it's not a child but part of the CTkFrame itself """
+
+        child_widgets = super().winfo_children()
+        try:
+            child_widgets.remove(self.canvas)
+            return child_widgets
+        except ValueError:
+            return child_widgets
+
     def detect_color_of_master(self):
         """ detect color of self.master widget to set correct bg_color """
 
