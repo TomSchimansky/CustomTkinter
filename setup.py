@@ -12,7 +12,7 @@ import os
 
 
 setup(name="customtkinter",
-      version="3.11",
+      version="3.12",
       author="Tom Schimansky",
       license="Creative Commons Zero v1.0 Universal",
       url="https://github.com/TomSchimansky/CustomTkinter",
