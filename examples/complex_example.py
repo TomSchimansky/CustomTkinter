@@ -19,17 +19,13 @@ class App(customtkinter.CTk):
         self.geometry(f"{App.WIDTH}x{App.HEIGHT}")
         # self.minsize(App.WIDTH, App.HEIGHT)
 
-        self.protocol("WM_DELETE_WINDOW", self.on_closing)
-        if sys.platform == "darwin":
-            self.bind("<Command-q>", self.on_closing)
-            self.bind("<Command-w>", self.on_closing)
-            self.createcommand('tk::mac::Quit', self.on_closing)
+        self.protocol("WM_DELETE_WINDOW", self.on_closing)  # call .on_closing() when app gets closed
 
         # ============ create two frames ============
 
-        # configure grid layout (1x2)
+        # configure grid layout (2x1)
         self.grid_columnconfigure(1, weight=1)
-        self.rowconfigure(0, weight=1)
+        self.grid_rowconfigure(0, weight=1)
 
         self.frame_left = customtkinter.CTkFrame(master=self,
                                                  width=180,
@@ -41,7 +37,7 @@ class App(customtkinter.CTk):
 
         # ============ frame_left ============
 
-        # configure grid layout
+        # configure grid layout (1x11)
         self.frame_left.grid_rowconfigure(0, minsize=10)   # empty row with minsize as spacing
         self.frame_left.grid_rowconfigure(5, weight=1)  # empty row as spacing
         self.frame_left.grid_rowconfigure(8, minsize=20)    # empty row with minsize as spacing
@@ -81,18 +77,17 @@ class App(customtkinter.CTk):
         # ============ frame_right ============
 
         # configure grid layout (3x7)
-        for i in [0, 1, 2, 3]:
-            self.frame_right.rowconfigure(i, weight=1)
+        self.frame_right.rowconfigure((0, 1, 2, 3), weight=1)
         self.frame_right.rowconfigure(7, weight=10)
-        self.frame_right.columnconfigure(0, weight=1)
-        self.frame_right.columnconfigure(1, weight=1)
+        self.frame_right.columnconfigure((0, 1), weight=1)
         self.frame_right.columnconfigure(2, weight=0)
 
         self.frame_info = customtkinter.CTkFrame(master=self.frame_right)
         self.frame_info.grid(row=0, column=0, columnspan=2, rowspan=4, pady=20, padx=20, sticky="nsew")
 
-        # ============ frame_right -> frame_info ============
+        # ============ frame_info ============
 
+        # configure grid layout (1x1)
         self.frame_info.rowconfigure(0, weight=1)
         self.frame_info.columnconfigure(0, weight=1)
 
@@ -108,7 +103,8 @@ class App(customtkinter.CTk):
         self.progressbar = customtkinter.CTkProgressBar(master=self.frame_info)
         self.progressbar.grid(row=1, column=0, sticky="ew", padx=15, pady=15)
 
-        # ============ frame_right <- ============
+        # ============ frame_right ============
+
         self.radio_var = tkinter.IntVar(value=0)
 
         self.label_radio_group = customtkinter.CTkLabel(master=self.frame_right,
