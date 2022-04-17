@@ -3,7 +3,9 @@
 ![PyPI - License](https://img.shields.io/pypi/l/customtkinter)
 ![Total lines](https://img.shields.io/tokei/lines/github.com/tomschimansky/customtkinter?color=green&label=total%20lines)
 
-# CustomTkinter UI-Library
+<p align="center">
+    <h1 align="center">CustomTkinter UI-Library</h1>
+</p>
 
 ![](documentation_images/Windows_dark.png)
 | _`complex_example.py` on Windows 11 with dark mode and 'dark-blue' theme_
