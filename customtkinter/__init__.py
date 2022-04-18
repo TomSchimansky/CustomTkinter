@@ -16,7 +16,7 @@ from .widgets.customtkinter_toplevel import CTkToplevel
 
 from .customtkinter_settings import CTkSettings
 from .appearance_mode_tracker import AppearanceModeTracker
-from .customtkinter_theme_manager import CTkThemeManager
+from .theme_manager import CTkThemeManager
 
 from distutils.version import StrictVersion as Version
 import tkinter

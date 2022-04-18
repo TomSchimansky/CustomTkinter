@@ -3,11 +3,9 @@ import sys
 
 class CTkSettings:
 
-    scaling_factor = 1
     circle_font_is_ready = False
     hand_cursor_enabled = True
     preferred_drawing_method = None
-
     radius_to_char_fine = None
 
     @classmethod
@@ -42,7 +40,6 @@ class CTkSettings:
     @classmethod
     def print_settings(cls):
         print(f"CTkSettings current values:")
-        print(f"scaling_factor = {cls.scaling_factor}")
         print(f"circle_font_is_ready = {cls.circle_font_is_ready}")
         print(f"hand_cursor_enabled = {cls.hand_cursor_enabled}")
         print(f"preferred_drawing_method = {cls.preferred_drawing_method}")

@@ -6,7 +6,7 @@ from .customtkinter_tk import CTk
 from .customtkinter_frame import CTkFrame
 from .customtkinter_canvas import CTkCanvas
 from ..appearance_mode_tracker import AppearanceModeTracker
-from ..customtkinter_theme_manager import CTkThemeManager
+from ..theme_manager import CTkThemeManager
 from ..customtkinter_draw_engine import CTkDrawEngine
 from ..customtkinter_settings import CTkSettings
 

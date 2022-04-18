@@ -6,9 +6,10 @@ from .customtkinter_tk import CTk
 from .customtkinter_frame import CTkFrame
 from .customtkinter_canvas import CTkCanvas
 from customtkinter.appearance_mode_tracker import AppearanceModeTracker
-from ..customtkinter_theme_manager import CTkThemeManager
+from ..theme_manager import CTkThemeManager
 from ..customtkinter_settings import CTkSettings
 from ..customtkinter_draw_engine import CTkDrawEngine
+from ..scaling_tracker import ScalingTracker
 
 
 class CTkButton(tkinter.Frame):
@@ -61,6 +62,9 @@ class CTkButton(tkinter.Frame):
         AppearanceModeTracker.add(self.set_appearance_mode, self)
         self.appearance_mode = AppearanceModeTracker.get_mode()  # 0: "Light" 1: "Dark"
 
+        ScalingTracker.add_widget(self.set_scaling, self)
+        self.scaling = ScalingTracker.get_widget_scaling(self)
+
         self.configure_basic_grid()
 
         # color variables
@@ -72,7 +76,7 @@ class CTkButton(tkinter.Frame):
         # shape and size
         self.width = width
         self.height = height
-        self.configure(width=self.width, height=self.height)
+        self.configure(width=self.width * self.scaling, height=self.height * self.scaling)
         self.corner_radius = CTkThemeManager.theme["shape"]["button_corner_radius"] if corner_radius == "default_theme" else corner_radius
         self.border_width = CTkThemeManager.theme["shape"]["button_border_width"] if border_width == "default_theme" else border_width
 
@@ -95,8 +99,8 @@ class CTkButton(tkinter.Frame):
 
         self.canvas = CTkCanvas(master=self,
                                 highlightthickness=0,
-                                width=self.width,
-                                height=self.height)
+                                width=self.width * self.scaling,
+                                height=self.height * self.scaling)
         self.canvas.grid(row=0, column=0, rowspan=2, columnspan=2, sticky="nsew")
 
         self.draw_engine = CTkDrawEngine(self.canvas, CTkSettings.preferred_drawing_method)
@@ -414,3 +418,9 @@ class CTkButton(tkinter.Frame):
             self.bg_color = self.master.cget("bg")
 
         self.draw()
+
+    def set_scaling(self, scaling_factor):
+        self.scaling = scaling_factor
+        self.configure(width=self.width * self.scaling, height=self.height * self.scaling)
+        self.canvas.configure(width=self.width * self.scaling, height=self.height * self.scaling)
+        self.draw(no_color_updates=True)

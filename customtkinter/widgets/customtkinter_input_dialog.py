@@ -7,7 +7,7 @@ from .customtkinter_frame import CTkFrame
 from .customtkinter_toplevel import CTkToplevel
 from .customtkinter_button import CTkButton
 from ..appearance_mode_tracker import AppearanceModeTracker
-from ..customtkinter_theme_manager import CTkThemeManager
+from ..theme_manager import CTkThemeManager
 
 
 class CTkInputDialog:

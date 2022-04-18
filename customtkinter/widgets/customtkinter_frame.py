@@ -4,7 +4,7 @@ import tkinter.ttk as ttk
 from .customtkinter_tk import CTk
 from .customtkinter_canvas import CTkCanvas
 from ..appearance_mode_tracker import AppearanceModeTracker
-from ..customtkinter_theme_manager import CTkThemeManager
+from ..theme_manager import CTkThemeManager
 from ..customtkinter_settings import CTkSettings
 from ..customtkinter_draw_engine import CTkDrawEngine
 
