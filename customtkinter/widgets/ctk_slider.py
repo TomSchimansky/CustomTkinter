@@ -1,17 +1,14 @@
 import tkinter
-import tkinter.ttk as ttk
 import sys
 
-from .customtkinter_tk import CTk
-from .customtkinter_frame import CTkFrame
-from .customtkinter_canvas import CTkCanvas
-from ..appearance_mode_tracker import AppearanceModeTracker
+from .ctk_canvas import CTkCanvas
 from ..customtkinter_theme_manager import CTkThemeManager
 from ..customtkinter_settings import CTkSettings
 from ..customtkinter_draw_engine import CTkDrawEngine
+from .widget_base_class import CTkBaseClass
 
 
-class CTkSlider(tkinter.Frame):
+class CTkSlider(CTkBaseClass):
     """ tkinter custom slider, always horizontal """
 
     def __init__(self, *args,
@@ -33,44 +30,18 @@ class CTkSlider(tkinter.Frame):
                  command=None,
                  variable=None,
                  **kwargs):
-        super().__init__(*args, **kwargs)
 
-        # overwrite configure methods of master when master is tkinter widget, so that bg changes get applied on child CTk widget too
-        if isinstance(self.master, (tkinter.Tk, tkinter.Frame)) and not isinstance(self.master, (CTk, CTkFrame)):
-            master_old_configure = self.master.config
+        # transfer basic functionality (bg_color, size, appearance_mode, scaling) to CTkBaseClass
+        super().__init__(*args, bg_color=bg_color, width=width, height=height, **kwargs)
 
-            def new_configure(*args, **kwargs):
-                if "bg" in kwargs:
-                    self.configure(bg_color=kwargs["bg"])
-                elif "background" in kwargs:
-                    self.configure(bg_color=kwargs["background"])
-
-                # args[0] is dict when attribute gets changed by widget[<attribut>] syntax
-                elif len(args) > 0 and type(args[0]) == dict:
-                    if "bg" in args[0]:
-                        self.configure(bg_color=args[0]["bg"])
-                    elif "background" in args[0]:
-                        self.configure(bg_color=args[0]["background"])
-                master_old_configure(*args, **kwargs)
-
-            self.master.config = new_configure
-            self.master.configure = new_configure
-
-        # add set_appearance_mode method to callback list of AppearanceModeTracker for appearance mode changes
-        AppearanceModeTracker.add(self.change_appearance_mode, self)
-        self.appearance_mode = AppearanceModeTracker.get_mode()  # 0: "Light" 1: "Dark"
-
-        self.configure_basic_grid()
-
-        self.bg_color = self.detect_color_of_master() if bg_color is None else bg_color
+        # color
         self.border_color = border_color
         self.fg_color = CTkThemeManager.theme["color"]["slider"] if fg_color == "default_theme" else fg_color
         self.progress_color = CTkThemeManager.theme["color"]["slider_progress"] if progress_color == "default_theme" else progress_color
         self.button_color = CTkThemeManager.theme["color"]["slider_button"] if button_color == "default_theme" else button_color
         self.button_hover_color = CTkThemeManager.theme["color"]["slider_button_hover"] if button_hover_color == "default_theme" else button_hover_color
 
-        self.width = width
-        self.height = height
+        # shape
         self.corner_radius = CTkThemeManager.theme["shape"]["slider_corner_radius"] if corner_radius == "default_theme" else corner_radius
         self.button_corner_radius = CTkThemeManager.theme["shape"]["slider_button_corner_radius"] if button_corner_radius == "default_theme" else button_corner_radius
         self.border_width = CTkThemeManager.theme["shape"]["slider_border_width"] if border_width == "default_theme" else border_width
@@ -85,23 +56,17 @@ class CTkSlider(tkinter.Frame):
         if self.corner_radius < self.button_corner_radius:
             self.corner_radius = self.button_corner_radius
 
+        # callback and control variables
         self.callback_function = command
         self.variable: tkinter.Variable = variable
         self.variable_callback_blocked = False
         self.variable_callback_name = None
-
-        self.configure(width=self.width, height=self.height)
-        if sys.platform == "darwin":
-            self.configure(cursor="pointinghand")
-        elif sys.platform.startswith("win"):
-            self.configure(cursor="hand2")
 
         self.canvas = CTkCanvas(master=self,
                                 highlightthickness=0,
                                 width=self.width,
                                 height=self.height)
         self.canvas.grid(column=0, row=0, sticky="nswe")
-
         self.draw_engine = CTkDrawEngine(self.canvas, CTkSettings.preferred_drawing_method)
 
         self.canvas.bind("<Enter>", self.on_enter)
@@ -112,6 +77,7 @@ class CTkSlider(tkinter.Frame):
         # Each time an item is resized due to pack position mode, the binding Configure is called on the widget
         self.bind('<Configure>', self.update_dimensions)
 
+        self.set_cursor()
         self.draw()  # initial draw
 
         if self.variable is not None:
@@ -121,9 +87,6 @@ class CTkSlider(tkinter.Frame):
             self.variable_callback_blocked = False
 
     def destroy(self):
-        # remove change_appearance_mode function from callback list of AppearanceModeTracker
-        AppearanceModeTracker.remove(self.change_appearance_mode)
-
         # remove variable_callback from variable callbacks if variable exists
         if self.variable is not None:
             self.variable.trace_remove("write", self.variable_callback_name)
@@ -134,52 +97,17 @@ class CTkSlider(tkinter.Frame):
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
 
-    def detect_color_of_master(self):
-        """ detect color of self.master widget to set correct bg_color """
-
-        if isinstance(self.master, CTkFrame):  # master is CTkFrame
-            return self.master.fg_color
-
-        elif isinstance(self.master, (ttk.Frame, ttk.LabelFrame, ttk.Notebook)):  # master is ttk widget
-            try:
-                ttk_style = ttk.Style()
-                return ttk_style.lookup(self.master.winfo_class(), 'background')
-            except Exception:
-                return "#FFFFFF", "#000000"
-
-        else:  # master is normal tkinter widget
-            try:
-                return self.master.cget("bg")  # try to get bg color by .cget() method
-            except Exception:
-                return "#FFFFFF", "#000000"
-
-    @staticmethod
-    def calc_optimal_height(user_height):
+    def set_cursor(self):
         if sys.platform == "darwin":
-            return user_height  # on macOS just use given value (canvas has Antialiasing)
-        else:
-            # make sure the value is always with uneven for better rendering of the ovals
-            if user_height == 0:
-                return 0
-            elif user_height % 2 == 0:
-                return user_height + 1
-            else:
-                return user_height
+            self.configure(cursor="pointinghand")
+        elif sys.platform.startswith("win"):
+            self.configure(cursor="hand2")
 
-    def update_dimensions(self, event):
-        # only redraw if dimensions changed (for performance)
-        if self.width != event.width or self.height != event.height:
-            self.width = event.width
-            self.height = event.height
-
-            self.draw()
-
-    def draw(self, color_updates=True):
-
+    def draw(self, no_color_updates=False):
         requires_recoloring = self.draw_engine.draw_rounded_slider_with_border_and_button(self.width, self.height, self.corner_radius, self.border_width,
                                                                                           self.button_length, self.button_corner_radius, self.value, "w")
 
-        if color_updates or requires_recoloring:
+        if no_color_updates is False or requires_recoloring:
             self.canvas.configure(bg=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
 
             if self.border_color is None:
@@ -213,7 +141,7 @@ class CTkSlider(tkinter.Frame):
         self.output_value = self.round_to_step_size(self.from_ + (self.value * (self.to - self.from_)))
         self.value = (self.output_value - self.from_) / (self.to - self.from_)
 
-        self.draw(color_updates=False)
+        self.draw(no_color_updates=False)
 
         if self.callback_function is not None:
             self.callback_function(self.output_value)
@@ -259,7 +187,7 @@ class CTkSlider(tkinter.Frame):
         self.output_value = self.round_to_step_size(output_value)
         self.value = (self.output_value - self.from_) / (self.to - self.from_)
 
-        self.draw(color_updates=False)
+        self.draw(no_color_updates=False)
 
         if self.callback_function is not None:
             self.callback_function(self.output_value)
@@ -272,9 +200,6 @@ class CTkSlider(tkinter.Frame):
     def variable_callback(self, var_name, index, mode):
         if not self.variable_callback_blocked:
             self.set(self.variable.get(), from_variable_callback=True)
-
-    def config(self, *args, **kwargs):
-        self.configure(*args, **kwargs)
 
     def configure(self, *args, **kwargs):
         require_redraw = False  # some attribute changes require a call of self.draw() at the end
@@ -354,16 +279,3 @@ class CTkSlider(tkinter.Frame):
 
         if require_redraw:
             self.draw()
-
-    def change_appearance_mode(self, mode_string):
-        if mode_string.lower() == "dark":
-            self.appearance_mode = 1
-        elif mode_string.lower() == "light":
-            self.appearance_mode = 0
-
-        if isinstance(self.master, CTkFrame):
-            self.bg_color = self.master.fg_color
-        else:
-            self.bg_color = self.master.cget("bg")
-
-        self.draw()

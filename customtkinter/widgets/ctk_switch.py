@@ -1,17 +1,14 @@
 import tkinter
-import tkinter.ttk as ttk
 import sys
 
-from .customtkinter_tk import CTk
-from .customtkinter_frame import CTkFrame
-from .customtkinter_canvas import CTkCanvas
-from ..appearance_mode_tracker import AppearanceModeTracker
+from .ctk_canvas import CTkCanvas
 from ..customtkinter_theme_manager import CTkThemeManager
 from ..customtkinter_settings import CTkSettings
 from ..customtkinter_draw_engine import CTkDrawEngine
+from .widget_base_class import CTkBaseClass
 
 
-class CTkSwitch(tkinter.Frame):
+class CTkSwitch(CTkBaseClass):
     def __init__(self, *args,
                  text="CTkSwitch",
                  text_font="default_theme",
@@ -34,34 +31,11 @@ class CTkSwitch(tkinter.Frame):
                  variable=None,
                  textvariable=None,
                  **kwargs):
-        super().__init__(*args, **kwargs)
 
-        # overwrite configure methods of master when master is tkinter widget, so that bg changes get applied on child CTk widget too
-        if isinstance(self.master, (tkinter.Tk, tkinter.Frame)) and not isinstance(self.master, (CTk, CTkFrame)):
-            master_old_configure = self.master.config
+        # transfer basic functionality (bg_color, size, appearance_mode, scaling) to CTkBaseClass
+        super().__init__(*args, bg_color=bg_color, width=width, height=height, **kwargs)
 
-            def new_configure(*args, **kwargs):
-                if "bg" in kwargs:
-                    self.configure(bg_color=kwargs["bg"])
-                elif "background" in kwargs:
-                    self.configure(bg_color=kwargs["background"])
-
-                # args[0] is dict when attribute gets changed by widget[<attribut>] syntax
-                elif len(args) > 0 and type(args[0]) == dict:
-                    if "bg" in args[0]:
-                        self.configure(bg_color=args[0]["bg"])
-                    elif "background" in args[0]:
-                        self.configure(bg_color=args[0]["background"])
-                master_old_configure(*args, **kwargs)
-
-            self.master.config = new_configure
-            self.master.configure = new_configure
-
-        # add set_appearance_mode method to callback list of AppearanceModeTracker for appearance mode changes
-        AppearanceModeTracker.add(self.change_appearance_mode, self)
-        self.appearance_mode = AppearanceModeTracker.get_mode()  # 0: "Light" 1: "Dark"
-
-        self.bg_color = self.detect_color_of_master() if bg_color is None else bg_color
+        # color
         self.border_color = border_color
         self.fg_color = CTkThemeManager.theme["color"]["switch"] if fg_color == "default_theme" else fg_color
         self.progress_color = CTkThemeManager.theme["color"]["switch_progress"] if progress_color == "default_theme" else progress_color
@@ -69,10 +43,12 @@ class CTkSwitch(tkinter.Frame):
         self.button_hover_color = CTkThemeManager.theme["color"]["switch_button_hover"] if button_hover_color == "default_theme" else button_hover_color
         self.text_color = CTkThemeManager.theme["color"]["text"] if text_color == "default_theme" else text_color
 
+        # text
         self.text = text
+        self.text_label = None
         self.text_font = (CTkThemeManager.theme["text"]["font"], CTkThemeManager.theme["text"]["size"]) if text_font == "default_theme" else text_font
-        self.width = width
-        self.height = height
+
+        # shape
         self.corner_radius = CTkThemeManager.theme["shape"]["switch_corner_radius"] if corner_radius == "default_theme" else corner_radius
         # self.button_corner_radius = CTkThemeManager.theme["shape"]["switch_button_corner_radius"] if button_corner_radius == "default_theme" else button_corner_radius
         self.border_width = CTkThemeManager.theme["shape"]["switch_border_width"] if border_width == "default_theme" else border_width
@@ -82,16 +58,17 @@ class CTkSwitch(tkinter.Frame):
         self.onvalue = onvalue
         self.offvalue = offvalue
 
-        #if self.corner_radius < self.button_corner_radius:
-        #    self.corner_radius = self.button_corner_radius
+        # if self.corner_radius < self.button_corner_radius:
+        #     self.corner_radius = self.button_corner_radius
 
+        # callback and control variables
         self.callback_function = command
         self.variable: tkinter.Variable = variable
         self.variable_callback_blocked = False
         self.variable_callback_name = None
         self.textvariable = textvariable
 
-        # configure grid system
+        # configure grid system (3x1)
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=0, minsize=6)
         self.grid_columnconfigure(2, weight=0)
@@ -101,20 +78,13 @@ class CTkSwitch(tkinter.Frame):
                                 width=self.width,
                                 height=self.height)
         self.canvas.grid(row=0, column=0, padx=0, pady=0, columnspan=1, sticky="nswe")
-
         self.draw_engine = CTkDrawEngine(self.canvas, CTkSettings.preferred_drawing_method)
-
-        if sys.platform == "darwin" and CTkSettings.hand_cursor_enabled:
-            self.canvas.configure(cursor="pointinghand")
-        elif sys.platform.startswith("win") and CTkSettings.hand_cursor_enabled:
-            self.canvas.configure(cursor="hand2")
 
         self.canvas.bind("<Enter>", self.on_enter)
         self.canvas.bind("<Leave>", self.on_leave)
         self.canvas.bind("<Button-1>", self.toggle)
 
-        self.text_label = None
-
+        self.set_cursor()
         self.draw()  # initial draw
 
         if self.variable is not None:
@@ -125,35 +95,19 @@ class CTkSwitch(tkinter.Frame):
                 self.deselect(from_variable_callback=True)
 
     def destroy(self):
-        # remove change_appearance_mode function from callback list of AppearanceModeTracker
-        AppearanceModeTracker.remove(self.change_appearance_mode)
-
         # remove variable_callback from variable callbacks if variable exists
         if self.variable is not None:
             self.variable.trace_remove("write", self.variable_callback_name)
 
         super().destroy()
 
-    def detect_color_of_master(self):
-        """ detect color of self.master widget to set correct bg_color """
+    def set_cursor(self):
+        if sys.platform == "darwin" and CTkSettings.hand_cursor_enabled:
+            self.canvas.configure(cursor="pointinghand")
+        elif sys.platform.startswith("win") and CTkSettings.hand_cursor_enabled:
+            self.canvas.configure(cursor="hand2")
 
-        if isinstance(self.master, CTkFrame):  # master is CTkFrame
-            return self.master.fg_color
-
-        elif isinstance(self.master, (ttk.Frame, ttk.LabelFrame, ttk.Notebook)):  # master is ttk widget
-            try:
-                ttk_style = ttk.Style()
-                return ttk_style.lookup(self.master.winfo_class(), 'background')
-            except Exception:
-                return "#FFFFFF", "#000000"
-
-        else:  # master is normal tkinter widget
-            try:
-                return self.master.cget("bg")  # try to get bg color by .cget() method
-            except Exception:
-                return "#FFFFFF", "#000000"
-
-    def draw(self, color_updates=True):
+    def draw(self, no_color_updates=False):
 
         if self.check_state is True:
             requires_recoloring = self.draw_engine.draw_rounded_slider_with_border_and_button(self.width, self.height, self.corner_radius, self.border_width,
@@ -162,7 +116,7 @@ class CTkSwitch(tkinter.Frame):
             requires_recoloring = self.draw_engine.draw_rounded_slider_with_border_and_button(self.width, self.height, self.corner_radius, self.border_width,
                                                                                               self.button_length, self.corner_radius, 0, "w")
 
-        if color_updates or requires_recoloring:
+        if no_color_updates is False or requires_recoloring:
             self.configure(bg=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
             self.canvas.configure(bg=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
 
@@ -186,8 +140,6 @@ class CTkSwitch(tkinter.Frame):
             self.canvas.itemconfig("slider_parts", fill=CTkThemeManager.single_color(self.button_color, self.appearance_mode),
                                    outline=CTkThemeManager.single_color(self.button_color, self.appearance_mode))
 
-        # self.canvas.configure(bg="red")
-
         if self.text_label is None:
             self.text_label = tkinter.Label(master=self,
                                             bd=0,
@@ -208,8 +160,6 @@ class CTkSwitch(tkinter.Frame):
         self.text = text
         if self.text_label is not None:
             self.text_label.configure(text=self.text)
-        else:
-            sys.stderr.write("ERROR (CTkSwitch): Cant change text because checkbox has no text.")
 
     def toggle(self, event=None):
         if self.check_state is True:
@@ -217,7 +167,7 @@ class CTkSwitch(tkinter.Frame):
         else:
             self.check_state = True
 
-        self.draw(color_updates=False)
+        self.draw(no_color_updates=True)
 
         if self.callback_function is not None:
             self.callback_function()
@@ -230,7 +180,7 @@ class CTkSwitch(tkinter.Frame):
     def select(self, from_variable_callback=False):
         self.check_state = True
 
-        self.draw(color_updates=False)
+        self.draw(no_color_updates=True)
 
         if self.callback_function is not None:
             self.callback_function()
@@ -243,7 +193,7 @@ class CTkSwitch(tkinter.Frame):
     def deselect(self, from_variable_callback=False):
         self.check_state = False
 
-        self.draw(color_updates=False)
+        self.draw(no_color_updates=True)
 
         if self.callback_function is not None:
             self.callback_function()
@@ -272,9 +222,6 @@ class CTkSwitch(tkinter.Frame):
                 self.select(from_variable_callback=True)
             elif self.variable.get() == self.offvalue:
                 self.deselect(from_variable_callback=True)
-
-    def config(self, *args, **kwargs):
-        self.configure(*args, **kwargs)
 
     def configure(self, *args, **kwargs):
         require_redraw = False  # some attribute changes require a call of self.draw() at the end
@@ -349,16 +296,3 @@ class CTkSwitch(tkinter.Frame):
 
         if require_redraw:
             self.draw()
-
-    def change_appearance_mode(self, mode_string):
-        if mode_string.lower() == "dark":
-            self.appearance_mode = 1
-        elif mode_string.lower() == "light":
-            self.appearance_mode = 0
-
-        if isinstance(self.master, CTkFrame):
-            self.bg_color = self.master.fg_color
-        else:
-            self.bg_color = self.master.cget("bg")
-
-        self.draw()

@@ -1,11 +1,11 @@
 import tkinter
 import time
 
-from .customtkinter_label import CTkLabel
-from .customtkinter_entry import CTkEntry
-from .customtkinter_frame import CTkFrame
-from .customtkinter_toplevel import CTkToplevel
-from .customtkinter_button import CTkButton
+from .ctk_label import CTkLabel
+from .ctk_entry import CTkEntry
+from .ctk_frame import CTkFrame
+from .ctk_toplevel import CTkToplevel
+from .ctk_button import CTkButton
 from ..appearance_mode_tracker import AppearanceModeTracker
 from ..customtkinter_theme_manager import CTkThemeManager
 

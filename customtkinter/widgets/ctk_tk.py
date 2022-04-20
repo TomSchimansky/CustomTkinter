@@ -97,13 +97,13 @@ class CTk(tkinter.Tk):
                 args[0]["background"] = CTkThemeManager.single_color(self.fg_color, self.appearance_mode)
 
         if bg_changed:
-            from .customtkinter_slider import CTkSlider
-            from .customtkinter_progressbar import CTkProgressBar
-            from .customtkinter_label import CTkLabel
-            from .customtkinter_frame import CTkFrame
-            from .customtkinter_entry import CTkEntry
-            from customtkinter.widgets.customtkinter_checkbox import CTkCheckBox
-            from customtkinter.widgets.customtkinter_button import CTkButton
+            from .ctk_slider import CTkSlider
+            from .ctk_progressbar import CTkProgressBar
+            from .ctk_label import CTkLabel
+            from .ctk_frame import CTkFrame
+            from .ctk_entry import CTkEntry
+            from customtkinter.widgets.ctk_checkbox import CTkCheckBox
+            from customtkinter.widgets.ctk_button import CTkButton
 
             for child in self.winfo_children():
                 if isinstance(child, (CTkFrame, CTkButton, CTkLabel, CTkSlider, CTkCheckBox, CTkEntry, CTkProgressBar)):

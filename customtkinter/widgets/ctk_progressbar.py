@@ -1,17 +1,13 @@
-import sys
 import tkinter
-import tkinter.ttk as ttk
 
-from .customtkinter_tk import CTk
-from .customtkinter_frame import CTkFrame
-from .customtkinter_canvas import CTkCanvas
-from ..appearance_mode_tracker import AppearanceModeTracker
+from .ctk_canvas import CTkCanvas
 from ..customtkinter_theme_manager import CTkThemeManager
 from ..customtkinter_draw_engine import CTkDrawEngine
 from ..customtkinter_settings import CTkSettings
+from .widget_base_class import CTkBaseClass
 
 
-class CTkProgressBar(tkinter.Frame):
+class CTkProgressBar(CTkBaseClass):
     """ tkinter custom progressbar, always horizontal, values are from 0 to 1 """
 
     def __init__(self, *args,
@@ -25,56 +21,30 @@ class CTkProgressBar(tkinter.Frame):
                  height=8,
                  border_width="default_theme",
                  **kwargs):
-        super().__init__(*args, **kwargs)
 
-        # overwrite configure methods of master when master is tkinter widget, so that bg changes get applied on child CTk widget too
-        if isinstance(self.master, (tkinter.Tk, tkinter.Frame)) and not isinstance(self.master, (CTk, CTkFrame)):
-            master_old_configure = self.master.config
+        # transfer basic functionality (bg_color, size, appearance_mode, scaling) to CTkBaseClass
+        super().__init__(*args, bg_color=bg_color, width=width, height=height, **kwargs)
 
-            def new_configure(*args, **kwargs):
-                if "bg" in kwargs:
-                    self.configure(bg_color=kwargs["bg"])
-                elif "background" in kwargs:
-                    self.configure(bg_color=kwargs["background"])
-
-                # args[0] is dict when attribute gets changed by widget[<attribut>] syntax
-                elif len(args) > 0 and type(args[0]) == dict:
-                    if "bg" in args[0]:
-                        self.configure(bg_color=args[0]["bg"])
-                    elif "background" in args[0]:
-                        self.configure(bg_color=args[0]["background"])
-                master_old_configure(*args, **kwargs)
-
-            self.master.config = new_configure
-            self.master.configure = new_configure
-
-        # add set_appearance_mode method to callback list of AppearanceModeTracker for appearance mode changes
-        AppearanceModeTracker.add(self.change_appearance_mode, self)
-        self.appearance_mode = AppearanceModeTracker.get_mode()  # 0: "Light" 1: "Dark"
-
-        self.bg_color = self.detect_color_of_master() if bg_color is None else bg_color
+        # color
         self.border_color = CTkThemeManager.theme["color"]["progressbar_border"] if border_color == "default_theme" else border_color
         self.fg_color = CTkThemeManager.theme["color"]["progressbar"] if fg_color == "default_theme" else fg_color
         self.progress_color = CTkThemeManager.theme["color"]["progressbar_progress"] if progress_color == "default_theme" else progress_color
 
+        # control variable
         self.variable = variable
         self.variable_callback_blocked = False
         self.variable_callback_name = None
 
-        self.width = width
-        self.height = height
+        # shape
         self.corner_radius = CTkThemeManager.theme["shape"]["progressbar_corner_radius"] if corner_radius == "default_theme" else corner_radius
         self.border_width = CTkThemeManager.theme["shape"]["progressbar_border_width"] if border_width == "default_theme" else border_width
         self.value = 0.5
-
-        self.configure(width=self.width, height=self.height)
 
         self.canvas = CTkCanvas(master=self,
                                 highlightthickness=0,
                                 width=self.width,
                                 height=self.height)
         self.canvas.place(x=0, y=0, relwidth=1, relheight=1)
-
         self.draw_engine = CTkDrawEngine(self.canvas, CTkSettings.preferred_drawing_method)
 
         # Each time an item is resized due to pack position mode, the binding Configure is called on the widget
@@ -89,52 +59,10 @@ class CTkProgressBar(tkinter.Frame):
             self.variable_callback_blocked = False
 
     def destroy(self):
-        AppearanceModeTracker.remove(self.change_appearance_mode)
-
         if self.variable is not None:
             self.variable.trace_remove("write", self.variable_callback_name)
 
         super().destroy()
-
-    def detect_color_of_master(self):
-        """ detect color of self.master widget to set correct bg_color """
-
-        if isinstance(self.master, CTkFrame):  # master is CTkFrame
-            return self.master.fg_color
-
-        elif isinstance(self.master, (ttk.Frame, ttk.LabelFrame, ttk.Notebook)):  # master is ttk widget
-            try:
-                ttk_style = ttk.Style()
-                return ttk_style.lookup(self.master.winfo_class(), 'background')
-            except Exception:
-                return "#FFFFFF", "#000000"
-
-        else:  # master is normal tkinter widget
-            try:
-                return self.master.cget("bg")  # try to get bg color by .cget() method
-            except Exception:
-                return "#FFFFFF", "#000000"
-
-    @staticmethod
-    def calc_optimal_height(user_height):
-        if sys.platform == "darwin":
-            return user_height  # on macOS just use given value (canvas has Antialiasing)
-        else:
-            # make sure the value is always with uneven for better rendering of the ovals
-            if user_height == 0:
-                return 0
-            elif user_height % 2 == 0:
-                return user_height + 1
-            else:
-                return user_height
-
-    def update_dimensions(self, event):
-        # only redraw if dimensions changed (for performance)
-        if self.width != event.width or self.height != event.height:
-            self.width = event.width
-            self.height = event.height
-
-            self.draw()
 
     def draw(self, no_color_updates=False):
 
@@ -156,9 +84,12 @@ class CTkProgressBar(tkinter.Frame):
         require_redraw = False  # some attribute changes require a call of self.draw() at the end
 
         if "bg_color" in kwargs:
-            self.bg_color = kwargs["bg_color"]
-            del kwargs["bg_color"]
+            if kwargs["bg_color"] is None:
+                self.bg_color = self.detect_color_of_master()
+            else:
+                self.bg_color = kwargs["bg_color"]
             require_redraw = True
+            del kwargs["bg_color"]
 
         if "fg_color" in kwargs:
             self.fg_color = kwargs["fg_color"]
@@ -217,16 +148,3 @@ class CTkProgressBar(tkinter.Frame):
             self.variable_callback_blocked = True
             self.variable.set(round(self.value) if isinstance(self.variable, tkinter.IntVar) else self.value)
             self.variable_callback_blocked = False
-
-    def change_appearance_mode(self, mode_string):
-        if mode_string.lower() == "dark":
-            self.appearance_mode = 1
-        elif mode_string.lower() == "light":
-            self.appearance_mode = 0
-
-        if isinstance(self.master, CTkFrame):
-            self.bg_color = self.master.fg_color
-        else:
-            self.bg_color = self.master.cget("bg")
-
-        self.draw()

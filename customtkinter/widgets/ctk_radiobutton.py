@@ -1,17 +1,14 @@
 import tkinter
-import tkinter.ttk as ttk
 import sys
 
-from .customtkinter_tk import CTk
-from .customtkinter_frame import CTkFrame
-from .customtkinter_canvas import CTkCanvas
-from ..appearance_mode_tracker import AppearanceModeTracker
+from .ctk_canvas import CTkCanvas
 from ..customtkinter_theme_manager import CTkThemeManager
 from ..customtkinter_settings import CTkSettings
 from ..customtkinter_draw_engine import CTkDrawEngine
+from .widget_base_class import CTkBaseClass
 
 
-class CTkRadioButton(tkinter.Frame):
+class CTkRadioButton(CTkBaseClass):
     def __init__(self, *args,
                  bg_color=None,
                  fg_color="default_theme",
@@ -33,60 +30,29 @@ class CTkRadioButton(tkinter.Frame):
                  variable=None,
                  textvariable=None,
                  **kwargs):
-        super().__init__(*args, **kwargs)
 
-        # overwrite configure methods of master when master is tkinter widget, so that bg changes get applied on child CTk widget too
-        if isinstance(self.master, (tkinter.Tk, tkinter.Frame)) and not isinstance(self.master, (CTk, CTkFrame)):
-            master_old_configure = self.master.config
+        # transfer basic functionality (bg_color, size, appearance_mode, scaling) to CTkBaseClass
+        super().__init__(*args, bg_color=bg_color, width=width, height=height, **kwargs)
 
-            def new_configure(*args, **kwargs):
-                if "bg" in kwargs:
-                    self.configure(bg_color=kwargs["bg"])
-                elif "background" in kwargs:
-                    self.configure(bg_color=kwargs["background"])
-
-                # args[0] is dict when attribute gets changed by widget[<attribut>] syntax
-                elif len(args) > 0 and type(args[0]) == dict:
-                    if "bg" in args[0]:
-                        self.configure(bg_color=args[0]["bg"])
-                    elif "background" in args[0]:
-                        self.configure(bg_color=args[0]["background"])
-                master_old_configure(*args, **kwargs)
-
-            self.master.config = new_configure
-            self.master.configure = new_configure
-
-        # add set_appearance_mode method to callback list of AppearanceModeTracker for appearance mode changes
-        AppearanceModeTracker.add(self.set_appearance_mode, self)
-        self.appearance_mode = AppearanceModeTracker.get_mode()  # 0: "Light" 1: "Dark"
-
-        self.bg_color = self.detect_color_of_master() if bg_color is None else bg_color
+        # color
         self.fg_color = CTkThemeManager.theme["color"]["button"] if fg_color == "default_theme" else fg_color
         self.hover_color = CTkThemeManager.theme["color"]["button_hover"] if hover_color == "default_theme" else hover_color
         self.border_color = CTkThemeManager.theme["color"]["checkbox_border"] if border_color == "default_theme" else border_color
 
-        self.width = width
-        self.height = height
+        # shape
         self.corner_radius = CTkThemeManager.theme["shape"]["radiobutton_corner_radius"] if corner_radius == "default_theme" else corner_radius
         self.border_width_unchecked = CTkThemeManager.theme["shape"]["radiobutton_border_width_unchecked"] if border_width_unchecked == "default_theme" else border_width_unchecked
         self.border_width_checked = CTkThemeManager.theme["shape"]["radiobutton_border_width_checked"] if border_width_checked == "default_theme" else border_width_checked
         self.border_width = self.border_width_unchecked
 
-        if self.corner_radius*2 > self.height:
-            self.corner_radius = self.height/2
-        elif self.corner_radius*2 > self.width:
-            self.corner_radius = self.width/2
-
-        if self.corner_radius >= self.border_width:
-            self.inner_corner_radius = self.corner_radius - self.border_width
-        else:
-            self.inner_corner_radius = 0
-
+        # text
         self.text = text
+        self.text_label = None
         self.text_color = CTkThemeManager.theme["color"]["text"] if text_color == "default_theme" else text_color
         self.text_color_disabled = CTkThemeManager.theme["color"]["text_disabled"] if text_color_disabled == "default_theme" else text_color_disabled
         self.text_font = (CTkThemeManager.theme["text"]["font"], CTkThemeManager.theme["text"]["size"]) if text_font == "default_theme" else text_font
 
+        # callback and control variables
         self.function = command
         self.state = state
         self.hover = hover
@@ -97,7 +63,7 @@ class CTkRadioButton(tkinter.Frame):
         self.textvariable = textvariable
         self.variable_callback_name = None
 
-        # configure grid system
+        # configure grid system (3x1)
         self.grid_columnconfigure(0, weight=0)
         self.grid_columnconfigure(1, weight=0, minsize=6)
         self.grid_columnconfigure(2, weight=1)
@@ -107,15 +73,12 @@ class CTkRadioButton(tkinter.Frame):
                                 width=self.width,
                                 height=self.height)
         self.canvas.grid(row=0, column=0, padx=0, pady=0, columnspan=1)
-
         self.draw_engine = CTkDrawEngine(self.canvas, CTkSettings.preferred_drawing_method)
 
         self.canvas.bind("<Enter>", self.on_enter)
         self.canvas.bind("<Leave>", self.on_leave)
         self.canvas.bind("<Button-1>", self.invoke)
         self.canvas.bind("<Button-1>", self.invoke)
-
-        self.text_label = None
 
         self.set_cursor()
         self.draw()  # initial draw
@@ -128,33 +91,12 @@ class CTkRadioButton(tkinter.Frame):
                 self.deselect(from_variable_callback=True)
 
     def destroy(self):
-        AppearanceModeTracker.remove(self.set_appearance_mode)
-
         if self.variable is not None:
             self.variable.trace_remove("write", self.variable_callback_name)
 
         super().destroy()
 
-    def detect_color_of_master(self):
-        """ detect color of self.master widget to set correct bg_color """
-
-        if isinstance(self.master, CTkFrame):  # master is CTkFrame
-            return self.master.fg_color
-
-        elif isinstance(self.master, (ttk.Frame, ttk.LabelFrame, ttk.Notebook)):  # master is ttk widget
-            try:
-                ttk_style = ttk.Style()
-                return ttk_style.lookup(self.master.winfo_class(), 'background')
-            except Exception:
-                return "#FFFFFF", "#000000"
-
-        else:  # master is normal tkinter widget
-            try:
-                return self.master.cget("bg")  # try to get bg color by .cget() method
-            except Exception:
-                return "#FFFFFF", "#000000"
-
-    def draw(self):
+    def draw(self, no_color_updates=False):
         requires_recoloring = self.draw_engine.draw_rounded_rect_with_border(self.width, self.height, self.corner_radius, self.border_width)
 
         self.canvas.configure(bg=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
@@ -190,9 +132,6 @@ class CTkRadioButton(tkinter.Frame):
         self.text_label.configure(bg=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
 
         self.set_text(self.text)
-
-    def config(self, *args, **kwargs):
-        self.configure(*args, **kwargs)
 
     def configure(self, *args, **kwargs):
         require_redraw = False  # some attribute changes require a call of self.draw()
@@ -338,16 +277,3 @@ class CTkRadioButton(tkinter.Frame):
             self.variable_callback_blocked = True
             self.variable.set("")
             self.variable_callback_blocked = False
-
-    def set_appearance_mode(self, mode_string):
-        if mode_string.lower() == "dark":
-            self.appearance_mode = 1
-        elif mode_string.lower() == "light":
-            self.appearance_mode = 0
-
-        if isinstance(self.master, (CTkFrame, CTk)):
-            self.bg_color = self.master.fg_color
-        else:
-            self.bg_color = self.master.cget("bg")
-
-        self.draw()

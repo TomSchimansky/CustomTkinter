@@ -1,18 +1,18 @@
 __version__ = "3.12"
 
-from .widgets.customtkinter_input_dialog import CTkInputDialog
-from .widgets.customtkinter_button import CTkButton
-from .widgets.customtkinter_slider import CTkSlider
-from .widgets.customtkinter_frame import CTkFrame
-from .widgets.customtkinter_progressbar import CTkProgressBar
-from .widgets.customtkinter_label import CTkLabel
-from .widgets.customtkinter_entry import CTkEntry
-from .widgets.customtkinter_checkbox import CTkCheckBox
-from .widgets.customtkinter_radiobutton import CTkRadioButton
-from .widgets.customtkinter_tk import CTk
-from .widgets.customtkinter_canvas import CTkCanvas
-from .widgets.customtkinter_switch import CTkSwitch
-from .widgets.customtkinter_toplevel import CTkToplevel
+from .widgets.ctk_input_dialog import CTkInputDialog
+from .widgets.ctk_button import CTkButton
+from .widgets.ctk_slider import CTkSlider
+from .widgets.ctk_frame import CTkFrame
+from .widgets.ctk_progressbar import CTkProgressBar
+from .widgets.ctk_label import CTkLabel
+from .widgets.ctk_entry import CTkEntry
+from .widgets.ctk_checkbox import CTkCheckBox
+from .widgets.ctk_radiobutton import CTkRadioButton
+from .widgets.ctk_tk import CTk
+from .widgets.ctk_canvas import CTkCanvas
+from .widgets.ctk_switch import CTkSwitch
+from .widgets.ctk_toplevel import CTkToplevel
 
 from .customtkinter_settings import CTkSettings
 from .appearance_mode_tracker import AppearanceModeTracker

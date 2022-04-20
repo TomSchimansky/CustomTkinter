@@ -10,9 +10,9 @@ app.title("CTkDialog Test")
 
 
 def change_mode():
-    if customtkinter.get_appearance_mode().lower() == "dark":
+    if c1.get() == 0:
         customtkinter.set_appearance_mode("light")
-    elif customtkinter.get_appearance_mode().lower() == "light":
+    else:
         customtkinter.set_appearance_mode("dark")
 
 

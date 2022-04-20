@@ -1,17 +1,14 @@
 import tkinter
-import tkinter.ttk as ttk
 import sys
 
-from .customtkinter_tk import CTk
-from .customtkinter_frame import CTkFrame
-from .customtkinter_canvas import CTkCanvas
-from customtkinter.appearance_mode_tracker import AppearanceModeTracker
+from .ctk_canvas import CTkCanvas
 from ..customtkinter_theme_manager import CTkThemeManager
 from ..customtkinter_settings import CTkSettings
 from ..customtkinter_draw_engine import CTkDrawEngine
+from .widget_base_class import CTkBaseClass
 
 
-class CTkButton(tkinter.Frame):
+class CTkButton(CTkBaseClass):
     """ tkinter custom button with border, rounded corners and hover effect """
 
     def __init__(self, *args,
@@ -34,45 +31,18 @@ class CTkButton(tkinter.Frame):
                  compound=tkinter.LEFT,
                  state=tkinter.NORMAL,
                  **kwargs):
-        super().__init__(*args, **kwargs)
 
-        # overwrite configure methods of master when master is tkinter widget, so that bg changes get applied on child CTk widget too
-        if isinstance(self.master, (tkinter.Tk, tkinter.Frame)) and not isinstance(self.master, (CTk, CTkFrame)):
-            master_old_configure = self.master.config
-
-            def new_configure(*args, **kwargs):
-                if "bg" in kwargs:
-                    self.configure(bg_color=kwargs["bg"])
-                elif "background" in kwargs:
-                    self.configure(bg_color=kwargs["background"])
-
-                # args[0] is dict when attribute gets changed by widget[<attribute>] syntax
-                elif len(args) > 0 and type(args[0]) == dict:
-                    if "bg" in args[0]:
-                        self.configure(bg_color=args[0]["bg"])
-                    elif "background" in args[0]:
-                        self.configure(bg_color=args[0]["background"])
-                master_old_configure(*args, **kwargs)
-
-            self.master.config = new_configure
-            self.master.configure = new_configure
-
-        # add set_appearance_mode method to callback list of AppearanceModeTracker for appearance mode changes
-        AppearanceModeTracker.add(self.set_appearance_mode, self)
-        self.appearance_mode = AppearanceModeTracker.get_mode()  # 0: "Light" 1: "Dark"
+        # transfer basic functionality (bg_color, size, appearance_mode, scaling) to CTkBaseClass
+        super().__init__(*args, bg_color=bg_color, width=width, height=height, **kwargs)
 
         self.configure_basic_grid()
 
         # color variables
-        self.bg_color = self.detect_color_of_master() if bg_color is None else bg_color
         self.fg_color = CTkThemeManager.theme["color"]["button"] if fg_color == "default_theme" else fg_color
         self.hover_color = CTkThemeManager.theme["color"]["button_hover"] if hover_color == "default_theme" else hover_color
         self.border_color = CTkThemeManager.theme["color"]["button_border"] if border_color == "default_theme" else border_color
 
-        # shape and size
-        self.width = width
-        self.height = height
-        self.configure(width=self.width, height=self.height)
+        # shape
         self.corner_radius = CTkThemeManager.theme["shape"]["button_corner_radius"] if corner_radius == "default_theme" else corner_radius
         self.border_width = CTkThemeManager.theme["shape"]["button_border_width"] if border_width == "default_theme" else border_width
 
@@ -98,7 +68,6 @@ class CTkButton(tkinter.Frame):
                                 width=self.width,
                                 height=self.height)
         self.canvas.grid(row=0, column=0, rowspan=2, columnspan=2, sticky="nsew")
-
         self.draw_engine = CTkDrawEngine(self.canvas, CTkSettings.preferred_drawing_method)
 
         # event bindings
@@ -113,44 +82,12 @@ class CTkButton(tkinter.Frame):
         self.set_cursor()
         self.draw()  # initial draw
 
-    def destroy(self):
-        AppearanceModeTracker.remove(self.set_appearance_mode)
-        super().destroy()
-
     def configure_basic_grid(self):
-        # Configuration of a basic grid (2x2) in which all elements of CTkButtons are centered on one row and one column
+        # Configuration of a grid system (2x2) in which all parts of CTkButton are centered on one row and one column
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(1, weight=1)
         self.grid_columnconfigure(1, weight=1)
-
-    def update_dimensions(self, event):
-        # only redraw if dimensions changed (for performance)
-        if self.width != event.width or self.height != event.height:
-            self.width = event.width
-            self.height = event.height
-
-            # self.canvas.config(width=self.width, height=self.height)
-            self.draw(no_color_updates=True)  # fast drawing without color changes
-
-    def detect_color_of_master(self):
-        """ detect color of self.master widget to set correct bg_color """
-
-        if isinstance(self.master, CTkFrame):  # master is CTkFrame
-            return self.master.fg_color
-
-        elif isinstance(self.master, (ttk.Frame, ttk.LabelFrame, ttk.Notebook)):  # master is ttk widget
-            try:
-                ttk_style = ttk.Style()
-                return ttk_style.lookup(self.master.winfo_class(), 'background')
-            except Exception:
-                return "#FFFFFF", "#000000"
-
-        else:  # master is normal tkinter widget
-            try:
-                return self.master.cget("bg")  # try to get bg color by .cget() method
-            except Exception:
-                return "#FFFFFF", "#000000"
 
     def draw(self, no_color_updates=False):
         requires_recoloring = self.draw_engine.draw_rounded_rect_with_border(self.width, self.height, self.corner_radius, self.border_width)
@@ -255,9 +192,6 @@ class CTkButton(tkinter.Frame):
             elif self.compound == tkinter.BOTTOM or self.compound == "bottom":
                 self.image_label.grid(row=1, column=0, padx=max(self.corner_radius, self.border_width), sticky="n", columnspan=2, rowspan=1, pady=(2, self.border_width))
                 self.text_label.grid(row=0, column=0, padx=max(self.corner_radius, self.border_width), sticky="s", columnspan=2, rowspan=1, pady=(self.border_width, 2))
-
-    def config(self, *args, **kwargs):
-        self.configure(*args, **kwargs)
 
     def configure(self, *args, **kwargs):
         require_redraw = False  # some attribute changes require a call of self.draw() at the end
@@ -401,16 +335,3 @@ class CTkButton(tkinter.Frame):
                 self.after(100, self.click_animation)
 
                 self.function()
-
-    def set_appearance_mode(self, mode_string):
-        if mode_string.lower() == "dark":
-            self.appearance_mode = 1
-        elif mode_string.lower() == "light":
-            self.appearance_mode = 0
-
-        if isinstance(self.master, (CTkFrame, CTk)):
-            self.bg_color = self.master.fg_color
-        else:
-            self.bg_color = self.master.cget("bg")
-
-        self.draw()
