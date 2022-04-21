@@ -73,6 +73,12 @@ class CTkSwitch(CTkBaseClass):
         self.grid_columnconfigure(1, weight=0, minsize=6 * self.scaling)
         self.grid_columnconfigure(2, weight=0)
 
+        self.bg_canvas = CTkCanvas(master=self,
+                                   highlightthickness=0,
+                                   width=self.width * self.scaling,
+                                   height=self.height * self.scaling)
+        self.bg_canvas.grid(row=0, column=0, padx=0, pady=0, columnspan=3, rowspan=1, sticky="nswe")
+
         self.canvas = CTkCanvas(master=self,
                                 highlightthickness=0,
                                 width=self.width * self.scaling,
@@ -127,7 +133,7 @@ class CTkSwitch(CTkBaseClass):
                                                                                               0, "w")
 
         if no_color_updates is False or requires_recoloring:
-            self.configure(bg=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
+            self.bg_canvas.configure(bg=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
             self.canvas.configure(bg=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
 
             if self.border_color is None:

@@ -2,6 +2,7 @@ import tkinter
 import tkinter.ttk as ttk
 import copy
 import re
+import math
 
 from .ctk_tk import CTk
 from .ctk_toplevel import CTkToplevel
@@ -76,9 +77,9 @@ class CTkBaseClass(tkinter.Frame):
 
     def update_dimensions_event(self, event):
         # only redraw if dimensions changed (for performance)
-        if self.width != int(event.width * self.scaling) or self.height != int(event.height * self.scaling):
-            self.width = int(event.width / self.scaling)  # adjust current size according to new size given by event
-            self.height = int(event.height / self.scaling)  # width and height are independent of the scale
+        if self.width != math.floor(event.width * self.scaling) or self.height != math.floor(event.height * self.scaling):
+            self.width = event.width / self.scaling  # adjust current size according to new size given by event
+            self.height = event.height / self.scaling  # width and height are independent of the scale
 
             self.draw(no_color_updates=True)  # faster drawing without color changes
 

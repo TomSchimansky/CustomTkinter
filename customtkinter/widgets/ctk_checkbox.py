@@ -72,6 +72,12 @@ class CTkCheckBox(CTkBaseClass):
         self.grid_columnconfigure(2, weight=1)
         self.grid_rowconfigure(0, weight=1)
 
+        self.bg_canvas = CTkCanvas(master=self,
+                                   highlightthickness=0,
+                                   width=self.width * self.scaling,
+                                   height=self.height * self.scaling)
+        self.bg_canvas.grid(row=0, column=0, padx=0, pady=0, columnspan=3, rowspan=1, sticky="nswe")
+
         self.canvas = CTkCanvas(master=self,
                                 highlightthickness=0,
                                 width=self.width * self.scaling,
@@ -116,7 +122,7 @@ class CTkCheckBox(CTkBaseClass):
         else:
             self.canvas.delete("checkmark")
 
-        self.configure(bg=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
+        self.bg_canvas.configure(bg=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
         self.canvas.configure(bg=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
 
         if self.check_state is True:
