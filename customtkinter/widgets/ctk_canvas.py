@@ -12,11 +12,10 @@ class CTkCanvas(tkinter.Canvas):
         self.aa_circle_canvas_ids = set()
 
     def get_char_from_radius(self, radius):
-        if CTkSettings.scaling_factor == 1:
-            if radius >= 20:
-                return "A"
-            else:
-                return self.radius_to_char_fine[radius]
+        if radius >= 20:
+            return "A"
+        else:
+            return self.radius_to_char_fine[radius]
 
     def create_aa_circle(self, x_pos, y_pos, radius, angle=0, fill="white", tags="", anchor=tkinter.CENTER) -> str:
         # create a circle with a font element
