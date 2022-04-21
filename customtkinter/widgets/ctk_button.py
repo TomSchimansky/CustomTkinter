@@ -2,9 +2,9 @@ import tkinter
 import sys
 
 from .ctk_canvas import CTkCanvas
-from ..customtkinter_theme_manager import CTkThemeManager
-from ..customtkinter_settings import CTkSettings
-from ..customtkinter_draw_engine import CTkDrawEngine
+from ..theme_manager import CTkThemeManager
+from ..ctk_settings import CTkSettings
+from ..ctk_draw_engine import CTkDrawEngine
 from .widget_base_class import CTkBaseClass
 
 
@@ -65,8 +65,8 @@ class CTkButton(CTkBaseClass):
 
         self.canvas = CTkCanvas(master=self,
                                 highlightthickness=0,
-                                width=self.width,
-                                height=self.height)
+                                width=self.width * self.scaling,
+                                height=self.height * self.scaling)
         self.canvas.grid(row=0, column=0, rowspan=2, columnspan=2, sticky="nsew")
         self.draw_engine = CTkDrawEngine(self.canvas, CTkSettings.preferred_drawing_method)
 
@@ -75,9 +75,7 @@ class CTkButton(CTkBaseClass):
         self.canvas.bind("<Leave>", self.on_leave)
         self.canvas.bind("<Button-1>", self.clicked)
         self.canvas.bind("<Button-1>", self.clicked)
-
-        # Each time an item is resized due to pack position mode, the binding Configure is called on the widget
-        self.bind('<Configure>', self.update_dimensions)
+        self.bind('<Configure>', self.update_dimensions_event)
 
         self.set_cursor()
         self.draw()  # initial draw
@@ -90,7 +88,10 @@ class CTkButton(CTkBaseClass):
         self.grid_columnconfigure(1, weight=1)
 
     def draw(self, no_color_updates=False):
-        requires_recoloring = self.draw_engine.draw_rounded_rect_with_border(self.width, self.height, self.corner_radius, self.border_width)
+        requires_recoloring = self.draw_engine.draw_rounded_rect_with_border(self.width * self.scaling,
+                                                                             self.height * self.scaling,
+                                                                             self.corner_radius * self.scaling,
+                                                                             self.border_width * self.scaling)
 
         if no_color_updates is False or requires_recoloring:
 
@@ -115,7 +116,9 @@ class CTkButton(CTkBaseClass):
         if self.text is not None and self.text != "":
 
             if self.text_label is None:
-                self.text_label = tkinter.Label(master=self, font=self.text_font, textvariable=self.textvariable)
+                self.text_label = tkinter.Label(master=self,
+                                                font=self.apply_font_scaling(self.text_font),
+                                                textvariable=self.textvariable)
 
                 self.text_label.bind("<Enter>", self.on_enter)
                 self.text_label.bind("<Leave>", self.on_leave)
@@ -172,26 +175,35 @@ class CTkButton(CTkBaseClass):
 
         # create grid layout with just an image given
         if self.image_label is not None and self.text_label is None:
-            self.image_label.grid(row=0, column=0, rowspan=2, columnspan=2, sticky="", pady=self.border_width)
+            self.image_label.grid(row=0, column=0, rowspan=2, columnspan=2, sticky="", pady=self.border_width * self.scaling)
 
         # create grid layout with just text given
         if self.image_label is None and self.text_label is not None:
-            self.text_label.grid(row=0, column=0, padx=self.corner_radius, pady=self.border_width, rowspan=2, columnspan=2, sticky="")
+            self.text_label.grid(row=0, column=0, rowspan=2, columnspan=2, sticky="",
+                                 padx=self.corner_radius * self.scaling, pady=self.border_width * self.scaling)
 
         # create grid layout of image and text label in 2x2 grid system with given compound
         if self.image_label is not None and self.text_label is not None:
             if self.compound == tkinter.LEFT or self.compound == "left":
-                self.image_label.grid(row=0, column=0, padx=(max(self.corner_radius, self.border_width), 2), sticky="e", rowspan=2, columnspan=1, pady=self.border_width)
-                self.text_label.grid(row=0, column=1, padx=(2, max(self.corner_radius, self.border_width)), sticky="w", rowspan=2, columnspan=1, pady=self.border_width)
+                self.image_label.grid(row=0, column=0, sticky="e", rowspan=2, columnspan=1,
+                                      padx=(max(self.corner_radius * self.scaling, self.border_width * self.scaling), 2), pady=self.border_width * self.scaling)
+                self.text_label.grid(row=0, column=1, sticky="w", rowspan=2, columnspan=1,
+                                     padx=(2, max(self.corner_radius * self.scaling, self.border_width * self.scaling)), pady=self.border_width * self.scaling)
             elif self.compound == tkinter.TOP or self.compound == "top":
-                self.image_label.grid(row=0, column=0, padx=max(self.corner_radius, self.border_width), sticky="s", columnspan=2, rowspan=1, pady=(self.border_width, 2))
-                self.text_label.grid(row=1, column=0, padx=max(self.corner_radius, self.border_width), sticky="n", columnspan=2, rowspan=1, pady=(2, self.border_width))
+                self.image_label.grid(row=0, column=0, sticky="s", columnspan=2, rowspan=1,
+                                      padx=max(self.corner_radius * self.scaling, self.border_width * self.scaling), pady=(self.border_width * self.scaling, 2))
+                self.text_label.grid(row=1, column=0, sticky="n", columnspan=2, rowspan=1,
+                                     padx=max(self.corner_radius * self.scaling, self.border_width * self.scaling), pady=(2, self.border_width * self.scaling))
             elif self.compound == tkinter.RIGHT or self.compound == "right":
-                self.image_label.grid(row=0, column=1, padx=(2, max(self.corner_radius, self.border_width)), sticky="w", rowspan=2, columnspan=1, pady=self.border_width)
-                self.text_label.grid(row=0, column=0, padx=(max(self.corner_radius, self.border_width), 2), sticky="e", rowspan=2, columnspan=1, pady=self.border_width)
+                self.image_label.grid(row=0, column=1, sticky="w", rowspan=2, columnspan=1,
+                                      padx=(2, max(self.corner_radius * self.scaling, self.border_width * self.scaling)), pady=self.border_width * self.scaling)
+                self.text_label.grid(row=0, column=0, sticky="e", rowspan=2, columnspan=1,
+                                     padx=(max(self.corner_radius * self.scaling, self.border_width * self.scaling), 2), pady=self.border_width * self.scaling)
             elif self.compound == tkinter.BOTTOM or self.compound == "bottom":
-                self.image_label.grid(row=1, column=0, padx=max(self.corner_radius, self.border_width), sticky="n", columnspan=2, rowspan=1, pady=(2, self.border_width))
-                self.text_label.grid(row=0, column=0, padx=max(self.corner_radius, self.border_width), sticky="s", columnspan=2, rowspan=1, pady=(self.border_width, 2))
+                self.image_label.grid(row=1, column=0, sticky="n", columnspan=2, rowspan=1,
+                                      padx=max(self.corner_radius * self.scaling, self.border_width * self.scaling), pady=(2, self.border_width * self.scaling))
+                self.text_label.grid(row=0, column=0, sticky="s", columnspan=2, rowspan=1,
+                                     padx=max(self.corner_radius * self.scaling, self.border_width * self.scaling), pady=(self.border_width * self.scaling, 2))
 
     def configure(self, *args, **kwargs):
         require_redraw = False  # some attribute changes require a call of self.draw() at the end

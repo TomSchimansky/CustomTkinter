@@ -14,9 +14,10 @@ from .widgets.ctk_canvas import CTkCanvas
 from .widgets.ctk_switch import CTkSwitch
 from .widgets.ctk_toplevel import CTkToplevel
 
-from .customtkinter_settings import CTkSettings
+from .ctk_settings import CTkSettings
 from .appearance_mode_tracker import AppearanceModeTracker
 from .theme_manager import CTkThemeManager
+from .scaling_tracker import ScalingTracker
 
 from distutils.version import StrictVersion as Version
 import tkinter

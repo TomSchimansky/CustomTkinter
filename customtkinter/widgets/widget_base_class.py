@@ -1,9 +1,13 @@
 import tkinter
 import tkinter.ttk as ttk
+import copy
+import re
 
 from .ctk_tk import CTk
 from .ctk_toplevel import CTkToplevel
 from ..appearance_mode_tracker import AppearanceModeTracker
+from ..scaling_tracker import ScalingTracker
+from ..theme_manager import CTkThemeManager
 
 
 class CTkBaseClass(tkinter.Frame):
@@ -12,11 +16,17 @@ class CTkBaseClass(tkinter.Frame):
 
         self.bg_color = self.detect_color_of_master() if bg_color is None else bg_color
         self.width = width  # width and height in pixel, represent current size of the widget (not the desired size by init)
-        self.height = height
+        self.height = height  # width and height are independent of the scale
+
+        # add set_scaling method to callback list of ScalingTracker for automatic scaling changes
+        ScalingTracker.add_widget(self.set_scaling, self)
+        self.scaling = ScalingTracker.get_widget_scaling(self)
 
         # add set_appearance_mode method to callback list of AppearanceModeTracker for appearance mode changes
         AppearanceModeTracker.add(self.set_appearance_mode, self)
         self.appearance_mode = AppearanceModeTracker.get_mode()  # 0: "Light" 1: "Dark"
+
+        super().configure(bg=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
 
         # overwrite configure methods of master when master is tkinter widget, so that bg changes get applied on child CTk widget too
         if isinstance(self.master, (tkinter.Tk, tkinter.Toplevel, tkinter.Frame)) and not isinstance(self.master, (CTkBaseClass, CTk, CTkToplevel)):
@@ -64,11 +74,11 @@ class CTkBaseClass(tkinter.Frame):
         if require_redraw:
             self.draw()
 
-    def update_dimensions(self, event):
+    def update_dimensions_event(self, event):
         # only redraw if dimensions changed (for performance)
-        if self.width != event.width or self.height != event.height:
-            self.width = event.width  # adjust current size according to new size given by event
-            self.height = event.height
+        if self.width != int(event.width * self.scaling) or self.height != int(event.height * self.scaling):
+            self.width = int(event.width / self.scaling)  # adjust current size according to new size given by event
+            self.height = int(event.height / self.scaling)  # width and height are independent of the scale
 
             self.draw(no_color_updates=True)  # faster drawing without color changes
 
@@ -103,6 +113,33 @@ class CTkBaseClass(tkinter.Frame):
             self.bg_color = self.master.cget("bg")
 
         self.draw()
+
+    def set_scaling(self, new_scaling):
+        self.scaling = new_scaling
+
+        super().configure(width=self.width * self.scaling, height=self.height * self.scaling)
+
+    def apply_font_scaling(self, font):
+        if type(font) == tuple or type(font) == list:
+            font_list = list(font)
+            for i in range(len(font_list)):
+                if (type(font_list[i]) == int or type(font_list[i]) == float) and font_list[i] < 0:
+                    font_list[i] = int(font_list[i] * self.scaling)
+            return tuple(font_list)
+
+        elif type(font) == str:
+            for negative_number in re.findall(r" -\d* ", font):
+                font = font.replace(negative_number, f" {int(int(negative_number) * self.scaling)} ")
+            return font
+
+        elif isinstance(font, tkinter.font.Font):
+            new_font_object = copy.copy(font)
+            if font.cget("size") < 0:
+                new_font_object.config(size=int(font.cget("size") * self.scaling))
+            return new_font_object
+
+        else:
+            return font
 
     def draw(self, no_color_updates=False):
         """ abstract of draw method to be overridden """

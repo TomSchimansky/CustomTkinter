@@ -2,9 +2,9 @@ import tkinter
 import sys
 
 from .ctk_canvas import CTkCanvas
-from ..customtkinter_theme_manager import CTkThemeManager
-from ..customtkinter_settings import CTkSettings
-from ..customtkinter_draw_engine import CTkDrawEngine
+from ..theme_manager import CTkThemeManager
+from ..ctk_settings import CTkSettings
+from ..ctk_draw_engine import CTkDrawEngine
 from .widget_base_class import CTkBaseClass
 
 
@@ -70,13 +70,13 @@ class CTkSwitch(CTkBaseClass):
 
         # configure grid system (3x1)
         self.grid_columnconfigure(0, weight=1)
-        self.grid_columnconfigure(1, weight=0, minsize=6)
+        self.grid_columnconfigure(1, weight=0, minsize=6 * self.scaling)
         self.grid_columnconfigure(2, weight=0)
 
         self.canvas = CTkCanvas(master=self,
                                 highlightthickness=0,
-                                width=self.width,
-                                height=self.height)
+                                width=self.width * self.scaling,
+                                height=self.height * self.scaling)
         self.canvas.grid(row=0, column=0, padx=0, pady=0, columnspan=1, sticky="nswe")
         self.draw_engine = CTkDrawEngine(self.canvas, CTkSettings.preferred_drawing_method)
 
@@ -110,11 +110,21 @@ class CTkSwitch(CTkBaseClass):
     def draw(self, no_color_updates=False):
 
         if self.check_state is True:
-            requires_recoloring = self.draw_engine.draw_rounded_slider_with_border_and_button(self.width, self.height, self.corner_radius, self.border_width,
-                                                                                              self.button_length, self.corner_radius, 1, "w")
+            requires_recoloring = self.draw_engine.draw_rounded_slider_with_border_and_button(self.width * self.scaling,
+                                                                                              self.height * self.scaling,
+                                                                                              self.corner_radius * self.scaling,
+                                                                                              self.border_width * self.scaling,
+                                                                                              self.button_length * self.scaling,
+                                                                                              self.corner_radius * self.scaling
+                                                                                              , 1, "w")
         else:
-            requires_recoloring = self.draw_engine.draw_rounded_slider_with_border_and_button(self.width, self.height, self.corner_radius, self.border_width,
-                                                                                              self.button_length, self.corner_radius, 0, "w")
+            requires_recoloring = self.draw_engine.draw_rounded_slider_with_border_and_button(self.width * self.scaling,
+                                                                                              self.height * self.scaling,
+                                                                                              self.corner_radius * self.scaling,
+                                                                                              self.border_width * self.scaling,
+                                                                                              self.button_length * self.scaling,
+                                                                                              self.corner_radius * self.scaling,
+                                                                                              0, "w")
 
         if no_color_updates is False or requires_recoloring:
             self.configure(bg=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
@@ -145,7 +155,7 @@ class CTkSwitch(CTkBaseClass):
                                             bd=0,
                                             text=self.text,
                                             justify=tkinter.LEFT,
-                                            font=self.text_font)
+                                            font=self.apply_font_scaling(self.text_font))
             self.text_label.grid(row=0, column=2, padx=0, pady=0, sticky="w")
             self.text_label["anchor"] = "w"
             if self.textvariable is not None:

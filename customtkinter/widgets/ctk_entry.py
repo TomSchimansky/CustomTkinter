@@ -1,9 +1,9 @@
 import tkinter
 
 from .ctk_canvas import CTkCanvas
-from ..customtkinter_theme_manager import CTkThemeManager
-from ..customtkinter_settings import CTkSettings
-from ..customtkinter_draw_engine import CTkDrawEngine
+from ..theme_manager import CTkThemeManager
+from ..ctk_settings import CTkSettings
+from ..ctk_draw_engine import CTkDrawEngine
 from .widget_base_class import CTkBaseClass
 
 
@@ -46,8 +46,8 @@ class CTkEntry(CTkBaseClass):
 
         self.canvas = CTkCanvas(master=self,
                                 highlightthickness=0,
-                                width=self.width,
-                                height=self.height)
+                                width=self.width * self.scaling,
+                                height=self.height * self.scaling)
         self.canvas.grid(column=0, row=0, sticky="we")
         self.draw_engine = CTkDrawEngine(self.canvas, CTkSettings.preferred_drawing_method)
 
@@ -55,11 +55,12 @@ class CTkEntry(CTkBaseClass):
                                    bd=0,
                                    width=1,
                                    highlightthickness=0,
-                                   font=self.text_font,
+                                   font=self.apply_font_scaling(self.text_font),
                                    **kwargs)
-        self.entry.grid(column=0, row=0, sticky="we", padx=self.corner_radius if self.corner_radius >= 6 else 6)
+        self.entry.grid(column=0, row=0, sticky="we",
+                        padx=self.corner_radius * self.scaling if self.corner_radius >= 6 * self.scaling else 6 * self.scaling)
 
-        super().bind('<Configure>', self.update_dimensions)
+        super().bind('<Configure>', self.update_dimensions_event)
         self.entry.bind('<FocusOut>', self.set_placeholder)
         self.entry.bind('<FocusIn>', self.clear_placeholder)
 
@@ -90,7 +91,10 @@ class CTkEntry(CTkBaseClass):
     def draw(self, no_color_updates=False):
         self.canvas.configure(bg=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
 
-        requires_recoloring = self.draw_engine.draw_rounded_rect_with_border(self.width, self.height, self.corner_radius, self.border_width)
+        requires_recoloring = self.draw_engine.draw_rounded_rect_with_border(self.width * self.scaling,
+                                                                             self.height * self.scaling,
+                                                                             self.corner_radius * self.scaling,
+                                                                             self.border_width * self.scaling)
 
         if CTkThemeManager.single_color(self.fg_color, self.appearance_mode) is not None:
             self.canvas.itemconfig("inner_parts",

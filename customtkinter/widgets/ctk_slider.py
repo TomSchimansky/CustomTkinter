@@ -2,9 +2,9 @@ import tkinter
 import sys
 
 from .ctk_canvas import CTkCanvas
-from ..customtkinter_theme_manager import CTkThemeManager
-from ..customtkinter_settings import CTkSettings
-from ..customtkinter_draw_engine import CTkDrawEngine
+from ..theme_manager import CTkThemeManager
+from ..ctk_settings import CTkSettings
+from ..ctk_draw_engine import CTkDrawEngine
 from .widget_base_class import CTkBaseClass
 
 
@@ -64,8 +64,8 @@ class CTkSlider(CTkBaseClass):
 
         self.canvas = CTkCanvas(master=self,
                                 highlightthickness=0,
-                                width=self.width,
-                                height=self.height)
+                                width=self.width * self.scaling,
+                                height=self.height * self.scaling)
         self.canvas.grid(column=0, row=0, sticky="nswe")
         self.draw_engine = CTkDrawEngine(self.canvas, CTkSettings.preferred_drawing_method)
 
@@ -75,7 +75,7 @@ class CTkSlider(CTkBaseClass):
         self.canvas.bind("<B1-Motion>", self.clicked)
 
         # Each time an item is resized due to pack position mode, the binding Configure is called on the widget
-        self.bind('<Configure>', self.update_dimensions)
+        self.bind('<Configure>', self.update_dimensions_event)
 
         self.set_cursor()
         self.draw()  # initial draw
@@ -104,8 +104,13 @@ class CTkSlider(CTkBaseClass):
             self.configure(cursor="hand2")
 
     def draw(self, no_color_updates=False):
-        requires_recoloring = self.draw_engine.draw_rounded_slider_with_border_and_button(self.width, self.height, self.corner_radius, self.border_width,
-                                                                                          self.button_length, self.button_corner_radius, self.value, "w")
+        requires_recoloring = self.draw_engine.draw_rounded_slider_with_border_and_button(self.width * self.scaling,
+                                                                                          self.height * self.scaling,
+                                                                                          self.corner_radius * self.scaling,
+                                                                                          self.border_width * self.scaling,
+                                                                                          self.button_length * self.scaling,
+                                                                                          self.button_corner_radius * self.scaling,
+                                                                                          self.value, "w")
 
         if no_color_updates is False or requires_recoloring:
             self.canvas.configure(bg=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
@@ -131,7 +136,7 @@ class CTkSlider(CTkBaseClass):
                                    outline=CTkThemeManager.single_color(self.button_color, self.appearance_mode))
 
     def clicked(self, event=None):
-        self.value = event.x / self.width
+        self.value = (event.x / self.width) / self.scaling
 
         if self.value > 1:
             self.value = 1

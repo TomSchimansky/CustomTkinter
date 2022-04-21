@@ -1,9 +1,9 @@
 import tkinter
 
 from .ctk_canvas import CTkCanvas
-from ..customtkinter_theme_manager import CTkThemeManager
-from ..customtkinter_draw_engine import CTkDrawEngine
-from ..customtkinter_settings import CTkSettings
+from ..theme_manager import CTkThemeManager
+from ..ctk_draw_engine import CTkDrawEngine
+from ..ctk_settings import CTkSettings
 from .widget_base_class import CTkBaseClass
 
 
@@ -40,15 +40,18 @@ class CTkProgressBar(CTkBaseClass):
         self.border_width = CTkThemeManager.theme["shape"]["progressbar_border_width"] if border_width == "default_theme" else border_width
         self.value = 0.5
 
+        self.grid_rowconfigure(1, weight=1)
+        self.grid_columnconfigure(1, weight=1)
+
         self.canvas = CTkCanvas(master=self,
                                 highlightthickness=0,
-                                width=self.width,
-                                height=self.height)
-        self.canvas.place(x=0, y=0, relwidth=1, relheight=1)
+                                width=self.width * self.scaling,
+                                height=self.height * self.scaling)
+        self.canvas.grid(row=0, column=0, rowspan=1, columnspan=1)
         self.draw_engine = CTkDrawEngine(self.canvas, CTkSettings.preferred_drawing_method)
 
         # Each time an item is resized due to pack position mode, the binding Configure is called on the widget
-        self.bind('<Configure>', self.update_dimensions)
+        self.bind('<Configure>', self.update_dimensions_event)
 
         self.draw()  # initial draw
 
@@ -65,8 +68,13 @@ class CTkProgressBar(CTkBaseClass):
         super().destroy()
 
     def draw(self, no_color_updates=False):
+        print("progress", self.scaling)
 
-        requires_recoloring = self.draw_engine.draw_rounded_progress_bar_with_border(self.width, self.height, self.corner_radius, self.border_width, self.value, "w")
+        requires_recoloring = self.draw_engine.draw_rounded_progress_bar_with_border(self.width * self.scaling,
+                                                                                     self.height * self.scaling,
+                                                                                     self.corner_radius * self.scaling,
+                                                                                     self.border_width * self.scaling,
+                                                                                     self.value, "w")
 
         if no_color_updates is False or requires_recoloring:
             self.canvas.configure(bg=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
