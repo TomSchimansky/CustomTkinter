@@ -4,9 +4,12 @@ import sys
 class CTkSettings:
 
     circle_font_is_ready = False
-    hand_cursor_enabled = True
     preferred_drawing_method = None
     radius_to_char_fine = None
+
+    cursor_manipulation_enabled = True
+    deactivate_macos_window_header_manipulation = False
+    deactivate_windows_window_header_manipulation = False
 
     @classmethod
     def init_font_character_mapping(cls):
@@ -41,7 +44,7 @@ class CTkSettings:
     def print_settings(cls):
         print(f"CTkSettings current values:")
         print(f"circle_font_is_ready = {cls.circle_font_is_ready}")
-        print(f"hand_cursor_enabled = {cls.hand_cursor_enabled}")
+        print(f"hand_cursor_enabled = {cls.cursor_manipulation_enabled}")
         print(f"preferred_drawing_method = {cls.preferred_drawing_method}")
         print(f"radius_to_char_fine = {cls.radius_to_char_fine}")
 

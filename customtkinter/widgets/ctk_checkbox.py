@@ -68,20 +68,20 @@ class CTkCheckBox(CTkBaseClass):
 
         # configure grid system (1x3)
         self.grid_columnconfigure(0, weight=0)
-        self.grid_columnconfigure(1, weight=0, minsize=6 * self.scaling)
+        self.grid_columnconfigure(1, weight=0, minsize=self.apply_widget_scaling(6))
         self.grid_columnconfigure(2, weight=1)
         self.grid_rowconfigure(0, weight=1)
 
         self.bg_canvas = CTkCanvas(master=self,
                                    highlightthickness=0,
-                                   width=self.width * self.scaling,
-                                   height=self.height * self.scaling)
+                                   width=self.apply_widget_scaling(self.desired_width),
+                                   height=self.apply_widget_scaling(self.desired_height))
         self.bg_canvas.grid(row=0, column=0, padx=0, pady=0, columnspan=3, rowspan=1, sticky="nswe")
 
         self.canvas = CTkCanvas(master=self,
                                 highlightthickness=0,
-                                width=self.width * self.scaling,
-                                height=self.height * self.scaling)
+                                width=self.apply_widget_scaling(self.desired_width),
+                                height=self.apply_widget_scaling(self.desired_height))
         self.canvas.grid(row=0, column=0, padx=0, pady=0, columnspan=1, rowspan=1)
         self.draw_engine = CTkDrawEngine(self.canvas, CTkSettings.preferred_drawing_method)
 
@@ -103,6 +103,16 @@ class CTkCheckBox(CTkBaseClass):
         self.set_cursor()
         self.draw()  # initial draw
 
+    def set_scaling(self, *args, **kwargs):
+        super().set_scaling(*args, **kwargs)
+
+        self.grid_columnconfigure(1, weight=0, minsize=self.apply_widget_scaling(6))
+        self.text_label.configure(font=self.apply_font_scaling(self.text_font))
+
+        self.bg_canvas.configure(width=self.apply_widget_scaling(self.desired_width), height=self.apply_widget_scaling(self.desired_height))
+        self.canvas.configure(width=self.apply_widget_scaling(self.desired_width), height=self.apply_widget_scaling(self.desired_height))
+        self.draw()
+
     def destroy(self):
         if self.variable is not None:
             self.variable.trace_remove("write", self.variable_callback_name)
@@ -110,15 +120,15 @@ class CTkCheckBox(CTkBaseClass):
         super().destroy()
 
     def draw(self, no_color_updates=False):
-        requires_recoloring = self.draw_engine.draw_rounded_rect_with_border(self.width * self.scaling,
-                                                                             self.height * self.scaling,
-                                                                             self.corner_radius * self.scaling,
-                                                                             self.border_width * self.scaling)
+        requires_recoloring = self.draw_engine.draw_rounded_rect_with_border(self.apply_widget_scaling(self.current_width),
+                                                                             self.apply_widget_scaling(self.current_height),
+                                                                             self.apply_widget_scaling(self.corner_radius),
+                                                                             self.apply_widget_scaling(self.border_width))
 
         if self.check_state is True:
-            self.draw_engine.draw_checkmark(self.width * self.scaling,
-                                            self.height * self.scaling,
-                                            self.height * 0.58 * self.scaling)
+            self.draw_engine.draw_checkmark(self.apply_widget_scaling(self.current_width),
+                                            self.apply_widget_scaling(self.current_height),
+                                            self.apply_widget_scaling(self.current_height * 0.58))
         else:
             self.canvas.delete("checkmark")
 
@@ -146,7 +156,6 @@ class CTkCheckBox(CTkBaseClass):
                                    fill=CTkThemeManager.single_color(self.border_color, self.appearance_mode))
 
         if self.text_label is None:
-            print("create label")
             self.text_label = tkinter.Label(master=self,
                                             bd=0,
                                             text=self.text,
@@ -231,17 +240,18 @@ class CTkCheckBox(CTkBaseClass):
             self.draw()
 
     def set_cursor(self):
-        if self.state == tkinter.DISABLED:
-            if sys.platform == "darwin" and CTkSettings.hand_cursor_enabled:
-                self.canvas.configure(cursor="arrow")
-            elif sys.platform.startswith("win") and CTkSettings.hand_cursor_enabled:
-                self.canvas.configure(cursor="arrow")
+        if CTkSettings.cursor_manipulation_enabled:
+            if self.state == tkinter.DISABLED:
+                if sys.platform == "darwin" and CTkSettings.cursor_manipulation_enabled:
+                    self.canvas.configure(cursor="arrow")
+                elif sys.platform.startswith("win") and CTkSettings.cursor_manipulation_enabled:
+                    self.canvas.configure(cursor="arrow")
 
-        elif self.state == tkinter.NORMAL:
-            if sys.platform == "darwin" and CTkSettings.hand_cursor_enabled:
-                self.canvas.configure(cursor="pointinghand")
-            elif sys.platform.startswith("win") and CTkSettings.hand_cursor_enabled:
-                self.canvas.configure(cursor="hand2")
+            elif self.state == tkinter.NORMAL:
+                if sys.platform == "darwin" and CTkSettings.cursor_manipulation_enabled:
+                    self.canvas.configure(cursor="pointinghand")
+                elif sys.platform.startswith("win") and CTkSettings.cursor_manipulation_enabled:
+                    self.canvas.configure(cursor="hand2")
 
     def set_text(self, text):
         self.text = text

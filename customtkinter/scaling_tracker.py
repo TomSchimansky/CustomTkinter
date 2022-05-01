@@ -6,23 +6,42 @@ class ScalingTracker:
 
     window_widgets_dict = {}  # contains window objects as keys with list of widget callbacks as elements
 
-    window_dpi_scaling_dict = {}  # contains window objects as keys and corresponding DPI values
-    user_scaling = 1  # scale change of all widgets and windows
+    window_dpi_scaling_dict = {}  # contains window objects as keys and corresponding scaling factors
+
+    widget_scaling = 1  # user values which multiply to detected window scaling factor
+    window_scaling = 1
+    spacing_scaling = 1
 
     update_loop_running = False
 
     @classmethod
     def get_widget_scaling(cls, widget):
         window_root = cls.get_window_root_of_widget(widget)
-        return cls.window_dpi_scaling_dict[window_root] * cls.user_scaling
+        return cls.window_dpi_scaling_dict[window_root] * cls.widget_scaling
+
+    @classmethod
+    def get_spacing_scaling(cls, widget):
+        window_root = cls.get_window_root_of_widget(widget)
+        return cls.window_dpi_scaling_dict[window_root] * cls.spacing_scaling
 
     @classmethod
     def get_window_scaling(cls, window):
-        return cls.window_dpi_scaling_dict[window] * cls.user_scaling
+        window_root = cls.get_window_root_of_widget(window)
+        return cls.window_dpi_scaling_dict[window_root] * cls.window_scaling
 
     @classmethod
-    def set_user_scaling(cls, user_scaling_factor):
-        cls.user_scaling = user_scaling_factor
+    def set_widget_scaling(cls, widget_scaling_factor):
+        cls.widget_scaling = widget_scaling_factor
+        cls.update_scaling_callbacks()
+
+    @classmethod
+    def set_spacing_scaling(cls, spacing_scaling_factor):
+        cls.spacing_scaling = spacing_scaling_factor
+        cls.update_scaling_callbacks()
+
+    @classmethod
+    def set_window_scaling(cls, window_scaling_factor):
+        cls.window_scaling = window_scaling_factor
         cls.update_scaling_callbacks()
 
     @classmethod
@@ -39,7 +58,9 @@ class ScalingTracker:
     def update_scaling_callbacks(cls):
         for window, callback_list in cls.window_widgets_dict.items():
             for callback in callback_list:
-                callback(cls.window_dpi_scaling_dict[window])
+                callback(cls.window_dpi_scaling_dict[window] * cls.widget_scaling,
+                         cls.window_dpi_scaling_dict[window] * cls.spacing_scaling,
+                         cls.window_dpi_scaling_dict[window] * cls.window_scaling)
 
     @classmethod
     def add_widget(cls, widget_callback, widget):
@@ -51,7 +72,7 @@ class ScalingTracker:
             cls.window_widgets_dict[window_root].append(widget_callback)
 
         if window_root not in cls.window_dpi_scaling_dict:
-            cls.window_dpi_scaling_dict[window_root] = cls.get_window_dpi_value(window_root)
+            cls.window_dpi_scaling_dict[window_root] = cls.get_window_dpi_scaling(window_root)
 
         if not cls.update_loop_running:
             window_root.after(100, cls.check_dpi_scaling)
@@ -65,10 +86,10 @@ class ScalingTracker:
             cls.window_widgets_dict[window].append(window_callback)
 
         if window not in cls.window_dpi_scaling_dict:
-            cls.window_dpi_scaling_dict[window] = cls.get_window_dpi_value(window)
+            cls.window_dpi_scaling_dict[window] = cls.get_window_dpi_scaling(window)
 
     @classmethod
-    def get_window_dpi_value(cls, window):
+    def get_window_dpi_scaling(cls, window):
         if sys.platform == "darwin":
             return 1  # scaling works automatically on macOS
 

@@ -41,8 +41,8 @@ class CTkFrame(CTkBaseClass):
 
         self.canvas = CTkCanvas(master=self,
                                 highlightthickness=0,
-                                width=self.width * self.scaling,
-                                height=self.height * self.scaling)
+                                width=self.apply_widget_scaling(self.current_width),
+                                height=self.apply_widget_scaling(self.current_height))
         self.canvas.place(x=0, y=0, relwidth=1, relheight=1)
         self.canvas.configure(bg=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
         self.draw_engine = CTkDrawEngine(self.canvas, CTkSettings.preferred_drawing_method)
@@ -62,12 +62,18 @@ class CTkFrame(CTkBaseClass):
         except ValueError:
             return child_widgets
 
+    def set_scaling(self, *args, **kwargs):
+        super().set_scaling(*args, **kwargs)
+
+        self.canvas.configure(width=self.apply_widget_scaling(self.desired_width), height=self.apply_widget_scaling(self.desired_height))
+        self.draw()
+
     def draw(self, no_color_updates=False):
 
-        requires_recoloring = self.draw_engine.draw_rounded_rect_with_border(self.width * self.scaling,
-                                                                             self.height * self.scaling,
-                                                                             self.corner_radius * self.scaling,
-                                                                             self.border_width * self.scaling)
+        requires_recoloring = self.draw_engine.draw_rounded_rect_with_border(self.apply_widget_scaling(self.current_width),
+                                                                             self.apply_widget_scaling(self.current_height),
+                                                                             self.apply_widget_scaling(self.corner_radius),
+                                                                             self.apply_widget_scaling(self.border_width))
 
         if no_color_updates is False or requires_recoloring:
             self.canvas.itemconfig("inner_parts",

@@ -40,14 +40,14 @@ class CTkProgressBar(CTkBaseClass):
         self.border_width = CTkThemeManager.theme["shape"]["progressbar_border_width"] if border_width == "default_theme" else border_width
         self.value = 0.5
 
-        self.grid_rowconfigure(1, weight=1)
-        self.grid_columnconfigure(1, weight=1)
+        self.grid_rowconfigure(0, weight=1)
+        self.grid_columnconfigure(0, weight=1)
 
         self.canvas = CTkCanvas(master=self,
                                 highlightthickness=0,
-                                width=self.width * self.scaling,
-                                height=self.height * self.scaling)
-        self.canvas.grid(row=0, column=0, rowspan=1, columnspan=1)
+                                width=self.apply_widget_scaling(self.desired_width),
+                                height=self.apply_widget_scaling(self.desired_height))
+        self.canvas.grid(row=0, column=0, rowspan=1, columnspan=1, sticky="nswe")
         self.draw_engine = CTkDrawEngine(self.canvas, CTkSettings.preferred_drawing_method)
 
         # Each time an item is resized due to pack position mode, the binding Configure is called on the widget
@@ -61,6 +61,12 @@ class CTkProgressBar(CTkBaseClass):
             self.set(self.variable.get(), from_variable_callback=True)
             self.variable_callback_blocked = False
 
+    def set_scaling(self, *args, **kwargs):
+        super().set_scaling(*args, **kwargs)
+
+        self.canvas.configure(width=self.apply_widget_scaling(self.desired_width), height=self.apply_widget_scaling(self.desired_height))
+        self.draw()
+
     def destroy(self):
         if self.variable is not None:
             self.variable.trace_remove("write", self.variable_callback_name)
@@ -68,12 +74,10 @@ class CTkProgressBar(CTkBaseClass):
         super().destroy()
 
     def draw(self, no_color_updates=False):
-        print("progress", self.scaling)
-
-        requires_recoloring = self.draw_engine.draw_rounded_progress_bar_with_border(self.width * self.scaling,
-                                                                                     self.height * self.scaling,
-                                                                                     self.corner_radius * self.scaling,
-                                                                                     self.border_width * self.scaling,
+        requires_recoloring = self.draw_engine.draw_rounded_progress_bar_with_border(self.apply_widget_scaling(self.current_width),
+                                                                                     self.apply_widget_scaling(self.current_height),
+                                                                                     self.apply_widget_scaling(self.corner_radius),
+                                                                                     self.apply_widget_scaling(self.border_width),
                                                                                      self.value, "w")
 
         if no_color_updates is False or requires_recoloring:

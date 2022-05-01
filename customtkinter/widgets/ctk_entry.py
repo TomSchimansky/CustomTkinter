@@ -46,8 +46,8 @@ class CTkEntry(CTkBaseClass):
 
         self.canvas = CTkCanvas(master=self,
                                 highlightthickness=0,
-                                width=self.width * self.scaling,
-                                height=self.height * self.scaling)
+                                width=self.apply_widget_scaling(self.current_width),
+                                height=self.apply_widget_scaling(self.current_height))
         self.canvas.grid(column=0, row=0, sticky="we")
         self.draw_engine = CTkDrawEngine(self.canvas, CTkSettings.preferred_drawing_method)
 
@@ -58,7 +58,7 @@ class CTkEntry(CTkBaseClass):
                                    font=self.apply_font_scaling(self.text_font),
                                    **kwargs)
         self.entry.grid(column=0, row=0, sticky="we",
-                        padx=self.corner_radius * self.scaling if self.corner_radius >= 6 * self.scaling else 6 * self.scaling)
+                        padx=self.apply_widget_scaling(self.corner_radius) if self.corner_radius >= 6 else self.apply_widget_scaling(6))
 
         super().bind('<Configure>', self.update_dimensions_event)
         self.entry.bind('<FocusOut>', self.set_placeholder)
@@ -66,6 +66,16 @@ class CTkEntry(CTkBaseClass):
 
         self.draw()
         self.set_placeholder()
+
+    def set_scaling(self, *args, **kwargs):
+        super().set_scaling( *args, **kwargs)
+
+        self.entry.configure(font=self.apply_font_scaling(self.text_font))
+        self.entry.grid(column=0, row=0, sticky="we",
+                        padx=self.apply_widget_scaling(self.corner_radius) if self.corner_radius >= 6 else self.apply_widget_scaling(6))
+
+        self.canvas.configure(width=self.apply_widget_scaling(self.desired_width), height=self.apply_widget_scaling(self.desired_height))
+        self.draw()
 
     def configure_basic_grid(self):
         self.grid_rowconfigure(0, weight=1)
@@ -91,10 +101,10 @@ class CTkEntry(CTkBaseClass):
     def draw(self, no_color_updates=False):
         self.canvas.configure(bg=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
 
-        requires_recoloring = self.draw_engine.draw_rounded_rect_with_border(self.width * self.scaling,
-                                                                             self.height * self.scaling,
-                                                                             self.corner_radius * self.scaling,
-                                                                             self.border_width * self.scaling)
+        requires_recoloring = self.draw_engine.draw_rounded_rect_with_border(self.apply_widget_scaling(self.current_width),
+                                                                             self.apply_widget_scaling(self.current_height),
+                                                                             self.apply_widget_scaling(self.corner_radius),
+                                                                             self.apply_widget_scaling(self.border_width))
 
         if CTkThemeManager.single_color(self.fg_color, self.appearance_mode) is not None:
             self.canvas.itemconfig("inner_parts",
@@ -147,12 +157,12 @@ class CTkEntry(CTkBaseClass):
         if "corner_radius" in kwargs:
             self.corner_radius = kwargs["corner_radius"]
 
-            if self.corner_radius * 2 > self.height:
-                self.corner_radius = self.height / 2
-            elif self.corner_radius * 2 > self.width:
-                self.corner_radius = self.width / 2
+            if self.corner_radius * 2 > self.current_height:
+                self.corner_radius = self.current_height / 2
+            elif self.corner_radius * 2 > self.current_width:
+                self.corner_radius = self.current_width / 2
 
-            self.entry.grid(column=0, row=0, sticky="we", padx=self.corner_radius if self.corner_radius >= 6 else 6)
+            self.entry.grid(column=0, row=0, sticky="we", padx=self.apply_widget_scaling(self.corner_radius) if self.corner_radius >= 6 else self.apply_widget_scaling(6))
             del kwargs["corner_radius"]
             require_redraw = True
 

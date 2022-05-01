@@ -4,9 +4,12 @@ import sys
 import os
 import platform
 import ctypes
+import re
 
 from ..appearance_mode_tracker import AppearanceModeTracker
 from ..theme_manager import CTkThemeManager
+from ..ctk_settings import CTkSettings
+from ..scaling_tracker import ScalingTracker
 
 
 class CTkToplevel(tkinter.Toplevel):
@@ -17,6 +20,13 @@ class CTkToplevel(tkinter.Toplevel):
         self.enable_macos_dark_title_bar()
         super().__init__(*args, **kwargs)
         self.appearance_mode = AppearanceModeTracker.get_mode()  # 0: "Light" 1: "Dark"
+
+        # add set_scaling method to callback list of ScalingTracker for automatic scaling changes
+        ScalingTracker.add_widget(self.set_scaling, self)
+        self.window_scaling = ScalingTracker.get_window_scaling(self)
+
+        self.current_width = 600  # initial window size, always without scaling
+        self.current_height = 500
 
         self.fg_color = CTkThemeManager.theme["color"]["window_bg_color"] if fg_color == "default_theme" else fg_color
 
@@ -37,6 +47,47 @@ class CTkToplevel(tkinter.Toplevel):
                 self.windows_set_titlebar_color("dark")
             else:
                 self.windows_set_titlebar_color("light")
+
+    def update_dimensions_event(self, event=None):
+        detected_width = self.winfo_width()  # detect current window size
+        detected_height = self.winfo_height()
+
+        if self.current_width != round(detected_width / self.window_scaling) or self.current_height != round(detected_height / self.window_scaling):
+            self.current_width = round(detected_width / self.window_scaling)  # adjust current size according to new size given by event
+            self.current_height = round(detected_height / self.window_scaling)  # current_width and current_height are independent of the scale
+
+    def set_scaling(self, new_widget_scaling, new_spacing_scaling, new_window_scaling):
+        self.window_scaling = new_window_scaling
+
+        # set new window size by applying scaling to the current window size
+        self.geometry(f"{self.current_width}x{self.current_height}")
+
+    def apply_geometry_scaling(self, geometry_string):
+        numbers = list(map(int, re.split(r"[x+]", geometry_string)))  # split geometry string into list of numbers
+
+        if len(numbers) == 2:
+            return f"{self.apply_window_scaling(numbers[0]):.0f}x" +\
+                   f"{self.apply_window_scaling(numbers[1]):.0f}"
+        elif len(numbers) == 4:
+            return f"{self.apply_window_scaling(numbers[0]):.0f}x" +\
+                   f"{self.apply_window_scaling(numbers[1]):.0f}+" +\
+                   f"{self.apply_window_scaling(numbers[2]):.0f}+" +\
+                   f"{self.apply_window_scaling(numbers[3]):.0f}"
+        else:
+            return geometry_string
+
+    def apply_window_scaling(self, value):
+        if isinstance(value, (int, float)):
+            return value * self.window_scaling
+        else:
+            return value
+
+    def geometry(self, geometry_string):
+        super().geometry(self.apply_geometry_scaling(geometry_string))
+
+        # update width and height attributes
+        numbers = list(map(int, re.split(r"[x+]", geometry_string)))  # split geometry string into list of numbers
+        self.current_width, self.current_height = numbers[0], numbers[1]
 
     def destroy(self):
         AppearanceModeTracker.remove(self.set_appearance_mode)
@@ -99,14 +150,14 @@ class CTkToplevel(tkinter.Toplevel):
 
     @staticmethod
     def enable_macos_dark_title_bar():
-        if sys.platform == "darwin":  # macOS
+        if sys.platform == "darwin" and not CTkSettings.deactivate_macos_window_header_manipulation:  # macOS
             if Version(platform.python_version()) < Version("3.10"):
                 if Version(tkinter.Tcl().call("info", "patchlevel")) >= Version("8.6.9"):  # Tcl/Tk >= 8.6.9
                     os.system("defaults write -g NSRequiresAquaSystemAppearance -bool No")
 
     @staticmethod
     def disable_macos_dark_title_bar():
-        if sys.platform == "darwin":  # macOS
+        if sys.platform == "darwin" and not CTkSettings.deactivate_macos_window_header_manipulation:  # macOS
             if Version(platform.python_version()) < Version("3.10"):
                 if Version(tkinter.Tcl().call("info", "patchlevel")) >= Version("8.6.9"):  # Tcl/Tk >= 8.6.9
                     os.system("defaults delete -g NSRequiresAquaSystemAppearance")
@@ -123,7 +174,7 @@ class CTkToplevel(tkinter.Toplevel):
         https://docs.microsoft.com/en-us/windows/win32/api/dwmapi/ne-dwmapi-dwmwindowattribute
         """
 
-        if sys.platform.startswith("win"):
+        if sys.platform.startswith("win") and not CTkSettings.deactivate_windows_window_header_manipulation:
 
             super().withdraw()  # hide window so that it can be redrawn after the titlebar change so that the color change is visible
             super().update()

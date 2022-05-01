@@ -45,8 +45,8 @@ class CTkLabel(CTkBaseClass):
 
         self.canvas = CTkCanvas(master=self,
                                 highlightthickness=0,
-                                width=self.width * self.scaling,
-                                height=self.height * self.scaling)
+                                width=self.apply_widget_scaling(self.desired_width),
+                                height=self.apply_widget_scaling(self.desired_height))
         self.canvas.grid(row=0, column=0, sticky="nswe")
         self.draw_engine = CTkDrawEngine(self.canvas, CTkSettings.preferred_drawing_method)
 
@@ -56,15 +56,22 @@ class CTkLabel(CTkBaseClass):
                                         text=self.text,
                                         font=self.apply_font_scaling(self.text_font),
                                         **kwargs)
-        self.text_label.grid(row=0, column=0, padx=self.corner_radius)
+        self.text_label.grid(row=0, column=0, padx=self.apply_widget_scaling(self.corner_radius))
 
         self.bind('<Configure>', self.update_dimensions_event)
         self.draw()
 
+    def set_scaling(self, *args, **kwargs):
+        super().set_scaling(*args, **kwargs)
+
+        self.canvas.configure(width=self.apply_widget_scaling(self.desired_width), height=self.apply_widget_scaling(self.desired_height))
+        self.text_label.configure(font=self.apply_font_scaling(self.text_font))
+        self.text_label.grid(row=0, column=0, padx=self.apply_widget_scaling(self.corner_radius))
+
     def draw(self, no_color_updates=False):
-        requires_recoloring = self.draw_engine.draw_rounded_rect_with_border(self.width * self.scaling,
-                                                                             self.height * self.scaling,
-                                                                             self.corner_radius * self.scaling,
+        requires_recoloring = self.draw_engine.draw_rounded_rect_with_border(self.apply_widget_scaling(self.current_width),
+                                                                             self.apply_widget_scaling(self.current_height),
+                                                                             self.apply_widget_scaling(self.corner_radius),
                                                                              0)
 
         self.canvas.configure(bg=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))

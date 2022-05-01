@@ -4,9 +4,12 @@ import sys
 import os
 import platform
 import ctypes
+import re
 
 from ..appearance_mode_tracker import AppearanceModeTracker
 from ..theme_manager import CTkThemeManager
+from ..scaling_tracker import ScalingTracker
+from ..ctk_settings import CTkSettings
 
 
 class CTk(tkinter.Tk):
@@ -15,8 +18,19 @@ class CTk(tkinter.Tk):
                  **kwargs):
 
         self.enable_macos_dark_title_bar()
+
         super().__init__(*args, **kwargs)
+
+        # add set_appearance_mode method to callback list of AppearanceModeTracker for appearance mode changes
+        AppearanceModeTracker.add(self.set_appearance_mode, self)
         self.appearance_mode = AppearanceModeTracker.get_mode()  # 0: "Light" 1: "Dark"
+
+        # add set_scaling method to callback list of ScalingTracker for automatic scaling changes
+        ScalingTracker.add_widget(self.set_scaling, self)
+        self.window_scaling = ScalingTracker.get_window_scaling(self)
+
+        self.current_width = 600  # initial window size, always without scaling
+        self.current_height = 500
 
         self.fg_color = CTkThemeManager.theme["color"]["window_bg_color"] if fg_color == "default_theme" else fg_color
 
@@ -27,10 +41,9 @@ class CTk(tkinter.Tk):
             self.fg_color = kwargs["background"]
             del kwargs["background"]
 
-        # add set_appearance_mode method to callback list of AppearanceModeTracker for appearance mode changes
-        AppearanceModeTracker.add(self.set_appearance_mode, self)
         super().configure(bg=CTkThemeManager.single_color(self.fg_color, self.appearance_mode))
         super().title("CTk")
+        self.geometry(f"{self.current_width}x{self.current_height}")
 
         self.window_exists = False  # indicates if the window is already shown through .update or .mainloop
 
@@ -39,6 +52,22 @@ class CTk(tkinter.Tk):
                 self.windows_set_titlebar_color("dark")
             else:
                 self.windows_set_titlebar_color("light")
+
+        self.bind('<Configure>', self.update_dimensions_event)
+
+    def update_dimensions_event(self, event=None):
+        detected_width = self.winfo_width()  # detect current window size
+        detected_height = self.winfo_height()
+
+        if self.current_width != round(detected_width / self.window_scaling) or self.current_height != round(detected_height / self.window_scaling):
+            self.current_width = round(detected_width / self.window_scaling)  # adjust current size according to new size given by event
+            self.current_height = round(detected_height / self.window_scaling)  # current_width and current_height are independent of the scale
+
+    def set_scaling(self, new_widget_scaling, new_spacing_scaling, new_window_scaling):
+        self.window_scaling = new_window_scaling
+
+        # set new window size by applying scaling to the current window size
+        self.geometry(f"{self.current_width}x{self.current_height}")
 
     def destroy(self):
         AppearanceModeTracker.remove(self.set_appearance_mode)
@@ -52,7 +81,7 @@ class CTk(tkinter.Tk):
         super().update()
 
     def mainloop(self, *args, **kwargs):
-        if self.window_exists is False:
+        if not self.window_exists:
             self.deiconify()
             self.window_exists = True
         super().mainloop(*args, **kwargs)
@@ -65,6 +94,33 @@ class CTk(tkinter.Tk):
                 self.windows_set_titlebar_color("dark")
             else:
                 self.windows_set_titlebar_color("light")
+
+    def geometry(self, geometry_string):
+        super().geometry(self.apply_geometry_scaling(geometry_string))
+
+        # update width and height attributes
+        numbers = list(map(int, re.split(r"[x+]", geometry_string)))  # split geometry string into list of numbers
+        self.current_width, self.current_height = numbers[0], numbers[1]
+
+    def apply_geometry_scaling(self, geometry_string):
+        numbers = list(map(int, re.split(r"[x+]", geometry_string)))  # split geometry string into list of numbers
+
+        if len(numbers) == 2:
+            return f"{self.apply_window_scaling(numbers[0]):.0f}x" +\
+                   f"{self.apply_window_scaling(numbers[1]):.0f}"
+        elif len(numbers) == 4:
+            return f"{self.apply_window_scaling(numbers[0]):.0f}x" +\
+                   f"{self.apply_window_scaling(numbers[1]):.0f}+" +\
+                   f"{self.apply_window_scaling(numbers[2]):.0f}+" +\
+                   f"{self.apply_window_scaling(numbers[3]):.0f}"
+        else:
+            return geometry_string
+
+    def apply_window_scaling(self, value):
+        if isinstance(value, (int, float)):
+            return value * self.window_scaling
+        else:
+            return value
 
     def config(self, *args, **kwargs):
         self.configure(*args, **kwargs)
@@ -97,30 +153,25 @@ class CTk(tkinter.Tk):
                 args[0]["background"] = CTkThemeManager.single_color(self.fg_color, self.appearance_mode)
 
         if bg_changed:
-            from .ctk_slider import CTkSlider
-            from .ctk_progressbar import CTkProgressBar
-            from .ctk_label import CTkLabel
-            from .ctk_frame import CTkFrame
-            from .ctk_entry import CTkEntry
-            from customtkinter.widgets.ctk_checkbox import CTkCheckBox
-            from customtkinter.widgets.ctk_button import CTkButton
+            from ..widgets.widget_base_class import CTkBaseClass
 
             for child in self.winfo_children():
-                if isinstance(child, (CTkFrame, CTkButton, CTkLabel, CTkSlider, CTkCheckBox, CTkEntry, CTkProgressBar)):
+                if isinstance(child, CTkBaseClass):
                     child.configure(bg_color=self.fg_color)
 
         super().configure(*args, **kwargs)
 
     @staticmethod
     def enable_macos_dark_title_bar():
-        if sys.platform == "darwin":  # macOS
+        if sys.platform == "darwin" and not CTkSettings.deactivate_macos_window_header_manipulation:  # macOS
             if Version(platform.python_version()) < Version("3.10"):
                 if Version(tkinter.Tcl().call("info", "patchlevel")) >= Version("8.6.9"):  # Tcl/Tk >= 8.6.9
                     os.system("defaults write -g NSRequiresAquaSystemAppearance -bool No")
+                    # This command allows dark-mode for all programs
 
     @staticmethod
     def disable_macos_dark_title_bar():
-        if sys.platform == "darwin":  # macOS
+        if sys.platform == "darwin" and not CTkSettings.deactivate_macos_window_header_manipulation:  # macOS
             if Version(platform.python_version()) < Version("3.10"):
                 if Version(tkinter.Tcl().call("info", "patchlevel")) >= Version("8.6.9"):  # Tcl/Tk >= 8.6.9
                     os.system("defaults delete -g NSRequiresAquaSystemAppearance")
@@ -137,7 +188,7 @@ class CTk(tkinter.Tk):
         https://docs.microsoft.com/en-us/windows/win32/api/dwmapi/ne-dwmapi-dwmwindowattribute
         """
 
-        if sys.platform.startswith("win"):
+        if sys.platform.startswith("win") and not CTkSettings.deactivate_windows_window_header_manipulation:
 
             super().withdraw()  # hide window so that it can be redrawn after the titlebar change so that the color change is visible
             if not self.window_exists:

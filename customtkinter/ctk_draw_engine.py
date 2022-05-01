@@ -56,18 +56,12 @@ class CTkDrawEngine:
 
             returns bool if recoloring is necessary """
 
-        print("before", width, height)
-
-        width = math.floor(width / 2) * 2  # round width and height and restrict them to even values only
+        width = math.floor(width / 2) * 2  # round (floor) current_width and current_height and restrict them to even values only
         height = math.floor(height / 2) * 2
         corner_radius = round(corner_radius)
 
-        print("after", width, height)
-
         if corner_radius > width / 2 or corner_radius > height / 2:  # restrict corner_radius if it's too larger
             corner_radius = min(width / 2, height / 2)
-
-        print("corner", corner_radius)
 
         border_width = round(border_width)
         corner_radius = self._calc_optimal_corner_radius(corner_radius)  # optimize corner_radius for different drawing methods (different rounding)
@@ -357,7 +351,7 @@ class CTkDrawEngine:
 
             returns bool if recoloring is necessary """
 
-        width = math.floor(width / 2) * 2  # round width and height and restrict them to even values only
+        width = math.floor(width / 2) * 2  # round current_width and current_height and restrict them to even values only
         height = math.floor(height / 2) * 2
 
         if corner_radius > width / 2 or corner_radius > height / 2:  # restrict corner_radius if it's too larger
@@ -521,7 +515,7 @@ class CTkDrawEngine:
                                                    button_length: Union[float, int], button_corner_radius: Union[float, int], slider_value: float,
                                                    orientation: str) -> bool:
 
-        width = math.floor(width / 2) * 2  # round width and height and restrict them to even values only
+        width = math.floor(width / 2) * 2  # round current_width and current_height and restrict them to even values only
         height = math.floor(height / 2) * 2
 
         if corner_radius > width / 2 or corner_radius > height / 2:  # restrict corner_radius if it's too larger

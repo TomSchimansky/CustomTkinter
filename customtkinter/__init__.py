@@ -1,18 +1,19 @@
 __version__ = "3.12"
 
-from .widgets.ctk_input_dialog import CTkInputDialog
 from .widgets.ctk_button import CTkButton
+from .widgets.ctk_checkbox import CTkCheckBox
+from .widgets.ctk_entry import CTkEntry
 from .widgets.ctk_slider import CTkSlider
 from .widgets.ctk_frame import CTkFrame
 from .widgets.ctk_progressbar import CTkProgressBar
 from .widgets.ctk_label import CTkLabel
-from .widgets.ctk_entry import CTkEntry
-from .widgets.ctk_checkbox import CTkCheckBox
 from .widgets.ctk_radiobutton import CTkRadioButton
-from .widgets.ctk_tk import CTk
 from .widgets.ctk_canvas import CTkCanvas
 from .widgets.ctk_switch import CTkSwitch
-from .widgets.ctk_toplevel import CTkToplevel
+
+from .windows.ctk_tk import CTk
+from .windows.ctk_toplevel import CTkToplevel
+from .windows.ctk_input_dialog import CTkInputDialog
 
 from .ctk_settings import CTkSettings
 from .appearance_mode_tracker import AppearanceModeTracker

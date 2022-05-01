@@ -62,11 +62,14 @@ class CTkSlider(CTkBaseClass):
         self.variable_callback_blocked = False
         self.variable_callback_name = None
 
+        self.grid_rowconfigure(0, weight=1)
+        self.grid_columnconfigure(0, weight=1)
+
         self.canvas = CTkCanvas(master=self,
                                 highlightthickness=0,
-                                width=self.width * self.scaling,
-                                height=self.height * self.scaling)
-        self.canvas.grid(column=0, row=0, sticky="nswe")
+                                width=self.apply_widget_scaling(self.desired_width),
+                                height=self.apply_widget_scaling(self.desired_height))
+        self.canvas.grid(column=0, row=0, rowspan=1, columnspan=1, sticky="nswe")
         self.draw_engine = CTkDrawEngine(self.canvas, CTkSettings.preferred_drawing_method)
 
         self.canvas.bind("<Enter>", self.on_enter)
@@ -86,6 +89,12 @@ class CTkSlider(CTkBaseClass):
             self.set(self.variable.get(), from_variable_callback=True)
             self.variable_callback_blocked = False
 
+    def set_scaling(self, *args, **kwargs):
+        super().set_scaling(*args, **kwargs)
+
+        self.canvas.configure(width=self.apply_widget_scaling(self.desired_width), height=self.apply_widget_scaling(self.desired_height))
+        self.draw()
+
     def destroy(self):
         # remove variable_callback from variable callbacks if variable exists
         if self.variable is not None:
@@ -93,23 +102,20 @@ class CTkSlider(CTkBaseClass):
 
         super().destroy()
 
-    def configure_basic_grid(self):
-        self.grid_rowconfigure(0, weight=1)
-        self.grid_columnconfigure(0, weight=1)
-
     def set_cursor(self):
-        if sys.platform == "darwin":
-            self.configure(cursor="pointinghand")
-        elif sys.platform.startswith("win"):
-            self.configure(cursor="hand2")
+        if CTkSettings.cursor_manipulation_enabled:
+            if sys.platform == "darwin":
+                self.configure(cursor="pointinghand")
+            elif sys.platform.startswith("win"):
+                self.configure(cursor="hand2")
 
     def draw(self, no_color_updates=False):
-        requires_recoloring = self.draw_engine.draw_rounded_slider_with_border_and_button(self.width * self.scaling,
-                                                                                          self.height * self.scaling,
-                                                                                          self.corner_radius * self.scaling,
-                                                                                          self.border_width * self.scaling,
-                                                                                          self.button_length * self.scaling,
-                                                                                          self.button_corner_radius * self.scaling,
+        requires_recoloring = self.draw_engine.draw_rounded_slider_with_border_and_button(self.apply_widget_scaling(self.current_width),
+                                                                                          self.apply_widget_scaling(self.current_height),
+                                                                                          self.apply_widget_scaling(self.corner_radius),
+                                                                                          self.apply_widget_scaling(self.border_width),
+                                                                                          self.apply_widget_scaling(self.button_length),
+                                                                                          self.apply_widget_scaling(self.button_corner_radius),
                                                                                           self.value, "w")
 
         if no_color_updates is False or requires_recoloring:
@@ -136,7 +142,7 @@ class CTkSlider(CTkBaseClass):
                                    outline=CTkThemeManager.single_color(self.button_color, self.appearance_mode))
 
     def clicked(self, event=None):
-        self.value = (event.x / self.width) / self.scaling
+        self.value = (event.x / self.current_width) / self.widget_scaling
 
         if self.value > 1:
             self.value = 1
@@ -159,12 +165,12 @@ class CTkSlider(CTkBaseClass):
     def on_enter(self, event=0):
         self.hover_state = True
         self.canvas.itemconfig("slider_parts", fill=CTkThemeManager.single_color(self.button_hover_color, self.appearance_mode),
-                                   outline=CTkThemeManager.single_color(self.button_hover_color, self.appearance_mode))
+                               outline=CTkThemeManager.single_color(self.button_hover_color, self.appearance_mode))
 
     def on_leave(self, event=0):
         self.hover_state = False
         self.canvas.itemconfig("slider_parts", fill=CTkThemeManager.single_color(self.button_color, self.appearance_mode),
-                                   outline=CTkThemeManager.single_color(self.button_color, self.appearance_mode))
+                               outline=CTkThemeManager.single_color(self.button_color, self.appearance_mode))
 
     def round_to_step_size(self, value):
         if self.number_of_steps is not None:

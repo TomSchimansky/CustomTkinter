@@ -70,19 +70,19 @@ class CTkSwitch(CTkBaseClass):
 
         # configure grid system (3x1)
         self.grid_columnconfigure(0, weight=1)
-        self.grid_columnconfigure(1, weight=0, minsize=6 * self.scaling)
+        self.grid_columnconfigure(1, weight=0, minsize=self.apply_widget_scaling(6))
         self.grid_columnconfigure(2, weight=0)
 
         self.bg_canvas = CTkCanvas(master=self,
                                    highlightthickness=0,
-                                   width=self.width * self.scaling,
-                                   height=self.height * self.scaling)
+                                   width=self.apply_widget_scaling(self.current_width),
+                                   height=self.apply_widget_scaling(self.current_height))
         self.bg_canvas.grid(row=0, column=0, padx=0, pady=0, columnspan=3, rowspan=1, sticky="nswe")
 
         self.canvas = CTkCanvas(master=self,
                                 highlightthickness=0,
-                                width=self.width * self.scaling,
-                                height=self.height * self.scaling)
+                                width=self.apply_widget_scaling(self.current_width),
+                                height=self.apply_widget_scaling(self.current_height))
         self.canvas.grid(row=0, column=0, padx=0, pady=0, columnspan=1, sticky="nswe")
         self.draw_engine = CTkDrawEngine(self.canvas, CTkSettings.preferred_drawing_method)
 
@@ -100,6 +100,16 @@ class CTkSwitch(CTkBaseClass):
             elif self.variable.get() == self.offvalue:
                 self.deselect(from_variable_callback=True)
 
+    def set_scaling(self, *args, **kwargs):
+        super().set_scaling(*args, **kwargs)
+
+        self.grid_columnconfigure(1, weight=0, minsize=self.apply_widget_scaling(6))
+        self.text_label.configure(font=self.apply_font_scaling(self.text_font))
+
+        self.bg_canvas.configure(width=self.apply_widget_scaling(self.desired_width), height=self.apply_widget_scaling(self.desired_height))
+        self.canvas.configure(width=self.apply_widget_scaling(self.desired_width), height=self.apply_widget_scaling(self.desired_height))
+        self.draw()
+
     def destroy(self):
         # remove variable_callback from variable callbacks if variable exists
         if self.variable is not None:
@@ -108,28 +118,29 @@ class CTkSwitch(CTkBaseClass):
         super().destroy()
 
     def set_cursor(self):
-        if sys.platform == "darwin" and CTkSettings.hand_cursor_enabled:
-            self.canvas.configure(cursor="pointinghand")
-        elif sys.platform.startswith("win") and CTkSettings.hand_cursor_enabled:
-            self.canvas.configure(cursor="hand2")
+        if CTkSettings.cursor_manipulation_enabled:
+            if sys.platform == "darwin" and CTkSettings.cursor_manipulation_enabled:
+                self.canvas.configure(cursor="pointinghand")
+            elif sys.platform.startswith("win") and CTkSettings.cursor_manipulation_enabled:
+                self.canvas.configure(cursor="hand2")
 
     def draw(self, no_color_updates=False):
 
         if self.check_state is True:
-            requires_recoloring = self.draw_engine.draw_rounded_slider_with_border_and_button(self.width * self.scaling,
-                                                                                              self.height * self.scaling,
-                                                                                              self.corner_radius * self.scaling,
-                                                                                              self.border_width * self.scaling,
-                                                                                              self.button_length * self.scaling,
-                                                                                              self.corner_radius * self.scaling
-                                                                                              , 1, "w")
+            requires_recoloring = self.draw_engine.draw_rounded_slider_with_border_and_button(self.apply_widget_scaling(self.current_width),
+                                                                                              self.apply_widget_scaling(self.current_height),
+                                                                                              self.apply_widget_scaling(self.corner_radius),
+                                                                                              self.apply_widget_scaling(self.border_width),
+                                                                                              self.apply_widget_scaling(self.button_length),
+                                                                                              self.apply_widget_scaling(self.corner_radius),
+                                                                                              1, "w")
         else:
-            requires_recoloring = self.draw_engine.draw_rounded_slider_with_border_and_button(self.width * self.scaling,
-                                                                                              self.height * self.scaling,
-                                                                                              self.corner_radius * self.scaling,
-                                                                                              self.border_width * self.scaling,
-                                                                                              self.button_length * self.scaling,
-                                                                                              self.corner_radius * self.scaling,
+            requires_recoloring = self.draw_engine.draw_rounded_slider_with_border_and_button(self.apply_widget_scaling(self.current_width),
+                                                                                              self.apply_widget_scaling(self.current_height),
+                                                                                              self.apply_widget_scaling(self.corner_radius),
+                                                                                              self.apply_widget_scaling(self.border_width),
+                                                                                              self.apply_widget_scaling(self.button_length),
+                                                                                              self.apply_widget_scaling(self.corner_radius),
                                                                                               0, "w")
 
         if no_color_updates is False or requires_recoloring:

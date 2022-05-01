@@ -4,8 +4,6 @@ import customtkinter  # <- import the CustomTkinter module
 customtkinter.set_appearance_mode("dark")  # Modes: "System" (standard), "Dark", "Light"
 customtkinter.set_default_color_theme("blue")  # Themes: "blue" (standard), "green", "dark-blue"
 
-customtkinter.ScalingTracker.set_user_scaling(2.5)
-
 root_tk = customtkinter.CTk()  # create CTk window like you do with the Tk window (you can also use normal tkinter.Tk window)
 root_tk.geometry("400x480")
 root_tk.title("CustomTkinter Test")
@@ -16,6 +14,10 @@ def button_function():
 
 
 def slider_function(value):
+    customtkinter.ScalingTracker.set_widget_scaling(value * 2)
+    customtkinter.ScalingTracker.set_spacing_scaling(value * 2)
+    customtkinter.ScalingTracker.set_window_scaling(value * 2)
+
     progressbar_1.set(value)
 
 

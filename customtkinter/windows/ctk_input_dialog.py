@@ -1,11 +1,11 @@
 import tkinter
 import time
 
-from .ctk_label import CTkLabel
-from .ctk_entry import CTkEntry
-from .ctk_frame import CTkFrame
-from .ctk_toplevel import CTkToplevel
-from .ctk_button import CTkButton
+from ..widgets.ctk_label import CTkLabel
+from ..widgets.ctk_entry import CTkEntry
+from ..widgets.ctk_frame import CTkFrame
+from ..windows.ctk_toplevel import CTkToplevel
+from ..widgets.ctk_button import CTkButton
 from ..appearance_mode_tracker import AppearanceModeTracker
 from ..theme_manager import CTkThemeManager
 
@@ -33,7 +33,7 @@ class CTkInputDialog:
         self.border_color = CTkThemeManager.theme["color"]["button_hover"] if border_color == "default_theme" else border_color
 
         self.top = CTkToplevel()
-        self.top.geometry(f"280x{self.height}")
+        self.top.geometry(f"{280}x{self.height}")
         self.top.resizable(False, False)
         self.top.title(title)
         self.top.lift()

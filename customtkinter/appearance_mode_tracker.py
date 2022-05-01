@@ -1,12 +1,16 @@
 import sys
 import tkinter
 from distutils.version import StrictVersion as Version
-import darkdetect
 
-if Version(darkdetect.__version__) < Version("0.3.1"):
-    sys.stderr.write("WARNING: You have to update the darkdetect library: pip3 install --upgrade darkdetect\n")
-    if sys.platform != "darwin":
-        exit()
+try:
+    import darkdetect
+
+    if Version(darkdetect.__version__) < Version("0.3.1"):
+        sys.stderr.write("WARNING: You have to update the darkdetect library: pip3 install --upgrade darkdetect\n")
+        if sys.platform != "darwin":
+            exit()
+except:
+    pass
 
 
 class AppearanceModeTracker:
