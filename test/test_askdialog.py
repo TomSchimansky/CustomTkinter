@@ -17,7 +17,6 @@ class App(customtkinter.CTk):
     MAIN_COLOR_DARK = "#2D5862"
     MAIN_HOVER = "#05f4b7"
 
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -28,14 +27,13 @@ class App(customtkinter.CTk):
         self.protocol("WM_DELETE_WINDOW", self.on_closing)
         # ============ create two CTkFrames ============
 
-        #1
         self.frame_left = customtkinter.CTkFrame(master=self,
                                                 width=220,
                                                 height=App.HEIGHT-40,
                                                 corner_radius=5)
         self.frame_left.place(relx=0.38, rely=0.5, anchor=tkinter.E)
+        print(self.frame_left.widget_scaling)
 
-        #2
         self.frame_right = customtkinter.CTkFrame(master=self,
                                                 width=350,
                                                 height=App.HEIGHT-40,
@@ -52,7 +50,6 @@ class App(customtkinter.CTk):
         self.entry_output = customtkinter.CTkEntry(master=self.frame_right, width=320, height=38, corner_radius=5)
         self.entry_output.place(relx=0.05, rely=0.18, anchor=tkinter.NW)
 
-
     def button_outputFunc(self):
         self.entry_output.delete(0, 'end')
         filename = fd.askdirectory()
@@ -64,8 +61,6 @@ class App(customtkinter.CTk):
 
     def start(self):
         self.mainloop()
-
-
 
 
 if __name__ == "__main__":

@@ -27,6 +27,8 @@ class CTkBaseClass(tkinter.Frame):
         self.widget_scaling = ScalingTracker.get_widget_scaling(self)
         self.spacing_scaling = ScalingTracker.get_spacing_scaling(self)
 
+        super().configure(width=self.apply_widget_scaling(self.desired_width), height=self.apply_widget_scaling(self.desired_height))
+
         # save latest geometry function and kwargs
         class GeometryCallDict(TypedDict):
             function: Callable
