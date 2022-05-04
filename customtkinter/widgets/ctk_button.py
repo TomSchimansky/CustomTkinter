@@ -103,7 +103,7 @@ class CTkButton(CTkBaseClass):
         self.draw()
 
     def draw(self, no_color_updates=False):
-        print("current_height", self.current_height, "desired", self.desired_height)
+        # print("current_height", self.current_height, "desired", self.desired_height)
         requires_recoloring = self.draw_engine.draw_rounded_rect_with_border(self.apply_widget_scaling(self.current_width),
                                                                              self.apply_widget_scaling(self.current_height),
                                                                              self.apply_widget_scaling(self.corner_radius),
