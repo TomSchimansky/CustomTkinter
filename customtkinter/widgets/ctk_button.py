@@ -66,8 +66,8 @@ class CTkButton(CTkBaseClass):
 
         self.canvas = CTkCanvas(master=self,
                                 highlightthickness=0,
-                                width=self.apply_widget_scaling(self.desired_width),
-                                height=self.apply_widget_scaling(self.desired_height))
+                                width=self.round_size(self.apply_widget_scaling(self.desired_width)),
+                                height=self.round_size(self.apply_widget_scaling(self.desired_height)))
         self.canvas.grid(row=0, column=0, rowspan=2, columnspan=2, sticky="nsew")
         self.draw_engine = CTkDrawEngine(self.canvas, CTkSettings.preferred_drawing_method)
 
@@ -98,10 +98,12 @@ class CTkButton(CTkBaseClass):
             self.image_label.destroy()
             self.image_label = None
 
-        self.canvas.configure(width=self.apply_widget_scaling(self.desired_width), height=self.apply_widget_scaling(self.desired_height))
+        self.canvas.configure(width=self.round_size(self.apply_widget_scaling(self.desired_width)),
+                              height=self.round_size(self.apply_widget_scaling(self.desired_height)))
         self.draw()
 
     def draw(self, no_color_updates=False):
+        print("current_height", self.current_height, "desired", self.desired_height)
         requires_recoloring = self.draw_engine.draw_rounded_rect_with_border(self.apply_widget_scaling(self.current_width),
                                                                              self.apply_widget_scaling(self.current_height),
                                                                              self.apply_widget_scaling(self.corner_radius),
@@ -218,6 +220,8 @@ class CTkButton(CTkBaseClass):
                                       padx=max(self.apply_widget_scaling(self.corner_radius), self.apply_widget_scaling(self.border_width)), pady=(2, self.apply_widget_scaling(self.border_width)))
                 self.text_label.grid(row=0, column=0, sticky="s", columnspan=2, rowspan=1,
                                      padx=max(self.apply_widget_scaling(self.corner_radius), self.apply_widget_scaling(self.border_width)), pady=(self.apply_widget_scaling(self.border_width), 2))
+
+        # self.canvas.configure(bg="red")  # test
 
     def configure(self, *args, **kwargs):
         require_redraw = False  # some attribute changes require a call of self.draw() at the end

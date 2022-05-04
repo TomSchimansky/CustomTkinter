@@ -2,6 +2,7 @@ import tkinter
 import tkinter.ttk as ttk
 import copy
 import re
+import math
 from typing import Callable, Union, TypedDict
 
 from ..windows.ctk_tk import CTk
@@ -27,7 +28,8 @@ class CTkBaseClass(tkinter.Frame):
         self.widget_scaling = ScalingTracker.get_widget_scaling(self)
         self.spacing_scaling = ScalingTracker.get_spacing_scaling(self)
 
-        super().configure(width=self.apply_widget_scaling(self.desired_width), height=self.apply_widget_scaling(self.desired_height))
+        super().configure(width=self.round_size(self.apply_widget_scaling(self.desired_width)),
+                          height=self.round_size(self.apply_widget_scaling(self.desired_height)))
 
         # save latest geometry function and kwargs
         class GeometryCallDict(TypedDict):
@@ -123,9 +125,9 @@ class CTkBaseClass(tkinter.Frame):
 
     def update_dimensions_event(self, event):
         # only redraw if dimensions changed (for performance)
-        if self.current_width != round(event.width / self.widget_scaling) or self.current_height != round(event.height / self.widget_scaling):
-            self.current_width = round(event.width / self.widget_scaling)  # adjust current size according to new size given by event
-            self.current_height = round(event.height / self.widget_scaling)  # current_width and current_height are independent of the scale
+        if round(self.current_width) != round(event.width / self.widget_scaling) or round(self.current_height) != round(event.height / self.widget_scaling):
+            self.current_width = (event.width / self.widget_scaling)  # adjust current size according to new size given by event
+            self.current_height = (event.height / self.widget_scaling)  # current_width and current_height are independent of the scale
 
             self.draw(no_color_updates=True)  # faster drawing without color changes
 
@@ -165,7 +167,8 @@ class CTkBaseClass(tkinter.Frame):
         self.widget_scaling = new_widget_scaling
         self.spacing_scaling = new_spacing_scaling
 
-        super().configure(width=self.apply_widget_scaling(self.desired_width), height=self.apply_widget_scaling(self.desired_height))
+        super().configure(width=self.round_size(self.apply_widget_scaling(self.desired_width)),
+                          height=self.round_size(self.apply_widget_scaling(self.desired_height)))
 
         if self.last_geometry_manager_call is not None:
             self.last_geometry_manager_call["function"](**self.apply_argument_scaling(self.last_geometry_manager_call["kwargs"]))
@@ -203,6 +206,13 @@ class CTkBaseClass(tkinter.Frame):
 
         else:
             return font
+
+    @staticmethod
+    def round_size(size: Union[int, float, str]):
+        if isinstance(size, (int, float)):
+            return math.floor(size / 2) * 2
+        else:
+            return size
 
     def draw(self, no_color_updates=False):
         """ abstract of draw method to be overridden """
