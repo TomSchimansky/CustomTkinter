@@ -67,6 +67,15 @@ def set_default_color_theme(color_string):
     CTkThemeManager.load_theme(color_string)
 
 
+def deactivate_dpi_awareness(deactivate_awareness: bool):
+    CTkSettings.deactivate_automatic_dpi_awareness = deactivate_awareness
+
+
+def set_user_scaling(scaling_value: float):
+    ScalingTracker.set_spacing_scaling(scaling_value)
+    ScalingTracker.set_widget_scaling(scaling_value)
+
+
 # Load fonts:
 if sys.platform.startswith("win"):
     from ctypes import windll, byref, create_unicode_buffer, create_string_buffer
@@ -106,7 +115,7 @@ if sys.platform.startswith("win"):
                              "Using 'circle_shapes' instead. The rendering quality will be very bad!")
             CTkSettings.preferred_drawing_method = "circle_shapes"
 
-elif sys.platform == "linux":
+elif sys.platform.startswith("linux"):
     try:
         if not os.path.isdir(os.path.expanduser('~/.fonts/')):
             os.mkdir(os.path.expanduser('~/.fonts/'))

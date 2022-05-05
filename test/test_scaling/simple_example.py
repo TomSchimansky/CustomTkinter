@@ -1,6 +1,10 @@
 import tkinter
 import customtkinter  # <- import the CustomTkinter module
 
+customtkinter.ScalingTracker.set_window_scaling(1.5)
+customtkinter.ScalingTracker.set_spacing_scaling(1.5)
+customtkinter.ScalingTracker.set_widget_scaling(1.5)
+
 customtkinter.set_appearance_mode("dark")  # Modes: "System" (standard), "Dark", "Light"
 customtkinter.set_default_color_theme("blue")  # Themes: "blue" (standard), "green", "dark-blue"
 
@@ -8,6 +12,7 @@ root_tk = customtkinter.CTk()  # create CTk window like you do with the Tk windo
 root_tk.geometry("400x480")
 root_tk.title("CustomTkinter Test")
 
+print(customtkinter.ScalingTracker.get_window_scaling(root_tk))
 
 def button_function():
     print("Button click", label_1.text_label.cget("text"))

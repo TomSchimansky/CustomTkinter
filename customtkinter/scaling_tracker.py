@@ -1,6 +1,8 @@
 import tkinter
 import sys
 
+from .ctk_settings import CTkSettings
+
 
 class ScalingTracker:
 
@@ -58,9 +60,14 @@ class ScalingTracker:
     def update_scaling_callbacks(cls):
         for window, callback_list in cls.window_widgets_dict.items():
             for callback in callback_list:
-                callback(cls.window_dpi_scaling_dict[window] * cls.widget_scaling,
-                         cls.window_dpi_scaling_dict[window] * cls.spacing_scaling,
-                         cls.window_dpi_scaling_dict[window] * cls.window_scaling)
+                if not CTkSettings.deactivate_automatic_dpi_awareness:
+                    callback(cls.window_dpi_scaling_dict[window] * cls.widget_scaling,
+                             cls.window_dpi_scaling_dict[window] * cls.spacing_scaling,
+                             cls.window_dpi_scaling_dict[window] * cls.window_scaling)
+                else:
+                    callback(cls.widget_scaling,
+                             cls.spacing_scaling,
+                             cls.window_scaling)
 
     @classmethod
     def add_widget(cls, widget_callback, widget):
@@ -89,6 +96,23 @@ class ScalingTracker:
             cls.window_dpi_scaling_dict[window] = cls.get_window_dpi_scaling(window)
 
     @classmethod
+    def activate_high_dpi_awareness(cls):
+        """ make process DPI aware, customtkinter elemets will get scaled automatically,
+            only gets activated when CTk object is created """
+
+        if not CTkSettings.deactivate_automatic_dpi_awareness:
+            if sys.platform == "darwin":
+                pass  # high DPI scaling works automatically on macOS
+
+            elif sys.platform.startswith("win"):
+                from ctypes import windll
+                windll.shcore.SetProcessDpiAwareness(2)
+                # Microsoft Docs: https://docs.microsoft.com/en-us/windows/win32/api/shellscalingapi/ne-shellscalingapi-process_dpi_awareness
+
+            else:
+                pass  # DPI awareness on Linux not implemented
+
+    @classmethod
     def get_window_dpi_scaling(cls, window):
         if sys.platform == "darwin":
             return 1  # scaling works automatically on macOS
@@ -105,7 +129,7 @@ class ScalingTracker:
             return (x_dpi.value + y_dpi.value) / (2 * DPI100pc)
 
         else:
-            return 1
+            return 1  # DPI awareness on Linux not implemented
 
     @classmethod
     def check_dpi_scaling(cls):
@@ -118,4 +142,3 @@ class ScalingTracker:
                 continue
 
         cls.update_loop_running = False
-

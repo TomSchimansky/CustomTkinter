@@ -82,14 +82,14 @@ class CTkButton(CTkBaseClass):
         self.draw()  # initial draw
 
     def configure_basic_grid(self):
-        # Configuration of a grid system (2x2) in which all parts of CTkButton are centered on one row and one column
+        # Configuration of a grid system (2x2) in which all parts of CTkButton are centered
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(1, weight=1)
         self.grid_columnconfigure(1, weight=1)
 
     def set_scaling(self, *args, **kwargs):
-        super().set_scaling( *args, **kwargs)
+        super().set_scaling(*args, **kwargs)
 
         if self.text_label is not None:
             self.text_label.destroy()
@@ -103,7 +103,6 @@ class CTkButton(CTkBaseClass):
         self.draw()
 
     def draw(self, no_color_updates=False):
-        # print("current_height", self.current_height, "desired", self.desired_height)
         requires_recoloring = self.draw_engine.draw_rounded_rect_with_border(self.apply_widget_scaling(self.current_width),
                                                                              self.apply_widget_scaling(self.current_height),
                                                                              self.apply_widget_scaling(self.corner_radius),

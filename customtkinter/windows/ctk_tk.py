@@ -17,6 +17,7 @@ class CTk(tkinter.Tk):
                  fg_color="default_theme",
                  **kwargs):
 
+        ScalingTracker.activate_high_dpi_awareness()  # make process DPI aware
         self.enable_macos_dark_title_bar()
 
         super().__init__(*args, **kwargs)
