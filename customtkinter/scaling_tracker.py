@@ -33,17 +33,17 @@ class ScalingTracker:
 
     @classmethod
     def set_widget_scaling(cls, widget_scaling_factor):
-        cls.widget_scaling = widget_scaling_factor
+        cls.widget_scaling = max(widget_scaling_factor, 0.4)
         cls.update_scaling_callbacks()
 
     @classmethod
     def set_spacing_scaling(cls, spacing_scaling_factor):
-        cls.spacing_scaling = spacing_scaling_factor
+        cls.spacing_scaling = max(spacing_scaling_factor, 0.4)
         cls.update_scaling_callbacks()
 
     @classmethod
     def set_window_scaling(cls, window_scaling_factor):
-        cls.window_scaling = window_scaling_factor
+        cls.window_scaling = max(window_scaling_factor, 0.4)
         cls.update_scaling_callbacks()
 
     @classmethod

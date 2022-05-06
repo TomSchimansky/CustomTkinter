@@ -134,16 +134,10 @@ class CTkToplevel(tkinter.Toplevel):
                 args[0]["background"] = CTkThemeManager.single_color(self.fg_color, self.appearance_mode)
 
         if bg_changed:
-            from .ctk_slider import CTkSlider
-            from .ctk_progressbar import CTkProgressBar
-            from .ctk_label import CTkLabel
-            from .ctk_frame import CTkFrame
-            from .ctk_entry import CTkEntry
-            from customtkinter.widgets.ctk_checkbox import CTkCheckBox
-            from customtkinter.widgets.ctk_button import CTkButton
+            from ..widgets.widget_base_class import CTkBaseClass
 
             for child in self.winfo_children():
-                if isinstance(child, (CTkFrame, CTkButton, CTkLabel, CTkSlider, CTkCheckBox, CTkEntry, CTkProgressBar)):
+                if isinstance(child, CTkBaseClass):
                     child.configure(bg_color=self.fg_color)
 
         super().configure(*args, **kwargs)

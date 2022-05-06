@@ -5,6 +5,7 @@ import os
 import platform
 import ctypes
 import re
+from typing import Union
 
 from ..appearance_mode_tracker import AppearanceModeTracker
 from ..theme_manager import CTkThemeManager
@@ -32,6 +33,8 @@ class CTk(tkinter.Tk):
 
         self.current_width = 600  # initial window size, always without scaling
         self.current_height = 500
+        self.minsize: Union[tuple, None] = None
+        self.maxsize: Union[tuple, None] = None
 
         self.fg_color = CTkThemeManager.theme["color"]["window_bg_color"] if fg_color == "default_theme" else fg_color
 

@@ -2,8 +2,6 @@ import tkinter
 import customtkinter  # <- import the CustomTkinter module
 
 customtkinter.ScalingTracker.set_window_scaling(1.5)
-customtkinter.ScalingTracker.set_spacing_scaling(1.5)
-customtkinter.ScalingTracker.set_widget_scaling(1.5)
 
 customtkinter.set_appearance_mode("dark")  # Modes: "System" (standard), "Dark", "Light"
 customtkinter.set_default_color_theme("blue")  # Themes: "blue" (standard), "green", "dark-blue"
@@ -19,6 +17,7 @@ def button_function():
 
 
 def slider_function(value):
+    customtkinter.set_user_scaling(value * 2)
     progressbar_1.set(value)
 
 
