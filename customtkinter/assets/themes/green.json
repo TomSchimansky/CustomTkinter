@@ -1,4 +1,3 @@
-
 {
   "color": {
     "window_bg_color": ["gray92", "gray12"],
@@ -30,7 +29,6 @@
     "switch_button_hover": ["gray30", "gray90"],
     "darken_factor": 0.8
   },
-
   "text": {
     "macOS": {
       "font": "SF Display",
@@ -44,7 +42,6 @@
       "font": "Roboto",
       "size": -13
     }
-
   },
   "shape": {
     "button_corner_radius": 6,
