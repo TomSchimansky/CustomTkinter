@@ -1,0 +1,69 @@
+{
+  "color": {
+    "window_bg_color": ["#181b28", "#181b28"],
+    "button": ["#212435", "#212435"],
+    "button_hover": ["#171926", "#171926"],
+    "button_border": ["#080b12", "#080b12"],
+    "checkbox_border": ["#01e9c4", "#01e9c4"],
+    "checkmark": ["#01e9c4", "#01e9c4"],
+    "entry": ["#212435", "#212435"],
+    "entry_border": ["#080b12", "#080b12"],
+    "entry_placeholder_text": ["#cdc8ce", "#cdc8ce"],
+    "frame_border": ["#10121f", "#10121f"],
+    "frame_low": ["#181b28", "#181b28"],
+    "frame_high": ["#181b28", "#181b28"],
+    "label": [null, null],
+    "text": ["#cdc8ce", "#cdc8ce"],
+    "text_disabled": ["#7a8894", "#7a8894"],
+    "text_button_disabled": ["#7a8894", "#7a8894"],
+    "progressbar": ["#c452f8", "#c452f8"],
+    "progressbar_progress": ["#363844", "#363844"],
+    "progressbar_border": ["#0d101f", "#0d101f"],
+    "slider": ["#c452f8", "#c452f8"],
+    "slider_progress": ["#363844", "#363844"],
+    "slider_button": ["#5b40c5", "#5b40c5"],
+    "slider_button_hover": ["#c452f8", "#c452f8"],
+    "switch": ["#1f2233", "#1f2233"],
+    "switch_progress": ["#00e6c3", "#00e6c3"],
+    "switch_button": ["#2e324a", "#2e324a"],
+    "switch_button_hover": ["#2e324a", "#2e324a"],
+    "darken_factor": 0.1
+  },
+  "text": {
+    "macOS": {
+      "font": "SF Display",
+      "size": -13
+    },
+    "Windows": {
+      "font": "Roboto",
+      "size": -13
+    },
+    "Linux": {
+      "font": "Roboto",
+      "size": -13
+    }
+  },
+  "shape": {
+    "button_corner_radius": 8,
+    "button_border_width": 2,
+    "checkbox_corner_radius": 7,
+    "checkbox_border_width": 3,
+    "radiobutton_corner_radius": 1000,
+    "radiobutton_border_width_unchecked": 3,
+    "radiobutton_border_width_checked": 6,
+    "entry_border_width": 2,
+    "frame_corner_radius": 10,
+    "frame_border_width": 2,
+    "label_corner_radius": 8,
+    "progressbar_border_width": 2,
+    "progressbar_corner_radius": 1000,
+    "slider_border_width": 6,
+    "slider_corner_radius": 8,
+    "slider_button_length": 0,
+    "slider_button_corner_radius": 1000,
+    "switch_border_width": 3,
+    "switch_corner_radius": 1000,
+    "switch_button_corner_radius": 1000,
+    "switch_button_length": 2
+  }
+}

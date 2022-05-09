@@ -28,7 +28,6 @@
     "switch_button": ["gray36", "#D5D9DE"],
     "switch_button_hover": ["gray20", "gray100"]
   },
-
   "text": {
     "macOS": {
       "font": "SF Display",
@@ -42,7 +41,6 @@
       "font": "Roboto",
       "size": -13
     }
-
   },
   "shape": {
     "button_corner_radius": 8,
