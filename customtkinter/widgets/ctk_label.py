@@ -74,22 +74,23 @@ class CTkLabel(CTkBaseClass):
                                                                              self.apply_widget_scaling(self.corner_radius),
                                                                              0)
 
-        self.canvas.configure(bg=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
+        if no_color_updates is False or requires_recoloring:
+            if CTkThemeManager.single_color(self.fg_color, self.appearance_mode) is not None:
+                self.canvas.itemconfig("inner_parts",
+                                       fill=CTkThemeManager.single_color(self.fg_color, self.appearance_mode),
+                                       outline=CTkThemeManager.single_color(self.fg_color, self.appearance_mode))
 
-        if CTkThemeManager.single_color(self.fg_color, self.appearance_mode) is not None:
-            self.canvas.itemconfig("inner_parts",
-                                   fill=CTkThemeManager.single_color(self.fg_color, self.appearance_mode),
-                                   outline=CTkThemeManager.single_color(self.fg_color, self.appearance_mode))
+                self.text_label.configure(fg=CTkThemeManager.single_color(self.text_color, self.appearance_mode),
+                                          bg=CTkThemeManager.single_color(self.fg_color, self.appearance_mode))
+            else:
+                self.canvas.itemconfig("inner_parts",
+                                       fill=CTkThemeManager.single_color(self.bg_color, self.appearance_mode),
+                                       outline=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
 
-            self.text_label.configure(fg=CTkThemeManager.single_color(self.text_color, self.appearance_mode),
-                                      bg=CTkThemeManager.single_color(self.fg_color, self.appearance_mode))
-        else:
-            self.canvas.itemconfig("inner_parts",
-                                   fill=CTkThemeManager.single_color(self.bg_color, self.appearance_mode),
-                                   outline=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
+                self.text_label.configure(fg=CTkThemeManager.single_color(self.text_color, self.appearance_mode),
+                                          bg=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
 
-            self.text_label.configure(fg=CTkThemeManager.single_color(self.text_color, self.appearance_mode),
-                                      bg=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
+            self.canvas.configure(bg=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
 
     def configure(self, *args, **kwargs):
         require_redraw = False  # some attribute changes require a call of self.draw() at the end

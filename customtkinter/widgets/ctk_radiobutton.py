@@ -270,13 +270,16 @@ class CTkRadioButton(CTkBaseClass):
                 self.deselect(from_variable_callback=True)
 
     def invoke(self, event=0):
-        if self.function is not None:
-            self.function()
-
         if self.state == tkinter.NORMAL:
             if self.check_state is False:
                 self.check_state = True
                 self.select()
+
+        if self.function is not None:
+            try:
+                self.function()
+            except:
+                pass
 
     def select(self, from_variable_callback=False):
         self.check_state = True

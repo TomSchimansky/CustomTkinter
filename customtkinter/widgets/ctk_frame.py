@@ -76,9 +76,15 @@ class CTkFrame(CTkBaseClass):
                                                                              self.apply_widget_scaling(self.border_width))
 
         if no_color_updates is False or requires_recoloring:
-            self.canvas.itemconfig("inner_parts",
-                                   fill=CTkThemeManager.single_color(self.fg_color, self.appearance_mode),
-                                   outline=CTkThemeManager.single_color(self.fg_color, self.appearance_mode))
+            if self.fg_color is None:
+                self.canvas.itemconfig("inner_parts",
+                                       fill=CTkThemeManager.single_color(self.bg_color, self.appearance_mode),
+                                       outline=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
+            else:
+                self.canvas.itemconfig("inner_parts",
+                                       fill=CTkThemeManager.single_color(self.fg_color, self.appearance_mode),
+                                       outline=CTkThemeManager.single_color(self.fg_color, self.appearance_mode))
+
             self.canvas.itemconfig("border_parts",
                                    fill=CTkThemeManager.single_color(self.border_color, self.appearance_mode),
                                    outline=CTkThemeManager.single_color(self.border_color, self.appearance_mode))

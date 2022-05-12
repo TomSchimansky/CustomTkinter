@@ -319,25 +319,25 @@ class CTkCheckBox(CTkBaseClass):
         self.check_state = True
         self.draw()
 
-        if self.function is not None:
-            self.function()
-
         if self.variable is not None and not from_variable_callback:
             self.variable_callback_blocked = True
             self.variable.set(self.onvalue)
             self.variable_callback_blocked = False
 
+        if self.function is not None:
+            self.function()
+
     def deselect(self, from_variable_callback=False):
         self.check_state = False
         self.draw()
-
-        if self.function is not None:
-            self.function()
 
         if self.variable is not None and not from_variable_callback:
             self.variable_callback_blocked = True
             self.variable.set(self.offvalue)
             self.variable_callback_blocked = False
+
+        if self.function is not None:
+            self.function()
 
     def get(self):
         return self.onvalue if self.check_state is True else self.offvalue
