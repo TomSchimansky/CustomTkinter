@@ -29,7 +29,8 @@ class CTkEntry(CTkBaseClass):
         else:
             super().__init__(*args, bg_color=bg_color, width=width, height=height)
 
-        self.configure_basic_grid()
+        self.grid_rowconfigure(0, weight=1)
+        self.grid_columnconfigure(0, weight=1)
 
         self.fg_color = CTkThemeManager.theme["color"]["entry"] if fg_color == "default_theme" else fg_color
         self.text_color = CTkThemeManager.theme["color"]["text"] if text_color == "default_theme" else text_color
@@ -76,10 +77,6 @@ class CTkEntry(CTkBaseClass):
 
         self.canvas.configure(width=self.apply_widget_scaling(self.desired_width), height=self.apply_widget_scaling(self.desired_height))
         self.draw()
-
-    def configure_basic_grid(self):
-        self.grid_rowconfigure(0, weight=1)
-        self.grid_columnconfigure(0, weight=1)
 
     def set_placeholder(self, event=None):
         if self.placeholder_text is not None:
@@ -152,6 +149,11 @@ class CTkEntry(CTkBaseClass):
         if "text_color" in kwargs:
             self.text_color = kwargs["text_color"]
             del kwargs["text_color"]
+            require_redraw = True
+
+        if "border_color" in kwargs:
+            self.border_color = kwargs["border_color"]
+            del kwargs["border_color"]
             require_redraw = True
 
         if "corner_radius" in kwargs:

@@ -66,8 +66,8 @@ class CTkButton(CTkBaseClass):
 
         self.canvas = CTkCanvas(master=self,
                                 highlightthickness=0,
-                                width=self.round_size(self.apply_widget_scaling(self.desired_width)),
-                                height=self.round_size(self.apply_widget_scaling(self.desired_height)))
+                                width=self.apply_widget_scaling(self.desired_width),
+                                height=self.apply_widget_scaling(self.desired_height))
         self.canvas.grid(row=0, column=0, rowspan=2, columnspan=2, sticky="nsew")
         self.draw_engine = CTkDrawEngine(self.canvas, CTkSettings.preferred_drawing_method)
 
@@ -98,8 +98,8 @@ class CTkButton(CTkBaseClass):
             self.image_label.destroy()
             self.image_label = None
 
-        self.canvas.configure(width=self.round_size(self.apply_widget_scaling(self.desired_width)),
-                              height=self.round_size(self.apply_widget_scaling(self.desired_height)))
+        self.canvas.configure(width=self.apply_widget_scaling(self.desired_width),
+                              height=self.apply_widget_scaling(self.desired_height)),
         self.draw()
 
     def draw(self, no_color_updates=False):
@@ -190,37 +190,45 @@ class CTkButton(CTkBaseClass):
 
         # create grid layout with just an image given
         if self.image_label is not None and self.text_label is None:
-            self.image_label.grid(row=0, column=0, rowspan=2, columnspan=2, sticky="", pady=self.apply_widget_scaling(self.border_width))
+            self.image_label.grid(row=0, column=0, rowspan=2, columnspan=2, sticky="",
+                                  pady=(self.apply_widget_scaling(self.border_width), self.apply_widget_scaling(self.border_width) + 1))  # bottom pady with +1 for rounding to even
 
         # create grid layout with just text given
         if self.image_label is None and self.text_label is not None:
             self.text_label.grid(row=0, column=0, rowspan=2, columnspan=2, sticky="",
-                                 padx=self.apply_widget_scaling(self.corner_radius), pady=self.apply_widget_scaling(self.border_width) + 1)
+                                 padx=self.apply_widget_scaling(self.corner_radius),
+                                 pady=(self.apply_widget_scaling(self.border_width), self.apply_widget_scaling(self.border_width) + 1))  # bottom pady with +1 for rounding to even
 
         # create grid layout of image and text label in 2x2 grid system with given compound
         if self.image_label is not None and self.text_label is not None:
             if self.compound == tkinter.LEFT or self.compound == "left":
                 self.image_label.grid(row=0, column=0, sticky="e", rowspan=2, columnspan=1,
-                                      padx=(max(self.apply_widget_scaling(self.corner_radius), self.apply_widget_scaling(self.border_width)), 2), pady=self.apply_widget_scaling(self.border_width))
+                                      padx=(max(self.apply_widget_scaling(self.corner_radius), self.apply_widget_scaling(self.border_width)), 2),
+                                      pady=(self.apply_widget_scaling(self.border_width), self.apply_widget_scaling(self.border_width) + 1))
                 self.text_label.grid(row=0, column=1, sticky="w", rowspan=2, columnspan=1,
-                                     padx=(2, max(self.apply_widget_scaling(self.corner_radius), self.apply_widget_scaling(self.border_width))), pady=self.apply_widget_scaling(self.border_width))
+                                     padx=(2, max(self.apply_widget_scaling(self.corner_radius), self.apply_widget_scaling(self.border_width))),
+                                     pady=(self.apply_widget_scaling(self.border_width), self.apply_widget_scaling(self.border_width) + 1))
             elif self.compound == tkinter.TOP or self.compound == "top":
                 self.image_label.grid(row=0, column=0, sticky="s", columnspan=2, rowspan=1,
-                                      padx=max(self.apply_widget_scaling(self.corner_radius), self.apply_widget_scaling(self.border_width)), pady=(self.apply_widget_scaling(self.border_width), 2))
+                                      padx=max(self.apply_widget_scaling(self.corner_radius), self.apply_widget_scaling(self.border_width)),
+                                      pady=(self.apply_widget_scaling(self.border_width), 2))
                 self.text_label.grid(row=1, column=0, sticky="n", columnspan=2, rowspan=1,
-                                     padx=max(self.apply_widget_scaling(self.corner_radius), self.apply_widget_scaling(self.border_width)), pady=(2, self.apply_widget_scaling(self.border_width)))
+                                     padx=max(self.apply_widget_scaling(self.corner_radius), self.apply_widget_scaling(self.border_width)),
+                                     pady=(2, self.apply_widget_scaling(self.border_width)))
             elif self.compound == tkinter.RIGHT or self.compound == "right":
                 self.image_label.grid(row=0, column=1, sticky="w", rowspan=2, columnspan=1,
-                                      padx=(2, max(self.apply_widget_scaling(self.corner_radius), self.apply_widget_scaling(self.border_width))), pady=self.apply_widget_scaling(self.border_width))
+                                      padx=(2, max(self.apply_widget_scaling(self.corner_radius), self.apply_widget_scaling(self.border_width))),
+                                      pady=(self.apply_widget_scaling(self.border_width), self.apply_widget_scaling(self.border_width) + 1))
                 self.text_label.grid(row=0, column=0, sticky="e", rowspan=2, columnspan=1,
-                                     padx=(max(self.apply_widget_scaling(self.corner_radius), self.apply_widget_scaling(self.border_width)), 2), pady=self.apply_widget_scaling(self.border_width))
+                                     padx=(max(self.apply_widget_scaling(self.corner_radius), self.apply_widget_scaling(self.border_width)), 2),
+                                     pady=(self.apply_widget_scaling(self.border_width), self.apply_widget_scaling(self.border_width) + 1))
             elif self.compound == tkinter.BOTTOM or self.compound == "bottom":
                 self.image_label.grid(row=1, column=0, sticky="n", columnspan=2, rowspan=1,
-                                      padx=max(self.apply_widget_scaling(self.corner_radius), self.apply_widget_scaling(self.border_width)), pady=(2, self.apply_widget_scaling(self.border_width)))
+                                      padx=max(self.apply_widget_scaling(self.corner_radius), self.apply_widget_scaling(self.border_width)),
+                                      pady=(2, self.apply_widget_scaling(self.border_width)))
                 self.text_label.grid(row=0, column=0, sticky="s", columnspan=2, rowspan=1,
-                                     padx=max(self.apply_widget_scaling(self.corner_radius), self.apply_widget_scaling(self.border_width)), pady=(self.apply_widget_scaling(self.border_width), 2))
-
-        # self.canvas.configure(bg="red")  # test
+                                     padx=max(self.apply_widget_scaling(self.corner_radius), self.apply_widget_scaling(self.border_width)),
+                                     pady=(self.apply_widget_scaling(self.border_width), 2))
 
     def configure(self, *args, **kwargs):
         require_redraw = False  # some attribute changes require a call of self.draw() at the end

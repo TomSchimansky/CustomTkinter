@@ -28,8 +28,8 @@ class CTkBaseClass(tkinter.Frame):
         self.widget_scaling = ScalingTracker.get_widget_scaling(self)
         self.spacing_scaling = ScalingTracker.get_spacing_scaling(self)
 
-        super().configure(width=self.round_size(self.apply_widget_scaling(self.desired_width)),
-                          height=self.round_size(self.apply_widget_scaling(self.desired_height)))
+        super().configure(width=self.apply_widget_scaling(self.desired_width),
+                          height=self.apply_widget_scaling(self.desired_height))
 
         # save latest geometry function and kwargs
         class GeometryCallDict(TypedDict):
@@ -167,8 +167,8 @@ class CTkBaseClass(tkinter.Frame):
         self.widget_scaling = new_widget_scaling
         self.spacing_scaling = new_spacing_scaling
 
-        super().configure(width=self.round_size(self.apply_widget_scaling(self.desired_width)),
-                          height=self.round_size(self.apply_widget_scaling(self.desired_height)))
+        super().configure(width=self.apply_widget_scaling(self.desired_width),
+                          height=self.apply_widget_scaling(self.desired_height))
 
         if self.last_geometry_manager_call is not None:
             self.last_geometry_manager_call["function"](**self.apply_argument_scaling(self.last_geometry_manager_call["kwargs"]))
@@ -206,13 +206,6 @@ class CTkBaseClass(tkinter.Frame):
 
         else:
             return font
-
-    @staticmethod
-    def round_size(size: Union[int, float, str]):
-        if isinstance(size, (int, float)):
-            return math.floor(size / 2) * 2
-        else:
-            return size
 
     def draw(self, no_color_updates=False):
         """ abstract of draw method to be overridden """

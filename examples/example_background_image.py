@@ -25,9 +25,6 @@ class App(customtkinter.CTk):
         self.maxsize(App.WIDTH, App.HEIGHT)
 
         self.protocol("WM_DELETE_WINDOW", self.on_closing)
-        self.bind("<Command-q>", self.on_closing)
-        self.bind("<Command-w>", self.on_closing)
-        self.createcommand('tk::mac::Quit', self.on_closing)
 
         # load image with PIL and convert to PhotoImage
         image = Image.open(PATH + "/test_images/bg_gradient.jpg").resize((self.WIDTH, self.HEIGHT))

@@ -10,6 +10,9 @@ root_tk = customtkinter.CTk()  # create CTk window like you do with the Tk windo
 root_tk.geometry("400x480")
 root_tk.title("CustomTkinter Test")
 
+root_tk.minsize(480, 480)
+root_tk.maxsize(520, 520)
+
 print(customtkinter.ScalingTracker.get_window_scaling(root_tk))
 
 def button_function():
@@ -18,6 +21,7 @@ def button_function():
 
 def slider_function(value):
     customtkinter.set_user_scaling(value * 2)
+    customtkinter.ScalingTracker.set_window_scaling(value * 2)
     progressbar_1.set(value)
 
 
