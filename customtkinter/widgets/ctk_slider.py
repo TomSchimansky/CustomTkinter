@@ -291,7 +291,3 @@ class CTkSlider(CTkBaseClass):
         if require_redraw:
             self.draw()
 
-    # the bind button is hidden since the wigets is using canvas
-    # Fix: https://github.com/TomSchimansky/CustomTkinter/issues/65
-    def bind(self, seq, callback):
-        self.canvas.bind(seq, callback)
