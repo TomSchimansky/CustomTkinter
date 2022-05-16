@@ -568,6 +568,15 @@ class CTkDrawEngine:
                                 slider_x_position - (button_length / 2), height - button_corner_radius)
             self._canvas.itemconfig("slider_line_1",
                                     width=button_corner_radius * 2)
+        elif orientation == "s":
+            slider_y_position = corner_radius + (button_length / 2) + (height - 2 * corner_radius - button_length) * (1 - slider_value)
+            self._canvas.coords("slider_line_1",
+                                button_corner_radius, slider_y_position - (button_length / 2),
+                                button_corner_radius, slider_y_position + (button_length / 2),
+                                width - button_corner_radius, slider_y_position + (button_length / 2),
+                                width - button_corner_radius, slider_y_position - (button_length / 2))
+            self._canvas.itemconfig("slider_line_1",
+                                    width=button_corner_radius * 2)
 
         return requires_recoloring
 

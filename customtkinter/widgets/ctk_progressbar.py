@@ -1,7 +1,7 @@
 import tkinter
 
 from .ctk_canvas import CTkCanvas
-from ..theme_manager import CTkThemeManager
+from ..ctk_theme_manager import CTkThemeManager
 from ..ctk_draw_engine import CTkDrawEngine
 from ..ctk_settings import CTkSettings
 from .widget_base_class import CTkBaseClass
@@ -17,10 +17,23 @@ class CTkProgressBar(CTkBaseClass):
                  fg_color="default_theme",
                  progress_color="default_theme",
                  corner_radius="default_theme",
-                 width=200,
-                 height=8,
+                 width=None,
+                 height=None,
                  border_width="default_theme",
+                 orient="horizontal",
                  **kwargs):
+
+        # set default dimensions according to orientation
+        if width is None:
+            if orient.lower() == "vertical":
+                width = 8
+            else:
+                width = 200
+        if height is None:
+            if orient.lower() == "vertical":
+                height = 200
+            else:
+                height = 8
 
         # transfer basic functionality (bg_color, size, appearance_mode, scaling) to CTkBaseClass
         super().__init__(*args, bg_color=bg_color, width=width, height=height, **kwargs)
@@ -39,6 +52,7 @@ class CTkProgressBar(CTkBaseClass):
         self.corner_radius = CTkThemeManager.theme["shape"]["progressbar_corner_radius"] if corner_radius == "default_theme" else corner_radius
         self.border_width = CTkThemeManager.theme["shape"]["progressbar_border_width"] if border_width == "default_theme" else border_width
         self.value = 0.5
+        self.orient = orient
 
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
@@ -74,11 +88,19 @@ class CTkProgressBar(CTkBaseClass):
         super().destroy()
 
     def draw(self, no_color_updates=False):
+        if self.orient.lower() == "horizontal":
+            orientation = "w"
+        elif self.orient.lower() == "vertical":
+            orientation = "s"
+        else:
+            orientation = "w"
+
         requires_recoloring = self.draw_engine.draw_rounded_progress_bar_with_border(self.apply_widget_scaling(self.current_width),
                                                                                      self.apply_widget_scaling(self.current_height),
                                                                                      self.apply_widget_scaling(self.corner_radius),
                                                                                      self.apply_widget_scaling(self.border_width),
-                                                                                     self.value, "w")
+                                                                                     self.value,
+                                                                                     orientation)
 
         if no_color_updates is False or requires_recoloring:
             self.canvas.configure(bg=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))

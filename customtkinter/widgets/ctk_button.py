@@ -3,7 +3,7 @@ import sys
 import math
 
 from .ctk_canvas import CTkCanvas
-from ..theme_manager import CTkThemeManager
+from ..ctk_theme_manager import CTkThemeManager
 from ..ctk_settings import CTkSettings
 from ..ctk_draw_engine import CTkDrawEngine
 from .widget_base_class import CTkBaseClass

@@ -9,7 +9,7 @@ from ..windows.ctk_tk import CTk
 from ..windows.ctk_toplevel import CTkToplevel
 from ..appearance_mode_tracker import AppearanceModeTracker
 from ..scaling_tracker import ScalingTracker
-from ..theme_manager import CTkThemeManager
+from ..ctk_theme_manager import CTkThemeManager
 
 
 class CTkBaseClass(tkinter.Frame):

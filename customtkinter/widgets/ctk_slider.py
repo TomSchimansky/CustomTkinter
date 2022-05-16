@@ -2,7 +2,7 @@ import tkinter
 import sys
 
 from .ctk_canvas import CTkCanvas
-from ..theme_manager import CTkThemeManager
+from ..ctk_theme_manager import CTkThemeManager
 from ..ctk_settings import CTkSettings
 from ..ctk_draw_engine import CTkDrawEngine
 from .widget_base_class import CTkBaseClass
@@ -21,15 +21,28 @@ class CTkSlider(CTkBaseClass):
                  from_=0,
                  to=1,
                  number_of_steps=None,
-                 width=160,
-                 height=16,
+                 width=None,
+                 height=None,
                  corner_radius="default_theme",
                  button_corner_radius="default_theme",
                  border_width="default_theme",
                  button_length="default_theme",
                  command=None,
                  variable=None,
+                 orient="horizontal",
                  **kwargs):
+
+        # set default dimensions according to orientation
+        if width is None:
+            if orient.lower() == "vertical":
+                width = 16
+            else:
+                width = 200
+        if height is None:
+            if orient.lower() == "vertical":
+                height = 200
+            else:
+                height = 16
 
         # transfer basic functionality (bg_color, size, appearance_mode, scaling) to CTkBaseClass
         super().__init__(*args, bg_color=bg_color, width=width, height=height, **kwargs)
@@ -47,6 +60,7 @@ class CTkSlider(CTkBaseClass):
         self.border_width = CTkThemeManager.theme["shape"]["slider_border_width"] if border_width == "default_theme" else border_width
         self.button_length = CTkThemeManager.theme["shape"]["slider_button_length"] if button_length == "default_theme" else button_length
         self.value = 0.5  # initial value of slider in percent
+        self.orient = orient
         self.hover_state = False
         self.from_ = from_
         self.to = to
@@ -110,13 +124,20 @@ class CTkSlider(CTkBaseClass):
                 self.configure(cursor="hand2")
 
     def draw(self, no_color_updates=False):
+        if self.orient.lower() == "horizontal":
+            orientation = "w"
+        elif self.orient.lower() == "vertical":
+            orientation = "s"
+        else:
+            orientation = "w"
+
         requires_recoloring = self.draw_engine.draw_rounded_slider_with_border_and_button(self.apply_widget_scaling(self.current_width),
                                                                                           self.apply_widget_scaling(self.current_height),
                                                                                           self.apply_widget_scaling(self.corner_radius),
                                                                                           self.apply_widget_scaling(self.border_width),
                                                                                           self.apply_widget_scaling(self.button_length),
                                                                                           self.apply_widget_scaling(self.button_corner_radius),
-                                                                                          self.value, "w")
+                                                                                          self.value, orientation)
 
         if no_color_updates is False or requires_recoloring:
             self.canvas.configure(bg=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
@@ -142,7 +163,10 @@ class CTkSlider(CTkBaseClass):
                                    outline=CTkThemeManager.single_color(self.button_color, self.appearance_mode))
 
     def clicked(self, event=None):
-        self.value = (event.x / self.current_width) / self.widget_scaling
+        if self.orient.lower() == "horizontal":
+            self.value = (event.x / self.current_width) / self.widget_scaling
+        else:
+            self.value = 1 - (event.y / self.current_height) / self.widget_scaling
 
         if self.value > 1:
             self.value = 1
