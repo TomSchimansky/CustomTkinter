@@ -5,9 +5,10 @@ import os
 import platform
 import ctypes
 import re
+from typing import Union, Tuple
 
 from ..appearance_mode_tracker import AppearanceModeTracker
-from ..theme_manager import CTkThemeManager
+from ..ctk_theme_manager import CTkThemeManager
 from ..ctk_settings import CTkSettings
 from ..scaling_tracker import ScalingTracker
 
@@ -27,6 +28,11 @@ class CTkToplevel(tkinter.Toplevel):
 
         self.current_width = 600  # initial window size, always without scaling
         self.current_height = 500
+        self.min_width: int = 0
+        self.min_height: int = 0
+        self.max_width: int = 1_000_000
+        self.max_height: int = 1_000_000
+        self.last_resizable_args: Union[Tuple[list, dict], None] = None  # (args, kwargs)
 
         self.fg_color = CTkThemeManager.theme["color"]["window_bg_color"] if fg_color == "default_theme" else fg_color
 
@@ -59,8 +65,24 @@ class CTkToplevel(tkinter.Toplevel):
     def set_scaling(self, new_widget_scaling, new_spacing_scaling, new_window_scaling):
         self.window_scaling = new_window_scaling
 
+        # reset min, max and resizable constraints for applying scaling
+        if self.last_resizable_args is not None:
+            super().resizable(True, True)
+        if self.min_width is not None or self.min_height is not None:
+            super().minsize(0, 0)
+        if self.max_width is not None or self.max_height is not None:
+            super().maxsize(1_000_000, 1_000_000)
+
         # set new window size by applying scaling to the current window size
         self.geometry(f"{self.current_width}x{self.current_height}")
+
+        # set scaled min, max sizes and reapply resizable
+        if self.last_resizable_args is not None:
+            super().resizable(*self.last_resizable_args[0], **self.last_resizable_args[1])  # args, kwargs
+        if self.min_width is not None or self.min_height is not None:
+            super().minsize(self.apply_window_scaling(self.min_width), self.apply_window_scaling(self.min_height))
+        if self.max_width is not None or self.max_height is not None:
+            super().maxsize(self.apply_window_scaling(self.max_width), self.apply_window_scaling(self.max_height))
 
     def apply_geometry_scaling(self, geometry_string):
         numbers = list(map(int, re.split(r"[x+]", geometry_string)))  # split geometry string into list of numbers
@@ -78,7 +100,7 @@ class CTkToplevel(tkinter.Toplevel):
 
     def apply_window_scaling(self, value):
         if isinstance(value, (int, float)):
-            return value * self.window_scaling
+            return int(value * self.window_scaling)
         else:
             return value
 
@@ -87,21 +109,38 @@ class CTkToplevel(tkinter.Toplevel):
 
         # update width and height attributes
         numbers = list(map(int, re.split(r"[x+]", geometry_string)))  # split geometry string into list of numbers
-        self.current_width, self.current_height = numbers[0], numbers[1]
+        self.current_width = max(self.min_width, min(numbers[0], self.max_width))  # bound value between min and max
+        self.current_height = max(self.min_height, min(numbers[1], self.max_height))
 
     def destroy(self):
         AppearanceModeTracker.remove(self.set_appearance_mode)
+        ScalingTracker.remove_window(self.set_scaling, self)
         self.disable_macos_dark_title_bar()
         super().destroy()
 
     def resizable(self, *args, **kwargs):
         super().resizable(*args, **kwargs)
+        self.last_resizable_args = (args, kwargs)
 
         if sys.platform.startswith("win"):
             if self.appearance_mode == 1:
                 self.windows_set_titlebar_color("dark")
             else:
                 self.windows_set_titlebar_color("light")
+
+    def minsize(self, width=None, height=None):
+        self.min_width = width
+        self.min_height = height
+        if self.current_width < width: self.current_width = width
+        if self.current_height < height: self.current_height = height
+        super().minsize(self.apply_window_scaling(self.min_width), self.apply_window_scaling(self.min_height))
+
+    def maxsize(self, width=None, height=None):
+        self.max_width = width
+        self.max_height = height
+        if self.current_width > width: self.current_width = width
+        if self.current_height > height: self.current_height = height
+        super().maxsize(self.apply_window_scaling(self.max_width), self.apply_window_scaling(self.max_height))
 
     def config(self, *args, **kwargs):
         self.configure(*args, **kwargs)

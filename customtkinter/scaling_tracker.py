@@ -81,9 +81,24 @@ class ScalingTracker:
         if window_root not in cls.window_dpi_scaling_dict:
             cls.window_dpi_scaling_dict[window_root] = cls.get_window_dpi_scaling(window_root)
 
-        if not cls.update_loop_running:
-            window_root.after(100, cls.check_dpi_scaling)
-            cls.update_loop_running = True
+        #if not cls.update_loop_running:
+        #    window_root.after(100, cls.check_dpi_scaling)
+        #    cls.update_loop_running = True
+
+    @classmethod
+    def remove_widget(cls, widget_callback, widget):
+        window_root = cls.get_window_root_of_widget(widget)
+        try:
+            cls.window_widgets_dict[window_root].remove(widget_callback)
+        except:
+            pass
+
+    @classmethod
+    def remove_window(cls, window_callback, window):
+        try:
+            del cls.window_widgets_dict[window]
+        except:
+            pass
 
     @classmethod
     def add_window(cls, window_callback, window):
@@ -133,6 +148,9 @@ class ScalingTracker:
 
     @classmethod
     def check_dpi_scaling(cls):
+        # check for every window if scaling value changed
+        # (not implemented yet)
+
         # find an existing tkinter object for the next call of .after()
         for root_tk in cls.window_widgets_dict.keys():
             try:

@@ -7,7 +7,7 @@ from ..widgets.ctk_frame import CTkFrame
 from ..windows.ctk_toplevel import CTkToplevel
 from ..widgets.ctk_button import CTkButton
 from ..appearance_mode_tracker import AppearanceModeTracker
-from ..theme_manager import CTkThemeManager
+from ..ctk_theme_manager import CTkThemeManager
 
 
 class CTkInputDialog:

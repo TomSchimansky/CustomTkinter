@@ -2,7 +2,7 @@ import tkinter
 import sys
 
 from .ctk_canvas import CTkCanvas
-from ..theme_manager import CTkThemeManager
+from ..ctk_theme_manager import CTkThemeManager
 from ..ctk_settings import CTkSettings
 from ..ctk_draw_engine import CTkDrawEngine
 from .widget_base_class import CTkBaseClass
@@ -325,7 +325,10 @@ class CTkCheckBox(CTkBaseClass):
             self.variable_callback_blocked = False
 
         if self.function is not None:
-            self.function()
+            try:
+                self.function()
+            except:
+                pass
 
     def deselect(self, from_variable_callback=False):
         self.check_state = False
@@ -337,7 +340,10 @@ class CTkCheckBox(CTkBaseClass):
             self.variable_callback_blocked = False
 
         if self.function is not None:
-            self.function()
+            try:
+                self.function()
+            except:
+                pass
 
     def get(self):
         return self.onvalue if self.check_state is True else self.offvalue
