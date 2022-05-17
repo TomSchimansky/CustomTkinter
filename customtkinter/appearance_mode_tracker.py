@@ -1,6 +1,7 @@
 import sys
 import tkinter
 from distutils.version import StrictVersion as Version
+from typing import Callable
 
 try:
     import darkdetect
@@ -32,7 +33,7 @@ class AppearanceModeTracker:
                 cls.update_callbacks()
 
     @classmethod
-    def add(cls, callback, widget=None):
+    def add(cls, callback: Callable, widget=None):
         cls.callback_list.append(callback)
 
         if widget is not None:
@@ -45,11 +46,11 @@ class AppearanceModeTracker:
                     cls.update_loop_running = True
 
     @classmethod
-    def remove(cls, callback):
+    def remove(cls, callback: Callable):
         cls.callback_list.remove(callback)
 
     @staticmethod
-    def detect_appearance_mode():
+    def detect_appearance_mode() -> int:
         try:
             if darkdetect.theme() == "Dark":
                 return 1  # Dark
@@ -103,11 +104,11 @@ class AppearanceModeTracker:
         cls.update_loop_running = False
 
     @classmethod
-    def get_mode(cls):
+    def get_mode(cls) -> int:
         return cls.appearance_mode
 
     @classmethod
-    def set_appearance_mode(cls, mode_string):
+    def set_appearance_mode(cls, mode_string: str):
         if mode_string.lower() == "dark":
             cls.appearance_mode_set_by = "user"
             new_appearance_mode = 1
@@ -126,6 +127,3 @@ class AppearanceModeTracker:
 
         elif mode_string.lower() == "system":
             cls.appearance_mode_set_by = "system"
-
-
-AppearanceModeTracker.init_appearance_mode()

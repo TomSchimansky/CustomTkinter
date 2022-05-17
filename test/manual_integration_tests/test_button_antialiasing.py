@@ -46,5 +46,5 @@ for i in range(0, 21, 1):
                                 border_color="gray10", fg_color="#228da8")
     b.grid(row=i, column=0, pady=5, padx=15, sticky="nsew")
 
-customtkinter.CTkSettings.print_settings()
+customtkinter.Settings.print_settings()
 app.mainloop()

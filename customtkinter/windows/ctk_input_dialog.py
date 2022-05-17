@@ -7,7 +7,7 @@ from ..widgets.ctk_frame import CTkFrame
 from ..windows.ctk_toplevel import CTkToplevel
 from ..widgets.ctk_button import CTkButton
 from ..appearance_mode_tracker import AppearanceModeTracker
-from ..ctk_theme_manager import CTkThemeManager
+from ..theme_manager import ThemeManager
 
 
 class CTkInputDialog:
@@ -27,10 +27,10 @@ class CTkInputDialog:
 
         self.height = len(text.split("\n"))*20 + 150
 
-        self.window_bg_color = CTkThemeManager.theme["color"]["window_bg_color"]
-        self.fg_color = CTkThemeManager.theme["color"]["button"] if fg_color == "default_theme" else fg_color
-        self.hover_color = CTkThemeManager.theme["color"]["button_hover"] if hover_color == "default_theme" else hover_color
-        self.border_color = CTkThemeManager.theme["color"]["button_hover"] if border_color == "default_theme" else border_color
+        self.window_bg_color = ThemeManager.theme["color"]["window_bg_color"]
+        self.fg_color = ThemeManager.theme["color"]["button"] if fg_color == "default_theme" else fg_color
+        self.hover_color = ThemeManager.theme["color"]["button_hover"] if hover_color == "default_theme" else hover_color
+        self.border_color = ThemeManager.theme["color"]["button_hover"] if border_color == "default_theme" else border_color
 
         self.top = CTkToplevel()
         self.top.geometry(f"{280}x{self.height}")

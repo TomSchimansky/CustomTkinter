@@ -1,10 +1,10 @@
 import tkinter
-from ..ctk_settings import CTkSettings
+from ..settings import Settings
 
 
 class CTkCanvas(tkinter.Canvas):
 
-    radius_to_char_fine = CTkSettings.radius_to_char_fine  # dict to map radius to font circle character
+    radius_to_char_fine = Settings.radius_to_char_fine  # dict to map radius to font circle character
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

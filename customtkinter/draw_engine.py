@@ -6,7 +6,7 @@ from typing import Union
 from .widgets.ctk_canvas import CTkCanvas
 
 
-class CTkDrawEngine:
+class DrawEngine:
     """
     This is the core of the CustomTkinter library where all the drawing on the tkinter.Canvas happens.
     A year of experimenting and trying out different drawing methods have led to the current state of this

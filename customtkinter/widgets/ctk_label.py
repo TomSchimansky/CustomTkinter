@@ -1,9 +1,9 @@
 import tkinter
 
 from .ctk_canvas import CTkCanvas
-from ..ctk_theme_manager import CTkThemeManager
-from ..ctk_settings import CTkSettings
-from ..ctk_draw_engine import CTkDrawEngine
+from ..theme_manager import ThemeManager
+from ..settings import Settings
+from ..draw_engine import DrawEngine
 from .widget_base_class import CTkBaseClass
 
 
@@ -27,17 +27,17 @@ class CTkLabel(CTkBaseClass):
             super().__init__(*args, bg_color=bg_color, width=width, height=height)
 
         # color
-        self.fg_color = CTkThemeManager.theme["color"]["label"] if fg_color == "default_theme" else fg_color
+        self.fg_color = ThemeManager.theme["color"]["label"] if fg_color == "default_theme" else fg_color
         if self.fg_color is None:
             self.fg_color = self.bg_color
-        self.text_color = CTkThemeManager.theme["color"]["text"] if text_color == "default_theme" else text_color
+        self.text_color = ThemeManager.theme["color"]["text"] if text_color == "default_theme" else text_color
 
         # shape
-        self.corner_radius = CTkThemeManager.theme["shape"]["label_corner_radius"] if corner_radius == "default_theme" else corner_radius
+        self.corner_radius = ThemeManager.theme["shape"]["label_corner_radius"] if corner_radius == "default_theme" else corner_radius
 
         # text
         self.text = text
-        self.text_font = (CTkThemeManager.theme["text"]["font"], CTkThemeManager.theme["text"]["size"]) if text_font == "default_theme" else text_font
+        self.text_font = (ThemeManager.theme["text"]["font"], ThemeManager.theme["text"]["size"]) if text_font == "default_theme" else text_font
 
         # configure grid system (1x1)
         self.grid_rowconfigure(0, weight=1)
@@ -48,7 +48,7 @@ class CTkLabel(CTkBaseClass):
                                 width=self.apply_widget_scaling(self.desired_width),
                                 height=self.apply_widget_scaling(self.desired_height))
         self.canvas.grid(row=0, column=0, sticky="nswe")
-        self.draw_engine = CTkDrawEngine(self.canvas, CTkSettings.preferred_drawing_method)
+        self.draw_engine = DrawEngine(self.canvas, Settings.preferred_drawing_method)
 
         self.text_label = tkinter.Label(master=self,
                                         highlightthickness=0,
@@ -75,22 +75,22 @@ class CTkLabel(CTkBaseClass):
                                                                              0)
 
         if no_color_updates is False or requires_recoloring:
-            if CTkThemeManager.single_color(self.fg_color, self.appearance_mode) is not None:
+            if ThemeManager.single_color(self.fg_color, self.appearance_mode) is not None:
                 self.canvas.itemconfig("inner_parts",
-                                       fill=CTkThemeManager.single_color(self.fg_color, self.appearance_mode),
-                                       outline=CTkThemeManager.single_color(self.fg_color, self.appearance_mode))
+                                       fill=ThemeManager.single_color(self.fg_color, self.appearance_mode),
+                                       outline=ThemeManager.single_color(self.fg_color, self.appearance_mode))
 
-                self.text_label.configure(fg=CTkThemeManager.single_color(self.text_color, self.appearance_mode),
-                                          bg=CTkThemeManager.single_color(self.fg_color, self.appearance_mode))
+                self.text_label.configure(fg=ThemeManager.single_color(self.text_color, self.appearance_mode),
+                                          bg=ThemeManager.single_color(self.fg_color, self.appearance_mode))
             else:
                 self.canvas.itemconfig("inner_parts",
-                                       fill=CTkThemeManager.single_color(self.bg_color, self.appearance_mode),
-                                       outline=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
+                                       fill=ThemeManager.single_color(self.bg_color, self.appearance_mode),
+                                       outline=ThemeManager.single_color(self.bg_color, self.appearance_mode))
 
-                self.text_label.configure(fg=CTkThemeManager.single_color(self.text_color, self.appearance_mode),
-                                          bg=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
+                self.text_label.configure(fg=ThemeManager.single_color(self.text_color, self.appearance_mode),
+                                          bg=ThemeManager.single_color(self.bg_color, self.appearance_mode))
 
-            self.canvas.configure(bg=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
+            self.canvas.configure(bg=ThemeManager.single_color(self.bg_color, self.appearance_mode))
 
     def configure(self, *args, **kwargs):
         require_redraw = False  # some attribute changes require a call of self.draw() at the end

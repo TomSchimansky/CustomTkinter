@@ -3,7 +3,7 @@ import os
 import json
 
 
-class CTkThemeManager:
+class ThemeManager:
 
     theme = {}  # contains all the theme data
     built_in_themes = ["blue", "green", "dark-blue", "sweetkind"]
@@ -65,11 +65,11 @@ class CTkThemeManager:
     @classmethod
     def multiply_hex_color(cls, hex_color: str, factor: float = 1.0) -> str:
         try:
-            rgb_color = CTkThemeManager.hex2rgb(hex_color)
+            rgb_color = ThemeManager.hex2rgb(hex_color)
             dark_rgb_color = (min(255, rgb_color[0] * factor),
                               min(255, rgb_color[1] * factor),
                               min(255, rgb_color[2] * factor))
-            return CTkThemeManager.rgb2hex(dark_rgb_color)
+            return ThemeManager.rgb2hex(dark_rgb_color)
         except Exception as err:
             # sys.stderr.write("ERROR (CTkColorManager): failed to darken the following color: " + str(hex_color) + " " + str(err))
             return hex_color
@@ -78,6 +78,3 @@ class CTkThemeManager:
     def set_main_color(cls, main_color, main_color_hover):
         cls.MAIN_COLOR = main_color
         cls.MAIN_HOVER_COLOR = main_color_hover
-
-
-CTkThemeManager.load_theme("blue")  # standard theme

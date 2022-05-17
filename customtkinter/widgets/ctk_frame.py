@@ -1,9 +1,9 @@
 import tkinter
 
 from .ctk_canvas import CTkCanvas
-from ..ctk_theme_manager import CTkThemeManager
-from ..ctk_settings import CTkSettings
-from ..ctk_draw_engine import CTkDrawEngine
+from ..theme_manager import ThemeManager
+from ..settings import Settings
+from ..draw_engine import DrawEngine
 from .widget_base_class import CTkBaseClass
 
 
@@ -22,30 +22,30 @@ class CTkFrame(CTkBaseClass):
         super().__init__(*args, bg_color=bg_color, width=width, height=height, **kwargs)
 
         # color
-        self.border_color = CTkThemeManager.theme["color"]["frame_border"] if border_color == "default_theme" else border_color
+        self.border_color = ThemeManager.theme["color"]["frame_border"] if border_color == "default_theme" else border_color
 
         if fg_color == "default_theme":
             if isinstance(self.master, CTkFrame):
-                if self.master.fg_color == CTkThemeManager.theme["color"]["frame_low"]:
-                    self.fg_color = CTkThemeManager.theme["color"]["frame_high"]
+                if self.master.fg_color == ThemeManager.theme["color"]["frame_low"]:
+                    self.fg_color = ThemeManager.theme["color"]["frame_high"]
                 else:
-                    self.fg_color = CTkThemeManager.theme["color"]["frame_low"]
+                    self.fg_color = ThemeManager.theme["color"]["frame_low"]
             else:
-                self.fg_color = CTkThemeManager.theme["color"]["frame_low"]
+                self.fg_color = ThemeManager.theme["color"]["frame_low"]
         else:
             self.fg_color = fg_color
 
         # shape
-        self.corner_radius = CTkThemeManager.theme["shape"]["frame_corner_radius"] if corner_radius == "default_theme" else corner_radius
-        self.border_width = CTkThemeManager.theme["shape"]["frame_border_width"] if border_width == "default_theme" else border_width
+        self.corner_radius = ThemeManager.theme["shape"]["frame_corner_radius"] if corner_radius == "default_theme" else corner_radius
+        self.border_width = ThemeManager.theme["shape"]["frame_border_width"] if border_width == "default_theme" else border_width
 
         self.canvas = CTkCanvas(master=self,
                                 highlightthickness=0,
                                 width=self.apply_widget_scaling(self.current_width),
                                 height=self.apply_widget_scaling(self.current_height))
         self.canvas.place(x=0, y=0, relwidth=1, relheight=1)
-        self.canvas.configure(bg=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
-        self.draw_engine = CTkDrawEngine(self.canvas, CTkSettings.preferred_drawing_method)
+        self.canvas.configure(bg=ThemeManager.single_color(self.bg_color, self.appearance_mode))
+        self.draw_engine = DrawEngine(self.canvas, Settings.preferred_drawing_method)
 
         self.bind('<Configure>', self.update_dimensions_event)
 
@@ -78,17 +78,17 @@ class CTkFrame(CTkBaseClass):
         if no_color_updates is False or requires_recoloring:
             if self.fg_color is None:
                 self.canvas.itemconfig("inner_parts",
-                                       fill=CTkThemeManager.single_color(self.bg_color, self.appearance_mode),
-                                       outline=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
+                                       fill=ThemeManager.single_color(self.bg_color, self.appearance_mode),
+                                       outline=ThemeManager.single_color(self.bg_color, self.appearance_mode))
             else:
                 self.canvas.itemconfig("inner_parts",
-                                       fill=CTkThemeManager.single_color(self.fg_color, self.appearance_mode),
-                                       outline=CTkThemeManager.single_color(self.fg_color, self.appearance_mode))
+                                       fill=ThemeManager.single_color(self.fg_color, self.appearance_mode),
+                                       outline=ThemeManager.single_color(self.fg_color, self.appearance_mode))
 
             self.canvas.itemconfig("border_parts",
-                                   fill=CTkThemeManager.single_color(self.border_color, self.appearance_mode),
-                                   outline=CTkThemeManager.single_color(self.border_color, self.appearance_mode))
-            self.canvas.configure(bg=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
+                                   fill=ThemeManager.single_color(self.border_color, self.appearance_mode),
+                                   outline=ThemeManager.single_color(self.border_color, self.appearance_mode))
+            self.canvas.configure(bg=ThemeManager.single_color(self.bg_color, self.appearance_mode))
 
         self.canvas.tag_lower("inner_parts")
         self.canvas.tag_lower("border_parts")

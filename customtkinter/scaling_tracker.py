@@ -1,13 +1,13 @@
 import tkinter
 import sys
+from typing import Callable, Type
 
-from .ctk_settings import CTkSettings
+from .settings import Settings
 
 
 class ScalingTracker:
 
     window_widgets_dict = {}  # contains window objects as keys with list of widget callbacks as elements
-
     window_dpi_scaling_dict = {}  # contains window objects as keys and corresponding scaling factors
 
     widget_scaling = 1  # user values which multiply to detected window scaling factor
@@ -17,32 +17,32 @@ class ScalingTracker:
     update_loop_running = False
 
     @classmethod
-    def get_widget_scaling(cls, widget):
+    def get_widget_scaling(cls, widget) -> float:
         window_root = cls.get_window_root_of_widget(widget)
         return cls.window_dpi_scaling_dict[window_root] * cls.widget_scaling
 
     @classmethod
-    def get_spacing_scaling(cls, widget):
+    def get_spacing_scaling(cls, widget) -> float:
         window_root = cls.get_window_root_of_widget(widget)
         return cls.window_dpi_scaling_dict[window_root] * cls.spacing_scaling
 
     @classmethod
-    def get_window_scaling(cls, window):
+    def get_window_scaling(cls, window) -> float:
         window_root = cls.get_window_root_of_widget(window)
         return cls.window_dpi_scaling_dict[window_root] * cls.window_scaling
 
     @classmethod
-    def set_widget_scaling(cls, widget_scaling_factor):
+    def set_widget_scaling(cls, widget_scaling_factor: float):
         cls.widget_scaling = max(widget_scaling_factor, 0.4)
         cls.update_scaling_callbacks()
 
     @classmethod
-    def set_spacing_scaling(cls, spacing_scaling_factor):
+    def set_spacing_scaling(cls, spacing_scaling_factor: float):
         cls.spacing_scaling = max(spacing_scaling_factor, 0.4)
         cls.update_scaling_callbacks()
 
     @classmethod
-    def set_window_scaling(cls, window_scaling_factor):
+    def set_window_scaling(cls, window_scaling_factor: float):
         cls.window_scaling = max(window_scaling_factor, 0.4)
         cls.update_scaling_callbacks()
 
@@ -60,7 +60,7 @@ class ScalingTracker:
     def update_scaling_callbacks(cls):
         for window, callback_list in cls.window_widgets_dict.items():
             for callback in callback_list:
-                if not CTkSettings.deactivate_automatic_dpi_awareness:
+                if not Settings.deactivate_automatic_dpi_awareness:
                     callback(cls.window_dpi_scaling_dict[window] * cls.widget_scaling,
                              cls.window_dpi_scaling_dict[window] * cls.spacing_scaling,
                              cls.window_dpi_scaling_dict[window] * cls.window_scaling)
@@ -70,7 +70,7 @@ class ScalingTracker:
                              cls.window_scaling)
 
     @classmethod
-    def add_widget(cls, widget_callback, widget):
+    def add_widget(cls, widget_callback: Callable, widget):
         window_root = cls.get_window_root_of_widget(widget)
 
         if window_root not in cls.window_widgets_dict:
@@ -115,7 +115,7 @@ class ScalingTracker:
         """ make process DPI aware, customtkinter elemets will get scaled automatically,
             only gets activated when CTk object is created """
 
-        if not CTkSettings.deactivate_automatic_dpi_awareness:
+        if not Settings.deactivate_automatic_dpi_awareness:
             if sys.platform == "darwin":
                 pass  # high DPI scaling works automatically on macOS
 
@@ -128,7 +128,7 @@ class ScalingTracker:
                 pass  # DPI awareness on Linux not implemented
 
     @classmethod
-    def get_window_dpi_scaling(cls, window):
+    def get_window_dpi_scaling(cls, window) -> float:
         if sys.platform == "darwin":
             return 1  # scaling works automatically on macOS
 

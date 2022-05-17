@@ -1,9 +1,9 @@
 import tkinter
 
 from .ctk_canvas import CTkCanvas
-from ..ctk_theme_manager import CTkThemeManager
-from ..ctk_draw_engine import CTkDrawEngine
-from ..ctk_settings import CTkSettings
+from ..theme_manager import ThemeManager
+from ..draw_engine import DrawEngine
+from ..settings import Settings
 from .widget_base_class import CTkBaseClass
 
 
@@ -39,9 +39,9 @@ class CTkProgressBar(CTkBaseClass):
         super().__init__(*args, bg_color=bg_color, width=width, height=height, **kwargs)
 
         # color
-        self.border_color = CTkThemeManager.theme["color"]["progressbar_border"] if border_color == "default_theme" else border_color
-        self.fg_color = CTkThemeManager.theme["color"]["progressbar"] if fg_color == "default_theme" else fg_color
-        self.progress_color = CTkThemeManager.theme["color"]["progressbar_progress"] if progress_color == "default_theme" else progress_color
+        self.border_color = ThemeManager.theme["color"]["progressbar_border"] if border_color == "default_theme" else border_color
+        self.fg_color = ThemeManager.theme["color"]["progressbar"] if fg_color == "default_theme" else fg_color
+        self.progress_color = ThemeManager.theme["color"]["progressbar_progress"] if progress_color == "default_theme" else progress_color
 
         # control variable
         self.variable = variable
@@ -49,8 +49,8 @@ class CTkProgressBar(CTkBaseClass):
         self.variable_callback_name = None
 
         # shape
-        self.corner_radius = CTkThemeManager.theme["shape"]["progressbar_corner_radius"] if corner_radius == "default_theme" else corner_radius
-        self.border_width = CTkThemeManager.theme["shape"]["progressbar_border_width"] if border_width == "default_theme" else border_width
+        self.corner_radius = ThemeManager.theme["shape"]["progressbar_corner_radius"] if corner_radius == "default_theme" else corner_radius
+        self.border_width = ThemeManager.theme["shape"]["progressbar_border_width"] if border_width == "default_theme" else border_width
         self.value = 0.5
         self.orient = orient
 
@@ -62,7 +62,7 @@ class CTkProgressBar(CTkBaseClass):
                                 width=self.apply_widget_scaling(self.desired_width),
                                 height=self.apply_widget_scaling(self.desired_height))
         self.canvas.grid(row=0, column=0, rowspan=1, columnspan=1, sticky="nswe")
-        self.draw_engine = CTkDrawEngine(self.canvas, CTkSettings.preferred_drawing_method)
+        self.draw_engine = DrawEngine(self.canvas, Settings.preferred_drawing_method)
 
         # Each time an item is resized due to pack position mode, the binding Configure is called on the widget
         self.bind('<Configure>', self.update_dimensions_event)
@@ -103,16 +103,16 @@ class CTkProgressBar(CTkBaseClass):
                                                                                      orientation)
 
         if no_color_updates is False or requires_recoloring:
-            self.canvas.configure(bg=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
+            self.canvas.configure(bg=ThemeManager.single_color(self.bg_color, self.appearance_mode))
             self.canvas.itemconfig("border_parts",
-                                   fill=CTkThemeManager.single_color(self.border_color, self.appearance_mode),
-                                   outline=CTkThemeManager.single_color(self.border_color, self.appearance_mode))
+                                   fill=ThemeManager.single_color(self.border_color, self.appearance_mode),
+                                   outline=ThemeManager.single_color(self.border_color, self.appearance_mode))
             self.canvas.itemconfig("inner_parts",
-                                   fill=CTkThemeManager.single_color(self.fg_color, self.appearance_mode),
-                                   outline=CTkThemeManager.single_color(self.fg_color, self.appearance_mode))
+                                   fill=ThemeManager.single_color(self.fg_color, self.appearance_mode),
+                                   outline=ThemeManager.single_color(self.fg_color, self.appearance_mode))
             self.canvas.itemconfig("progress_parts",
-                                   fill=CTkThemeManager.single_color(self.progress_color, self.appearance_mode),
-                                   outline=CTkThemeManager.single_color(self.progress_color, self.appearance_mode))
+                                   fill=ThemeManager.single_color(self.progress_color, self.appearance_mode),
+                                   outline=ThemeManager.single_color(self.progress_color, self.appearance_mode))
 
     def configure(self, *args, **kwargs):
         require_redraw = False  # some attribute changes require a call of self.draw() at the end

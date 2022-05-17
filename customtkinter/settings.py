@@ -1,12 +1,11 @@
 import sys
 
 
-class CTkSettings:
+class Settings:
 
     circle_font_is_ready = False
     preferred_drawing_method: str = None  # 'polygon_shapes', 'font_shapes', 'circle_shapes'
     radius_to_char_fine: dict = None  # set in self.init_font_character_mapping()
-
     cursor_manipulation_enabled = True
     deactivate_macos_window_header_manipulation = False
     deactivate_windows_window_header_manipulation = False
@@ -41,15 +40,3 @@ class CTkSettings:
             cls.preferred_drawing_method = "polygon_shapes"
         else:
             cls.preferred_drawing_method = "font_shapes"
-
-    @classmethod
-    def print_settings(cls):
-        print(f"CTkSettings current values:")
-        print(f"circle_font_is_ready = {cls.circle_font_is_ready}")
-        print(f"hand_cursor_enabled = {cls.cursor_manipulation_enabled}")
-        print(f"preferred_drawing_method = {cls.preferred_drawing_method}")
-        print(f"radius_to_char_fine = {cls.radius_to_char_fine}")
-
-
-CTkSettings.init_font_character_mapping()
-CTkSettings.init_drawing_method()

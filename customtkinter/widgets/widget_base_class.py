@@ -8,7 +8,7 @@ from ..windows.ctk_tk import CTk
 from ..windows.ctk_toplevel import CTkToplevel
 from ..appearance_mode_tracker import AppearanceModeTracker
 from ..scaling_tracker import ScalingTracker
-from ..ctk_theme_manager import CTkThemeManager
+from ..theme_manager import ThemeManager
 
 
 class CTkBaseClass(tkinter.Frame):
@@ -41,7 +41,7 @@ class CTkBaseClass(tkinter.Frame):
         AppearanceModeTracker.add(self.set_appearance_mode, self)
         self.appearance_mode = AppearanceModeTracker.get_mode()  # 0: "Light" 1: "Dark"
 
-        super().configure(bg=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
+        super().configure(bg=ThemeManager.single_color(self.bg_color, self.appearance_mode))
 
         # overwrite configure methods of master when master is tkinter widget, so that bg changes get applied on child CTk widget too
         if isinstance(self.master, (tkinter.Tk, tkinter.Toplevel, tkinter.Frame)) and not isinstance(self.master, (CTkBaseClass, CTk, CTkToplevel)):
