@@ -103,29 +103,34 @@ class CTkEntry(CTkBaseClass):
                                                                              self.apply_widget_scaling(self.corner_radius),
                                                                              self.apply_widget_scaling(self.border_width))
 
-        if CTkThemeManager.single_color(self.fg_color, self.appearance_mode) is not None:
-            self.canvas.itemconfig("inner_parts",
-                                   fill=CTkThemeManager.single_color(self.fg_color, self.appearance_mode),
-                                   outline=CTkThemeManager.single_color(self.fg_color, self.appearance_mode))
-            self.entry.configure(bg=CTkThemeManager.single_color(self.fg_color, self.appearance_mode),
-                                 highlightcolor=CTkThemeManager.single_color(self.fg_color, self.appearance_mode),
-                                 fg=CTkThemeManager.single_color(self.text_color, self.appearance_mode),
-                                 insertbackground=CTkThemeManager.single_color(self.text_color, self.appearance_mode))
-        else:
-            self.canvas.itemconfig("inner_parts",
-                                   fill=CTkThemeManager.single_color(self.bg_color, self.appearance_mode),
-                                   outline=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
-            self.entry.configure(bg=CTkThemeManager.single_color(self.bg_color, self.appearance_mode),
-                                 highlightcolor=CTkThemeManager.single_color(self.bg_color, self.appearance_mode),
-                                 fg=CTkThemeManager.single_color(self.text_color, self.appearance_mode),
-                                 insertbackground=CTkThemeManager.single_color(self.text_color, self.appearance_mode))
+        if requires_recoloring or no_color_updates is False:
+            if CTkThemeManager.single_color(self.fg_color, self.appearance_mode) is not None:
+                self.canvas.itemconfig("inner_parts",
+                                       fill=CTkThemeManager.single_color(self.fg_color, self.appearance_mode),
+                                       outline=CTkThemeManager.single_color(self.fg_color, self.appearance_mode))
+                self.entry.configure(bg=CTkThemeManager.single_color(self.fg_color, self.appearance_mode),
+                                     disabledbackground=CTkThemeManager.single_color(self.fg_color, self.appearance_mode),
+                                     highlightcolor=CTkThemeManager.single_color(self.fg_color, self.appearance_mode),
+                                     fg=CTkThemeManager.single_color(self.text_color, self.appearance_mode),
+                                     disabledforeground=CTkThemeManager.single_color(self.text_color, self.appearance_mode),
+                                     insertbackground=CTkThemeManager.single_color(self.text_color, self.appearance_mode))
+            else:
+                self.canvas.itemconfig("inner_parts",
+                                       fill=CTkThemeManager.single_color(self.bg_color, self.appearance_mode),
+                                       outline=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
+                self.entry.configure(bg=CTkThemeManager.single_color(self.bg_color, self.appearance_mode),
+                                     disabledbackground=CTkThemeManager.single_color(self.bg_color, self.appearance_mode),
+                                     highlightcolor=CTkThemeManager.single_color(self.bg_color, self.appearance_mode),
+                                     fg=CTkThemeManager.single_color(self.text_color, self.appearance_mode),
+                                     disabledforeground=CTkThemeManager.single_color(self.text_color, self.appearance_mode),
+                                     insertbackground=CTkThemeManager.single_color(self.text_color, self.appearance_mode))
 
-        self.canvas.itemconfig("border_parts",
-                               fill=CTkThemeManager.single_color(self.border_color, self.appearance_mode),
-                               outline=CTkThemeManager.single_color(self.border_color, self.appearance_mode))
+            self.canvas.itemconfig("border_parts",
+                                   fill=CTkThemeManager.single_color(self.border_color, self.appearance_mode),
+                                   outline=CTkThemeManager.single_color(self.border_color, self.appearance_mode))
 
-        if self.placeholder_text_active:
-            self.entry.config(fg=CTkThemeManager.single_color(self.placeholder_text_color, self.appearance_mode))
+            if self.placeholder_text_active:
+                self.entry.config(fg=CTkThemeManager.single_color(self.placeholder_text_color, self.appearance_mode))
 
     def bind(self, *args, **kwargs):
         self.entry.bind(*args, **kwargs)

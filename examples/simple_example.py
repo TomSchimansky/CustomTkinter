@@ -34,7 +34,6 @@ progressbar_1.pack(pady=y_padding, padx=10)
 
 button_1 = customtkinter.CTkButton(master=frame_1, corner_radius=8, command=button_function)
 button_1.pack(pady=y_padding, padx=10)
-# button_1.configure(state="disabled")
 
 slider_1 = customtkinter.CTkSlider(master=frame_1, command=slider_function, from_=0, to=1)
 slider_1.pack(pady=y_padding, padx=10)

@@ -2,7 +2,6 @@ import tkinter
 import tkinter.ttk as ttk
 import copy
 import re
-import math
 from typing import Callable, Union, TypedDict
 
 from ..windows.ctk_tk import CTk
