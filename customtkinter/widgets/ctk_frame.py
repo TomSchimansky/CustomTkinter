@@ -124,3 +124,10 @@ class CTkFrame(CTkBaseClass):
 
         if require_redraw:
             self.draw()
+
+    def bind(self, sequence, func, add=None):
+
+        if add is None:
+            self.canvas.bind(sequence, func)
+        else:
+            self.canvas.bind(sequence, func, add)
