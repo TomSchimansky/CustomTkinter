@@ -27,6 +27,8 @@ FontManager.load_font(os.path.join(script_directory, "assets", "fonts", "Roboto"
 # load font necessary for rendering the widgets on Windows, Linux
 if FontManager.load_font(os.path.join(script_directory, "assets", "fonts", "CustomTkinter_shapes_font-fine.otf")) is True:
     Settings.circle_font_is_ready = True
+else:
+    Settings.circle_font_is_ready = False
 
     if Settings.preferred_drawing_method == "font_shapes":
         sys.stderr.write("customtkinter.__init__ warning: " +

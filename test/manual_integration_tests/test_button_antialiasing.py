@@ -29,9 +29,9 @@ f4.grid(row=0, column=3, rowspan=1, columnspan=1, sticky="nsew")
 f4.grid_columnconfigure(0, weight=1)
 
 for i in range(0, 21, 1):
-    #b = customtkinter.CTkButton(f1, corner_radius=i, current_height=34, border_width=2, text=f"{i} {i-2}",
-    #                            border_color="white", fg_color=None, text_color="white")
-    b = tkinter.Button(f1,  text=f"{i} {i-2}", width=20)
+    b = customtkinter.CTkButton(f1, corner_radius=i, height=34, border_width=2, text=f"{i} {i-2}",
+                                border_color="white", fg_color=None, text_color="white")
+    # b = tkinter.Button(f1,  text=f"{i} {i-2}", width=20)
     b.grid(row=i, column=0, pady=5, padx=15, sticky="nsew")
 
     b = customtkinter.CTkButton(f2, corner_radius=i, height=34, border_width=0, text=f"{i}",
@@ -46,5 +46,4 @@ for i in range(0, 21, 1):
                                 border_color="gray10", fg_color="#228da8")
     b.grid(row=i, column=0, pady=5, padx=15, sticky="nsew")
 
-customtkinter.Settings.print_settings()
 app.mainloop()
