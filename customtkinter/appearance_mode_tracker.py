@@ -7,7 +7,7 @@ try:
     import darkdetect
 
     if Version(darkdetect.__version__) < Version("0.3.1"):
-        sys.stderr.write("WARNING: You have to update the darkdetect library: pip3 install --upgrade darkdetect\n")
+        sys.stderr.write("WARNING: You have to upgrade the darkdetect library: pip3 install --upgrade darkdetect\n")
         if sys.platform != "darwin":
             exit()
 except:
