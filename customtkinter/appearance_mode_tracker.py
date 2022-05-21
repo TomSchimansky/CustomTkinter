@@ -10,8 +10,10 @@ try:
         sys.stderr.write("WARNING: You have to upgrade the darkdetect library: pip3 install --upgrade darkdetect\n")
         if sys.platform != "darwin":
             exit()
-except:
-    pass
+except ImportError as err:
+    raise err
+except Exception:
+    sys.stderr.write("customtkinter.appearance_mode_tracker warning: failed to import darkdetect")
 
 
 class AppearanceModeTracker:
