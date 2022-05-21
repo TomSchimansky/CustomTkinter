@@ -83,7 +83,7 @@ class CTkCheckBox(CTkBaseClass):
                                 width=self.apply_widget_scaling(self.desired_width),
                                 height=self.apply_widget_scaling(self.desired_height))
         self.canvas.grid(row=0, column=0, padx=0, pady=0, columnspan=1, rowspan=1)
-        self.draw_engine = DrawEngine(self.canvas, Settings.preferred_drawing_method)
+        self.draw_engine = DrawEngine(self.canvas)
 
         if self.hover is True:
             self.canvas.bind("<Enter>", self.on_enter)

@@ -51,7 +51,7 @@
     "radiobutton_border_width_unchecked": 3,
     "radiobutton_border_width_checked": 6,
     "entry_border_width": 2,
-    "frame_corner_radius": 10,
+    "frame_corner_radius": 8,
     "frame_border_width": 0,
     "label_corner_radius": 8,
     "progressbar_border_width": 0,

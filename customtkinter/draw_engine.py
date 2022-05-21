@@ -1,9 +1,11 @@
+from __future__ import annotations
 import sys
 import math
 import tkinter
-from typing import Union
+from typing import Union, TYPE_CHECKING
 
-from .widgets.ctk_canvas import CTkCanvas
+if TYPE_CHECKING:
+    from .widgets.ctk_canvas import CTkCanvas
 
 
 class DrawEngine:
@@ -21,25 +23,26 @@ class DrawEngine:
 
     """
 
-    def __init__(self, canvas: CTkCanvas, rendering_method: str):
+    preferred_drawing_method: str = None  # 'polygon_shapes', 'font_shapes', 'circle_shapes'
+
+    def __init__(self, canvas: CTkCanvas):
         self._canvas = canvas
-        self._rendering_method = rendering_method  # "polygon_shapes" (macOS), "font_shapes" (Windows, Linux), "circle_shapes" (backup without fonts)
         self._existing_tags = set()
 
     def _calc_optimal_corner_radius(self, user_corner_radius: Union[float, int]) -> Union[float, int]:
         # optimize for drawing with polygon shapes
-        if self._rendering_method == "polygon_shapes":
+        if self.preferred_drawing_method == "polygon_shapes":
             if sys.platform == "darwin":
                 return user_corner_radius
             else:
                 return round(user_corner_radius)
 
         # optimize forx drawing with antialiased font shapes
-        elif self._rendering_method == "font_shapes":
+        elif self.preferred_drawing_method == "font_shapes":
             return round(user_corner_radius)
 
         # optimize for drawing with circles and rects
-        elif self._rendering_method == "circle_shapes":
+        elif self.preferred_drawing_method == "circle_shapes":
             user_corner_radius = 0.5 * round(user_corner_radius / 0.5)  # round to 0.5 steps
 
             # make sure the value is always with .5 at the end for smoother corners
@@ -71,11 +74,11 @@ class DrawEngine:
         else:
             inner_corner_radius = 0
 
-        if self._rendering_method == "polygon_shapes":
+        if self.preferred_drawing_method == "polygon_shapes":
             return self._draw_rounded_rect_with_border_polygon_shapes(width, height, corner_radius, border_width, inner_corner_radius)
-        elif self._rendering_method == "font_shapes":
+        elif self.preferred_drawing_method == "font_shapes":
             return self._draw_rounded_rect_with_border_font_shapes(width, height, corner_radius, border_width, inner_corner_radius, ())
-        elif self._rendering_method == "circle_shapes":
+        elif self.preferred_drawing_method == "circle_shapes":
             return self._draw_rounded_rect_with_border_circle_shapes(width, height, corner_radius, border_width, inner_corner_radius)
 
     def _draw_rounded_rect_with_border_polygon_shapes(self, width: int, height: int, corner_radius: int, border_width: int, inner_corner_radius: int) -> bool:
@@ -365,10 +368,10 @@ class DrawEngine:
         else:
             inner_corner_radius = 0
 
-        if self._rendering_method == "polygon_shapes" or self._rendering_method == "circle_shapes":
+        if self.preferred_drawing_method == "polygon_shapes" or self.preferred_drawing_method == "circle_shapes":
             return self._draw_rounded_progress_bar_with_border_polygon_shapes(width, height, corner_radius, border_width, inner_corner_radius,
                                                                               progress_value, orientation)
-        elif self._rendering_method == "font_shapes":
+        elif self.preferred_drawing_method == "font_shapes":
             return self._draw_rounded_progress_bar_with_border_font_shapes(width, height, corner_radius, border_width, inner_corner_radius,
                                                                            progress_value, orientation)
 
@@ -534,10 +537,10 @@ class DrawEngine:
         else:
             inner_corner_radius = 0
 
-        if self._rendering_method == "polygon_shapes" or self._rendering_method == "circle_shapes":
+        if self.preferred_drawing_method == "polygon_shapes" or self.preferred_drawing_method == "circle_shapes":
             return self._draw_rounded_slider_with_border_and_button_polygon_shapes(width, height, corner_radius, border_width, inner_corner_radius,
                                                                                    button_length, button_corner_radius, slider_value, orientation)
-        elif self._rendering_method == "font_shapes":
+        elif self.preferred_drawing_method == "font_shapes":
             return self._draw_rounded_slider_with_border_and_button_font_shapes(width, height, corner_radius, border_width, inner_corner_radius,
                                                                                 button_length, button_corner_radius, slider_value, orientation)
 
@@ -659,7 +662,7 @@ class DrawEngine:
         size = round(size)
         requires_recoloring = False
 
-        if self._rendering_method == "polygon_shapes" or self._rendering_method == "circle_shapes":
+        if self.preferred_drawing_method == "polygon_shapes" or self.preferred_drawing_method == "circle_shapes":
             x, y, radius = width / 2, height / 2, size / 2.8
             if not self._canvas.find_withtag("checkmark"):
                 self._canvas.create_line(0, 0, 0, 0, tags=("checkmark", "create_line"), width=round(height / 8), joinstyle=tkinter.MITER, capstyle=tkinter.ROUND)
@@ -670,7 +673,7 @@ class DrawEngine:
                                 x + radius, y - radius,
                                 x - radius / 4, y + radius * 0.8,
                                 x - radius, y + radius / 6)
-        elif self._rendering_method == "font_shapes":
+        elif self.preferred_drawing_method == "font_shapes":
             if not self._canvas.find_withtag("checkmark"):
                 self._canvas.create_text(0, 0, text="Z", font=("CustomTkinter_shapes_font", -size), tags=("checkmark", "create_text"), anchor=tkinter.CENTER)
                 self._canvas.tag_raise("checkmark")

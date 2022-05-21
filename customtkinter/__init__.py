@@ -9,15 +9,17 @@ from .appearance_mode_tracker import AppearanceModeTracker
 from .theme_manager import ThemeManager
 from .scaling_tracker import ScalingTracker
 from .font_manager import FontManager
-
-Settings.init_font_character_mapping()
-Settings.init_drawing_method()
+from .draw_engine import DrawEngine
 
 AppearanceModeTracker.init_appearance_mode()
-
 ThemeManager.load_theme("blue")
-
 FontManager.init_font_manager()
+
+# determine draw method based on current platform
+if sys.platform == "darwin":
+    DrawEngine.preferred_drawing_method = "polygon_shapes"
+else:
+    DrawEngine.preferred_drawing_method = "font_shapes"
 
 # load Roboto fonts
 script_directory = os.path.dirname(os.path.abspath(__file__))
@@ -25,16 +27,12 @@ FontManager.load_font(os.path.join(script_directory, "assets", "fonts", "Roboto"
 FontManager.load_font(os.path.join(script_directory, "assets", "fonts", "Roboto", "Roboto-Medium.ttf"))
 
 # load font necessary for rendering the widgets on Windows, Linux
-if FontManager.load_font(os.path.join(script_directory, "assets", "fonts", "CustomTkinter_shapes_font-fine.otf")) is True:
-    Settings.circle_font_is_ready = True
-else:
-    Settings.circle_font_is_ready = False
-
-    if Settings.preferred_drawing_method == "font_shapes":
+if FontManager.load_font(os.path.join(script_directory, "assets", "fonts", "CustomTkinter_shapes_font-fine.otf")) is False:
+    if DrawEngine.preferred_drawing_method == "font_shapes":
         sys.stderr.write("customtkinter.__init__ warning: " +
                          "Preferred drawing method 'font_shapes' can not be used because the font file could not be loaded.\n" +
                          "Using 'circle_shapes' instead. The rendering quality will be bad!")
-        Settings.preferred_drawing_method = "circle_shapes"
+        DrawEngine.preferred_drawing_method = "circle_shapes"
 
 # import widgets
 from .widgets.ctk_button import CTkButton
@@ -69,10 +67,10 @@ def set_default_color_theme(color_string):
     ThemeManager.load_theme(color_string)
 
 
-def deactivate_dpi_awareness(deactivate_awareness: bool):
-    Settings.deactivate_automatic_dpi_awareness = deactivate_awareness
-
-
 def set_user_scaling(scaling_value: float):
     ScalingTracker.set_spacing_scaling(scaling_value)
     ScalingTracker.set_widget_scaling(scaling_value)
+
+
+def deactivate_automatic_dpi_awareness():
+    ScalingTracker.deactivate_automatic_dpi_awareness = False

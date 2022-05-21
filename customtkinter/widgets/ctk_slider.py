@@ -84,7 +84,7 @@ class CTkSlider(CTkBaseClass):
                                 width=self.apply_widget_scaling(self.desired_width),
                                 height=self.apply_widget_scaling(self.desired_height))
         self.canvas.grid(column=0, row=0, rowspan=1, columnspan=1, sticky="nswe")
-        self.draw_engine = DrawEngine(self.canvas, Settings.preferred_drawing_method)
+        self.draw_engine = DrawEngine(self.canvas)
 
         self.canvas.bind("<Enter>", self.on_enter)
         self.canvas.bind("<Leave>", self.on_leave)

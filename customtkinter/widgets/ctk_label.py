@@ -48,7 +48,7 @@ class CTkLabel(CTkBaseClass):
                                 width=self.apply_widget_scaling(self.desired_width),
                                 height=self.apply_widget_scaling(self.desired_height))
         self.canvas.grid(row=0, column=0, sticky="nswe")
-        self.draw_engine = DrawEngine(self.canvas, Settings.preferred_drawing_method)
+        self.draw_engine = DrawEngine(self.canvas)
 
         self.text_label = tkinter.Label(master=self,
                                         highlightthickness=0,

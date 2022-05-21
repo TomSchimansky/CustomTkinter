@@ -79,7 +79,7 @@ class CTkRadioButton(CTkBaseClass):
                                 width=self.apply_widget_scaling(self.current_width),
                                 height=self.apply_widget_scaling(self.current_height))
         self.canvas.grid(row=0, column=0, padx=0, pady=0, columnspan=1)
-        self.draw_engine = DrawEngine(self.canvas, Settings.preferred_drawing_method)
+        self.draw_engine = DrawEngine(self.canvas)
 
         self.canvas.bind("<Enter>", self.on_enter)
         self.canvas.bind("<Leave>", self.on_leave)

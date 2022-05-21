@@ -50,7 +50,7 @@ class CTkEntry(CTkBaseClass):
                                 width=self.apply_widget_scaling(self.current_width),
                                 height=self.apply_widget_scaling(self.current_height))
         self.canvas.grid(column=0, row=0, sticky="we")
-        self.draw_engine = DrawEngine(self.canvas, Settings.preferred_drawing_method)
+        self.draw_engine = DrawEngine(self.canvas)
 
         self.entry = tkinter.Entry(master=self,
                                    bd=0,

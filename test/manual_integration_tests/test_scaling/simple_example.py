@@ -1,21 +1,22 @@
 import tkinter
 import customtkinter  # <- import the CustomTkinter module
 
-customtkinter.ScalingTracker.set_window_scaling(1.5)
+customtkinter.ScalingTracker.set_window_scaling(0.5)
 
 customtkinter.set_appearance_mode("dark")  # Modes: "System" (standard), "Dark", "Light"
 customtkinter.set_default_color_theme("blue")  # Themes: "blue" (standard), "green", "dark-blue"
 
 root_tk = customtkinter.CTk()  # create CTk window like you do with the Tk window (you can also use normal tkinter.Tk window)
 root_tk.geometry("400x480")
-root_tk.title("CustomTkinter Test")
+root_tk.title("CustomTkinter manual scaling test")
 
-root_tk.minsize(480, 480)
-root_tk.maxsize(520, 520)
+#root_tk.minsize(200, 200)
+#root_tk.maxsize(520, 520)
+root_tk.resizable(True, False)
 
-print(customtkinter.ScalingTracker.get_window_scaling(root_tk))
 
 def button_function():
+    root_tk.geometry(f"{200}x{200}")
     print("Button click", label_1.text_label.cget("text"))
 
 
@@ -31,7 +32,7 @@ def check_box_function():
 
 y_padding = 13
 
-frame_1 = customtkinter.CTkFrame(master=root_tk, corner_radius=15)
+frame_1 = customtkinter.CTkFrame(master=root_tk)
 frame_1.pack(pady=20, padx=60, fill="both", expand=True)
 
 label_1 = customtkinter.CTkLabel(master=frame_1, justify=tkinter.LEFT)

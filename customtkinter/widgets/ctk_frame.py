@@ -45,7 +45,7 @@ class CTkFrame(CTkBaseClass):
                                 height=self.apply_widget_scaling(self.current_height))
         self.canvas.place(x=0, y=0, relwidth=1, relheight=1)
         self.canvas.configure(bg=ThemeManager.single_color(self.bg_color, self.appearance_mode))
-        self.draw_engine = DrawEngine(self.canvas, Settings.preferred_drawing_method)
+        self.draw_engine = DrawEngine(self.canvas)
 
         self.bind('<Configure>', self.update_dimensions_event)
 

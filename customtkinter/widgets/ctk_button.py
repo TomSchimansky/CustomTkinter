@@ -69,7 +69,7 @@ class CTkButton(CTkBaseClass):
                                 width=self.apply_widget_scaling(self.desired_width),
                                 height=self.apply_widget_scaling(self.desired_height))
         self.canvas.grid(row=0, column=0, rowspan=2, columnspan=2, sticky="nsew")
-        self.draw_engine = DrawEngine(self.canvas, Settings.preferred_drawing_method)
+        self.draw_engine = DrawEngine(self.canvas)
 
         # event bindings
         self.canvas.bind("<Enter>", self.on_enter)

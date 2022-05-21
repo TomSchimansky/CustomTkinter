@@ -98,7 +98,7 @@ class AppearanceModeTracker:
         # find an existing tkinter.Tk object for the next call of .after()
         for root_tk in cls.root_tk_list:
             try:
-                root_tk.after(200, cls.update)
+                root_tk.after(500, cls.update)
                 return
             except Exception:
                 continue

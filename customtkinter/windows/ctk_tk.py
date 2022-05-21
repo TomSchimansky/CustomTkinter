@@ -69,24 +69,21 @@ class CTk(tkinter.Tk):
         if self.current_width != round(detected_width / self.window_scaling) or self.current_height != round(detected_height / self.window_scaling):
             self.current_width = round(detected_width / self.window_scaling)  # adjust current size according to new size given by event
             self.current_height = round(detected_height / self.window_scaling)  # current_width and current_height are independent of the scale
+            print("update_dimensions_event:", self.current_width)
 
     def set_scaling(self, new_widget_scaling, new_spacing_scaling, new_window_scaling):
         self.window_scaling = new_window_scaling
 
-        # reset min, max and resizable constraints for applying scaling
-        if self.last_resizable_args is not None:
-            super().resizable(True, True)
-        if self.min_width is not None or self.min_height is not None:
-            super().minsize(0, 0)
-        if self.max_width is not None or self.max_height is not None:
-            super().maxsize(1_000_000, 1_000_000)
+        # force new dimensions on window by using min, max, and geometry
+        super().minsize(self.apply_window_scaling(self.current_width), self.apply_window_scaling(self.current_height))
+        super().maxsize(self.apply_window_scaling(self.current_width), self.apply_window_scaling(self.current_height))
+        super().geometry(f"{self.apply_window_scaling(self.current_width)}x"+f"{self.apply_window_scaling(self.current_height)}")
+        print("set_scaling:", self.apply_window_scaling(self.current_width), self.max_width, self.min_width)
 
-        # set new window size by applying scaling to the current window size
-        self.geometry(f"{self.current_width}x{self.current_height}")
+        # set new scaled min and max with 400ms delay (otherwise it won't work for some reason)
+        self.after(400, self.set_scaled_min_max)
 
-        # set scaled min, max sizes and reapply resizable
-        if self.last_resizable_args is not None:
-            super().resizable(*self.last_resizable_args[0], **self.last_resizable_args[1])  # args, kwargs
+    def set_scaled_min_max(self):
         if self.min_width is not None or self.min_height is not None:
             super().minsize(self.apply_window_scaling(self.min_width), self.apply_window_scaling(self.min_height))
         if self.max_width is not None or self.max_height is not None:
@@ -106,6 +103,7 @@ class CTk(tkinter.Tk):
 
     def mainloop(self, *args, **kwargs):
         if not self.window_exists:
+            print("deiconify")
             self.deiconify()
             self.window_exists = True
         super().mainloop(*args, **kwargs)
@@ -135,6 +133,7 @@ class CTk(tkinter.Tk):
         super().maxsize(self.apply_window_scaling(self.max_width), self.apply_window_scaling(self.max_height))
 
     def geometry(self, geometry_string):
+        print("geometry:", geometry_string)
         super().geometry(self.apply_geometry_scaling(geometry_string))
 
         # update width and height attributes

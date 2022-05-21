@@ -62,7 +62,7 @@ class CTkProgressBar(CTkBaseClass):
                                 width=self.apply_widget_scaling(self.desired_width),
                                 height=self.apply_widget_scaling(self.desired_height))
         self.canvas.grid(row=0, column=0, rowspan=1, columnspan=1, sticky="nswe")
-        self.draw_engine = DrawEngine(self.canvas, Settings.preferred_drawing_method)
+        self.draw_engine = DrawEngine(self.canvas)
 
         # Each time an item is resized due to pack position mode, the binding Configure is called on the widget
         self.bind('<Configure>', self.update_dimensions_event)
