@@ -27,6 +27,7 @@ class CTkInputDialog:
 
         self.height = len(text.split("\n"))*20 + 150
 
+        self.text = text
         self.window_bg_color = ThemeManager.theme["color"]["window_bg_color"]
         self.fg_color = ThemeManager.theme["color"]["button"] if fg_color == "default_theme" else fg_color
         self.hover_color = ThemeManager.theme["color"]["button_hover"] if hover_color == "default_theme" else hover_color
@@ -34,12 +35,16 @@ class CTkInputDialog:
 
         self.top = CTkToplevel()
         self.top.geometry(f"{280}x{self.height}")
-        self.top.resizable(False, False)
+        self.top.minsize(280, self.height)
+        self.top.maxsize(280, self.height)
         self.top.title(title)
         self.top.lift()
         self.top.focus_force()
         self.top.grab_set()
 
+        self.top.after(10, self.create_widgets)  # create widgets with slight delay, to avoid white flickering of background
+
+    def create_widgets(self):
         self.label_frame = CTkFrame(master=self.top,
                                     corner_radius=0,
                                     fg_color=self.window_bg_color,
@@ -55,7 +60,7 @@ class CTkInputDialog:
         self.button_and_entry_frame.place(relx=0.5, rely=1, anchor=tkinter.S)
 
         self.myLabel = CTkLabel(master=self.label_frame,
-                                text=text,
+                                text=self.text,
                                 width=300,
                                 fg_color=None,
                                 height=self.height-100)

@@ -21,6 +21,7 @@ class AppearanceModeTracker:
     callback_list = []
     root_tk_list = []
     update_loop_running = False
+    update_loop_interval = 500  # milliseconds
 
     appearance_mode_set_by = "system"
     appearance_mode = 0  # Light (standard)
@@ -98,7 +99,7 @@ class AppearanceModeTracker:
         # find an existing tkinter.Tk object for the next call of .after()
         for root_tk in cls.root_tk_list:
             try:
-                root_tk.after(500, cls.update)
+                root_tk.after(cls.update_loop_interval, cls.update)
                 return
             except Exception:
                 continue

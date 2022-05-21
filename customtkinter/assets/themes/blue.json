@@ -10,7 +10,7 @@
     "entry_border": ["gray70", "gray32"],
     "entry_placeholder_text": ["gray52", "gray62"],
     "frame_border": ["#A7C2E0", "#5FB4DD"],
-    "frame_low": ["#E3E4E5", "gray18"],
+    "frame_low": ["#E3E4E5", "gray16"],
     "frame_high": ["#D7D8D9", "gray22"],
     "label": [null, null],
     "text": ["gray20", "#D5D9DE"],

@@ -13,11 +13,12 @@ progressbar_1.grid(row=0, column=0, pady=20, padx=20)
 progressbar_2 = customtkinter.CTkProgressBar(root_tk, orient="vertical")
 progressbar_2.grid(row=1, column=0, pady=20, padx=20)
 
-slider_1 = customtkinter.CTkSlider(root_tk, orient="horizontal", command=progressbar_1.set)
+slider_1 = customtkinter.CTkSlider(root_tk, orient="horizontal", command=progressbar_1.set,
+                                   button_corner_radius=3, button_length=20)
 slider_1.grid(row=2, column=0, pady=20, padx=20)
 
 slider_2 = customtkinter.CTkSlider(root_tk, orient="vertical", command=progressbar_2.set,
-                                   button_corner_radius=2, button_length=20)
+                                   button_corner_radius=3, button_length=20)
 slider_2.grid(row=3, column=0, pady=20, padx=20)
 
 

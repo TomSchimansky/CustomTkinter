@@ -12,7 +12,7 @@ from .font_manager import FontManager
 from .draw_engine import DrawEngine
 
 AppearanceModeTracker.init_appearance_mode()
-ThemeManager.load_theme("blue")
+ThemeManager.load_theme("blue")  # load default theme
 FontManager.init_font_manager()
 
 # determine draw method based on current platform
@@ -21,13 +21,14 @@ if sys.platform == "darwin":
 else:
     DrawEngine.preferred_drawing_method = "font_shapes"
 
-# load Roboto fonts
+# load Roboto fonts (used on Windows/Linux)
 script_directory = os.path.dirname(os.path.abspath(__file__))
 FontManager.load_font(os.path.join(script_directory, "assets", "fonts", "Roboto", "Roboto-Regular.ttf"))
 FontManager.load_font(os.path.join(script_directory, "assets", "fonts", "Roboto", "Roboto-Medium.ttf"))
 
-# load font necessary for rendering the widgets on Windows, Linux
+# load font necessary for rendering the widgets (used on Windows/Linux)
 if FontManager.load_font(os.path.join(script_directory, "assets", "fonts", "CustomTkinter_shapes_font-fine.otf")) is False:
+    # change draw method if font loading failed
     if DrawEngine.preferred_drawing_method == "font_shapes":
         sys.stderr.write("customtkinter.__init__ warning: " +
                          "Preferred drawing method 'font_shapes' can not be used because the font file could not be loaded.\n" +
@@ -52,25 +53,39 @@ from .windows.ctk_toplevel import CTkToplevel
 from .windows.ctk_input_dialog import CTkInputDialog
 
 
-def set_appearance_mode(mode_string):
+def set_appearance_mode(mode_string: str):
+    """ possible values: light, dark, system """
     AppearanceModeTracker.set_appearance_mode(mode_string)
 
 
-def get_appearance_mode():
+def get_appearance_mode() -> str:
+    """ get current state of the appearance mode (light or dark) """
     if AppearanceModeTracker.appearance_mode == 0:
         return "Light"
     elif AppearanceModeTracker.appearance_mode == 1:
         return "Dark"
 
 
-def set_default_color_theme(color_string):
+def set_default_color_theme(color_string: str):
+    """ set color theme or load custom theme file by passing the path """
     ThemeManager.load_theme(color_string)
 
 
-def set_user_scaling(scaling_value: float):
-    ScalingTracker.set_spacing_scaling(scaling_value)
+def set_widget_scaling(scaling_value: float):
+    """ set scaling for the widget dimensions """
     ScalingTracker.set_widget_scaling(scaling_value)
 
 
+def set_spacing_scaling(scaling_value: float):
+    """ set scaling for geometry manager calls (place, pack, grid)"""
+    ScalingTracker.set_spacing_scaling(scaling_value)
+
+
+def set_window_scaling(scaling_value: float):
+    """ set scaling for window dimensions """
+    ScalingTracker.set_window_scaling(scaling_value)
+
+
 def deactivate_automatic_dpi_awareness():
+    """ deactivate DPI awareness of current process (windll.shcore.SetProcessDpiAwareness(0)) """
     ScalingTracker.deactivate_automatic_dpi_awareness = False

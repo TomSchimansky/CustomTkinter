@@ -92,13 +92,13 @@ class DrawEngine:
 
             self._canvas.coords("border_line_1",
                                 (corner_radius,
-                                corner_radius,
-                                width - corner_radius,
-                                corner_radius,
-                                width - corner_radius,
-                                height - corner_radius,
-                                corner_radius,
-                                height - corner_radius))
+                                 corner_radius,
+                                 width - corner_radius,
+                                 corner_radius,
+                                 width - corner_radius,
+                                 height - corner_radius,
+                                 corner_radius,
+                                 height - corner_radius))
             self._canvas.itemconfig("border_line_1",
                                     joinstyle=tkinter.ROUND,
                                     width=corner_radius * 2)
@@ -157,7 +157,7 @@ class DrawEngine:
                     self._canvas.delete("border_oval_2_a", "border_oval_2_b")
 
                 if not self._canvas.find_withtag("border_oval_3_a") and height > 2 * corner_radius \
-                        and width > 2 * corner_radius and "border_oval_3" not in exclude_parts:
+                    and width > 2 * corner_radius and "border_oval_3" not in exclude_parts:
                     self._canvas.create_aa_circle(0, 0, 0, tags=("border_oval_3_a", "border_corner_part", "border_parts"), anchor=tkinter.CENTER)
                     self._canvas.create_aa_circle(0, 0, 0, tags=("border_oval_3_b", "border_corner_part", "border_parts"), anchor=tkinter.CENTER, angle=180)
                     requires_recoloring = True
@@ -217,12 +217,12 @@ class DrawEngine:
                 self._canvas.delete("inner_oval_2_a", "inner_oval_2_b")
 
             if not self._canvas.find_withtag("inner_oval_3_a") and height - (2 * border_width) > 2 * inner_corner_radius \
-                    and width - (2 * border_width) > 2 * inner_corner_radius and "inner_oval_3" not in exclude_parts:
+                and width - (2 * border_width) > 2 * inner_corner_radius and "inner_oval_3" not in exclude_parts:
                 self._canvas.create_aa_circle(0, 0, 0, tags=("inner_oval_3_a", "inner_corner_part", "inner_parts"), anchor=tkinter.CENTER)
                 self._canvas.create_aa_circle(0, 0, 0, tags=("inner_oval_3_b", "inner_corner_part", "inner_parts"), anchor=tkinter.CENTER, angle=180)
                 requires_recoloring = True
             elif self._canvas.find_withtag("inner_oval_3_a") and (not (height - (2 * border_width) > 2 * inner_corner_radius
-                    and width - (2 * border_width) > 2 * inner_corner_radius) or "inner_oval_3" in exclude_parts):
+                                                                       and width - (2 * border_width) > 2 * inner_corner_radius) or "inner_oval_3" in exclude_parts):
                 self._canvas.delete("inner_oval_3_a", "inner_oval_3_b")
 
             if not self._canvas.find_withtag("inner_oval_4_a") and height - (2 * border_width) > 2 * inner_corner_radius and "inner_oval_4" not in exclude_parts:
@@ -341,7 +341,7 @@ class DrawEngine:
                                                   height - border_width))
         self._canvas.coords("inner_rectangle_2", (border_width,
                                                   border_width + inner_corner_radius,
-                                                  width - border_width ,
+                                                  width - border_width,
                                                   height - inner_corner_radius - border_width))
 
         return requires_recoloring
@@ -462,9 +462,9 @@ class DrawEngine:
                                 border_width + inner_corner_radius, inner_corner_radius)
             self._canvas.coords("progress_oval_2_b", border_width + inner_corner_radius + (width - 2 * border_width - 2 * inner_corner_radius) * progress_value,
                                 border_width + inner_corner_radius, inner_corner_radius)
-            self._canvas.coords("progress_oval_3_a",  border_width + inner_corner_radius + (width - 2 * border_width - 2 * inner_corner_radius) * progress_value,
+            self._canvas.coords("progress_oval_3_a", border_width + inner_corner_radius + (width - 2 * border_width - 2 * inner_corner_radius) * progress_value,
                                 height - border_width - inner_corner_radius, inner_corner_radius)
-            self._canvas.coords("progress_oval_3_b",  border_width + inner_corner_radius + (width - 2 * border_width - 2 * inner_corner_radius) * progress_value,
+            self._canvas.coords("progress_oval_3_b", border_width + inner_corner_radius + (width - 2 * border_width - 2 * inner_corner_radius) * progress_value,
                                 height - border_width - inner_corner_radius, inner_corner_radius)
             self._canvas.coords("progress_oval_4_a", border_width + inner_corner_radius, height - border_width - inner_corner_radius, inner_corner_radius)
             self._canvas.coords("progress_oval_4_b", border_width + inner_corner_radius, height - border_width - inner_corner_radius, inner_corner_radius)
@@ -631,22 +631,41 @@ class DrawEngine:
             self._canvas.delete("slider_rectangle_2")
 
         # set positions of circles and rectangles
-        slider_x_position = corner_radius + (button_length / 2) + (width - 2 * corner_radius - button_length) * slider_value
-        self._canvas.coords("slider_oval_1_a", slider_x_position - (button_length / 2), button_corner_radius, button_corner_radius)
-        self._canvas.coords("slider_oval_1_b", slider_x_position - (button_length / 2), button_corner_radius, button_corner_radius)
-        self._canvas.coords("slider_oval_2_a", slider_x_position + (button_length / 2), button_corner_radius, button_corner_radius)
-        self._canvas.coords("slider_oval_2_b", slider_x_position + (button_length / 2), button_corner_radius, button_corner_radius)
-        self._canvas.coords("slider_oval_3_a", slider_x_position + (button_length / 2), height - button_corner_radius, button_corner_radius)
-        self._canvas.coords("slider_oval_3_b", slider_x_position + (button_length / 2), height - button_corner_radius, button_corner_radius)
-        self._canvas.coords("slider_oval_4_a", slider_x_position - (button_length / 2), height - button_corner_radius, button_corner_radius)
-        self._canvas.coords("slider_oval_4_b", slider_x_position - (button_length / 2), height - button_corner_radius, button_corner_radius)
+        if orientation == "w":
+            slider_x_position = corner_radius + (button_length / 2) + (width - 2 * corner_radius - button_length) * slider_value
+            self._canvas.coords("slider_oval_1_a", slider_x_position - (button_length / 2), button_corner_radius, button_corner_radius)
+            self._canvas.coords("slider_oval_1_b", slider_x_position - (button_length / 2), button_corner_radius, button_corner_radius)
+            self._canvas.coords("slider_oval_2_a", slider_x_position + (button_length / 2), button_corner_radius, button_corner_radius)
+            self._canvas.coords("slider_oval_2_b", slider_x_position + (button_length / 2), button_corner_radius, button_corner_radius)
+            self._canvas.coords("slider_oval_3_a", slider_x_position + (button_length / 2), height - button_corner_radius, button_corner_radius)
+            self._canvas.coords("slider_oval_3_b", slider_x_position + (button_length / 2), height - button_corner_radius, button_corner_radius)
+            self._canvas.coords("slider_oval_4_a", slider_x_position - (button_length / 2), height - button_corner_radius, button_corner_radius)
+            self._canvas.coords("slider_oval_4_b", slider_x_position - (button_length / 2), height - button_corner_radius, button_corner_radius)
 
-        self._canvas.coords("slider_rectangle_1",
-                            slider_x_position - (button_length / 2), 0,
-                            slider_x_position + (button_length / 2), height)
-        self._canvas.coords("slider_rectangle_2",
-                            slider_x_position - (button_length / 2) - button_corner_radius, button_corner_radius,
-                            slider_x_position + (button_length / 2) + button_corner_radius, height - button_corner_radius)
+            self._canvas.coords("slider_rectangle_1",
+                                slider_x_position - (button_length / 2), 0,
+                                slider_x_position + (button_length / 2), height)
+            self._canvas.coords("slider_rectangle_2",
+                                slider_x_position - (button_length / 2) - button_corner_radius, button_corner_radius,
+                                slider_x_position + (button_length / 2) + button_corner_radius, height - button_corner_radius)
+
+        elif orientation == "s":
+            slider_y_position = corner_radius + (button_length / 2) + (height - 2 * corner_radius - button_length) * (1 - slider_value)
+            self._canvas.coords("slider_oval_1_a", button_corner_radius, slider_y_position - (button_length / 2), button_corner_radius)
+            self._canvas.coords("slider_oval_1_b", button_corner_radius, slider_y_position - (button_length / 2), button_corner_radius)
+            self._canvas.coords("slider_oval_2_a", button_corner_radius, slider_y_position + (button_length / 2), button_corner_radius)
+            self._canvas.coords("slider_oval_2_b", button_corner_radius, slider_y_position + (button_length / 2), button_corner_radius)
+            self._canvas.coords("slider_oval_3_a", width - button_corner_radius, slider_y_position + (button_length / 2), button_corner_radius)
+            self._canvas.coords("slider_oval_3_b", width - button_corner_radius, slider_y_position + (button_length / 2), button_corner_radius)
+            self._canvas.coords("slider_oval_4_a", width - button_corner_radius, slider_y_position - (button_length / 2), button_corner_radius)
+            self._canvas.coords("slider_oval_4_b", width - button_corner_radius, slider_y_position - (button_length / 2), button_corner_radius)
+
+            self._canvas.coords("slider_rectangle_1",
+                                0, slider_y_position - (button_length / 2),
+                                width, slider_y_position + (button_length / 2))
+            self._canvas.coords("slider_rectangle_2",
+                                button_corner_radius, slider_y_position - (button_length / 2) - button_corner_radius,
+                                width - button_corner_radius, slider_y_position + (button_length / 2) + button_corner_radius)
 
         if requires_recoloring:  # new parts were added -> manage z-order
             self._canvas.tag_raise("slider_parts")

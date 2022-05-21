@@ -14,6 +14,7 @@ class ScalingTracker:
     spacing_scaling = 1
 
     update_loop_running = False
+    update_loop_interval = 150  # milliseconds
 
     @classmethod
     def get_widget_scaling(cls, widget) -> float:
@@ -160,8 +161,6 @@ class ScalingTracker:
     @classmethod
     def check_dpi_scaling(cls):
         # check for every window if scaling value changed
-        # (not implemented yet)
-
         for window in cls.window_widgets_dict:
             current_dpi_scaling_value = cls.get_window_dpi_scaling(window)
             if current_dpi_scaling_value != cls.window_dpi_scaling_dict[window]:
@@ -171,7 +170,7 @@ class ScalingTracker:
         # find an existing tkinter object for the next call of .after()
         for root_tk in cls.window_widgets_dict.keys():
             try:
-                root_tk.after(200, cls.check_dpi_scaling)
+                root_tk.after(cls.update_loop_interval, cls.check_dpi_scaling)
                 return
             except Exception:
                 continue
