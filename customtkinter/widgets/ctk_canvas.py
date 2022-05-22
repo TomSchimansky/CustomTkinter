@@ -1,6 +1,6 @@
 import tkinter
 import sys
-from typing import Union
+from typing import Union, Tuple
 
 
 class CTkCanvas(tkinter.Canvas):
@@ -44,7 +44,7 @@ class CTkCanvas(tkinter.Canvas):
             return self.radius_to_char_fine[radius]
 
     def create_aa_circle(self, x_pos: int, y_pos: int, radius: int, angle: int = 0, fill: str = "white",
-                         tags: Union[str, tuple[str, ...]] = "", anchor: str = tkinter.CENTER) -> int:
+                         tags: Union[str, Tuple[str, ...]] = "", anchor: str = tkinter.CENTER) -> int:
         # create a circle with a font element
         circle_1 = self.create_text(x_pos, y_pos, text=self.get_char_from_radius(radius), anchor=anchor, fill=fill,
                                     font=("CustomTkinter_shapes_font", -radius * 2), tags=tags, angle=angle)

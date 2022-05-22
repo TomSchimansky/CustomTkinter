@@ -11,6 +11,7 @@ root_tk.geometry("400x480")
 root_tk.title("CustomTkinter manual scaling test")
 
 top_tk = customtkinter.CTkToplevel(root_tk)
+top_tk.geometry("500x500")
 
 #root_tk.minsize(200, 200)
 #root_tk.maxsize(520, 520)
