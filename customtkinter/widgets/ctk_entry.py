@@ -2,7 +2,6 @@ import tkinter
 
 from .ctk_canvas import CTkCanvas
 from ..theme_manager import ThemeManager
-from ..settings import Settings
 from ..draw_engine import DrawEngine
 from .widget_base_class import CTkBaseClass
 
@@ -20,6 +19,7 @@ class CTkEntry(CTkBaseClass):
                  border_color="default_theme",
                  width=120,
                  height=30,
+                 state=tkinter.NORMAL,
                  **kwargs):
 
         # transfer basic functionality (bg_color, size, appearance_mode, scaling) to CTkBaseClass
@@ -42,6 +42,8 @@ class CTkEntry(CTkBaseClass):
         self.placeholder_text_active = False
         self.pre_placeholder_arguments = {}  # some set arguments of the entry will be changed for placeholder and then set back
 
+        self.state = state
+
         self.corner_radius = ThemeManager.theme["shape"]["button_corner_radius"] if corner_radius == "default_theme" else corner_radius
         self.border_width = ThemeManager.theme["shape"]["entry_border_width"] if border_width == "default_theme" else border_width
 
@@ -57,6 +59,7 @@ class CTkEntry(CTkBaseClass):
                                    width=1,
                                    highlightthickness=0,
                                    font=self.apply_font_scaling(self.text_font),
+                                   state=self.state,
                                    **kwargs)
         self.entry.grid(column=0, row=0, sticky="we",
                         padx=self.apply_widget_scaling(self.corner_radius) if self.corner_radius >= 6 else self.apply_widget_scaling(6))
@@ -137,6 +140,11 @@ class CTkEntry(CTkBaseClass):
 
     def configure(self, *args, **kwargs):
         require_redraw = False  # some attribute changes require a call of self.draw() at the end
+
+        if "state" in kwargs:
+            self.state = kwargs["state"]
+            self.entry.configure(state=self.state)
+            del kwargs["state"]
 
         if "bg_color" in kwargs:
             if kwargs["bg_color"] is None:
