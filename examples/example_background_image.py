@@ -40,13 +40,13 @@ class App(customtkinter.CTk):
         self.frame.place(relx=0.5, rely=0.5, anchor=tkinter.CENTER)
 
         self.label_1 = customtkinter.CTkLabel(master=self.frame, width=200, height=60,
-                                              fg_color=("gray70", "gray35"), text="CustomTkinter\ninterface example")
+                                              fg_color=("gray70", "gray25"), text="CustomTkinter\ninterface example")
         self.label_1.place(relx=0.5, rely=0.3, anchor=tkinter.CENTER)
 
-        self.entry_1 = customtkinter.CTkEntry(master=self.frame, corner_radius=20, width=200, placeholder_text="username")
+        self.entry_1 = customtkinter.CTkEntry(master=self.frame, corner_radius=6, width=200, placeholder_text="username")
         self.entry_1.place(relx=0.5, rely=0.52, anchor=tkinter.CENTER)
 
-        self.entry_2 = customtkinter.CTkEntry(master=self.frame, corner_radius=20, width=200, show="*", placeholder_text="password")
+        self.entry_2 = customtkinter.CTkEntry(master=self.frame, corner_radius=6, width=200, show="*", placeholder_text="password")
         self.entry_2.place(relx=0.5, rely=0.6, anchor=tkinter.CENTER)
 
         self.button_2 = customtkinter.CTkButton(master=self.frame, text="Login",

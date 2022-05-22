@@ -2,7 +2,6 @@ import tkinter
 
 from .ctk_canvas import CTkCanvas
 from ..theme_manager import ThemeManager
-from ..settings import Settings
 from ..draw_engine import DrawEngine
 from .widget_base_class import CTkBaseClass
 
@@ -67,6 +66,8 @@ class CTkLabel(CTkBaseClass):
         self.canvas.configure(width=self.apply_widget_scaling(self.desired_width), height=self.apply_widget_scaling(self.desired_height))
         self.text_label.configure(font=self.apply_font_scaling(self.text_font))
         self.text_label.grid(row=0, column=0, padx=self.apply_widget_scaling(self.corner_radius))
+
+        self.draw()
 
     def draw(self, no_color_updates=False):
         requires_recoloring = self.draw_engine.draw_rounded_rect_with_border(self.apply_widget_scaling(self.current_width),
