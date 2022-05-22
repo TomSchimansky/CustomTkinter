@@ -73,7 +73,6 @@ class CTkToplevel(tkinter.Toplevel):
         super().maxsize(self.apply_window_scaling(self.current_width), self.apply_window_scaling(self.current_height))
         super().geometry(
             f"{self.apply_window_scaling(self.current_width)}x" + f"{self.apply_window_scaling(self.current_height)}")
-        print("set_scaling:", self.apply_window_scaling(self.current_width), self.max_width, self.min_width)
 
         # set new scaled min and max with 400ms delay (otherwise it won't work for some reason)
         self.after(400, self.set_scaled_min_max)

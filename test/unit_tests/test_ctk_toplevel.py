@@ -64,20 +64,15 @@ class TestCTkToplevel():
 
         customtkinter.ScalingTracker.set_window_scaling(1.5)
         self.ctk_toplevel.geometry("300x400")
-        self.ctk_toplevel.update()
         assert self.ctk_toplevel.current_width == 300 and self.ctk_toplevel.current_height == 400
-        assert round(self.ctk_toplevel.winfo_width()) == 450 and round(self.ctk_toplevel.winfo_height()) == 600
+        assert self.root_ctk.window_scaling == 1.5 * customtkinter.ScalingTracker.get_window_dpi_scaling(self.root_ctk)
 
         self.ctk_toplevel.maxsize(400, 500)
         self.ctk_toplevel.geometry("500x500")
-        self.ctk_toplevel.update()
         assert self.ctk_toplevel.current_width == 400 and self.ctk_toplevel.current_height == 500
-        assert round(self.ctk_toplevel.winfo_width()) == 600 and round(self.ctk_toplevel.winfo_height()) == 750
 
         customtkinter.ScalingTracker.set_window_scaling(1)
-        self.ctk_toplevel.update()
         assert self.ctk_toplevel.current_width == 400 and self.ctk_toplevel.current_height == 500
-        assert round(self.ctk_toplevel.winfo_width()) == 400 and round(self.ctk_toplevel.winfo_height()) == 500
         print("successful")
 
     def test_configure(self):

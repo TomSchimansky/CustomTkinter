@@ -15,8 +15,6 @@ class ExampleApp(customtkinter.CTk):
         window = customtkinter.CTkToplevel(self)
         window.geometry("400x200")
 
-        print(window.master.winfo_class())
-
         label = customtkinter.CTkLabel(window, text="CTkToplevel window")
         label.pack(side="top", fill="both", expand=True, padx=40, pady=40)
 

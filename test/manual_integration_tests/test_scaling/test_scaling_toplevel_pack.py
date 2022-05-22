@@ -25,7 +25,8 @@ def button_function():
 
 def slider_function(value):
     customtkinter.set_widget_scaling(value * 2)
-    customtkinter.ScalingTracker.set_window_scaling(value * 2)
+    customtkinter.set_spacing_scaling(value * 2)
+    customtkinter.set_window_scaling(value * 2)
     progressbar_1.set(value)
 
 

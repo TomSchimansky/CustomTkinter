@@ -13,6 +13,7 @@ class CTkSwitch(CTkBaseClass):
                  text="CTkSwitch",
                  text_font="default_theme",
                  text_color="default_theme",
+                 text_color_disabled="default_theme",
                  bg_color=None,
                  border_color=None,
                  fg_color="default_theme",
@@ -30,6 +31,7 @@ class CTkSwitch(CTkBaseClass):
                  offvalue=0,
                  variable=None,
                  textvariable=None,
+                 state=tkinter.NORMAL,
                  **kwargs):
 
         # transfer basic functionality (bg_color, size, appearance_mode, scaling) to CTkBaseClass
@@ -42,6 +44,7 @@ class CTkSwitch(CTkBaseClass):
         self.button_color = ThemeManager.theme["color"]["switch_button"] if button_color == "default_theme" else button_color
         self.button_hover_color = ThemeManager.theme["color"]["switch_button_hover"] if button_hover_color == "default_theme" else button_hover_color
         self.text_color = ThemeManager.theme["color"]["text"] if text_color == "default_theme" else text_color
+        self.text_color_disabled = ThemeManager.theme["color"]["text_button_disabled"] if text_color_disabled == "default_theme" else text_color_disabled
 
         # text
         self.text = text
@@ -55,6 +58,7 @@ class CTkSwitch(CTkBaseClass):
         self.button_length = ThemeManager.theme["shape"]["switch_button_length"] if button_length == "default_theme" else button_length
         self.hover_state = False
         self.check_state = False  # True if switch is activated
+        self.state = state
         self.onvalue = onvalue
         self.offvalue = offvalue
 
@@ -119,10 +123,16 @@ class CTkSwitch(CTkBaseClass):
 
     def set_cursor(self):
         if Settings.cursor_manipulation_enabled:
-            if sys.platform == "darwin" and Settings.cursor_manipulation_enabled:
-                self.canvas.configure(cursor="pointinghand")
-            elif sys.platform.startswith("win") and Settings.cursor_manipulation_enabled:
-                self.canvas.configure(cursor="hand2")
+            if self.state == tkinter.DISABLED:
+                if sys.platform == "darwin" and Settings.cursor_manipulation_enabled:
+                    self.canvas.configure(cursor="arrow")
+                elif sys.platform.startswith("win") and Settings.cursor_manipulation_enabled:
+                    self.canvas.configure(cursor="arrow")
+            else:
+                if sys.platform == "darwin" and Settings.cursor_manipulation_enabled:
+                    self.canvas.configure(cursor="pointinghand")
+                elif sys.platform.startswith("win") and Settings.cursor_manipulation_enabled:
+                    self.canvas.configure(cursor="hand2")
 
     def draw(self, no_color_updates=False):
 
@@ -178,7 +188,11 @@ class CTkSwitch(CTkBaseClass):
             if self.textvariable is not None:
                 self.text_label.configure(textvariable=self.textvariable)
 
-        self.text_label.configure(fg=ThemeManager.single_color(self.text_color, self.appearance_mode))
+        if self.state == tkinter.DISABLED:
+            self.text_label.configure(fg=(ThemeManager.single_color(self.text_color_disabled, self.appearance_mode)))
+        else:
+            self.text_label.configure(fg=ThemeManager.single_color(self.text_color, self.appearance_mode))
+
         self.text_label.configure(bg=ThemeManager.single_color(self.bg_color, self.appearance_mode))
 
         self.set_text(self.text)
@@ -189,54 +203,59 @@ class CTkSwitch(CTkBaseClass):
             self.text_label.configure(text=self.text)
 
     def toggle(self, event=None):
-        if self.check_state is True:
-            self.check_state = False
-        else:
-            self.check_state = True
+        if self.state is not tkinter.DISABLED:
+            if self.check_state is True:
+                self.check_state = False
+            else:
+                self.check_state = True
 
-        self.draw(no_color_updates=True)
+            self.draw(no_color_updates=True)
 
-        if self.callback_function is not None:
-            self.callback_function()
+            if self.callback_function is not None:
+                self.callback_function()
 
-        if self.variable is not None:
-            self.variable_callback_blocked = True
-            self.variable.set(self.onvalue if self.check_state is True else self.offvalue)
-            self.variable_callback_blocked = False
+            if self.variable is not None:
+                self.variable_callback_blocked = True
+                self.variable.set(self.onvalue if self.check_state is True else self.offvalue)
+                self.variable_callback_blocked = False
 
     def select(self, from_variable_callback=False):
-        self.check_state = True
+        if self.state is not tkinter.DISABLED or from_variable_callback:
+            self.check_state = True
 
-        self.draw(no_color_updates=True)
+            self.draw(no_color_updates=True)
 
-        if self.callback_function is not None:
-            self.callback_function()
+            if self.callback_function is not None:
+                self.callback_function()
 
-        if self.variable is not None and not from_variable_callback:
-            self.variable_callback_blocked = True
-            self.variable.set(self.onvalue)
-            self.variable_callback_blocked = False
+            if self.variable is not None and not from_variable_callback:
+                self.variable_callback_blocked = True
+                self.variable.set(self.onvalue)
+                self.variable_callback_blocked = False
 
     def deselect(self, from_variable_callback=False):
-        self.check_state = False
+        if self.state is not tkinter.DISABLED or from_variable_callback:
+            self.check_state = False
 
-        self.draw(no_color_updates=True)
+            self.draw(no_color_updates=True)
 
-        if self.callback_function is not None:
-            self.callback_function()
+            if self.callback_function is not None:
+                self.callback_function()
 
-        if self.variable is not None and not from_variable_callback:
-            self.variable_callback_blocked = True
-            self.variable.set(self.offvalue)
-            self.variable_callback_blocked = False
+            if self.variable is not None and not from_variable_callback:
+                self.variable_callback_blocked = True
+                self.variable.set(self.offvalue)
+                self.variable_callback_blocked = False
 
     def get(self):
         return self.onvalue if self.check_state is True else self.offvalue
 
     def on_enter(self, event=0):
         self.hover_state = True
-        self.canvas.itemconfig("slider_parts", fill=ThemeManager.single_color(self.button_hover_color, self.appearance_mode),
-                               outline=ThemeManager.single_color(self.button_hover_color, self.appearance_mode))
+
+        if self.state is not tkinter.DISABLED:
+            self.canvas.itemconfig("slider_parts", fill=ThemeManager.single_color(self.button_hover_color, self.appearance_mode),
+                                   outline=ThemeManager.single_color(self.button_hover_color, self.appearance_mode))
 
     def on_leave(self, event=0):
         self.hover_state = False
@@ -252,6 +271,12 @@ class CTkSwitch(CTkBaseClass):
 
     def configure(self, *args, **kwargs):
         require_redraw = False  # some attribute changes require a call of self.draw() at the end
+
+        if "state" in kwargs:
+            self.state = kwargs["state"]
+            self.set_cursor()
+            require_redraw = True
+            del kwargs["state"]
 
         if "fg_color" in kwargs:
             self.fg_color = kwargs["fg_color"]

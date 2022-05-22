@@ -69,7 +69,6 @@ class CTk(tkinter.Tk):
         if self.current_width != round(detected_width / self.window_scaling) or self.current_height != round(detected_height / self.window_scaling):
             self.current_width = round(detected_width / self.window_scaling)  # adjust current size according to new size given by event
             self.current_height = round(detected_height / self.window_scaling)  # current_width and current_height are independent of the scale
-            print("update_dimensions_event:", self.current_width)
 
     def set_scaling(self, new_widget_scaling, new_spacing_scaling, new_window_scaling):
         self.window_scaling = new_window_scaling
@@ -78,7 +77,6 @@ class CTk(tkinter.Tk):
         super().minsize(self.apply_window_scaling(self.current_width), self.apply_window_scaling(self.current_height))
         super().maxsize(self.apply_window_scaling(self.current_width), self.apply_window_scaling(self.current_height))
         super().geometry(f"{self.apply_window_scaling(self.current_width)}x"+f"{self.apply_window_scaling(self.current_height)}")
-        print("set_scaling:", self.apply_window_scaling(self.current_width), self.max_width, self.min_width)
 
         # set new scaled min and max with 400ms delay (otherwise it won't work for some reason)
         self.after(400, self.set_scaled_min_max)
@@ -103,7 +101,6 @@ class CTk(tkinter.Tk):
 
     def mainloop(self, *args, **kwargs):
         if not self.window_exists:
-            print("deiconify")
             self.deiconify()
             self.window_exists = True
         super().mainloop(*args, **kwargs)
@@ -133,7 +130,6 @@ class CTk(tkinter.Tk):
         super().maxsize(self.apply_window_scaling(self.max_width), self.apply_window_scaling(self.max_height))
 
     def geometry(self, geometry_string):
-        print("geometry:", geometry_string)
         super().geometry(self.apply_geometry_scaling(geometry_string))
 
         # update width and height attributes
