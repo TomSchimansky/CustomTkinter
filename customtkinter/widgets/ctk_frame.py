@@ -115,10 +115,20 @@ class CTkFrame(CTkBaseClass):
 
             del kwargs["bg_color"]
 
+        if "border_color" in kwargs:
+            self.border_color = kwargs["border_color"]
+            require_redraw = True
+            del kwargs["border_color"]
+
         if "corner_radius" in kwargs:
             self.corner_radius = kwargs["corner_radius"]
             require_redraw = True
             del kwargs["corner_radius"]
+
+        if "border_width" in kwargs:
+            self.border_width = kwargs["border_width"]
+            require_redraw = True
+            del kwargs["border_width"]
 
         super().configure(*args, **kwargs)
 
