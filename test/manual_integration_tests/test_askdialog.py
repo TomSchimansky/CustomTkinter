@@ -1,9 +1,7 @@
-from tkinter.constants import CENTER, LEFT
 import tkinter
 import tkinter.messagebox
 from tkinter import filedialog as fd
-import customtkinter  # <- import the CustomTkinter module
-import os
+import customtkinter
 
 
 class App(customtkinter.CTk):

@@ -168,9 +168,9 @@ class ScalingTracker:
                 cls.update_scaling_callbacks_for_window(window)
 
         # find an existing tkinter object for the next call of .after()
-        for root_tk in cls.window_widgets_dict.keys():
+        for app in cls.window_widgets_dict.keys():
             try:
-                root_tk.after(cls.update_loop_interval, cls.check_dpi_scaling)
+                app.after(cls.update_loop_interval, cls.check_dpi_scaling)
                 return
             except Exception:
                 continue

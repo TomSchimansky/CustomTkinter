@@ -19,7 +19,7 @@ except Exception:
 class AppearanceModeTracker:
 
     callback_list = []
-    root_tk_list = []
+    app_list = []
     update_loop_running = False
     update_loop_interval = 500  # milliseconds
 
@@ -40,12 +40,12 @@ class AppearanceModeTracker:
         cls.callback_list.append(callback)
 
         if widget is not None:
-            root_tk = cls.get_tk_root_of_widget(widget)
-            if root_tk not in cls.root_tk_list:
-                cls.root_tk_list.append(root_tk)
+            app = cls.get_tk_root_of_widget(widget)
+            if app not in cls.app_list:
+                cls.app_list.append(app)
 
                 if not cls.update_loop_running:
-                    root_tk.after(500, cls.update)
+                    app.after(500, cls.update)
                     cls.update_loop_running = True
 
     @classmethod
@@ -97,9 +97,9 @@ class AppearanceModeTracker:
                 cls.update_callbacks()
 
         # find an existing tkinter.Tk object for the next call of .after()
-        for root_tk in cls.root_tk_list:
+        for app in cls.app_list:
             try:
-                root_tk.after(cls.update_loop_interval, cls.update)
+                app.after(cls.update_loop_interval, cls.update)
                 return
             except Exception:
                 continue

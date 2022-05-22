@@ -2,6 +2,7 @@ __version__ = "4.0.1"
 
 import os
 import sys
+from tkinter.constants import *
 
 # import manager classes
 from .settings import Settings

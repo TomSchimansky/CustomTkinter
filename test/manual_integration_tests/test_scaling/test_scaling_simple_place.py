@@ -6,17 +6,17 @@ customtkinter.ScalingTracker.set_window_scaling(0.5)
 customtkinter.set_appearance_mode("dark")  # Modes: "System" (standard), "Dark", "Light"
 customtkinter.set_default_color_theme("blue")  # Themes: "blue" (standard), "green", "dark-blue"
 
-root_tk = customtkinter.CTk()  # create CTk window like you do with the Tk window (you can also use normal tkinter.Tk window)
-root_tk.geometry("400x600")
-root_tk.title("CustomTkinter manual scaling test")
+app = customtkinter.CTk()  # create CTk window like you do with the Tk window (you can also use normal tkinter.Tk window)
+app.geometry("400x600")
+app.title("CustomTkinter manual scaling test")
 
-#root_tk.minsize(200, 200)
-#root_tk.maxsize(520, 520)
-#root_tk.resizable(True, False)
+#app.minsize(200, 200)
+#app.maxsize(520, 520)
+#app.resizable(True, False)
 
 
 def button_function():
-    root_tk.geometry(f"{200}x{200}")
+    app.geometry(f"{200}x{200}")
     print("Button click", label_1.text_label.cget("text"))
 
 
@@ -29,7 +29,7 @@ def slider_function(value):
 
 y_padding = 13
 
-frame_1 = customtkinter.CTkFrame(master=root_tk, height=550, width=300)
+frame_1 = customtkinter.CTkFrame(master=app, height=550, width=300)
 frame_1.place(relx=0.5, rely=0.5, anchor=tkinter.CENTER)
 label_1 = customtkinter.CTkLabel(master=frame_1, justify=tkinter.LEFT)
 label_1.place(relx=0.5, y=50, anchor=tkinter.CENTER)
@@ -53,4 +53,4 @@ s_var = tkinter.StringVar(value="on")
 switch_1 = customtkinter.CTkSwitch(master=frame_1)
 switch_1.place(relx=0.5, y=450, anchor=tkinter.CENTER)
 
-root_tk.mainloop()
+app.mainloop()

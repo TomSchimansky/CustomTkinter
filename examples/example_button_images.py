@@ -1,5 +1,5 @@
 import tkinter
-import customtkinter  # <- import the CustomTkinter module
+import customtkinter
 from PIL import Image, ImageTk  # <- import PIL for the images
 import os
 
@@ -8,9 +8,9 @@ PATH = os.path.dirname(os.path.realpath(__file__))
 customtkinter.set_appearance_mode("System")  # Modes: "System" (standard), "Dark", "Light"
 customtkinter.set_default_color_theme("blue")  # Themes: "blue" (standard), "green", "dark-blue"
 
-root_tk = customtkinter.CTk()  # create CTk window like you do with the Tk window (you can also use normal tkinter.Tk window)
-root_tk.geometry("450x260")
-root_tk.title("CustomTkinter button images")
+app = customtkinter.CTk()  # create CTk window like you do with the Tk window (you can also use normal tkinter.Tk window)
+app.geometry("450x260")
+app.title("CustomTkinter example_button_images.py")
 
 
 def button_function():
@@ -29,10 +29,10 @@ add_user_image = ImageTk.PhotoImage(Image.open(PATH + "/test_images/add-user.png
 chat_image = ImageTk.PhotoImage(Image.open(PATH + "/test_images/chat.png").resize((image_size, image_size), Image.ANTIALIAS))
 home_image = ImageTk.PhotoImage(Image.open(PATH + "/test_images/home.png").resize((image_size, image_size), Image.ANTIALIAS))
 
-root_tk.grid_rowconfigure(0, weight=1)
-root_tk.grid_columnconfigure(0, weight=1, minsize=200)
+app.grid_rowconfigure(0, weight=1)
+app.grid_columnconfigure(0, weight=1, minsize=200)
 
-frame_1 = customtkinter.CTkFrame(master=root_tk, width=250, height=240, corner_radius=15)
+frame_1 = customtkinter.CTkFrame(master=app, width=250, height=240, corner_radius=15)
 frame_1.grid(row=0, column=0, padx=20, pady=20, sticky="nsew")
 
 frame_1.grid_columnconfigure(0, weight=1)
@@ -56,9 +56,9 @@ button_4 = customtkinter.CTkButton(master=frame_1, image=home_image, text="", wi
                                    corner_radius=10, fg_color="gray40", hover_color="gray25", command=button_function)
 button_4.grid(row=3, column=1, columnspan=1, padx=20, pady=10, sticky="e")
 
-button_5 = customtkinter.CTkButton(master=root_tk, image=add_user_image, text="Add User", width=130, height=70, border_width=3,
+button_5 = customtkinter.CTkButton(master=app, image=add_user_image, text="Add User", width=130, height=70, border_width=3,
                                    corner_radius=10, compound="bottom", border_color="#D35B58", fg_color=("gray84", "gray25"), hover_color="#C77C78",
                                    command=button_function)
 button_5.grid(row=0, column=1, padx=20, pady=20)
 
-root_tk.mainloop()
+app.mainloop()

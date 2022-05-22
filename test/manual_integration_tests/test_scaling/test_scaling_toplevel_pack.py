@@ -6,20 +6,20 @@ customtkinter.ScalingTracker.set_window_scaling(0.5)
 customtkinter.set_appearance_mode("dark")  # Modes: "System" (standard), "Dark", "Light"
 customtkinter.set_default_color_theme("blue")  # Themes: "blue" (standard), "green", "dark-blue"
 
-root_tk = customtkinter.CTk()  # create CTk window like you do with the Tk window (you can also use normal tkinter.Tk window)
-root_tk.geometry("400x480")
-root_tk.title("CustomTkinter manual scaling test")
+app = customtkinter.CTk()  # create CTk window like you do with the Tk window (you can also use normal tkinter.Tk window)
+app.geometry("400x480")
+app.title("CustomTkinter manual scaling test")
 
-top_tk = customtkinter.CTkToplevel(root_tk)
+top_tk = customtkinter.CTkToplevel(app)
 top_tk.geometry("500x500")
 
-#root_tk.minsize(200, 200)
-#root_tk.maxsize(520, 520)
-#root_tk.resizable(True, False)
+#app.minsize(200, 200)
+#app.maxsize(520, 520)
+#app.resizable(True, False)
 
 
 def button_function():
-    root_tk.geometry(f"{200}x{200}")
+    app.geometry(f"{200}x{200}")
     print("Button click", label_1.text_label.cget("text"))
 
 
@@ -32,7 +32,7 @@ def slider_function(value):
 
 y_padding = 13
 
-frame_1 = customtkinter.CTkFrame(master=root_tk)
+frame_1 = customtkinter.CTkFrame(master=app)
 frame_1.pack(pady=20, padx=60, fill="both", expand=True)
 label_1 = customtkinter.CTkLabel(master=frame_1, justify=tkinter.LEFT)
 label_1.pack(pady=y_padding, padx=10)
@@ -78,4 +78,4 @@ radiobutton_2.pack(pady=y_padding, padx=10)
 switch_1 = customtkinter.CTkSwitch(master=top_tk)
 switch_1.pack(pady=y_padding, padx=10)
 
-root_tk.mainloop()
+app.mainloop()

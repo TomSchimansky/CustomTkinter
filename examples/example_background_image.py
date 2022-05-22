@@ -12,7 +12,7 @@ PATH = os.path.dirname(os.path.realpath(__file__))
 
 class App(customtkinter.CTk):
 
-    APP_NAME = "CustomTkinter background gradient image"
+    APP_NAME = "CustomTkinter example_background_image.py"
     WIDTH = 900
     HEIGHT = 600
 

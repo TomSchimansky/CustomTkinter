@@ -3,8 +3,8 @@ import tkinter
 
 # customtkinter.set_appearance_mode("light")
 
-root_tk = customtkinter.CTk()
-root_tk.geometry("600x500")
+app = customtkinter.CTk()
+app.geometry("600x500")
 
 menu = tkinter.Menu(tearoff=0, bd=0, relief=tkinter.FLAT, activeforeground="red")
 menu.add_command(label="System")
@@ -45,9 +45,9 @@ class CTkMenu(tkinter.Toplevel):
 
 
 def open_menu():
-    menu = CTkMenu(root_tk, button.winfo_rootx(), button.winfo_rooty() + button.winfo_height() + 4, ["Option 1", "Option 2", "Point 3"])
+    menu = CTkMenu(app, button.winfo_rootx(), button.winfo_rooty() + button.winfo_height() + 4, ["Option 1", "Option 2", "Point 3"])
 
 button = customtkinter.CTkButton(command=open_menu, height=50)
 button.pack(pady=20)
 
-root_tk.mainloop()
+app.mainloop()
