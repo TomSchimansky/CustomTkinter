@@ -2,7 +2,12 @@ import tkinter
 import tkinter.ttk as ttk
 import copy
 import re
-from typing import Callable, Union, TypedDict
+from typing import Callable, Union
+
+try:
+    from typing import TypedDict
+except ImportError:
+    from typing_extensions import TypedDict
 
 from ..windows.ctk_tk import CTk
 from ..windows.ctk_toplevel import CTkToplevel
