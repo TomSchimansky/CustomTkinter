@@ -51,7 +51,7 @@ class FontManager:
             return cls.windows_load_font(font_path, private=True, enumerable=False)
 
         # Linux
-        elif sys.platform.startswith("win"):
+        elif sys.platform.startswith("linux"):
             try:
                 shutil.copy(font_path, os.path.expanduser("~/.fonts/"))
                 return True
