@@ -135,22 +135,30 @@ class CTkBaseClass(tkinter.Frame):
 
             self.draw(no_color_updates=True)  # faster drawing without color changes
 
-    def detect_color_of_master(self):
+    def detect_color_of_master(self, master_widget=None):
         """ detect color of self.master widget to set correct bg_color """
 
-        if isinstance(self.master, CTkBaseClass) and hasattr(self.master, "fg_color"):  # master is CTkFrame
-            return self.master.fg_color
+        if master_widget is None:
+            master_widget = self.master
 
-        elif isinstance(self.master, (ttk.Frame, ttk.LabelFrame, ttk.Notebook)):  # master is ttk widget
+        if isinstance(master_widget, CTkBaseClass) and hasattr(master_widget, "fg_color"):  # master is CTkFrame
+            if master_widget.fg_color is not None:
+                return master_widget.fg_color
+
+            # if fg_color of master is None, try to retrieve fg_color from master of master
+            elif hasattr(master_widget.master, "master"):
+                return self.detect_color_of_master(self.master.master)
+
+        elif isinstance(master_widget, (ttk.Frame, ttk.LabelFrame, ttk.Notebook)):  # master is ttk widget
             try:
                 ttk_style = ttk.Style()
-                return ttk_style.lookup(self.master.winfo_class(), 'background')
+                return ttk_style.lookup(master_widget.winfo_class(), 'background')
             except Exception:
                 return "#FFFFFF", "#000000"
 
         else:  # master is normal tkinter widget
             try:
-                return self.master.cget("bg")  # try to get bg color by .cget() method
+                return master_widget.cget("bg")  # try to get bg color by .cget() method
             except Exception:
                 return "#FFFFFF", "#000000"
 
