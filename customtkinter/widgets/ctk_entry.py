@@ -81,6 +81,13 @@ class CTkEntry(CTkBaseClass):
         self.canvas.configure(width=self.apply_widget_scaling(self.desired_width), height=self.apply_widget_scaling(self.desired_height))
         self.draw()
 
+    def set_dimensions(self, width=None, height=None):
+        super().set_dimensions(width, height)
+
+        self.canvas.configure(width=self.apply_widget_scaling(self.desired_width),
+                              height=self.apply_widget_scaling(self.desired_height))
+        self.draw()
+
     def set_placeholder(self, event=None):
         if self.placeholder_text is not None:
             if not self.placeholder_text_active and self.entry.get() == "":
@@ -180,6 +187,14 @@ class CTkEntry(CTkBaseClass):
             self.entry.grid(column=0, row=0, sticky="we", padx=self.apply_widget_scaling(self.corner_radius) if self.corner_radius >= 6 else self.apply_widget_scaling(6))
             del kwargs["corner_radius"]
             require_redraw = True
+
+        if "width" in kwargs:
+            self.set_dimensions(width=kwargs["width"])
+            del kwargs["width"]
+
+        if "height" in kwargs:
+            self.set_dimensions(height=kwargs["height"])
+            del kwargs["height"]
 
         if "placeholder_text" in kwargs:
             pass

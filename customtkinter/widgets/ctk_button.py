@@ -99,7 +99,14 @@ class CTkButton(CTkBaseClass):
             self.image_label = None
 
         self.canvas.configure(width=self.apply_widget_scaling(self.desired_width),
-                              height=self.apply_widget_scaling(self.desired_height)),
+                              height=self.apply_widget_scaling(self.desired_height))
+        self.draw()
+
+    def set_dimensions(self, width=None, height=None):
+        super().set_dimensions(width, height)
+
+        self.canvas.configure(width=self.apply_widget_scaling(self.desired_width),
+                              height=self.apply_widget_scaling(self.desired_height))
         self.draw()
 
     def draw(self, no_color_updates=False):
@@ -289,6 +296,14 @@ class CTkButton(CTkBaseClass):
             if self.text_label is not None:
                 self.text_label.configure(textvariable=self.textvariable)
             del kwargs["textvariable"]
+
+        if "width" in kwargs:
+            self.set_dimensions(width=kwargs["width"])
+            del kwargs["width"]
+
+        if "height" in kwargs:
+            self.set_dimensions(height=kwargs["height"])
+            del kwargs["height"]
 
         super().configure(*args, **kwargs)
 

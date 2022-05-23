@@ -1,8 +1,5 @@
-import tkinter
-
 from .ctk_canvas import CTkCanvas
 from ..theme_manager import ThemeManager
-from ..settings import Settings
 from ..draw_engine import DrawEngine
 from .widget_base_class import CTkBaseClass
 
@@ -68,6 +65,13 @@ class CTkFrame(CTkBaseClass):
         self.canvas.configure(width=self.apply_widget_scaling(self.desired_width), height=self.apply_widget_scaling(self.desired_height))
         self.draw()
 
+    def set_dimensions(self, width=None, height=None):
+        super().set_dimensions(width, height)
+
+        self.canvas.configure(width=self.apply_widget_scaling(self.desired_width),
+                              height=self.apply_widget_scaling(self.desired_height))
+        self.draw()
+
     def draw(self, no_color_updates=False):
 
         requires_recoloring = self.draw_engine.draw_rounded_rect_with_border(self.apply_widget_scaling(self.current_width),
@@ -129,6 +133,14 @@ class CTkFrame(CTkBaseClass):
             self.border_width = kwargs["border_width"]
             require_redraw = True
             del kwargs["border_width"]
+
+        if "width" in kwargs:
+            self.set_dimensions(width=kwargs["width"])
+            del kwargs["width"]
+
+        if "height" in kwargs:
+            self.set_dimensions(height=kwargs["height"])
+            del kwargs["height"]
 
         super().configure(*args, **kwargs)
 

@@ -69,6 +69,13 @@ class CTkLabel(CTkBaseClass):
 
         self.draw()
 
+    def set_dimensions(self, width=None, height=None):
+        super().set_dimensions(width, height)
+
+        self.canvas.configure(width=self.apply_widget_scaling(self.desired_width),
+                              height=self.apply_widget_scaling(self.desired_height))
+        self.draw()
+
     def draw(self, no_color_updates=False):
         requires_recoloring = self.draw_engine.draw_rounded_rect_with_border(self.apply_widget_scaling(self.current_width),
                                                                              self.apply_widget_scaling(self.current_height),
@@ -117,6 +124,14 @@ class CTkLabel(CTkBaseClass):
             self.text_color = kwargs["text_color"]
             require_redraw = True
             del kwargs["text_color"]
+
+        if "width" in kwargs:
+            self.set_dimensions(width=kwargs["width"])
+            del kwargs["width"]
+
+        if "height" in kwargs:
+            self.set_dimensions(height=kwargs["height"])
+            del kwargs["height"]
 
         self.text_label.configure(*args, **kwargs)
 

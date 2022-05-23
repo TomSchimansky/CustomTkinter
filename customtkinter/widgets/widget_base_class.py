@@ -185,6 +185,15 @@ class CTkBaseClass(tkinter.Frame):
         if self.last_geometry_manager_call is not None:
             self.last_geometry_manager_call["function"](**self.apply_argument_scaling(self.last_geometry_manager_call["kwargs"]))
 
+    def set_dimensions(self, width=None, height=None):
+        if width is not None:
+            self.desired_width = width
+        if height is not None:
+            self.desired_height = height
+
+        super().configure(width=self.apply_widget_scaling(self.desired_width),
+                          height=self.apply_widget_scaling(self.desired_height))
+
     def apply_widget_scaling(self, value):
         if isinstance(value, (int, float)):
             return value * self.widget_scaling

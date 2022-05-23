@@ -81,6 +81,13 @@ class CTkProgressBar(CTkBaseClass):
         self.canvas.configure(width=self.apply_widget_scaling(self.desired_width), height=self.apply_widget_scaling(self.desired_height))
         self.draw()
 
+    def set_dimensions(self, width=None, height=None):
+        super().set_dimensions(width, height)
+
+        self.canvas.configure(width=self.apply_widget_scaling(self.desired_width),
+                              height=self.apply_widget_scaling(self.desired_height))
+        self.draw()
+
     def destroy(self):
         if self.variable is not None:
             self.variable.trace_remove("write", self.variable_callback_name)
@@ -158,6 +165,14 @@ class CTkProgressBar(CTkBaseClass):
                 self.variable = None
 
             del kwargs["variable"]
+
+        if "width" in kwargs:
+            self.set_dimensions(width=kwargs["width"])
+            del kwargs["width"]
+
+        if "height" in kwargs:
+            self.set_dimensions(height=kwargs["height"])
+            del kwargs["height"]
 
         super().configure(*args, **kwargs)
 

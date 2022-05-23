@@ -109,6 +109,13 @@ class CTkSlider(CTkBaseClass):
         self.canvas.configure(width=self.apply_widget_scaling(self.desired_width), height=self.apply_widget_scaling(self.desired_height))
         self.draw()
 
+    def set_dimensions(self, width=None, height=None):
+        super().set_dimensions(width, height)
+
+        self.canvas.configure(width=self.apply_widget_scaling(self.desired_width),
+                              height=self.apply_widget_scaling(self.desired_height))
+        self.draw()
+
     def destroy(self):
         # remove variable_callback from variable callbacks if variable exists
         if self.variable is not None:
@@ -309,6 +316,14 @@ class CTkSlider(CTkBaseClass):
                 self.variable = None
 
             del kwargs["variable"]
+
+        if "width" in kwargs:
+            self.set_dimensions(width=kwargs["width"])
+            del kwargs["width"]
+
+        if "height" in kwargs:
+            self.set_dimensions(height=kwargs["height"])
+            del kwargs["height"]
 
         super().configure(*args, **kwargs)
 
