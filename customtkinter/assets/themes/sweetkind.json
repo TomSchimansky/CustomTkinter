@@ -32,15 +32,15 @@
   "text": {
     "macOS": {
       "font": "SF Display",
-      "size": -13
+      "size": 12
     },
     "Windows": {
       "font": "Roboto",
-      "size": -13
+      "size": 12
     },
     "Linux": {
       "font": "Roboto",
-      "size": -13
+      "size": 12
     }
   },
   "shape": {

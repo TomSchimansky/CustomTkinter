@@ -8,6 +8,21 @@ class ThemeManager:
     theme = {}  # contains all the theme data
     built_in_themes = ["blue", "green", "dark-blue", "sweetkind"]
 
+    @staticmethod
+    def get_color_by_name(color_name: str, appearance_mode: str):
+        if appearance_mode == "Dark":
+            return ThemeManager.theme["color"][color_name][1]
+        elif appearance_mode == "Light":
+            return ThemeManager.theme["color"][color_name][0]
+
+    @staticmethod
+    def get_shape_by_name(shape_name: str, appearance_mode: str) -> int:
+        return ThemeManager.theme["shape"][shape_name]
+
+    @staticmethod
+    def get_text_size() -> int:
+        return ThemeManager.theme["text"]["size"]
+
     @classmethod
     def load_theme(cls, theme_name_or_path: str):
         script_directory = os.path.dirname(os.path.abspath(__file__))
