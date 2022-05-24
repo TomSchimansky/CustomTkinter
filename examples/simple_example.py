@@ -1,12 +1,12 @@
 import tkinter
-import customtkinter  # <- import the CustomTkinter module
+import customtkinter
 
 customtkinter.set_appearance_mode("dark")  # Modes: "System" (standard), "Dark", "Light"
 customtkinter.set_default_color_theme("blue")  # Themes: "blue" (standard), "green", "dark-blue"
 
-root_tk = customtkinter.CTk()  # create CTk window like you do with the Tk window (you can also use normal tkinter.Tk window)
-root_tk.geometry("400x480")
-root_tk.title("CustomTkinter Test")
+app = customtkinter.CTk()  # create CTk window like you do with the Tk window
+app.geometry("400x480")
+app.title("CustomTkinter simple_example.py")
 
 
 def button_function():
@@ -23,7 +23,7 @@ def check_box_function():
 
 y_padding = 13
 
-frame_1 = customtkinter.CTkFrame(master=root_tk, corner_radius=15)
+frame_1 = customtkinter.CTkFrame(master=app, corner_radius=15)
 frame_1.pack(pady=20, padx=60, fill="both", expand=True)
 
 label_1 = customtkinter.CTkLabel(master=frame_1, justify=tkinter.LEFT)
@@ -34,7 +34,6 @@ progressbar_1.pack(pady=y_padding, padx=10)
 
 button_1 = customtkinter.CTkButton(master=frame_1, corner_radius=8, command=button_function)
 button_1.pack(pady=y_padding, padx=10)
-# button_1.configure(state="disabled")
 
 slider_1 = customtkinter.CTkSlider(master=frame_1, command=slider_function, from_=0, to=1)
 slider_1.pack(pady=y_padding, padx=10)
@@ -59,4 +58,4 @@ s_var = tkinter.StringVar(value="on")
 switch_1 = customtkinter.CTkSwitch(master=frame_1)
 switch_1.pack(pady=y_padding, padx=10)
 
-root_tk.mainloop()
+app.mainloop()

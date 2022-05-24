@@ -1,12 +1,14 @@
+from __future__ import annotations
 import sys
 import math
 import tkinter
-from typing import Union
+from typing import Union, TYPE_CHECKING
 
-from .widgets.ctk_canvas import CTkCanvas
+if TYPE_CHECKING:
+    from .widgets.ctk_canvas import CTkCanvas
 
 
-class CTkDrawEngine:
+class DrawEngine:
     """
     This is the core of the CustomTkinter library where all the drawing on the tkinter.Canvas happens.
     A year of experimenting and trying out different drawing methods have led to the current state of this
@@ -21,25 +23,26 @@ class CTkDrawEngine:
 
     """
 
-    def __init__(self, canvas: CTkCanvas, rendering_method: str):
+    preferred_drawing_method: str = None  # 'polygon_shapes', 'font_shapes', 'circle_shapes'
+
+    def __init__(self, canvas: CTkCanvas):
         self._canvas = canvas
-        self._rendering_method = rendering_method  # "polygon_shapes" (macOS), "font_shapes" (Windows, Linux), "circle_shapes" (backup without fonts)
         self._existing_tags = set()
 
     def _calc_optimal_corner_radius(self, user_corner_radius: Union[float, int]) -> Union[float, int]:
         # optimize for drawing with polygon shapes
-        if self._rendering_method == "polygon_shapes":
+        if self.preferred_drawing_method == "polygon_shapes":
             if sys.platform == "darwin":
                 return user_corner_radius
             else:
                 return round(user_corner_radius)
 
         # optimize forx drawing with antialiased font shapes
-        elif self._rendering_method == "font_shapes":
+        elif self.preferred_drawing_method == "font_shapes":
             return round(user_corner_radius)
 
         # optimize for drawing with circles and rects
-        elif self._rendering_method == "circle_shapes":
+        elif self.preferred_drawing_method == "circle_shapes":
             user_corner_radius = 0.5 * round(user_corner_radius / 0.5)  # round to 0.5 steps
 
             # make sure the value is always with .5 at the end for smoother corners
@@ -71,11 +74,11 @@ class CTkDrawEngine:
         else:
             inner_corner_radius = 0
 
-        if self._rendering_method == "polygon_shapes":
+        if self.preferred_drawing_method == "polygon_shapes":
             return self._draw_rounded_rect_with_border_polygon_shapes(width, height, corner_radius, border_width, inner_corner_radius)
-        elif self._rendering_method == "font_shapes":
+        elif self.preferred_drawing_method == "font_shapes":
             return self._draw_rounded_rect_with_border_font_shapes(width, height, corner_radius, border_width, inner_corner_radius, ())
-        elif self._rendering_method == "circle_shapes":
+        elif self.preferred_drawing_method == "circle_shapes":
             return self._draw_rounded_rect_with_border_circle_shapes(width, height, corner_radius, border_width, inner_corner_radius)
 
     def _draw_rounded_rect_with_border_polygon_shapes(self, width: int, height: int, corner_radius: int, border_width: int, inner_corner_radius: int) -> bool:
@@ -89,13 +92,13 @@ class CTkDrawEngine:
 
             self._canvas.coords("border_line_1",
                                 (corner_radius,
-                                corner_radius,
-                                width - corner_radius,
-                                corner_radius,
-                                width - corner_radius,
-                                height - corner_radius,
-                                corner_radius,
-                                height - corner_radius))
+                                 corner_radius,
+                                 width - corner_radius,
+                                 corner_radius,
+                                 width - corner_radius,
+                                 height - corner_radius,
+                                 corner_radius,
+                                 height - corner_radius))
             self._canvas.itemconfig("border_line_1",
                                     joinstyle=tkinter.ROUND,
                                     width=corner_radius * 2)
@@ -154,7 +157,7 @@ class CTkDrawEngine:
                     self._canvas.delete("border_oval_2_a", "border_oval_2_b")
 
                 if not self._canvas.find_withtag("border_oval_3_a") and height > 2 * corner_radius \
-                        and width > 2 * corner_radius and "border_oval_3" not in exclude_parts:
+                    and width > 2 * corner_radius and "border_oval_3" not in exclude_parts:
                     self._canvas.create_aa_circle(0, 0, 0, tags=("border_oval_3_a", "border_corner_part", "border_parts"), anchor=tkinter.CENTER)
                     self._canvas.create_aa_circle(0, 0, 0, tags=("border_oval_3_b", "border_corner_part", "border_parts"), anchor=tkinter.CENTER, angle=180)
                     requires_recoloring = True
@@ -214,12 +217,12 @@ class CTkDrawEngine:
                 self._canvas.delete("inner_oval_2_a", "inner_oval_2_b")
 
             if not self._canvas.find_withtag("inner_oval_3_a") and height - (2 * border_width) > 2 * inner_corner_radius \
-                    and width - (2 * border_width) > 2 * inner_corner_radius and "inner_oval_3" not in exclude_parts:
+                and width - (2 * border_width) > 2 * inner_corner_radius and "inner_oval_3" not in exclude_parts:
                 self._canvas.create_aa_circle(0, 0, 0, tags=("inner_oval_3_a", "inner_corner_part", "inner_parts"), anchor=tkinter.CENTER)
                 self._canvas.create_aa_circle(0, 0, 0, tags=("inner_oval_3_b", "inner_corner_part", "inner_parts"), anchor=tkinter.CENTER, angle=180)
                 requires_recoloring = True
             elif self._canvas.find_withtag("inner_oval_3_a") and (not (height - (2 * border_width) > 2 * inner_corner_radius
-                    and width - (2 * border_width) > 2 * inner_corner_radius) or "inner_oval_3" in exclude_parts):
+                                                                       and width - (2 * border_width) > 2 * inner_corner_radius) or "inner_oval_3" in exclude_parts):
                 self._canvas.delete("inner_oval_3_a", "inner_oval_3_b")
 
             if not self._canvas.find_withtag("inner_oval_4_a") and height - (2 * border_width) > 2 * inner_corner_radius and "inner_oval_4" not in exclude_parts:
@@ -338,7 +341,7 @@ class CTkDrawEngine:
                                                   height - border_width))
         self._canvas.coords("inner_rectangle_2", (border_width,
                                                   border_width + inner_corner_radius,
-                                                  width - border_width ,
+                                                  width - border_width,
                                                   height - inner_corner_radius - border_width))
 
         return requires_recoloring
@@ -365,10 +368,10 @@ class CTkDrawEngine:
         else:
             inner_corner_radius = 0
 
-        if self._rendering_method == "polygon_shapes" or self._rendering_method == "circle_shapes":
+        if self.preferred_drawing_method == "polygon_shapes" or self.preferred_drawing_method == "circle_shapes":
             return self._draw_rounded_progress_bar_with_border_polygon_shapes(width, height, corner_radius, border_width, inner_corner_radius,
                                                                               progress_value, orientation)
-        elif self._rendering_method == "font_shapes":
+        elif self.preferred_drawing_method == "font_shapes":
             return self._draw_rounded_progress_bar_with_border_font_shapes(width, height, corner_radius, border_width, inner_corner_radius,
                                                                            progress_value, orientation)
 
@@ -459,9 +462,9 @@ class CTkDrawEngine:
                                 border_width + inner_corner_radius, inner_corner_radius)
             self._canvas.coords("progress_oval_2_b", border_width + inner_corner_radius + (width - 2 * border_width - 2 * inner_corner_radius) * progress_value,
                                 border_width + inner_corner_radius, inner_corner_radius)
-            self._canvas.coords("progress_oval_3_a",  border_width + inner_corner_radius + (width - 2 * border_width - 2 * inner_corner_radius) * progress_value,
+            self._canvas.coords("progress_oval_3_a", border_width + inner_corner_radius + (width - 2 * border_width - 2 * inner_corner_radius) * progress_value,
                                 height - border_width - inner_corner_radius, inner_corner_radius)
-            self._canvas.coords("progress_oval_3_b",  border_width + inner_corner_radius + (width - 2 * border_width - 2 * inner_corner_radius) * progress_value,
+            self._canvas.coords("progress_oval_3_b", border_width + inner_corner_radius + (width - 2 * border_width - 2 * inner_corner_radius) * progress_value,
                                 height - border_width - inner_corner_radius, inner_corner_radius)
             self._canvas.coords("progress_oval_4_a", border_width + inner_corner_radius, height - border_width - inner_corner_radius, inner_corner_radius)
             self._canvas.coords("progress_oval_4_b", border_width + inner_corner_radius, height - border_width - inner_corner_radius, inner_corner_radius)
@@ -534,10 +537,10 @@ class CTkDrawEngine:
         else:
             inner_corner_radius = 0
 
-        if self._rendering_method == "polygon_shapes" or self._rendering_method == "circle_shapes":
+        if self.preferred_drawing_method == "polygon_shapes" or self.preferred_drawing_method == "circle_shapes":
             return self._draw_rounded_slider_with_border_and_button_polygon_shapes(width, height, corner_radius, border_width, inner_corner_radius,
                                                                                    button_length, button_corner_radius, slider_value, orientation)
-        elif self._rendering_method == "font_shapes":
+        elif self.preferred_drawing_method == "font_shapes":
             return self._draw_rounded_slider_with_border_and_button_font_shapes(width, height, corner_radius, border_width, inner_corner_radius,
                                                                                 button_length, button_corner_radius, slider_value, orientation)
 
@@ -628,22 +631,41 @@ class CTkDrawEngine:
             self._canvas.delete("slider_rectangle_2")
 
         # set positions of circles and rectangles
-        slider_x_position = corner_radius + (button_length / 2) + (width - 2 * corner_radius - button_length) * slider_value
-        self._canvas.coords("slider_oval_1_a", slider_x_position - (button_length / 2), button_corner_radius, button_corner_radius)
-        self._canvas.coords("slider_oval_1_b", slider_x_position - (button_length / 2), button_corner_radius, button_corner_radius)
-        self._canvas.coords("slider_oval_2_a", slider_x_position + (button_length / 2), button_corner_radius, button_corner_radius)
-        self._canvas.coords("slider_oval_2_b", slider_x_position + (button_length / 2), button_corner_radius, button_corner_radius)
-        self._canvas.coords("slider_oval_3_a", slider_x_position + (button_length / 2), height - button_corner_radius, button_corner_radius)
-        self._canvas.coords("slider_oval_3_b", slider_x_position + (button_length / 2), height - button_corner_radius, button_corner_radius)
-        self._canvas.coords("slider_oval_4_a", slider_x_position - (button_length / 2), height - button_corner_radius, button_corner_radius)
-        self._canvas.coords("slider_oval_4_b", slider_x_position - (button_length / 2), height - button_corner_radius, button_corner_radius)
+        if orientation == "w":
+            slider_x_position = corner_radius + (button_length / 2) + (width - 2 * corner_radius - button_length) * slider_value
+            self._canvas.coords("slider_oval_1_a", slider_x_position - (button_length / 2), button_corner_radius, button_corner_radius)
+            self._canvas.coords("slider_oval_1_b", slider_x_position - (button_length / 2), button_corner_radius, button_corner_radius)
+            self._canvas.coords("slider_oval_2_a", slider_x_position + (button_length / 2), button_corner_radius, button_corner_radius)
+            self._canvas.coords("slider_oval_2_b", slider_x_position + (button_length / 2), button_corner_radius, button_corner_radius)
+            self._canvas.coords("slider_oval_3_a", slider_x_position + (button_length / 2), height - button_corner_radius, button_corner_radius)
+            self._canvas.coords("slider_oval_3_b", slider_x_position + (button_length / 2), height - button_corner_radius, button_corner_radius)
+            self._canvas.coords("slider_oval_4_a", slider_x_position - (button_length / 2), height - button_corner_radius, button_corner_radius)
+            self._canvas.coords("slider_oval_4_b", slider_x_position - (button_length / 2), height - button_corner_radius, button_corner_radius)
 
-        self._canvas.coords("slider_rectangle_1",
-                            slider_x_position - (button_length / 2), 0,
-                            slider_x_position + (button_length / 2), height)
-        self._canvas.coords("slider_rectangle_2",
-                            slider_x_position - (button_length / 2) - button_corner_radius, button_corner_radius,
-                            slider_x_position + (button_length / 2) + button_corner_radius, height - button_corner_radius)
+            self._canvas.coords("slider_rectangle_1",
+                                slider_x_position - (button_length / 2), 0,
+                                slider_x_position + (button_length / 2), height)
+            self._canvas.coords("slider_rectangle_2",
+                                slider_x_position - (button_length / 2) - button_corner_radius, button_corner_radius,
+                                slider_x_position + (button_length / 2) + button_corner_radius, height - button_corner_radius)
+
+        elif orientation == "s":
+            slider_y_position = corner_radius + (button_length / 2) + (height - 2 * corner_radius - button_length) * (1 - slider_value)
+            self._canvas.coords("slider_oval_1_a", button_corner_radius, slider_y_position - (button_length / 2), button_corner_radius)
+            self._canvas.coords("slider_oval_1_b", button_corner_radius, slider_y_position - (button_length / 2), button_corner_radius)
+            self._canvas.coords("slider_oval_2_a", button_corner_radius, slider_y_position + (button_length / 2), button_corner_radius)
+            self._canvas.coords("slider_oval_2_b", button_corner_radius, slider_y_position + (button_length / 2), button_corner_radius)
+            self._canvas.coords("slider_oval_3_a", width - button_corner_radius, slider_y_position + (button_length / 2), button_corner_radius)
+            self._canvas.coords("slider_oval_3_b", width - button_corner_radius, slider_y_position + (button_length / 2), button_corner_radius)
+            self._canvas.coords("slider_oval_4_a", width - button_corner_radius, slider_y_position - (button_length / 2), button_corner_radius)
+            self._canvas.coords("slider_oval_4_b", width - button_corner_radius, slider_y_position - (button_length / 2), button_corner_radius)
+
+            self._canvas.coords("slider_rectangle_1",
+                                0, slider_y_position - (button_length / 2),
+                                width, slider_y_position + (button_length / 2))
+            self._canvas.coords("slider_rectangle_2",
+                                button_corner_radius, slider_y_position - (button_length / 2) - button_corner_radius,
+                                width - button_corner_radius, slider_y_position + (button_length / 2) + button_corner_radius)
 
         if requires_recoloring:  # new parts were added -> manage z-order
             self._canvas.tag_raise("slider_parts")
@@ -659,7 +681,7 @@ class CTkDrawEngine:
         size = round(size)
         requires_recoloring = False
 
-        if self._rendering_method == "polygon_shapes" or self._rendering_method == "circle_shapes":
+        if self.preferred_drawing_method == "polygon_shapes" or self.preferred_drawing_method == "circle_shapes":
             x, y, radius = width / 2, height / 2, size / 2.8
             if not self._canvas.find_withtag("checkmark"):
                 self._canvas.create_line(0, 0, 0, 0, tags=("checkmark", "create_line"), width=round(height / 8), joinstyle=tkinter.MITER, capstyle=tkinter.ROUND)
@@ -670,7 +692,7 @@ class CTkDrawEngine:
                                 x + radius, y - radius,
                                 x - radius / 4, y + radius * 0.8,
                                 x - radius, y + radius / 6)
-        elif self._rendering_method == "font_shapes":
+        elif self.preferred_drawing_method == "font_shapes":
             if not self._canvas.find_withtag("checkmark"):
                 self._canvas.create_text(0, 0, text="Z", font=("CustomTkinter_shapes_font", -size), tags=("checkmark", "create_text"), anchor=tkinter.CENTER)
                 self._canvas.tag_raise("checkmark")

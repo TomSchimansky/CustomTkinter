@@ -1,23 +1,27 @@
 import sys
 import tkinter
 from distutils.version import StrictVersion as Version
+from typing import Callable
 
 try:
     import darkdetect
 
     if Version(darkdetect.__version__) < Version("0.3.1"):
-        sys.stderr.write("WARNING: You have to update the darkdetect library: pip3 install --upgrade darkdetect\n")
+        sys.stderr.write("WARNING: You have to upgrade the darkdetect library: pip3 install --upgrade darkdetect\n")
         if sys.platform != "darwin":
             exit()
-except:
-    pass
+except ImportError as err:
+    raise err
+except Exception:
+    sys.stderr.write("customtkinter.appearance_mode_tracker warning: failed to import darkdetect")
 
 
 class AppearanceModeTracker:
 
     callback_list = []
-    root_tk_list = []
+    app_list = []
     update_loop_running = False
+    update_loop_interval = 500  # milliseconds
 
     appearance_mode_set_by = "system"
     appearance_mode = 0  # Light (standard)
@@ -32,24 +36,24 @@ class AppearanceModeTracker:
                 cls.update_callbacks()
 
     @classmethod
-    def add(cls, callback, widget=None):
+    def add(cls, callback: Callable, widget=None):
         cls.callback_list.append(callback)
 
         if widget is not None:
-            root_tk = cls.get_tk_root_of_widget(widget)
-            if root_tk not in cls.root_tk_list:
-                cls.root_tk_list.append(root_tk)
+            app = cls.get_tk_root_of_widget(widget)
+            if app not in cls.app_list:
+                cls.app_list.append(app)
 
                 if not cls.update_loop_running:
-                    root_tk.after(500, cls.update)
+                    app.after(500, cls.update)
                     cls.update_loop_running = True
 
     @classmethod
-    def remove(cls, callback):
+    def remove(cls, callback: Callable):
         cls.callback_list.remove(callback)
 
     @staticmethod
-    def detect_appearance_mode():
+    def detect_appearance_mode() -> int:
         try:
             if darkdetect.theme() == "Dark":
                 return 1  # Dark
@@ -93,9 +97,9 @@ class AppearanceModeTracker:
                 cls.update_callbacks()
 
         # find an existing tkinter.Tk object for the next call of .after()
-        for root_tk in cls.root_tk_list:
+        for app in cls.app_list:
             try:
-                root_tk.after(200, cls.update)
+                app.after(cls.update_loop_interval, cls.update)
                 return
             except Exception:
                 continue
@@ -103,11 +107,11 @@ class AppearanceModeTracker:
         cls.update_loop_running = False
 
     @classmethod
-    def get_mode(cls):
+    def get_mode(cls) -> int:
         return cls.appearance_mode
 
     @classmethod
-    def set_appearance_mode(cls, mode_string):
+    def set_appearance_mode(cls, mode_string: str):
         if mode_string.lower() == "dark":
             cls.appearance_mode_set_by = "user"
             new_appearance_mode = 1
@@ -126,6 +130,3 @@ class AppearanceModeTracker:
 
         elif mode_string.lower() == "system":
             cls.appearance_mode_set_by = "system"
-
-
-AppearanceModeTracker.init_appearance_mode()

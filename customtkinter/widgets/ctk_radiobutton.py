@@ -2,9 +2,9 @@ import tkinter
 import sys
 
 from .ctk_canvas import CTkCanvas
-from ..ctk_theme_manager import CTkThemeManager
-from ..ctk_settings import CTkSettings
-from ..ctk_draw_engine import CTkDrawEngine
+from ..theme_manager import ThemeManager
+from ..settings import Settings
+from ..draw_engine import DrawEngine
 from .widget_base_class import CTkBaseClass
 
 
@@ -35,22 +35,22 @@ class CTkRadioButton(CTkBaseClass):
         super().__init__(*args, bg_color=bg_color, width=width, height=height, **kwargs)
 
         # color
-        self.fg_color = CTkThemeManager.theme["color"]["button"] if fg_color == "default_theme" else fg_color
-        self.hover_color = CTkThemeManager.theme["color"]["button_hover"] if hover_color == "default_theme" else hover_color
-        self.border_color = CTkThemeManager.theme["color"]["checkbox_border"] if border_color == "default_theme" else border_color
+        self.fg_color = ThemeManager.theme["color"]["button"] if fg_color == "default_theme" else fg_color
+        self.hover_color = ThemeManager.theme["color"]["button_hover"] if hover_color == "default_theme" else hover_color
+        self.border_color = ThemeManager.theme["color"]["checkbox_border"] if border_color == "default_theme" else border_color
 
         # shape
-        self.corner_radius = CTkThemeManager.theme["shape"]["radiobutton_corner_radius"] if corner_radius == "default_theme" else corner_radius
-        self.border_width_unchecked = CTkThemeManager.theme["shape"]["radiobutton_border_width_unchecked"] if border_width_unchecked == "default_theme" else border_width_unchecked
-        self.border_width_checked = CTkThemeManager.theme["shape"]["radiobutton_border_width_checked"] if border_width_checked == "default_theme" else border_width_checked
+        self.corner_radius = ThemeManager.theme["shape"]["radiobutton_corner_radius"] if corner_radius == "default_theme" else corner_radius
+        self.border_width_unchecked = ThemeManager.theme["shape"]["radiobutton_border_width_unchecked"] if border_width_unchecked == "default_theme" else border_width_unchecked
+        self.border_width_checked = ThemeManager.theme["shape"]["radiobutton_border_width_checked"] if border_width_checked == "default_theme" else border_width_checked
         self.border_width = self.border_width_unchecked
 
         # text
         self.text = text
         self.text_label = None
-        self.text_color = CTkThemeManager.theme["color"]["text"] if text_color == "default_theme" else text_color
-        self.text_color_disabled = CTkThemeManager.theme["color"]["text_disabled"] if text_color_disabled == "default_theme" else text_color_disabled
-        self.text_font = (CTkThemeManager.theme["text"]["font"], CTkThemeManager.theme["text"]["size"]) if text_font == "default_theme" else text_font
+        self.text_color = ThemeManager.theme["color"]["text"] if text_color == "default_theme" else text_color
+        self.text_color_disabled = ThemeManager.theme["color"]["text_disabled"] if text_color_disabled == "default_theme" else text_color_disabled
+        self.text_font = (ThemeManager.theme["text"]["font"], ThemeManager.theme["text"]["size"]) if text_font == "default_theme" else text_font
 
         # callback and control variables
         self.function = command
@@ -79,7 +79,7 @@ class CTkRadioButton(CTkBaseClass):
                                 width=self.apply_widget_scaling(self.current_width),
                                 height=self.apply_widget_scaling(self.current_height))
         self.canvas.grid(row=0, column=0, padx=0, pady=0, columnspan=1)
-        self.draw_engine = CTkDrawEngine(self.canvas, CTkSettings.preferred_drawing_method)
+        self.draw_engine = DrawEngine(self.canvas)
 
         self.canvas.bind("<Enter>", self.on_enter)
         self.canvas.bind("<Leave>", self.on_leave)
@@ -118,21 +118,21 @@ class CTkRadioButton(CTkBaseClass):
                                                                              self.apply_widget_scaling(self.corner_radius),
                                                                              self.apply_widget_scaling(self.border_width))
 
-        self.bg_canvas.configure(bg=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
-        self.canvas.configure(bg=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
+        self.bg_canvas.configure(bg=ThemeManager.single_color(self.bg_color, self.appearance_mode))
+        self.canvas.configure(bg=ThemeManager.single_color(self.bg_color, self.appearance_mode))
 
         if self.check_state is False:
             self.canvas.itemconfig("border_parts",
-                                   outline=CTkThemeManager.single_color(self.border_color, self.appearance_mode),
-                                   fill=CTkThemeManager.single_color(self.border_color, self.appearance_mode))
+                                   outline=ThemeManager.single_color(self.border_color, self.appearance_mode),
+                                   fill=ThemeManager.single_color(self.border_color, self.appearance_mode))
         else:
             self.canvas.itemconfig("border_parts",
-                                   outline=CTkThemeManager.single_color(self.fg_color, self.appearance_mode),
-                                   fill=CTkThemeManager.single_color(self.fg_color, self.appearance_mode))
+                                   outline=ThemeManager.single_color(self.fg_color, self.appearance_mode),
+                                   fill=ThemeManager.single_color(self.fg_color, self.appearance_mode))
 
         self.canvas.itemconfig("inner_parts",
-                               outline=CTkThemeManager.single_color(self.bg_color, self.appearance_mode),
-                               fill=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
+                               outline=ThemeManager.single_color(self.bg_color, self.appearance_mode),
+                               fill=ThemeManager.single_color(self.bg_color, self.appearance_mode))
 
         if self.text_label is None:
             self.text_label = tkinter.Label(master=self,
@@ -144,11 +144,11 @@ class CTkRadioButton(CTkBaseClass):
             self.text_label["anchor"] = "w"
 
         if self.state == tkinter.DISABLED:
-            self.text_label.configure(fg=CTkThemeManager.single_color(self.text_color_disabled, self.appearance_mode))
+            self.text_label.configure(fg=ThemeManager.single_color(self.text_color_disabled, self.appearance_mode))
         else:
-            self.text_label.configure(fg=CTkThemeManager.single_color(self.text_color, self.appearance_mode))
+            self.text_label.configure(fg=ThemeManager.single_color(self.text_color, self.appearance_mode))
 
-        self.text_label.configure(bg=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
+        self.text_label.configure(bg=ThemeManager.single_color(self.bg_color, self.appearance_mode))
 
         self.set_text(self.text)
 
@@ -225,17 +225,17 @@ class CTkRadioButton(CTkBaseClass):
             self.draw()
 
     def set_cursor(self):
-        if CTkSettings.cursor_manipulation_enabled:
+        if Settings.cursor_manipulation_enabled:
             if self.state == tkinter.DISABLED:
-                if sys.platform == "darwin" and CTkSettings.cursor_manipulation_enabled:
+                if sys.platform == "darwin" and Settings.cursor_manipulation_enabled:
                     self.canvas.configure(cursor="arrow")
-                elif sys.platform.startswith("win") and CTkSettings.cursor_manipulation_enabled:
+                elif sys.platform.startswith("win") and Settings.cursor_manipulation_enabled:
                     self.canvas.configure(cursor="arrow")
 
             elif self.state == tkinter.NORMAL:
-                if sys.platform == "darwin" and CTkSettings.cursor_manipulation_enabled:
+                if sys.platform == "darwin" and Settings.cursor_manipulation_enabled:
                     self.canvas.configure(cursor="pointinghand")
-                elif sys.platform.startswith("win") and CTkSettings.cursor_manipulation_enabled:
+                elif sys.platform.startswith("win") and Settings.cursor_manipulation_enabled:
                     self.canvas.configure(cursor="hand2")
 
     def set_text(self, text):
@@ -248,19 +248,19 @@ class CTkRadioButton(CTkBaseClass):
     def on_enter(self, event=0):
         if self.hover is True and self.state == tkinter.NORMAL:
             self.canvas.itemconfig("border_parts",
-                                   fill=CTkThemeManager.single_color(self.hover_color, self.appearance_mode),
-                                   outline=CTkThemeManager.single_color(self.hover_color, self.appearance_mode))
+                                   fill=ThemeManager.single_color(self.hover_color, self.appearance_mode),
+                                   outline=ThemeManager.single_color(self.hover_color, self.appearance_mode))
 
     def on_leave(self, event=0):
         if self.hover is True:
             if self.check_state is True:
                 self.canvas.itemconfig("border_parts",
-                                       fill=CTkThemeManager.single_color(self.fg_color, self.appearance_mode),
-                                       outline=CTkThemeManager.single_color(self.fg_color, self.appearance_mode))
+                                       fill=ThemeManager.single_color(self.fg_color, self.appearance_mode),
+                                       outline=ThemeManager.single_color(self.fg_color, self.appearance_mode))
             else:
                 self.canvas.itemconfig("border_parts",
-                                       fill=CTkThemeManager.single_color(self.border_color, self.appearance_mode),
-                                       outline=CTkThemeManager.single_color(self.border_color, self.appearance_mode))
+                                       fill=ThemeManager.single_color(self.border_color, self.appearance_mode),
+                                       outline=ThemeManager.single_color(self.border_color, self.appearance_mode))
 
     def variable_callback(self, var_name, index, mode):
         if not self.variable_callback_blocked:

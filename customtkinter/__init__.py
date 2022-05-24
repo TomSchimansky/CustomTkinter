@@ -1,4 +1,40 @@
-__version__ = "3.12"
+__version__ = "4.1.0"
+
+import os
+import sys
+from tkinter.constants import *
+
+# import manager classes
+from .settings import Settings
+from .appearance_mode_tracker import AppearanceModeTracker
+from .theme_manager import ThemeManager
+from .scaling_tracker import ScalingTracker
+from .font_manager import FontManager
+from .draw_engine import DrawEngine
+
+AppearanceModeTracker.init_appearance_mode()
+ThemeManager.load_theme("blue")  # load default theme
+FontManager.init_font_manager()
+
+# determine draw method based on current platform
+if sys.platform == "darwin":
+    DrawEngine.preferred_drawing_method = "polygon_shapes"
+else:
+    DrawEngine.preferred_drawing_method = "font_shapes"
+
+# load Roboto fonts (used on Windows/Linux)
+script_directory = os.path.dirname(os.path.abspath(__file__))
+FontManager.load_font(os.path.join(script_directory, "assets", "fonts", "Roboto", "Roboto-Regular.ttf"))
+FontManager.load_font(os.path.join(script_directory, "assets", "fonts", "Roboto", "Roboto-Medium.ttf"))
+
+# load font necessary for rendering the widgets (used on Windows/Linux)
+if FontManager.load_font(os.path.join(script_directory, "assets", "fonts", "CustomTkinter_shapes_font-fine.otf")) is False:
+    # change draw method if font loading failed
+    if DrawEngine.preferred_drawing_method == "font_shapes":
+        sys.stderr.write("customtkinter.__init__ warning: " +
+                         "Preferred drawing method 'font_shapes' can not be used because the font file could not be loaded.\n" +
+                         "Using 'circle_shapes' instead. The rendering quality will be bad!")
+        DrawEngine.preferred_drawing_method = "circle_shapes"
 
 # import widgets
 from .widgets.ctk_button import CTkButton
@@ -17,100 +53,40 @@ from .windows.ctk_tk import CTk
 from .windows.ctk_toplevel import CTkToplevel
 from .windows.ctk_input_dialog import CTkInputDialog
 
-# import other classes
-from .ctk_settings import CTkSettings
-from .appearance_mode_tracker import AppearanceModeTracker
-from .ctk_theme_manager import CTkThemeManager
-from .scaling_tracker import ScalingTracker
 
-import os
-import sys
-import shutil
-
-
-def set_appearance_mode(mode_string):
+def set_appearance_mode(mode_string: str):
+    """ possible values: light, dark, system """
     AppearanceModeTracker.set_appearance_mode(mode_string)
 
 
-def get_appearance_mode():
+def get_appearance_mode() -> str:
+    """ get current state of the appearance mode (light or dark) """
     if AppearanceModeTracker.appearance_mode == 0:
         return "Light"
     elif AppearanceModeTracker.appearance_mode == 1:
         return "Dark"
 
 
-def set_default_color_theme(color_string):
-    CTkThemeManager.load_theme(color_string)
+def set_default_color_theme(color_string: str):
+    """ set color theme or load custom theme file by passing the path """
+    ThemeManager.load_theme(color_string)
 
 
-def deactivate_dpi_awareness(deactivate_awareness: bool):
-    CTkSettings.deactivate_automatic_dpi_awareness = deactivate_awareness
-
-
-def set_user_scaling(scaling_value: float):
-    ScalingTracker.set_spacing_scaling(scaling_value)
+def set_widget_scaling(scaling_value: float):
+    """ set scaling for the widget dimensions """
     ScalingTracker.set_widget_scaling(scaling_value)
 
 
-# Load fonts:
-if sys.platform.startswith("win"):
-    from ctypes import windll, byref, create_unicode_buffer, create_string_buffer
-
-    FR_PRIVATE = 0x10
-    FR_NOT_ENUM = 0x20
+def set_spacing_scaling(scaling_value: float):
+    """ set scaling for geometry manager calls (place, pack, grid)"""
+    ScalingTracker.set_spacing_scaling(scaling_value)
 
 
-    def loadfont(fontpath, private=True, enumerable=False):
-        """ Function taken from: https://stackoverflow.com/questions/11993290/truly-custom-font-in-tkinter/30631309#30631309 """
-
-        if isinstance(fontpath, bytes):
-            pathbuf = create_string_buffer(fontpath)
-            AddFontResourceEx = windll.gdi32.AddFontResourceExA
-        elif isinstance(fontpath, str):
-            pathbuf = create_unicode_buffer(fontpath)
-            AddFontResourceEx = windll.gdi32.AddFontResourceExW
-        else:
-            raise TypeError('fontpath must be of type bytes or str')
-
-        flags = (FR_PRIVATE if private else 0) | (FR_NOT_ENUM if not enumerable else 0)
-        num_fonts_added = AddFontResourceEx(byref(pathbuf), flags, 0)
-        return bool(num_fonts_added)
+def set_window_scaling(scaling_value: float):
+    """ set scaling for window dimensions """
+    ScalingTracker.set_window_scaling(scaling_value)
 
 
-    # load text fonts and custom font with circle shapes for round corner rendering
-    script_directory = os.path.dirname(os.path.abspath(__file__))
-    CTkSettings.circle_font_is_ready = loadfont(os.path.join(script_directory, "assets", "fonts", "CustomTkinter_shapes_font-fine.otf"))
-    loadfont(os.path.join(script_directory, "assets", "fonts", "Roboto", "Roboto-Regular.ttf"))
-    loadfont(os.path.join(script_directory, "assets", "fonts", "Roboto", "Roboto-Medium.ttf"))
-
-    # correct drawing method if font could not be loaded
-    if not CTkSettings.circle_font_is_ready:
-        if CTkSettings.preferred_drawing_method == "font_shapes":
-            sys.stderr.write("WARNING (customtkinter.CTkSettings): " +
-                             "Preferred drawing method 'font_shapes' can not be used because the font file could not be loaded.\n" +
-                             "Using 'circle_shapes' instead. The rendering quality will be very bad!")
-            CTkSettings.preferred_drawing_method = "circle_shapes"
-
-elif sys.platform.startswith("linux"):
-    try:
-        if not os.path.isdir(os.path.expanduser('~/.fonts/')):
-            os.mkdir(os.path.expanduser('~/.fonts/'))
-
-        script_directory = os.path.dirname(os.path.abspath(__file__))
-
-        # copy fonts in user font folder
-        shutil.copy(os.path.join(script_directory, "assets", "fonts", "Roboto", "Roboto-Regular.ttf"),
-                    os.path.expanduser("~/.fonts/"))
-        shutil.copy(os.path.join(script_directory, "assets", "fonts", "Roboto", "Roboto-Medium.ttf"),
-                    os.path.expanduser("~/.fonts/"))
-        shutil.copy(os.path.join(script_directory, "assets", "fonts", "CustomTkinter_shapes_font-fine.otf"),
-                    os.path.expanduser("~/.fonts/"))
-
-    except Exception as err:
-        sys.stderr.write(str(err) + "\n")
-        sys.stderr.write("WARNING (customtkinter.CTkSettings): " +
-                         "Preferred drawing method 'font_shapes' can not be used because the font file could not be copied to ~/.fonts/.\n" +
-                         "Using 'circle_shapes' instead. The rendering quality will be very bad!\n")
-        CTkSettings.preferred_drawing_method = "circle_shapes"
-
-
+def deactivate_automatic_dpi_awareness():
+    """ deactivate DPI awareness of current process (windll.shcore.SetProcessDpiAwareness(0)) """
+    ScalingTracker.deactivate_automatic_dpi_awareness = False

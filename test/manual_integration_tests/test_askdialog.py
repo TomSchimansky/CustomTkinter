@@ -1,9 +1,7 @@
-from tkinter.constants import CENTER, LEFT
 import tkinter
 import tkinter.messagebox
 from tkinter import filedialog as fd
-import customtkinter  # <- import the CustomTkinter module
-import os
+import customtkinter
 
 
 class App(customtkinter.CTk):
@@ -32,7 +30,6 @@ class App(customtkinter.CTk):
                                                 height=App.HEIGHT-40,
                                                 corner_radius=5)
         self.frame_left.place(relx=0.38, rely=0.5, anchor=tkinter.E)
-        print(self.frame_left.widget_scaling)
 
         self.frame_right = customtkinter.CTkFrame(master=self,
                                                 width=350,

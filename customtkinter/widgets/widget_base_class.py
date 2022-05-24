@@ -2,14 +2,18 @@ import tkinter
 import tkinter.ttk as ttk
 import copy
 import re
-import math
-from typing import Callable, Union, TypedDict
+from typing import Callable, Union
+
+try:
+    from typing import TypedDict
+except ImportError:
+    from typing_extensions import TypedDict
 
 from ..windows.ctk_tk import CTk
 from ..windows.ctk_toplevel import CTkToplevel
 from ..appearance_mode_tracker import AppearanceModeTracker
 from ..scaling_tracker import ScalingTracker
-from ..ctk_theme_manager import CTkThemeManager
+from ..theme_manager import ThemeManager
 
 
 class CTkBaseClass(tkinter.Frame):
@@ -42,7 +46,7 @@ class CTkBaseClass(tkinter.Frame):
         AppearanceModeTracker.add(self.set_appearance_mode, self)
         self.appearance_mode = AppearanceModeTracker.get_mode()  # 0: "Light" 1: "Dark"
 
-        super().configure(bg=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
+        super().configure(bg=ThemeManager.single_color(self.bg_color, self.appearance_mode))
 
         # overwrite configure methods of master when master is tkinter widget, so that bg changes get applied on child CTk widget too
         if isinstance(self.master, (tkinter.Tk, tkinter.Toplevel, tkinter.Frame)) and not isinstance(self.master, (CTkBaseClass, CTk, CTkToplevel)):
@@ -131,22 +135,30 @@ class CTkBaseClass(tkinter.Frame):
 
             self.draw(no_color_updates=True)  # faster drawing without color changes
 
-    def detect_color_of_master(self):
+    def detect_color_of_master(self, master_widget=None):
         """ detect color of self.master widget to set correct bg_color """
 
-        if isinstance(self.master, CTkBaseClass) and hasattr(self.master, "fg_color"):  # master is CTkFrame
-            return self.master.fg_color
+        if master_widget is None:
+            master_widget = self.master
 
-        elif isinstance(self.master, (ttk.Frame, ttk.LabelFrame, ttk.Notebook)):  # master is ttk widget
+        if isinstance(master_widget, CTkBaseClass) and hasattr(master_widget, "fg_color"):  # master is CTkFrame
+            if master_widget.fg_color is not None:
+                return master_widget.fg_color
+
+            # if fg_color of master is None, try to retrieve fg_color from master of master
+            elif hasattr(master_widget.master, "master"):
+                return self.detect_color_of_master(self.master.master)
+
+        elif isinstance(master_widget, (ttk.Frame, ttk.LabelFrame, ttk.Notebook)):  # master is ttk widget
             try:
                 ttk_style = ttk.Style()
-                return ttk_style.lookup(self.master.winfo_class(), 'background')
+                return ttk_style.lookup(master_widget.winfo_class(), 'background')
             except Exception:
                 return "#FFFFFF", "#000000"
 
         else:  # master is normal tkinter widget
             try:
-                return self.master.cget("bg")  # try to get bg color by .cget() method
+                return master_widget.cget("bg")  # try to get bg color by .cget() method
             except Exception:
                 return "#FFFFFF", "#000000"
 
@@ -172,6 +184,15 @@ class CTkBaseClass(tkinter.Frame):
 
         if self.last_geometry_manager_call is not None:
             self.last_geometry_manager_call["function"](**self.apply_argument_scaling(self.last_geometry_manager_call["kwargs"]))
+
+    def set_dimensions(self, width=None, height=None):
+        if width is not None:
+            self.desired_width = width
+        if height is not None:
+            self.desired_height = height
+
+        super().configure(width=self.apply_widget_scaling(self.desired_width),
+                          height=self.apply_widget_scaling(self.desired_height))
 
     def apply_widget_scaling(self, value):
         if isinstance(value, (int, float)):

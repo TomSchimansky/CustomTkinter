@@ -3,7 +3,7 @@ import tkinter
 
 app = tkinter.Tk()
 app.geometry("400x350")
-app.title("Standard Tkinter Test")
+app.title("simple_example_standard_tkinter.py")
 
 
 def button_function():

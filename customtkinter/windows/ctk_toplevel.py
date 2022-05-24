@@ -8,8 +8,8 @@ import re
 from typing import Union, Tuple
 
 from ..appearance_mode_tracker import AppearanceModeTracker
-from ..ctk_theme_manager import CTkThemeManager
-from ..ctk_settings import CTkSettings
+from ..theme_manager import ThemeManager
+from ..settings import Settings
 from ..scaling_tracker import ScalingTracker
 
 
@@ -26,15 +26,15 @@ class CTkToplevel(tkinter.Toplevel):
         ScalingTracker.add_widget(self.set_scaling, self)
         self.window_scaling = ScalingTracker.get_window_scaling(self)
 
-        self.current_width = 600  # initial window size, always without scaling
-        self.current_height = 500
+        self.current_width = 200  # initial window size, always without scaling
+        self.current_height = 200
         self.min_width: int = 0
         self.min_height: int = 0
         self.max_width: int = 1_000_000
         self.max_height: int = 1_000_000
         self.last_resizable_args: Union[Tuple[list, dict], None] = None  # (args, kwargs)
 
-        self.fg_color = CTkThemeManager.theme["color"]["window_bg_color"] if fg_color == "default_theme" else fg_color
+        self.fg_color = ThemeManager.theme["color"]["window_bg_color"] if fg_color == "default_theme" else fg_color
 
         if "bg" in kwargs:
             self.fg_color = kwargs["bg"]
@@ -45,14 +45,17 @@ class CTkToplevel(tkinter.Toplevel):
 
         # add set_appearance_mode method to callback list of AppearanceModeTracker for appearance mode changes
         AppearanceModeTracker.add(self.set_appearance_mode, self)
-        super().configure(bg=CTkThemeManager.single_color(self.fg_color, self.appearance_mode))
+        super().configure(bg=ThemeManager.single_color(self.fg_color, self.appearance_mode))
         super().title("CTkToplevel")
+        # self.geometry(f"{self.current_width}x{self.current_height}")
 
         if sys.platform.startswith("win"):
             if self.appearance_mode == 1:
                 self.windows_set_titlebar_color("dark")
             else:
                 self.windows_set_titlebar_color("light")
+
+        self.bind('<Configure>', self.update_dimensions_event)
 
     def update_dimensions_event(self, event=None):
         detected_width = self.winfo_width()  # detect current window size
@@ -65,20 +68,16 @@ class CTkToplevel(tkinter.Toplevel):
     def set_scaling(self, new_widget_scaling, new_spacing_scaling, new_window_scaling):
         self.window_scaling = new_window_scaling
 
-        # reset min, max and resizable constraints for applying scaling
-        if self.last_resizable_args is not None:
-            super().resizable(True, True)
-        if self.min_width is not None or self.min_height is not None:
-            super().minsize(0, 0)
-        if self.max_width is not None or self.max_height is not None:
-            super().maxsize(1_000_000, 1_000_000)
+        # force new dimensions on window by using min, max, and geometry
+        super().minsize(self.apply_window_scaling(self.current_width), self.apply_window_scaling(self.current_height))
+        super().maxsize(self.apply_window_scaling(self.current_width), self.apply_window_scaling(self.current_height))
+        super().geometry(
+            f"{self.apply_window_scaling(self.current_width)}x" + f"{self.apply_window_scaling(self.current_height)}")
 
-        # set new window size by applying scaling to the current window size
-        self.geometry(f"{self.current_width}x{self.current_height}")
+        # set new scaled min and max with 400ms delay (otherwise it won't work for some reason)
+        self.after(400, self.set_scaled_min_max)
 
-        # set scaled min, max sizes and reapply resizable
-        if self.last_resizable_args is not None:
-            super().resizable(*self.last_resizable_args[0], **self.last_resizable_args[1])  # args, kwargs
+    def set_scaled_min_max(self):
         if self.min_width is not None or self.min_height is not None:
             super().minsize(self.apply_window_scaling(self.min_width), self.apply_window_scaling(self.min_height))
         if self.max_width is not None or self.max_height is not None:
@@ -151,14 +150,14 @@ class CTkToplevel(tkinter.Toplevel):
         if "bg" in kwargs:
             self.fg_color = kwargs["bg"]
             bg_changed = True
-            kwargs["bg"] = CTkThemeManager.single_color(self.fg_color, self.appearance_mode)
+            kwargs["bg"] = ThemeManager.single_color(self.fg_color, self.appearance_mode)
         elif "background" in kwargs:
             self.fg_color = kwargs["background"]
             bg_changed = True
-            kwargs["background"] = CTkThemeManager.single_color(self.fg_color, self.appearance_mode)
+            kwargs["background"] = ThemeManager.single_color(self.fg_color, self.appearance_mode)
         elif "fg_color" in kwargs:
             self.fg_color = kwargs["fg_color"]
-            kwargs["bg"] = CTkThemeManager.single_color(self.fg_color, self.appearance_mode)
+            kwargs["bg"] = ThemeManager.single_color(self.fg_color, self.appearance_mode)
             del kwargs["fg_color"]
             bg_changed = True
 
@@ -166,11 +165,11 @@ class CTkToplevel(tkinter.Toplevel):
             if "bg" in args[0]:
                 self.fg_color=args[0]["bg"]
                 bg_changed = True
-                args[0]["bg"] = CTkThemeManager.single_color(self.fg_color, self.appearance_mode)
+                args[0]["bg"] = ThemeManager.single_color(self.fg_color, self.appearance_mode)
             elif "background" in args[0]:
                 self.fg_color=args[0]["background"]
                 bg_changed = True
-                args[0]["background"] = CTkThemeManager.single_color(self.fg_color, self.appearance_mode)
+                args[0]["background"] = ThemeManager.single_color(self.fg_color, self.appearance_mode)
 
         if bg_changed:
             from ..widgets.widget_base_class import CTkBaseClass
@@ -183,14 +182,14 @@ class CTkToplevel(tkinter.Toplevel):
 
     @staticmethod
     def enable_macos_dark_title_bar():
-        if sys.platform == "darwin" and not CTkSettings.deactivate_macos_window_header_manipulation:  # macOS
+        if sys.platform == "darwin" and not Settings.deactivate_macos_window_header_manipulation:  # macOS
             if Version(platform.python_version()) < Version("3.10"):
                 if Version(tkinter.Tcl().call("info", "patchlevel")) >= Version("8.6.9"):  # Tcl/Tk >= 8.6.9
                     os.system("defaults write -g NSRequiresAquaSystemAppearance -bool No")
 
     @staticmethod
     def disable_macos_dark_title_bar():
-        if sys.platform == "darwin" and not CTkSettings.deactivate_macos_window_header_manipulation:  # macOS
+        if sys.platform == "darwin" and not Settings.deactivate_macos_window_header_manipulation:  # macOS
             if Version(platform.python_version()) < Version("3.10"):
                 if Version(tkinter.Tcl().call("info", "patchlevel")) >= Version("8.6.9"):  # Tcl/Tk >= 8.6.9
                     os.system("defaults delete -g NSRequiresAquaSystemAppearance")
@@ -207,7 +206,7 @@ class CTkToplevel(tkinter.Toplevel):
         https://docs.microsoft.com/en-us/windows/win32/api/dwmapi/ne-dwmapi-dwmwindowattribute
         """
 
-        if sys.platform.startswith("win") and not CTkSettings.deactivate_windows_window_header_manipulation:
+        if sys.platform.startswith("win") and not Settings.deactivate_windows_window_header_manipulation:
 
             super().withdraw()  # hide window so that it can be redrawn after the titlebar change so that the color change is visible
             super().update()
@@ -250,4 +249,4 @@ class CTkToplevel(tkinter.Toplevel):
             else:
                 self.windows_set_titlebar_color("light")
 
-        super().configure(bg=CTkThemeManager.single_color(self.fg_color, self.appearance_mode))
+        super().configure(bg=ThemeManager.single_color(self.fg_color, self.appearance_mode))

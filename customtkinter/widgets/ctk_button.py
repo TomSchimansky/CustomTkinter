@@ -3,9 +3,9 @@ import sys
 import math
 
 from .ctk_canvas import CTkCanvas
-from ..ctk_theme_manager import CTkThemeManager
-from ..ctk_settings import CTkSettings
-from ..ctk_draw_engine import CTkDrawEngine
+from ..theme_manager import ThemeManager
+from ..settings import Settings
+from ..draw_engine import DrawEngine
 from .widget_base_class import CTkBaseClass
 
 
@@ -39,22 +39,22 @@ class CTkButton(CTkBaseClass):
         self.configure_basic_grid()
 
         # color variables
-        self.fg_color = CTkThemeManager.theme["color"]["button"] if fg_color == "default_theme" else fg_color
-        self.hover_color = CTkThemeManager.theme["color"]["button_hover"] if hover_color == "default_theme" else hover_color
-        self.border_color = CTkThemeManager.theme["color"]["button_border"] if border_color == "default_theme" else border_color
+        self.fg_color = ThemeManager.theme["color"]["button"] if fg_color == "default_theme" else fg_color
+        self.hover_color = ThemeManager.theme["color"]["button_hover"] if hover_color == "default_theme" else hover_color
+        self.border_color = ThemeManager.theme["color"]["button_border"] if border_color == "default_theme" else border_color
 
         # shape
-        self.corner_radius = CTkThemeManager.theme["shape"]["button_corner_radius"] if corner_radius == "default_theme" else corner_radius
-        self.border_width = CTkThemeManager.theme["shape"]["button_border_width"] if border_width == "default_theme" else border_width
+        self.corner_radius = ThemeManager.theme["shape"]["button_corner_radius"] if corner_radius == "default_theme" else corner_radius
+        self.border_width = ThemeManager.theme["shape"]["button_border_width"] if border_width == "default_theme" else border_width
 
         # text and font and image
         self.image = image
         self.image_label = None
         self.text = text
         self.text_label = None
-        self.text_color = CTkThemeManager.theme["color"]["text"] if text_color == "default_theme" else text_color
-        self.text_color_disabled = CTkThemeManager.theme["color"]["text_button_disabled"] if text_color_disabled == "default_theme" else text_color_disabled
-        self.text_font = (CTkThemeManager.theme["text"]["font"], CTkThemeManager.theme["text"]["size"]) if text_font == "default_theme" else text_font
+        self.text_color = ThemeManager.theme["color"]["text"] if text_color == "default_theme" else text_color
+        self.text_color_disabled = ThemeManager.theme["color"]["text_button_disabled"] if text_color_disabled == "default_theme" else text_color_disabled
+        self.text_font = (ThemeManager.theme["text"]["font"], ThemeManager.theme["text"]["size"]) if text_font == "default_theme" else text_font
 
         # callback and hover functionality
         self.function = command
@@ -69,7 +69,7 @@ class CTkButton(CTkBaseClass):
                                 width=self.apply_widget_scaling(self.desired_width),
                                 height=self.apply_widget_scaling(self.desired_height))
         self.canvas.grid(row=0, column=0, rowspan=2, columnspan=2, sticky="nsew")
-        self.draw_engine = CTkDrawEngine(self.canvas, CTkSettings.preferred_drawing_method)
+        self.draw_engine = DrawEngine(self.canvas)
 
         # event bindings
         self.canvas.bind("<Enter>", self.on_enter)
@@ -99,7 +99,14 @@ class CTkButton(CTkBaseClass):
             self.image_label = None
 
         self.canvas.configure(width=self.apply_widget_scaling(self.desired_width),
-                              height=self.apply_widget_scaling(self.desired_height)),
+                              height=self.apply_widget_scaling(self.desired_height))
+        self.draw()
+
+    def set_dimensions(self, width=None, height=None):
+        super().set_dimensions(width, height)
+
+        self.canvas.configure(width=self.apply_widget_scaling(self.desired_width),
+                              height=self.apply_widget_scaling(self.desired_height))
         self.draw()
 
     def draw(self, no_color_updates=False):
@@ -110,22 +117,22 @@ class CTkButton(CTkBaseClass):
 
         if no_color_updates is False or requires_recoloring:
 
-            self.canvas.configure(bg=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
+            self.canvas.configure(bg=ThemeManager.single_color(self.bg_color, self.appearance_mode))
 
             # set color for the button border parts (outline)
             self.canvas.itemconfig("border_parts",
-                                   outline=CTkThemeManager.single_color(self.border_color, self.appearance_mode),
-                                   fill=CTkThemeManager.single_color(self.border_color, self.appearance_mode))
+                                   outline=ThemeManager.single_color(self.border_color, self.appearance_mode),
+                                   fill=ThemeManager.single_color(self.border_color, self.appearance_mode))
 
             # set color for inner button parts
             if self.fg_color is None:
                 self.canvas.itemconfig("inner_parts",
-                                       outline=CTkThemeManager.single_color(self.bg_color, self.appearance_mode),
-                                       fill=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
+                                       outline=ThemeManager.single_color(self.bg_color, self.appearance_mode),
+                                       fill=ThemeManager.single_color(self.bg_color, self.appearance_mode))
             else:
                 self.canvas.itemconfig("inner_parts",
-                                       outline=CTkThemeManager.single_color(self.fg_color, self.appearance_mode),
-                                       fill=CTkThemeManager.single_color(self.fg_color, self.appearance_mode))
+                                       outline=ThemeManager.single_color(self.fg_color, self.appearance_mode),
+                                       fill=ThemeManager.single_color(self.fg_color, self.appearance_mode))
 
         # create text label if text given
         if self.text is not None and self.text != "":
@@ -142,17 +149,17 @@ class CTkButton(CTkBaseClass):
 
             if no_color_updates is False:
                 # set text_label fg color (text color)
-                self.text_label.configure(fg=CTkThemeManager.single_color(self.text_color, self.appearance_mode))
+                self.text_label.configure(fg=ThemeManager.single_color(self.text_color, self.appearance_mode))
 
                 if self.state == tkinter.DISABLED:
-                    self.text_label.configure(fg=(CTkThemeManager.single_color(self.text_color_disabled, self.appearance_mode)))
+                    self.text_label.configure(fg=(ThemeManager.single_color(self.text_color_disabled, self.appearance_mode)))
                 else:
-                    self.text_label.configure(fg=CTkThemeManager.single_color(self.text_color, self.appearance_mode))
+                    self.text_label.configure(fg=ThemeManager.single_color(self.text_color, self.appearance_mode))
 
                 if self.fg_color is None:
-                    self.text_label.configure(bg=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
+                    self.text_label.configure(bg=ThemeManager.single_color(self.bg_color, self.appearance_mode))
                 else:
-                    self.text_label.configure(bg=CTkThemeManager.single_color(self.fg_color, self.appearance_mode))
+                    self.text_label.configure(bg=ThemeManager.single_color(self.fg_color, self.appearance_mode))
 
             self.text_label.configure(text=self.text)  # set text
 
@@ -176,9 +183,9 @@ class CTkButton(CTkBaseClass):
             if no_color_updates is False:
                 # set image_label bg color (background color of label)
                 if self.fg_color is None:
-                    self.image_label.configure(bg=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
+                    self.image_label.configure(bg=ThemeManager.single_color(self.bg_color, self.appearance_mode))
                 else:
-                    self.image_label.configure(bg=CTkThemeManager.single_color(self.fg_color, self.appearance_mode))
+                    self.image_label.configure(bg=ThemeManager.single_color(self.fg_color, self.appearance_mode))
 
             self.image_label.configure(image=self.image)  # set image
 
@@ -290,23 +297,31 @@ class CTkButton(CTkBaseClass):
                 self.text_label.configure(textvariable=self.textvariable)
             del kwargs["textvariable"]
 
+        if "width" in kwargs:
+            self.set_dimensions(width=kwargs["width"])
+            del kwargs["width"]
+
+        if "height" in kwargs:
+            self.set_dimensions(height=kwargs["height"])
+            del kwargs["height"]
+
         super().configure(*args, **kwargs)
 
         if require_redraw:
             self.draw()
 
     def set_cursor(self):
-        if CTkSettings.cursor_manipulation_enabled:
+        if Settings.cursor_manipulation_enabled:
             if self.state == tkinter.DISABLED:
-                if sys.platform == "darwin" and self.function is not None and CTkSettings.cursor_manipulation_enabled:
+                if sys.platform == "darwin" and self.function is not None and Settings.cursor_manipulation_enabled:
                     self.configure(cursor="arrow")
-                elif sys.platform.startswith("win") and self.function is not None and CTkSettings.cursor_manipulation_enabled:
+                elif sys.platform.startswith("win") and self.function is not None and Settings.cursor_manipulation_enabled:
                     self.configure(cursor="arrow")
 
             elif self.state == tkinter.NORMAL:
-                if sys.platform == "darwin" and self.function is not None and CTkSettings.cursor_manipulation_enabled:
+                if sys.platform == "darwin" and self.function is not None and Settings.cursor_manipulation_enabled:
                     self.configure(cursor="pointinghand")
-                elif sys.platform.startswith("win") and self.function is not None and CTkSettings.cursor_manipulation_enabled:
+                elif sys.platform.startswith("win") and self.function is not None and Settings.cursor_manipulation_enabled:
                     self.configure(cursor="hand2")
 
     def set_text(self, text):
@@ -326,16 +341,16 @@ class CTkButton(CTkBaseClass):
 
             # set color of inner button parts to hover color
             self.canvas.itemconfig("inner_parts",
-                                   outline=CTkThemeManager.single_color(inner_parts_color, self.appearance_mode),
-                                   fill=CTkThemeManager.single_color(inner_parts_color, self.appearance_mode))
+                                   outline=ThemeManager.single_color(inner_parts_color, self.appearance_mode),
+                                   fill=ThemeManager.single_color(inner_parts_color, self.appearance_mode))
 
             # set text_label bg color to button hover color
             if self.text_label is not None:
-                self.text_label.configure(bg=CTkThemeManager.single_color(inner_parts_color, self.appearance_mode))
+                self.text_label.configure(bg=ThemeManager.single_color(inner_parts_color, self.appearance_mode))
 
             # set image_label bg color to button hover color
             if self.image_label is not None:
-                self.image_label.configure(bg=CTkThemeManager.single_color(inner_parts_color, self.appearance_mode))
+                self.image_label.configure(bg=ThemeManager.single_color(inner_parts_color, self.appearance_mode))
 
     def on_leave(self, event=0):
         self.click_animation_running = False
@@ -348,16 +363,16 @@ class CTkButton(CTkBaseClass):
 
             # set color of inner button parts
             self.canvas.itemconfig("inner_parts",
-                                   outline=CTkThemeManager.single_color(inner_parts_color, self.appearance_mode),
-                                   fill=CTkThemeManager.single_color(inner_parts_color, self.appearance_mode))
+                                   outline=ThemeManager.single_color(inner_parts_color, self.appearance_mode),
+                                   fill=ThemeManager.single_color(inner_parts_color, self.appearance_mode))
 
             # set text_label bg color (label color)
             if self.text_label is not None:
-                self.text_label.configure(bg=CTkThemeManager.single_color(inner_parts_color, self.appearance_mode))
+                self.text_label.configure(bg=ThemeManager.single_color(inner_parts_color, self.appearance_mode))
 
             # set image_label bg color (image bg color)
             if self.image_label is not None:
-                self.image_label.configure(bg=CTkThemeManager.single_color(inner_parts_color, self.appearance_mode))
+                self.image_label.configure(bg=ThemeManager.single_color(inner_parts_color, self.appearance_mode))
 
     def click_animation(self):
         if self.click_animation_running:

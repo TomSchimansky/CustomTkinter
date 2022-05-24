@@ -7,7 +7,7 @@ build-backend = "setuptools.build_meta"
 github_url = "https://github.com/TomSchimansky/CustomTkinter"
 
 [tool.tbump.version]
-current = "3.12"
+current = "4.1.0"
 
 # Example of a semver regexp.
 # Make sure this matches current_version before
@@ -16,6 +16,8 @@ regex = '''
   (?P<major>\d+)
   \.
   (?P<minor>\d+)
+  \.
+  (?P<patch>\d+)
   '''
 
 [tool.tbump.git]

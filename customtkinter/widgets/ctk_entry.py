@@ -1,9 +1,8 @@
 import tkinter
 
 from .ctk_canvas import CTkCanvas
-from ..ctk_theme_manager import CTkThemeManager
-from ..ctk_settings import CTkSettings
-from ..ctk_draw_engine import CTkDrawEngine
+from ..theme_manager import ThemeManager
+from ..draw_engine import DrawEngine
 from .widget_base_class import CTkBaseClass
 
 
@@ -20,6 +19,7 @@ class CTkEntry(CTkBaseClass):
                  border_color="default_theme",
                  width=120,
                  height=30,
+                 state=tkinter.NORMAL,
                  **kwargs):
 
         # transfer basic functionality (bg_color, size, appearance_mode, scaling) to CTkBaseClass
@@ -32,31 +32,34 @@ class CTkEntry(CTkBaseClass):
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
 
-        self.fg_color = CTkThemeManager.theme["color"]["entry"] if fg_color == "default_theme" else fg_color
-        self.text_color = CTkThemeManager.theme["color"]["text"] if text_color == "default_theme" else text_color
-        self.placeholder_text_color = CTkThemeManager.theme["color"]["entry_placeholder_text"] if placeholder_text_color == "default_theme" else placeholder_text_color
-        self.text_font = (CTkThemeManager.theme["text"]["font"], CTkThemeManager.theme["text"]["size"]) if text_font == "default_theme" else text_font
-        self.border_color = CTkThemeManager.theme["color"]["entry_border"] if border_color == "default_theme" else border_color
+        self.fg_color = ThemeManager.theme["color"]["entry"] if fg_color == "default_theme" else fg_color
+        self.text_color = ThemeManager.theme["color"]["text"] if text_color == "default_theme" else text_color
+        self.placeholder_text_color = ThemeManager.theme["color"]["entry_placeholder_text"] if placeholder_text_color == "default_theme" else placeholder_text_color
+        self.text_font = (ThemeManager.theme["text"]["font"], ThemeManager.theme["text"]["size"]) if text_font == "default_theme" else text_font
+        self.border_color = ThemeManager.theme["color"]["entry_border"] if border_color == "default_theme" else border_color
 
         self.placeholder_text = placeholder_text
         self.placeholder_text_active = False
         self.pre_placeholder_arguments = {}  # some set arguments of the entry will be changed for placeholder and then set back
 
-        self.corner_radius = CTkThemeManager.theme["shape"]["button_corner_radius"] if corner_radius == "default_theme" else corner_radius
-        self.border_width = CTkThemeManager.theme["shape"]["entry_border_width"] if border_width == "default_theme" else border_width
+        self.state = state
+
+        self.corner_radius = ThemeManager.theme["shape"]["button_corner_radius"] if corner_radius == "default_theme" else corner_radius
+        self.border_width = ThemeManager.theme["shape"]["entry_border_width"] if border_width == "default_theme" else border_width
 
         self.canvas = CTkCanvas(master=self,
                                 highlightthickness=0,
                                 width=self.apply_widget_scaling(self.current_width),
                                 height=self.apply_widget_scaling(self.current_height))
         self.canvas.grid(column=0, row=0, sticky="we")
-        self.draw_engine = CTkDrawEngine(self.canvas, CTkSettings.preferred_drawing_method)
+        self.draw_engine = DrawEngine(self.canvas)
 
         self.entry = tkinter.Entry(master=self,
                                    bd=0,
                                    width=1,
                                    highlightthickness=0,
                                    font=self.apply_font_scaling(self.text_font),
+                                   state=self.state,
                                    **kwargs)
         self.entry.grid(column=0, row=0, sticky="we",
                         padx=self.apply_widget_scaling(self.corner_radius) if self.corner_radius >= 6 else self.apply_widget_scaling(6))
@@ -78,60 +81,77 @@ class CTkEntry(CTkBaseClass):
         self.canvas.configure(width=self.apply_widget_scaling(self.desired_width), height=self.apply_widget_scaling(self.desired_height))
         self.draw()
 
+    def set_dimensions(self, width=None, height=None):
+        super().set_dimensions(width, height)
+
+        self.canvas.configure(width=self.apply_widget_scaling(self.desired_width),
+                              height=self.apply_widget_scaling(self.desired_height))
+        self.draw()
+
     def set_placeholder(self, event=None):
         if self.placeholder_text is not None:
             if not self.placeholder_text_active and self.entry.get() == "":
                 self.placeholder_text_active = True
                 self.pre_placeholder_arguments = {"show": self.entry.cget("show")}
-                self.entry.config(fg=CTkThemeManager.single_color(self.placeholder_text_color, self.appearance_mode), show="")
+                self.entry.config(fg=ThemeManager.single_color(self.placeholder_text_color, self.appearance_mode), show="")
                 self.entry.delete(0, tkinter.END)
                 self.entry.insert(0, self.placeholder_text)
 
     def clear_placeholder(self, event=None):
         if self.placeholder_text_active:
             self.placeholder_text_active = False
-            self.entry.config(fg=CTkThemeManager.single_color(self.text_color, self.appearance_mode))
+            self.entry.config(fg=ThemeManager.single_color(self.text_color, self.appearance_mode))
             self.entry.delete(0, tkinter.END)
             for argument, value in self.pre_placeholder_arguments.items():
                 self.entry[argument] = value
 
     def draw(self, no_color_updates=False):
-        self.canvas.configure(bg=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
+        self.canvas.configure(bg=ThemeManager.single_color(self.bg_color, self.appearance_mode))
 
         requires_recoloring = self.draw_engine.draw_rounded_rect_with_border(self.apply_widget_scaling(self.current_width),
                                                                              self.apply_widget_scaling(self.current_height),
                                                                              self.apply_widget_scaling(self.corner_radius),
                                                                              self.apply_widget_scaling(self.border_width))
 
-        if CTkThemeManager.single_color(self.fg_color, self.appearance_mode) is not None:
-            self.canvas.itemconfig("inner_parts",
-                                   fill=CTkThemeManager.single_color(self.fg_color, self.appearance_mode),
-                                   outline=CTkThemeManager.single_color(self.fg_color, self.appearance_mode))
-            self.entry.configure(bg=CTkThemeManager.single_color(self.fg_color, self.appearance_mode),
-                                 highlightcolor=CTkThemeManager.single_color(self.fg_color, self.appearance_mode),
-                                 fg=CTkThemeManager.single_color(self.text_color, self.appearance_mode),
-                                 insertbackground=CTkThemeManager.single_color(self.text_color, self.appearance_mode))
-        else:
-            self.canvas.itemconfig("inner_parts",
-                                   fill=CTkThemeManager.single_color(self.bg_color, self.appearance_mode),
-                                   outline=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
-            self.entry.configure(bg=CTkThemeManager.single_color(self.bg_color, self.appearance_mode),
-                                 highlightcolor=CTkThemeManager.single_color(self.bg_color, self.appearance_mode),
-                                 fg=CTkThemeManager.single_color(self.text_color, self.appearance_mode),
-                                 insertbackground=CTkThemeManager.single_color(self.text_color, self.appearance_mode))
+        if requires_recoloring or no_color_updates is False:
+            if ThemeManager.single_color(self.fg_color, self.appearance_mode) is not None:
+                self.canvas.itemconfig("inner_parts",
+                                       fill=ThemeManager.single_color(self.fg_color, self.appearance_mode),
+                                       outline=ThemeManager.single_color(self.fg_color, self.appearance_mode))
+                self.entry.configure(bg=ThemeManager.single_color(self.fg_color, self.appearance_mode),
+                                     disabledbackground=ThemeManager.single_color(self.fg_color, self.appearance_mode),
+                                     highlightcolor=ThemeManager.single_color(self.fg_color, self.appearance_mode),
+                                     fg=ThemeManager.single_color(self.text_color, self.appearance_mode),
+                                     disabledforeground=ThemeManager.single_color(self.text_color, self.appearance_mode),
+                                     insertbackground=ThemeManager.single_color(self.text_color, self.appearance_mode))
+            else:
+                self.canvas.itemconfig("inner_parts",
+                                       fill=ThemeManager.single_color(self.bg_color, self.appearance_mode),
+                                       outline=ThemeManager.single_color(self.bg_color, self.appearance_mode))
+                self.entry.configure(bg=ThemeManager.single_color(self.bg_color, self.appearance_mode),
+                                     disabledbackground=ThemeManager.single_color(self.bg_color, self.appearance_mode),
+                                     highlightcolor=ThemeManager.single_color(self.bg_color, self.appearance_mode),
+                                     fg=ThemeManager.single_color(self.text_color, self.appearance_mode),
+                                     disabledforeground=ThemeManager.single_color(self.text_color, self.appearance_mode),
+                                     insertbackground=ThemeManager.single_color(self.text_color, self.appearance_mode))
 
-        self.canvas.itemconfig("border_parts",
-                               fill=CTkThemeManager.single_color(self.border_color, self.appearance_mode),
-                               outline=CTkThemeManager.single_color(self.border_color, self.appearance_mode))
+            self.canvas.itemconfig("border_parts",
+                                   fill=ThemeManager.single_color(self.border_color, self.appearance_mode),
+                                   outline=ThemeManager.single_color(self.border_color, self.appearance_mode))
 
-        if self.placeholder_text_active:
-            self.entry.config(fg=CTkThemeManager.single_color(self.placeholder_text_color, self.appearance_mode))
+            if self.placeholder_text_active:
+                self.entry.config(fg=ThemeManager.single_color(self.placeholder_text_color, self.appearance_mode))
 
     def bind(self, *args, **kwargs):
         self.entry.bind(*args, **kwargs)
 
     def configure(self, *args, **kwargs):
         require_redraw = False  # some attribute changes require a call of self.draw() at the end
+
+        if "state" in kwargs:
+            self.state = kwargs["state"]
+            self.entry.configure(state=self.state)
+            del kwargs["state"]
 
         if "bg_color" in kwargs:
             if kwargs["bg_color"] is None:
@@ -167,6 +187,14 @@ class CTkEntry(CTkBaseClass):
             self.entry.grid(column=0, row=0, sticky="we", padx=self.apply_widget_scaling(self.corner_radius) if self.corner_radius >= 6 else self.apply_widget_scaling(6))
             del kwargs["corner_radius"]
             require_redraw = True
+
+        if "width" in kwargs:
+            self.set_dimensions(width=kwargs["width"])
+            del kwargs["width"]
+
+        if "height" in kwargs:
+            self.set_dimensions(height=kwargs["height"])
+            del kwargs["height"]
 
         if "placeholder_text" in kwargs:
             pass

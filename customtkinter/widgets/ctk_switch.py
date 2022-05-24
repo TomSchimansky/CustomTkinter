@@ -2,9 +2,9 @@ import tkinter
 import sys
 
 from .ctk_canvas import CTkCanvas
-from ..ctk_theme_manager import CTkThemeManager
-from ..ctk_settings import CTkSettings
-from ..ctk_draw_engine import CTkDrawEngine
+from ..theme_manager import ThemeManager
+from ..settings import Settings
+from ..draw_engine import DrawEngine
 from .widget_base_class import CTkBaseClass
 
 
@@ -13,6 +13,7 @@ class CTkSwitch(CTkBaseClass):
                  text="CTkSwitch",
                  text_font="default_theme",
                  text_color="default_theme",
+                 text_color_disabled="default_theme",
                  bg_color=None,
                  border_color=None,
                  fg_color="default_theme",
@@ -30,6 +31,7 @@ class CTkSwitch(CTkBaseClass):
                  offvalue=0,
                  variable=None,
                  textvariable=None,
+                 state=tkinter.NORMAL,
                  **kwargs):
 
         # transfer basic functionality (bg_color, size, appearance_mode, scaling) to CTkBaseClass
@@ -37,24 +39,26 @@ class CTkSwitch(CTkBaseClass):
 
         # color
         self.border_color = border_color
-        self.fg_color = CTkThemeManager.theme["color"]["switch"] if fg_color == "default_theme" else fg_color
-        self.progress_color = CTkThemeManager.theme["color"]["switch_progress"] if progress_color == "default_theme" else progress_color
-        self.button_color = CTkThemeManager.theme["color"]["switch_button"] if button_color == "default_theme" else button_color
-        self.button_hover_color = CTkThemeManager.theme["color"]["switch_button_hover"] if button_hover_color == "default_theme" else button_hover_color
-        self.text_color = CTkThemeManager.theme["color"]["text"] if text_color == "default_theme" else text_color
+        self.fg_color = ThemeManager.theme["color"]["switch"] if fg_color == "default_theme" else fg_color
+        self.progress_color = ThemeManager.theme["color"]["switch_progress"] if progress_color == "default_theme" else progress_color
+        self.button_color = ThemeManager.theme["color"]["switch_button"] if button_color == "default_theme" else button_color
+        self.button_hover_color = ThemeManager.theme["color"]["switch_button_hover"] if button_hover_color == "default_theme" else button_hover_color
+        self.text_color = ThemeManager.theme["color"]["text"] if text_color == "default_theme" else text_color
+        self.text_color_disabled = ThemeManager.theme["color"]["text_button_disabled"] if text_color_disabled == "default_theme" else text_color_disabled
 
         # text
         self.text = text
         self.text_label = None
-        self.text_font = (CTkThemeManager.theme["text"]["font"], CTkThemeManager.theme["text"]["size"]) if text_font == "default_theme" else text_font
+        self.text_font = (ThemeManager.theme["text"]["font"], ThemeManager.theme["text"]["size"]) if text_font == "default_theme" else text_font
 
         # shape
-        self.corner_radius = CTkThemeManager.theme["shape"]["switch_corner_radius"] if corner_radius == "default_theme" else corner_radius
-        # self.button_corner_radius = CTkThemeManager.theme["shape"]["switch_button_corner_radius"] if button_corner_radius == "default_theme" else button_corner_radius
-        self.border_width = CTkThemeManager.theme["shape"]["switch_border_width"] if border_width == "default_theme" else border_width
-        self.button_length = CTkThemeManager.theme["shape"]["switch_button_length"] if button_length == "default_theme" else button_length
+        self.corner_radius = ThemeManager.theme["shape"]["switch_corner_radius"] if corner_radius == "default_theme" else corner_radius
+        # self.button_corner_radius = ThemeManager.theme["shape"]["switch_button_corner_radius"] if button_corner_radius == "default_theme" else button_corner_radius
+        self.border_width = ThemeManager.theme["shape"]["switch_border_width"] if border_width == "default_theme" else border_width
+        self.button_length = ThemeManager.theme["shape"]["switch_button_length"] if button_length == "default_theme" else button_length
         self.hover_state = False
         self.check_state = False  # True if switch is activated
+        self.state = state
         self.onvalue = onvalue
         self.offvalue = offvalue
 
@@ -84,7 +88,7 @@ class CTkSwitch(CTkBaseClass):
                                 width=self.apply_widget_scaling(self.current_width),
                                 height=self.apply_widget_scaling(self.current_height))
         self.canvas.grid(row=0, column=0, padx=0, pady=0, columnspan=1, sticky="nswe")
-        self.draw_engine = CTkDrawEngine(self.canvas, CTkSettings.preferred_drawing_method)
+        self.draw_engine = DrawEngine(self.canvas)
 
         self.canvas.bind("<Enter>", self.on_enter)
         self.canvas.bind("<Leave>", self.on_leave)
@@ -118,11 +122,17 @@ class CTkSwitch(CTkBaseClass):
         super().destroy()
 
     def set_cursor(self):
-        if CTkSettings.cursor_manipulation_enabled:
-            if sys.platform == "darwin" and CTkSettings.cursor_manipulation_enabled:
-                self.canvas.configure(cursor="pointinghand")
-            elif sys.platform.startswith("win") and CTkSettings.cursor_manipulation_enabled:
-                self.canvas.configure(cursor="hand2")
+        if Settings.cursor_manipulation_enabled:
+            if self.state == tkinter.DISABLED:
+                if sys.platform == "darwin" and Settings.cursor_manipulation_enabled:
+                    self.canvas.configure(cursor="arrow")
+                elif sys.platform.startswith("win") and Settings.cursor_manipulation_enabled:
+                    self.canvas.configure(cursor="arrow")
+            else:
+                if sys.platform == "darwin" and Settings.cursor_manipulation_enabled:
+                    self.canvas.configure(cursor="pointinghand")
+                elif sys.platform.startswith("win") and Settings.cursor_manipulation_enabled:
+                    self.canvas.configure(cursor="hand2")
 
     def draw(self, no_color_updates=False):
 
@@ -144,28 +154,28 @@ class CTkSwitch(CTkBaseClass):
                                                                                               0, "w")
 
         if no_color_updates is False or requires_recoloring:
-            self.bg_canvas.configure(bg=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
-            self.canvas.configure(bg=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
+            self.bg_canvas.configure(bg=ThemeManager.single_color(self.bg_color, self.appearance_mode))
+            self.canvas.configure(bg=ThemeManager.single_color(self.bg_color, self.appearance_mode))
 
             if self.border_color is None:
-                self.canvas.itemconfig("border_parts", fill=CTkThemeManager.single_color(self.bg_color, self.appearance_mode),
-                                       outline=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
+                self.canvas.itemconfig("border_parts", fill=ThemeManager.single_color(self.bg_color, self.appearance_mode),
+                                       outline=ThemeManager.single_color(self.bg_color, self.appearance_mode))
             else:
-                self.canvas.itemconfig("border_parts", fill=CTkThemeManager.single_color(self.border_color, self.appearance_mode),
-                                       outline=CTkThemeManager.single_color(self.border_color, self.appearance_mode))
+                self.canvas.itemconfig("border_parts", fill=ThemeManager.single_color(self.border_color, self.appearance_mode),
+                                       outline=ThemeManager.single_color(self.border_color, self.appearance_mode))
 
-            self.canvas.itemconfig("inner_parts", fill=CTkThemeManager.single_color(self.fg_color, self.appearance_mode),
-                                   outline=CTkThemeManager.single_color(self.fg_color, self.appearance_mode))
+            self.canvas.itemconfig("inner_parts", fill=ThemeManager.single_color(self.fg_color, self.appearance_mode),
+                                   outline=ThemeManager.single_color(self.fg_color, self.appearance_mode))
 
             if self.progress_color is None:
-                self.canvas.itemconfig("progress_parts", fill=CTkThemeManager.single_color(self.fg_color, self.appearance_mode),
-                                       outline=CTkThemeManager.single_color(self.fg_color, self.appearance_mode))
+                self.canvas.itemconfig("progress_parts", fill=ThemeManager.single_color(self.fg_color, self.appearance_mode),
+                                       outline=ThemeManager.single_color(self.fg_color, self.appearance_mode))
             else:
-                self.canvas.itemconfig("progress_parts", fill=CTkThemeManager.single_color(self.progress_color, self.appearance_mode),
-                                       outline=CTkThemeManager.single_color(self.progress_color, self.appearance_mode))
+                self.canvas.itemconfig("progress_parts", fill=ThemeManager.single_color(self.progress_color, self.appearance_mode),
+                                       outline=ThemeManager.single_color(self.progress_color, self.appearance_mode))
 
-            self.canvas.itemconfig("slider_parts", fill=CTkThemeManager.single_color(self.button_color, self.appearance_mode),
-                                   outline=CTkThemeManager.single_color(self.button_color, self.appearance_mode))
+            self.canvas.itemconfig("slider_parts", fill=ThemeManager.single_color(self.button_color, self.appearance_mode),
+                                   outline=ThemeManager.single_color(self.button_color, self.appearance_mode))
 
         if self.text_label is None:
             self.text_label = tkinter.Label(master=self,
@@ -178,8 +188,12 @@ class CTkSwitch(CTkBaseClass):
             if self.textvariable is not None:
                 self.text_label.configure(textvariable=self.textvariable)
 
-        self.text_label.configure(fg=CTkThemeManager.single_color(self.text_color, self.appearance_mode))
-        self.text_label.configure(bg=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
+        if self.state == tkinter.DISABLED:
+            self.text_label.configure(fg=(ThemeManager.single_color(self.text_color_disabled, self.appearance_mode)))
+        else:
+            self.text_label.configure(fg=ThemeManager.single_color(self.text_color, self.appearance_mode))
+
+        self.text_label.configure(bg=ThemeManager.single_color(self.bg_color, self.appearance_mode))
 
         self.set_text(self.text)
 
@@ -189,59 +203,64 @@ class CTkSwitch(CTkBaseClass):
             self.text_label.configure(text=self.text)
 
     def toggle(self, event=None):
-        if self.check_state is True:
-            self.check_state = False
-        else:
-            self.check_state = True
+        if self.state is not tkinter.DISABLED:
+            if self.check_state is True:
+                self.check_state = False
+            else:
+                self.check_state = True
 
-        self.draw(no_color_updates=True)
+            self.draw(no_color_updates=True)
 
-        if self.callback_function is not None:
-            self.callback_function()
+            if self.callback_function is not None:
+                self.callback_function()
 
-        if self.variable is not None:
-            self.variable_callback_blocked = True
-            self.variable.set(self.onvalue if self.check_state is True else self.offvalue)
-            self.variable_callback_blocked = False
+            if self.variable is not None:
+                self.variable_callback_blocked = True
+                self.variable.set(self.onvalue if self.check_state is True else self.offvalue)
+                self.variable_callback_blocked = False
 
     def select(self, from_variable_callback=False):
-        self.check_state = True
+        if self.state is not tkinter.DISABLED or from_variable_callback:
+            self.check_state = True
 
-        self.draw(no_color_updates=True)
+            self.draw(no_color_updates=True)
 
-        if self.callback_function is not None:
-            self.callback_function()
+            if self.callback_function is not None:
+                self.callback_function()
 
-        if self.variable is not None and not from_variable_callback:
-            self.variable_callback_blocked = True
-            self.variable.set(self.onvalue)
-            self.variable_callback_blocked = False
+            if self.variable is not None and not from_variable_callback:
+                self.variable_callback_blocked = True
+                self.variable.set(self.onvalue)
+                self.variable_callback_blocked = False
 
     def deselect(self, from_variable_callback=False):
-        self.check_state = False
+        if self.state is not tkinter.DISABLED or from_variable_callback:
+            self.check_state = False
 
-        self.draw(no_color_updates=True)
+            self.draw(no_color_updates=True)
 
-        if self.callback_function is not None:
-            self.callback_function()
+            if self.callback_function is not None:
+                self.callback_function()
 
-        if self.variable is not None and not from_variable_callback:
-            self.variable_callback_blocked = True
-            self.variable.set(self.offvalue)
-            self.variable_callback_blocked = False
+            if self.variable is not None and not from_variable_callback:
+                self.variable_callback_blocked = True
+                self.variable.set(self.offvalue)
+                self.variable_callback_blocked = False
 
     def get(self):
         return self.onvalue if self.check_state is True else self.offvalue
 
     def on_enter(self, event=0):
         self.hover_state = True
-        self.canvas.itemconfig("slider_parts", fill=CTkThemeManager.single_color(self.button_hover_color, self.appearance_mode),
-                               outline=CTkThemeManager.single_color(self.button_hover_color, self.appearance_mode))
+
+        if self.state is not tkinter.DISABLED:
+            self.canvas.itemconfig("slider_parts", fill=ThemeManager.single_color(self.button_hover_color, self.appearance_mode),
+                                   outline=ThemeManager.single_color(self.button_hover_color, self.appearance_mode))
 
     def on_leave(self, event=0):
         self.hover_state = False
-        self.canvas.itemconfig("slider_parts", fill=CTkThemeManager.single_color(self.button_color, self.appearance_mode),
-                               outline=CTkThemeManager.single_color(self.button_color, self.appearance_mode))
+        self.canvas.itemconfig("slider_parts", fill=ThemeManager.single_color(self.button_color, self.appearance_mode),
+                               outline=ThemeManager.single_color(self.button_color, self.appearance_mode))
 
     def variable_callback(self, var_name, index, mode):
         if not self.variable_callback_blocked:
@@ -252,6 +271,12 @@ class CTkSwitch(CTkBaseClass):
 
     def configure(self, *args, **kwargs):
         require_redraw = False  # some attribute changes require a call of self.draw() at the end
+
+        if "state" in kwargs:
+            self.state = kwargs["state"]
+            self.set_cursor()
+            require_redraw = True
+            del kwargs["state"]
 
         if "fg_color" in kwargs:
             self.fg_color = kwargs["fg_color"]

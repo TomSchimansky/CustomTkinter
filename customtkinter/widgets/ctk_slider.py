@@ -2,9 +2,9 @@ import tkinter
 import sys
 
 from .ctk_canvas import CTkCanvas
-from ..ctk_theme_manager import CTkThemeManager
-from ..ctk_settings import CTkSettings
-from ..ctk_draw_engine import CTkDrawEngine
+from ..theme_manager import ThemeManager
+from ..settings import Settings
+from ..draw_engine import DrawEngine
 from .widget_base_class import CTkBaseClass
 
 
@@ -49,16 +49,16 @@ class CTkSlider(CTkBaseClass):
 
         # color
         self.border_color = border_color
-        self.fg_color = CTkThemeManager.theme["color"]["slider"] if fg_color == "default_theme" else fg_color
-        self.progress_color = CTkThemeManager.theme["color"]["slider_progress"] if progress_color == "default_theme" else progress_color
-        self.button_color = CTkThemeManager.theme["color"]["slider_button"] if button_color == "default_theme" else button_color
-        self.button_hover_color = CTkThemeManager.theme["color"]["slider_button_hover"] if button_hover_color == "default_theme" else button_hover_color
+        self.fg_color = ThemeManager.theme["color"]["slider"] if fg_color == "default_theme" else fg_color
+        self.progress_color = ThemeManager.theme["color"]["slider_progress"] if progress_color == "default_theme" else progress_color
+        self.button_color = ThemeManager.theme["color"]["slider_button"] if button_color == "default_theme" else button_color
+        self.button_hover_color = ThemeManager.theme["color"]["slider_button_hover"] if button_hover_color == "default_theme" else button_hover_color
 
         # shape
-        self.corner_radius = CTkThemeManager.theme["shape"]["slider_corner_radius"] if corner_radius == "default_theme" else corner_radius
-        self.button_corner_radius = CTkThemeManager.theme["shape"]["slider_button_corner_radius"] if button_corner_radius == "default_theme" else button_corner_radius
-        self.border_width = CTkThemeManager.theme["shape"]["slider_border_width"] if border_width == "default_theme" else border_width
-        self.button_length = CTkThemeManager.theme["shape"]["slider_button_length"] if button_length == "default_theme" else button_length
+        self.corner_radius = ThemeManager.theme["shape"]["slider_corner_radius"] if corner_radius == "default_theme" else corner_radius
+        self.button_corner_radius = ThemeManager.theme["shape"]["slider_button_corner_radius"] if button_corner_radius == "default_theme" else button_corner_radius
+        self.border_width = ThemeManager.theme["shape"]["slider_border_width"] if border_width == "default_theme" else border_width
+        self.button_length = ThemeManager.theme["shape"]["slider_button_length"] if button_length == "default_theme" else button_length
         self.value = 0.5  # initial value of slider in percent
         self.orient = orient
         self.hover_state = False
@@ -84,7 +84,7 @@ class CTkSlider(CTkBaseClass):
                                 width=self.apply_widget_scaling(self.desired_width),
                                 height=self.apply_widget_scaling(self.desired_height))
         self.canvas.grid(column=0, row=0, rowspan=1, columnspan=1, sticky="nswe")
-        self.draw_engine = CTkDrawEngine(self.canvas, CTkSettings.preferred_drawing_method)
+        self.draw_engine = DrawEngine(self.canvas)
 
         self.canvas.bind("<Enter>", self.on_enter)
         self.canvas.bind("<Leave>", self.on_leave)
@@ -109,6 +109,13 @@ class CTkSlider(CTkBaseClass):
         self.canvas.configure(width=self.apply_widget_scaling(self.desired_width), height=self.apply_widget_scaling(self.desired_height))
         self.draw()
 
+    def set_dimensions(self, width=None, height=None):
+        super().set_dimensions(width, height)
+
+        self.canvas.configure(width=self.apply_widget_scaling(self.desired_width),
+                              height=self.apply_widget_scaling(self.desired_height))
+        self.draw()
+
     def destroy(self):
         # remove variable_callback from variable callbacks if variable exists
         if self.variable is not None:
@@ -117,7 +124,7 @@ class CTkSlider(CTkBaseClass):
         super().destroy()
 
     def set_cursor(self):
-        if CTkSettings.cursor_manipulation_enabled:
+        if Settings.cursor_manipulation_enabled:
             if sys.platform == "darwin":
                 self.configure(cursor="pointinghand")
             elif sys.platform.startswith("win"):
@@ -140,27 +147,27 @@ class CTkSlider(CTkBaseClass):
                                                                                           self.value, orientation)
 
         if no_color_updates is False or requires_recoloring:
-            self.canvas.configure(bg=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
+            self.canvas.configure(bg=ThemeManager.single_color(self.bg_color, self.appearance_mode))
 
             if self.border_color is None:
-                self.canvas.itemconfig("border_parts", fill=CTkThemeManager.single_color(self.bg_color, self.appearance_mode),
-                                       outline=CTkThemeManager.single_color(self.bg_color, self.appearance_mode))
+                self.canvas.itemconfig("border_parts", fill=ThemeManager.single_color(self.bg_color, self.appearance_mode),
+                                       outline=ThemeManager.single_color(self.bg_color, self.appearance_mode))
             else:
-                self.canvas.itemconfig("border_parts", fill=CTkThemeManager.single_color(self.border_color, self.appearance_mode),
-                                       outline=CTkThemeManager.single_color(self.border_color, self.appearance_mode))
+                self.canvas.itemconfig("border_parts", fill=ThemeManager.single_color(self.border_color, self.appearance_mode),
+                                       outline=ThemeManager.single_color(self.border_color, self.appearance_mode))
 
-            self.canvas.itemconfig("inner_parts", fill=CTkThemeManager.single_color(self.fg_color, self.appearance_mode),
-                                   outline=CTkThemeManager.single_color(self.fg_color, self.appearance_mode))
+            self.canvas.itemconfig("inner_parts", fill=ThemeManager.single_color(self.fg_color, self.appearance_mode),
+                                   outline=ThemeManager.single_color(self.fg_color, self.appearance_mode))
 
             if self.progress_color is None:
-                self.canvas.itemconfig("progress_parts", fill=CTkThemeManager.single_color(self.fg_color, self.appearance_mode),
-                                       outline=CTkThemeManager.single_color(self.fg_color, self.appearance_mode))
+                self.canvas.itemconfig("progress_parts", fill=ThemeManager.single_color(self.fg_color, self.appearance_mode),
+                                       outline=ThemeManager.single_color(self.fg_color, self.appearance_mode))
             else:
-                self.canvas.itemconfig("progress_parts", fill=CTkThemeManager.single_color(self.progress_color, self.appearance_mode),
-                                       outline=CTkThemeManager.single_color(self.progress_color, self.appearance_mode))
+                self.canvas.itemconfig("progress_parts", fill=ThemeManager.single_color(self.progress_color, self.appearance_mode),
+                                       outline=ThemeManager.single_color(self.progress_color, self.appearance_mode))
 
-            self.canvas.itemconfig("slider_parts", fill=CTkThemeManager.single_color(self.button_color, self.appearance_mode),
-                                   outline=CTkThemeManager.single_color(self.button_color, self.appearance_mode))
+            self.canvas.itemconfig("slider_parts", fill=ThemeManager.single_color(self.button_color, self.appearance_mode),
+                                   outline=ThemeManager.single_color(self.button_color, self.appearance_mode))
 
     def clicked(self, event=None):
         if self.orient.lower() == "horizontal":
@@ -188,13 +195,13 @@ class CTkSlider(CTkBaseClass):
 
     def on_enter(self, event=0):
         self.hover_state = True
-        self.canvas.itemconfig("slider_parts", fill=CTkThemeManager.single_color(self.button_hover_color, self.appearance_mode),
-                               outline=CTkThemeManager.single_color(self.button_hover_color, self.appearance_mode))
+        self.canvas.itemconfig("slider_parts", fill=ThemeManager.single_color(self.button_hover_color, self.appearance_mode),
+                               outline=ThemeManager.single_color(self.button_hover_color, self.appearance_mode))
 
     def on_leave(self, event=0):
         self.hover_state = False
-        self.canvas.itemconfig("slider_parts", fill=CTkThemeManager.single_color(self.button_color, self.appearance_mode),
-                               outline=CTkThemeManager.single_color(self.button_color, self.appearance_mode))
+        self.canvas.itemconfig("slider_parts", fill=ThemeManager.single_color(self.button_color, self.appearance_mode),
+                               outline=ThemeManager.single_color(self.button_color, self.appearance_mode))
 
     def round_to_step_size(self, value):
         if self.number_of_steps is not None:
@@ -309,6 +316,14 @@ class CTkSlider(CTkBaseClass):
                 self.variable = None
 
             del kwargs["variable"]
+
+        if "width" in kwargs:
+            self.set_dimensions(width=kwargs["width"])
+            del kwargs["width"]
+
+        if "height" in kwargs:
+            self.set_dimensions(height=kwargs["height"])
+            del kwargs["height"]
 
         super().configure(*args, **kwargs)
 
