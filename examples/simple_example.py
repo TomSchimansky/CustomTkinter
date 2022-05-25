@@ -5,7 +5,7 @@ customtkinter.set_appearance_mode("dark")  # Modes: "System" (standard), "Dark",
 customtkinter.set_default_color_theme("blue")  # Themes: "blue" (standard), "green", "dark-blue"
 
 app = customtkinter.CTk()  # create CTk window like you do with the Tk window
-app.geometry("400x480")
+app.geometry("400x540")
 app.title("CustomTkinter simple_example.py")
 
 
@@ -57,5 +57,8 @@ s_var = tkinter.StringVar(value="on")
 
 switch_1 = customtkinter.CTkSwitch(master=frame_1)
 switch_1.pack(pady=y_padding, padx=10)
+
+optionmenu_1 = customtkinter.CTkOptionMenu(master=frame_1, values=["option 1", "option 2", "number 42"])
+optionmenu_1.pack(pady=y_padding, padx=10)
 
 app.mainloop()

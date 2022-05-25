@@ -26,7 +26,9 @@
     "switch": ["gray70", "gray35"],
     "switch_progress": ["#5B97D3", "#3373B8"],
     "switch_button": ["gray36", "#D5D9DE"],
-    "switch_button_hover": ["gray20", "gray100"]
+    "switch_button_hover": ["gray20", "gray100"],
+    "optionmenu_button": ["#4A7BAD", "#1D538D"],
+    "optionmenu_button_hover": ["#D7D8D9", "gray22"]
   },
   "text": {
     "macOS": {

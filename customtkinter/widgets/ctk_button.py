@@ -21,7 +21,7 @@ class CTkButton(CTkBaseClass):
                  command=None,
                  textvariable=None,
                  width=120,
-                 height=30,
+                 height=28,
                  corner_radius="default_theme",
                  text_font="default_theme",
                  text_color="default_theme",

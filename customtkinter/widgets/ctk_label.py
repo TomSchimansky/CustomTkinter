@@ -13,7 +13,7 @@ class CTkLabel(CTkBaseClass):
                  text_color="default_theme",
                  corner_radius="default_theme",
                  width=120,
-                 height=25,
+                 height=28,
                  text="CTkLabel",
                  text_font="default_theme",
                  **kwargs):

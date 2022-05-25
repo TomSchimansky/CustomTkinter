@@ -18,7 +18,7 @@ class CTkEntry(CTkBaseClass):
                  border_width="default_theme",
                  border_color="default_theme",
                  width=120,
-                 height=30,
+                 height=28,
                  state=tkinter.NORMAL,
                  **kwargs):
 
