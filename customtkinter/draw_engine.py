@@ -74,11 +74,16 @@ class DrawEngine:
         else:
             inner_corner_radius = 0
 
-        if self.preferred_drawing_method == "polygon_shapes":
+        if overwrite_preferred_drawing_method is None:
+            preferred_drawing_method = self.preferred_drawing_method
+        else:
+            preferred_drawing_method = overwrite_preferred_drawing_method
+
+        if preferred_drawing_method == "polygon_shapes":
             return self._draw_rounded_rect_with_border_polygon_shapes(width, height, corner_radius, border_width, inner_corner_radius)
-        elif self.preferred_drawing_method == "font_shapes":
+        elif preferred_drawing_method == "font_shapes":
             return self._draw_rounded_rect_with_border_font_shapes(width, height, corner_radius, border_width, inner_corner_radius, ())
-        elif self.preferred_drawing_method == "circle_shapes":
+        elif preferred_drawing_method == "circle_shapes":
             return self._draw_rounded_rect_with_border_circle_shapes(width, height, corner_radius, border_width, inner_corner_radius)
 
     def _draw_rounded_rect_with_border_polygon_shapes(self, width: int, height: int, corner_radius: int, border_width: int, inner_corner_radius: int) -> bool:
