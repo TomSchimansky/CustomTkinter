@@ -13,6 +13,7 @@ class CTkFrame(CTkBaseClass):
                  corner_radius="default_theme",
                  width=200,
                  height=200,
+                 overwrite_preferred_drawing_method: str = None,
                  **kwargs):
 
         # transfer basic functionality (bg_color, size, appearance_mode, scaling) to CTkBaseClass
@@ -21,6 +22,7 @@ class CTkFrame(CTkBaseClass):
         # color
         self.border_color = ThemeManager.theme["color"]["frame_border"] if border_color == "default_theme" else border_color
 
+        # determine fg_color of frame
         if fg_color == "default_theme":
             if isinstance(self.master, CTkFrame):
                 if self.master.fg_color == ThemeManager.theme["color"]["frame_low"]:
@@ -43,6 +45,7 @@ class CTkFrame(CTkBaseClass):
         self.canvas.place(x=0, y=0, relwidth=1, relheight=1)
         self.canvas.configure(bg=ThemeManager.single_color(self.bg_color, self.appearance_mode))
         self.draw_engine = DrawEngine(self.canvas)
+        self._overwrite_preferred_drawing_method = overwrite_preferred_drawing_method
 
         self.bind('<Configure>', self.update_dimensions_event)
 
@@ -77,7 +80,8 @@ class CTkFrame(CTkBaseClass):
         requires_recoloring = self.draw_engine.draw_rounded_rect_with_border(self.apply_widget_scaling(self.current_width),
                                                                              self.apply_widget_scaling(self.current_height),
                                                                              self.apply_widget_scaling(self.corner_radius),
-                                                                             self.apply_widget_scaling(self.border_width))
+                                                                             self.apply_widget_scaling(self.border_width),
+                                                                             overwrite_preferred_drawing_method=self._overwrite_preferred_drawing_method)
 
         if no_color_updates is False or requires_recoloring:
             if self.fg_color is None:

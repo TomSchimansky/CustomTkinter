@@ -162,10 +162,11 @@ class ScalingTracker:
     def check_dpi_scaling(cls):
         # check for every window if scaling value changed
         for window in cls.window_widgets_dict:
-            current_dpi_scaling_value = cls.get_window_dpi_scaling(window)
-            if current_dpi_scaling_value != cls.window_dpi_scaling_dict[window]:
-                cls.window_dpi_scaling_dict[window] = current_dpi_scaling_value
-                cls.update_scaling_callbacks_for_window(window)
+            if window.winfo_exists():
+                current_dpi_scaling_value = cls.get_window_dpi_scaling(window)
+                if current_dpi_scaling_value != cls.window_dpi_scaling_dict[window]:
+                    cls.window_dpi_scaling_dict[window] = current_dpi_scaling_value
+                    cls.update_scaling_callbacks_for_window(window)
 
         # find an existing tkinter object for the next call of .after()
         for app in cls.window_widgets_dict.keys():
