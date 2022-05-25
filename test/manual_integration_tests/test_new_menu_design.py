@@ -12,6 +12,7 @@ class CTkMenu(tkinter.Toplevel):
         self.config(bg='systemTransparent')  # transparent bg
         self.geometry(f"120x{len(options) * (25 + 3) + 3}+{x}+{y}")
         self.bind("<FocusOut>", self.focus_loss_event)
+        self.focus_force()
 
         self.frame = customtkinter.CTkFrame(self, border_width=0, width=120, corner_radius=6, border_color="gray4", fg_color="#333740")
         self.frame.grid(row=0, column=0, sticky="nsew", rowspan=len(options) + 1, columnspan=1, ipadx=0, ipady=0)
@@ -44,7 +45,7 @@ app.geometry("600x500")
 
 def open_menu():
     menu = CTkMenu(app, button.winfo_rootx(), button.winfo_rooty() + button.winfo_height() + 4, ["Option 1", "Option 2", "Point 3"])
-    print(menu)
+
 
 button = customtkinter.CTkButton(command=open_menu, height=30, corner_radius=6)
 button.pack(pady=20)
