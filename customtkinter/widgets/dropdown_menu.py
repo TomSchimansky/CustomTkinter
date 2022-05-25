@@ -8,7 +8,7 @@ from ..appearance_mode_tracker import AppearanceModeTracker
 
 class DropdownMenu(tkinter.Toplevel):
     def __init__(self, *args,
-                 fg_color="gray50",
+                 fg_color="#555555",
                  button_color="gray50",
                  button_hover_color="gray35",
                  text_color="black",
@@ -54,15 +54,15 @@ class DropdownMenu(tkinter.Toplevel):
 
         elif sys.platform.startswith("win"):
             self.overrideredirect(True)  # remove title-bar
-            self.configure(bg=ThemeManager.single_color(self.fg_color, self.appearance_mode))
-            self.wm_attributes("-transparentcolor", "#FFFFF1")
+            self.configure(bg="#010302")
+            self.wm_attributes("-transparentcolor", "#010302")
             self.focus()
             self.frame = customtkinter.CTkFrame(self, border_width=0, width=120, corner_radius=self.corner_radius,
                                                 fg_color=self.fg_color, overwrite_preferred_drawing_method="circle_shapes")
         else:
             self.overrideredirect(True)  # remove title-bar
-            self.configure(bg=ThemeManager.single_color(self.fg_color, self.appearance_mode))
-            self.wm_attributes("-transparentcolor", "#FFFFF1")
+            self.configure(bg="#010302")
+            self.wm_attributes("-transparentcolor", "#010302")
             self.frame = customtkinter.CTkFrame(self, border_width=0, width=120, corner_radius=self.corner_radius,
                                                 fg_color=self.fg_color, overwrite_preferred_drawing_method="circle_shapes")
 

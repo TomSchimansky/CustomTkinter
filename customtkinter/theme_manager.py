@@ -63,6 +63,19 @@ class ThemeManager:
         return cls.rgb2hex(new_rgb)
 
     @classmethod
+    def get_minimal_darker(cls, color: str) -> str:
+        if color.startswith("#"):
+            color_rgb = cls.hex2rgb(color)
+            if color_rgb[0] > 0:
+                return cls.rgb2hex((color_rgb[0] - 1, color_rgb[1], color_rgb[2]))
+            elif color_rgb[1] > 0:
+                return cls.rgb2hex((color_rgb[0], color_rgb[1] - 1, color_rgb[2]))
+            elif color_rgb[2] > 0:
+                return cls.rgb2hex((color_rgb[0], color_rgb[1], color_rgb[2] - 1))
+            else:
+                return cls.rgb2hex((color_rgb[0] + 1, color_rgb[1], color_rgb[2] - 1))  # otherwise slightly lighter
+
+    @classmethod
     def multiply_hex_color(cls, hex_color: str, factor: float = 1.0) -> str:
         try:
             rgb_color = ThemeManager.hex2rgb(hex_color)
