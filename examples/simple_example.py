@@ -58,7 +58,4 @@ s_var = tkinter.StringVar(value="on")
 switch_1 = customtkinter.CTkSwitch(master=frame_1)
 switch_1.pack(pady=y_padding, padx=10)
 
-optionmenu_1 = customtkinter.CTkOptionMenu(master=frame_1, values=["option 1", "option 2", "number 42"])
-optionmenu_1.pack(pady=y_padding, padx=10)
-
 app.mainloop()

@@ -124,7 +124,7 @@ class ScalingTracker:
 
     @classmethod
     def activate_high_dpi_awareness(cls):
-        """ make process DPI aware, customtkinter elemets will get scaled automatically,
+        """ make process DPI aware, customtkinter elements will get scaled automatically,
             only gets activated when CTk object is created """
 
         if not cls.deactivate_automatic_dpi_awareness:
@@ -135,28 +135,30 @@ class ScalingTracker:
                 from ctypes import windll
                 windll.shcore.SetProcessDpiAwareness(2)
                 # Microsoft Docs: https://docs.microsoft.com/en-us/windows/win32/api/shellscalingapi/ne-shellscalingapi-process_dpi_awareness
-
             else:
                 pass  # DPI awareness on Linux not implemented
 
     @classmethod
     def get_window_dpi_scaling(cls, window) -> float:
-        if sys.platform == "darwin":
-            return 1  # scaling works automatically on macOS
+        if not cls.deactivate_automatic_dpi_awareness:
+            if sys.platform == "darwin":
+                return 1  # scaling works automatically on macOS
 
-        elif sys.platform.startswith("win"):
-            from ctypes import windll, pointer, wintypes
+            elif sys.platform.startswith("win"):
+                from ctypes import windll, pointer, wintypes
 
-            DPI100pc = 96  # DPI 96 is 100% scaling
-            DPI_type = 0  # MDT_EFFECTIVE_DPI = 0, MDT_ANGULAR_DPI = 1, MDT_RAW_DPI = 2
-            window_hwnd = wintypes.HWND(window.winfo_id())
-            monitor_handle = windll.user32.MonitorFromWindow(window_hwnd, wintypes.DWORD(2))  # MONITOR_DEFAULTTONEAREST = 2
-            x_dpi, y_dpi = wintypes.UINT(), wintypes.UINT()
-            windll.shcore.GetDpiForMonitor(monitor_handle, DPI_type, pointer(x_dpi), pointer(y_dpi))
-            return (x_dpi.value + y_dpi.value) / (2 * DPI100pc)
+                DPI100pc = 96  # DPI 96 is 100% scaling
+                DPI_type = 0  # MDT_EFFECTIVE_DPI = 0, MDT_ANGULAR_DPI = 1, MDT_RAW_DPI = 2
+                window_hwnd = wintypes.HWND(window.winfo_id())
+                monitor_handle = windll.user32.MonitorFromWindow(window_hwnd, wintypes.DWORD(2))  # MONITOR_DEFAULTTONEAREST = 2
+                x_dpi, y_dpi = wintypes.UINT(), wintypes.UINT()
+                windll.shcore.GetDpiForMonitor(monitor_handle, DPI_type, pointer(x_dpi), pointer(y_dpi))
+                return (x_dpi.value + y_dpi.value) / (2 * DPI100pc)
 
+            else:
+                return 1  # DPI awareness on Linux not implemented
         else:
-            return 1  # DPI awareness on Linux not implemented
+            return 1
 
     @classmethod
     def check_dpi_scaling(cls):

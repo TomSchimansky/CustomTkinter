@@ -93,7 +93,7 @@ class CTkOptionMenu(CTkBaseClass):
                               height=self.apply_widget_scaling(self.desired_height))
         self.draw()
 
-    def set_dimensions(self, width=None, height=None):
+    def set_dimensions(self, width: int = None, height: int = None):
         super().set_dimensions(width, height)
 
         self.canvas.configure(width=self.apply_widget_scaling(self.desired_width),
@@ -148,16 +148,18 @@ class CTkOptionMenu(CTkBaseClass):
                                           y_position=self.winfo_rooty() + self.current_height + 4,
                                           width=self.current_width,
                                           values=self.values,
-                                          command=self.set_value)
+                                          command=self.set)
 
-    def set_value(self, value):
-        print("set value", value)
+    def set(self, value: str):
         self.current_value = value
 
         if self.text_label is not None:
             self.text_label.configure(text=self.current_value)
         else:
             self.draw()
+
+    def get(self) -> str:
+        return self.current_value
 
     def configure(self, *args, **kwargs):
         require_redraw = False  # some attribute changes require a call of self.draw() at the end
@@ -181,10 +183,15 @@ class CTkOptionMenu(CTkBaseClass):
             require_redraw = True
             del kwargs["bg_color"]
 
-        if "hover_color" in kwargs:
-            self.hover_color = kwargs["hover_color"]
+        if "button_color" in kwargs:
+            self.button_color = kwargs["button_color"]
             require_redraw = True
-            del kwargs["hover_color"]
+            del kwargs["button_color"]
+
+        if "button_hover_color" in kwargs:
+            self.button_hover_color = kwargs["button_hover_color"]
+            require_redraw = True
+            del kwargs["button_hover_color"]
 
         if "text_color" in kwargs:
             self.text_color = kwargs["text_color"]
@@ -252,10 +259,10 @@ class CTkOptionMenu(CTkBaseClass):
         if self.state is not tkinter.DISABLED:
             self.open_dropdown_menu()
 
-            if self.function is not None:
-                # click animation: change color with .on_leave() and back to normal after 100ms with click_animation()
-                self.on_leave()
-                self.click_animation_running = True
-                self.after(100, self.click_animation)
+            # click animation: change color with .on_leave() and back to normal after 100ms with click_animation()
+            self.on_leave()
+            self.click_animation_running = True
+            self.after(100, self.click_animation)
 
+            if self.function is not None:
                 self.function()

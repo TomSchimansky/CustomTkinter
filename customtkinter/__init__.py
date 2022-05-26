@@ -22,6 +22,9 @@ if sys.platform == "darwin":
 else:
     DrawEngine.preferred_drawing_method = "font_shapes"
 
+if sys.platform.startswith("win") and sys.getwindowsversion().build < 9000:  # No automatic scaling on Windows < 8.1
+    ScalingTracker.deactivate_automatic_dpi_awareness = True
+
 # load Roboto fonts (used on Windows/Linux)
 script_directory = os.path.dirname(os.path.abspath(__file__))
 FontManager.load_font(os.path.join(script_directory, "assets", "fonts", "Roboto", "Roboto-Regular.ttf"))

@@ -1,4 +1,5 @@
 from tkinter import *
+import customtkinter
 
 ws = Tk()
 ws.title('PythonGuides')
@@ -13,7 +14,7 @@ countries = ['Bahamas','Canada', 'Cuba','United States']
 
 # setting variable for Integers
 variable = StringVar()
-variable.set(countries[3])
+variable.set("test")
 
 # creating widget
 dropdown = OptionMenu(
@@ -24,7 +25,10 @@ dropdown = OptionMenu(
 )
 
 # positioning widget
-dropdown.pack(expand=True)
+dropdown.pack(pady=10, padx=10)
+
+optionmenu_1 = customtkinter.CTkOptionMenu(master=ws, values=["option 1", "option 2", "number 42"])
+optionmenu_1.pack(pady=10, padx=10)
 
 # infinite loop
 ws.mainloop()
