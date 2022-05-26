@@ -4,6 +4,7 @@ import sys
 
 from ..theme_manager import ThemeManager
 from ..appearance_mode_tracker import AppearanceModeTracker
+from ..scaling_tracker import ScalingTracker
 
 
 class DropdownMenu(tkinter.Toplevel):
@@ -25,6 +26,9 @@ class DropdownMenu(tkinter.Toplevel):
                  **kwargs):
         super().__init__(*args, **kwargs)
 
+        ScalingTracker.add_widget(self.set_scaling, self)
+        self.widget_scaling = ScalingTracker.get_widget_scaling(self)
+
         self.values = values
         self.command = command
 
@@ -41,7 +45,9 @@ class DropdownMenu(tkinter.Toplevel):
         self.button_corner_radius = button_corner_radius
         self.button_height = button_height
 
-        self.geometry(f"{round(self.width)}x{round(len(self.values) * (self.button_height + y_spacing) + y_spacing)}+{round(x_position)}+{round(y_position)}")
+        self.geometry(f"{round(self.apply_widget_scaling(self.width))}x" +
+                      f"{round(self.apply_widget_scaling(len(self.values) * (self.button_height + y_spacing) + y_spacing))}+" +
+                      f"{round(x_position)}+{round(y_position)}")
         self.grid_columnconfigure(0, weight=1)
 
         if sys.platform.startswith("darwin"):
@@ -49,7 +55,10 @@ class DropdownMenu(tkinter.Toplevel):
             self.overrideredirect(False)
             self.wm_attributes("-transparent", True)  # turn off window shadow
             self.config(bg='systemTransparent')  # transparent bg
-            self.frame = customtkinter.CTkFrame(self, border_width=0, width=self.width, corner_radius=self.corner_radius,
+            self.frame = customtkinter.CTkFrame(self,
+                                                border_width=0,
+                                                width=self.width,
+                                                corner_radius=self.corner_radius,
                                                 fg_color=ThemeManager.single_color(self.fg_color, self.appearance_mode))
 
         elif sys.platform.startswith("win"):
@@ -57,13 +66,19 @@ class DropdownMenu(tkinter.Toplevel):
             self.configure(bg="#010302")
             self.wm_attributes("-transparentcolor", "#010302")
             self.focus()
-            self.frame = customtkinter.CTkFrame(self, border_width=0, width=120, corner_radius=self.corner_radius,
+            self.frame = customtkinter.CTkFrame(self,
+                                                border_width=0,
+                                                width=self.width,
+                                                corner_radius=self.corner_radius,
                                                 fg_color=self.fg_color, overwrite_preferred_drawing_method="circle_shapes")
         else:
             self.overrideredirect(True)  # remove title-bar
             self.configure(bg="#010302")
             self.wm_attributes("-transparentcolor", "#010302")
-            self.frame = customtkinter.CTkFrame(self, border_width=0, width=120, corner_radius=self.corner_radius,
+            self.frame = customtkinter.CTkFrame(self,
+                                                border_width=0,
+                                                width=self.width,
+                                                corner_radius=self.corner_radius,
                                                 fg_color=self.fg_color, overwrite_preferred_drawing_method="circle_shapes")
 
         self.frame.grid(row=0, column=0, sticky="nsew", rowspan=len(self.values) + 1)
@@ -72,16 +87,32 @@ class DropdownMenu(tkinter.Toplevel):
 
         self.button_list = []
         for index, option in enumerate(self.values):
-            button = customtkinter.CTkButton(self.frame, text=option, height=self.button_height, width=self.width - 2 * x_spacing,
-                                             fg_color=self.button_color, text_color=self.text_color,
-                                             hover_color=self.button_hover_color, corner_radius=self.button_corner_radius,
+            button = customtkinter.CTkButton(self.frame,
+                                             text=option,
+                                             height=self.button_height,
+                                             width=self.width - 2 * x_spacing,
+                                             fg_color=self.button_color,
+                                             text_color=self.text_color,
+                                             hover_color=self.button_hover_color,
+                                             corner_radius=self.button_corner_radius,
                                              command=lambda i=index: self.button_callback(i))
             button.text_label.grid(row=0, column=0, rowspan=2, columnspan=2, sticky="w")
-            button.grid(row=index, column=0, padx=x_spacing, pady=(y_spacing, 0), sticky="ew")
+            button.grid(row=index, column=0,
+                        padx=x_spacing,
+                        pady=(y_spacing, 0), sticky="ew")
             self.button_list.append(button)
 
         self.bind("<FocusOut>", self.focus_loss_event)
         self.frame.canvas.bind("<Button-1>", self.focus_loss_event)
+
+    def apply_widget_scaling(self, value):
+        if isinstance(value, (int, float)):
+            return value * self.widget_scaling
+        else:
+            return value
+
+    def set_scaling(self, new_widget_scaling, new_spacing_scaling, new_window_scaling):
+        return
 
     def focus_loss_event(self, event):
         self.destroy()

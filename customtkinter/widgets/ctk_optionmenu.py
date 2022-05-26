@@ -120,6 +120,9 @@ class CTkOptionMenu(CTkBaseClass):
                                                                                             0,
                                                                                             self.apply_widget_scaling(left_section_width))
 
+        requires_recoloring_2 = self.draw_engine.draw_dropdown_arrow(self.apply_widget_scaling(self.current_width - (self.current_height / 2)),
+                                                                     self.apply_widget_scaling(self.current_height / 2),
+                                                                     self.apply_widget_scaling(self.current_height / 3))
         if self.text_label is None:
             self.text_label = tkinter.Label(master=self,
                                             font=self.apply_font_scaling(self.text_font))
@@ -135,7 +138,7 @@ class CTkOptionMenu(CTkBaseClass):
         if self.current_value is not None:
             self.text_label.configure(text=self.current_value)
 
-        if no_color_updates is False or requires_recoloring:
+        if no_color_updates is False or requires_recoloring or requires_recoloring_2:
 
             self.canvas.configure(bg=ThemeManager.single_color(self.bg_color, self.appearance_mode))
 
@@ -150,14 +153,18 @@ class CTkOptionMenu(CTkBaseClass):
 
             if self.state == tkinter.DISABLED:
                 self.text_label.configure(fg=(ThemeManager.single_color(self.text_color_disabled, self.appearance_mode)))
+                self.canvas.itemconfig("dropdown_arrow",
+                                       fill=ThemeManager.single_color(self.text_color_disabled, self.appearance_mode))
             else:
                 self.text_label.configure(fg=ThemeManager.single_color(self.text_color, self.appearance_mode))
+                self.canvas.itemconfig("dropdown_arrow",
+                                       fill=ThemeManager.single_color(self.text_color, self.appearance_mode))
 
             self.text_label.configure(bg=ThemeManager.single_color(self.fg_color, self.appearance_mode))
 
     def open_dropdown_menu(self):
         self.dropdown_menu = DropdownMenu(x_position=self.winfo_rootx(),
-                                          y_position=self.winfo_rooty() + self.current_height + 4,
+                                          y_position=self.winfo_rooty() + self.apply_widget_scaling(self.current_height + 4),
                                           width=self.current_width,
                                           values=self.values,
                                           command=self.set,
