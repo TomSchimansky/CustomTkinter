@@ -1,7 +1,7 @@
 import tkinter
 import customtkinter
 
-customtkinter.set_appearance_mode("dark")  # Modes: "System" (standard), "Dark", "Light"
+customtkinter.set_appearance_mode("light")  # Modes: "System" (standard), "Dark", "Light"
 customtkinter.set_default_color_theme("blue")  # Themes: "blue" (standard), "green", "dark-blue"
 
 app = customtkinter.CTk()  # create CTk window like you do with the Tk window
@@ -41,6 +41,9 @@ slider_1.set(0.5)
 
 entry_1 = customtkinter.CTkEntry(master=frame_1, placeholder_text="CTkEntry")
 entry_1.pack(pady=y_padding, padx=10)
+
+optionmenu_1 = customtkinter.CTkOptionMenu(master=frame_1, values=["Option 1", "Option 2", "Option 3"])
+optionmenu_1.pack(pady=y_padding, padx=10)
 
 checkbox_1 = customtkinter.CTkCheckBox(master=frame_1, command=check_box_function)
 checkbox_1.pack(pady=y_padding, padx=10)

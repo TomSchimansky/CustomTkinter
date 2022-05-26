@@ -5,7 +5,7 @@ TEST_CONFIGURE = True
 TEST_REMOVING = False
 
 app = customtkinter.CTk()  # create CTk window like you do with the Tk window (you can also use normal tkinter.Tk window)
-app.geometry("400x600")
+app.geometry("400x800")
 app.title("Tkinter Variable Test")
 
 txt_var = tkinter.StringVar(value="")
@@ -69,6 +69,12 @@ switch_1 = customtkinter.CTkSwitch(master=app, variable=s_var, textvariable=s_va
 switch_1.pack(pady=20, padx=10)
 switch_1 = customtkinter.CTkSwitch(master=app, variable=s_var, textvariable=s_var, onvalue="on", offvalue="off")
 switch_1.pack(pady=20, padx=10)
-#switch_1.toggle()
+
+optionmenu_var = tkinter.StringVar(value="test")
+optionmenu_1 = customtkinter.CTkOptionMenu(master=app, variable=optionmenu_var, values=["Option 1", "Option 2", "Option 3"])
+optionmenu_1.pack(pady=20, padx=10)
+optionmenu_2 = customtkinter.CTkOptionMenu(master=app, values=["Option 1", "Option 2", "Option 3"])
+optionmenu_2.pack(pady=20, padx=10)
+optionmenu_2.configure(variable=optionmenu_var)
 
 app.mainloop()

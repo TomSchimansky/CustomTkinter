@@ -17,6 +17,9 @@ class CTkOptionMenu(CTkBaseClass):
                  fg_color="default_theme",
                  button_color="default_theme",
                  button_hover_color="default_theme",
+                 dropdown_color="default_theme",
+                 dropdown_hover_color="default_theme",
+                 dropdown_text_color="default_theme",
                  variable=None,
                  values=None,
                  command=None,
@@ -37,6 +40,9 @@ class CTkOptionMenu(CTkBaseClass):
         self.fg_color = ThemeManager.theme["color"]["button"] if fg_color == "default_theme" else fg_color
         self.button_color = ThemeManager.theme["color"]["optionmenu_button"] if button_color == "default_theme" else button_color
         self.button_hover_color = ThemeManager.theme["color"]["optionmenu_button_hover"] if button_hover_color == "default_theme" else button_hover_color
+        self.dropdown_color = ThemeManager.theme["color"]["dropdown_color"] if dropdown_color == "default_theme" else dropdown_color
+        self.dropdown_hover_color = ThemeManager.theme["color"]["dropdown_hover"] if dropdown_hover_color == "default_theme" else dropdown_hover_color
+        self.dropdown_text_color = ThemeManager.theme["color"]["dropdown_text"] if dropdown_text_color == "default_theme" else dropdown_text_color
 
         # shape
         self.corner_radius = ThemeManager.theme["shape"]["button_corner_radius"] if corner_radius == "default_theme" else corner_radius
@@ -50,6 +56,8 @@ class CTkOptionMenu(CTkBaseClass):
         # callback and hover functionality
         self.function = command
         self.variable = variable
+        self.variable_callback_blocked = False
+        self.variable_callback_name = None
         self.state = state
         self.hover = hover
         self.click_animation_running = False
@@ -81,6 +89,10 @@ class CTkOptionMenu(CTkBaseClass):
 
         self.set_cursor()
         self.draw()  # initial draw
+
+        if self.variable is not None:
+            self.variable_callback_name = self.variable.trace_add("write", self.variable_callback)
+            self.set(self.variable.get(), from_variable_callback=True)
 
     def set_scaling(self, *args, **kwargs):
         super().set_scaling(*args, **kwargs)
@@ -148,18 +160,11 @@ class CTkOptionMenu(CTkBaseClass):
                                           y_position=self.winfo_rooty() + self.current_height + 4,
                                           width=self.current_width,
                                           values=self.values,
-                                          command=self.set)
-
-    def set(self, value: str):
-        self.current_value = value
-
-        if self.text_label is not None:
-            self.text_label.configure(text=self.current_value)
-        else:
-            self.draw()
-
-    def get(self) -> str:
-        return self.current_value
+                                          command=self.set,
+                                          fg_color=self.dropdown_color,
+                                          button_hover_color=self.dropdown_hover_color,
+                                          button_color=self.dropdown_color,
+                                          text_color=self.dropdown_text_color)
 
     def configure(self, *args, **kwargs):
         require_redraw = False  # some attribute changes require a call of self.draw() at the end
@@ -203,9 +208,17 @@ class CTkOptionMenu(CTkBaseClass):
             del kwargs["command"]
 
         if "variable" in kwargs:
+            if self.variable is not None:  # remove old callback
+                self.variable.trace_remove("write", self.variable_callback_name)
+
             self.variable = kwargs["variable"]
-            if self.text_label is not None:
-                self.text_label.configure(textvariable=self.variable)
+
+            if self.variable is not None and self.variable != "":
+                self.variable_callback_name = self.variable.trace_add("write", self.variable_callback)
+                self.set(self.variable.get(), from_variable_callback=True)
+            else:
+                self.variable = None
+
             del kwargs["variable"]
 
         if "width" in kwargs:
@@ -255,6 +268,26 @@ class CTkOptionMenu(CTkBaseClass):
         if self.click_animation_running:
             self.on_enter()
 
+    def variable_callback(self, var_name, index, mode):
+        if not self.variable_callback_blocked:
+            self.set(self.variable.get(), from_variable_callback=True)
+
+    def set(self, value: str, from_variable_callback: bool = False):
+        self.current_value = value
+
+        if self.text_label is not None:
+            self.text_label.configure(text=self.current_value)
+        else:
+            self.draw()
+
+        if self.variable is not None and not from_variable_callback:
+            self.variable_callback_blocked = True
+            self.variable.set(self.current_value)
+            self.variable_callback_blocked = False
+
+    def get(self) -> str:
+        return self.current_value
+
     def clicked(self, event=0):
         if self.state is not tkinter.DISABLED:
             self.open_dropdown_menu()
@@ -265,4 +298,7 @@ class CTkOptionMenu(CTkBaseClass):
             self.after(100, self.click_animation)
 
             if self.function is not None:
-                self.function()
+                try:
+                    self.function()
+                except Exception:
+                    pass
