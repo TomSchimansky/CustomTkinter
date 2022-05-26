@@ -56,8 +56,6 @@ radiobutton_1.pack(pady=y_padding, padx=10)
 radiobutton_2 = customtkinter.CTkRadioButton(master=frame_1, variable=radiobutton_var, value=2)
 radiobutton_2.pack(pady=y_padding, padx=10)
 
-s_var = tkinter.StringVar(value="on")
-
 switch_1 = customtkinter.CTkSwitch(master=frame_1)
 switch_1.pack(pady=y_padding, padx=10)
 
