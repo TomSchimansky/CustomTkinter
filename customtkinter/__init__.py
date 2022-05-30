@@ -3,6 +3,7 @@ __version__ = "4.1.0"
 import os
 import sys
 from tkinter.constants import *
+from tkinter import StringVar, IntVar, DoubleVar, BooleanVar
 
 # import manager classes
 from .settings import Settings

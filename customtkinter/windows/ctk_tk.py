@@ -138,18 +138,7 @@ class CTk(tkinter.Tk):
         self.current_height = max(self.min_height, min(numbers[1], self.max_height))
 
     def apply_geometry_scaling(self, geometry_string):
-        numbers = list(map(int, re.split(r"[x+]", geometry_string)))  # split geometry string into list of numbers
-
-        if len(numbers) == 2:
-            return f"{self.apply_window_scaling(numbers[0]):.0f}x" +\
-                   f"{self.apply_window_scaling(numbers[1]):.0f}"
-        elif len(numbers) == 4:
-            return f"{self.apply_window_scaling(numbers[0]):.0f}x" +\
-                   f"{self.apply_window_scaling(numbers[1]):.0f}+" +\
-                   f"{self.apply_window_scaling(numbers[2]):.0f}+" +\
-                   f"{self.apply_window_scaling(numbers[3]):.0f}"
-        else:
-            return geometry_string
+        return re.sub(re.compile("\d+"), lambda match_obj: str(round(int(match_obj.group(0)) * self.window_scaling)), geometry_string)
 
     def apply_window_scaling(self, value):
         if isinstance(value, (int, float)):

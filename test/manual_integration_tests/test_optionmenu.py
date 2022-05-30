@@ -1,26 +1,26 @@
-from tkinter import *
+import tkinter
 import customtkinter
 
-ws = customtkinter.CTk()
-ws.title('PythonGuides')
-ws.geometry('400x300')
+app = customtkinter.CTk()
+app.title('test_optionmenu.py')
+app.geometry('400x300')
 
-def display_selected(choice):
+
+def select_callback(choice):
     choice = variable.get()
     print("display_selected", choice)
 
-countries = ['Bahamas','Canada', 'Cuba','United States']
 
-# setting variable for Integers
-variable = StringVar()
+countries = ['Bahamas', 'Canada', 'Cuba', 'United States']
+
+variable = tkinter.StringVar()
 variable.set("test")
 
-# creating widget
-optionmenu_tk = OptionMenu(ws, variable, *countries, command=display_selected)
+optionmenu_tk = tkinter.OptionMenu(app, variable, *countries, command=select_callback)
 optionmenu_tk.pack(pady=10, padx=10)
 
-optionmenu_1 = customtkinter.CTkOptionMenu(master=ws, variable=variable, values=countries, command=display_selected)
+optionmenu_1 = customtkinter.CTkOptionMenu(app, variable=variable, values=countries, command=select_callback)
 optionmenu_1.pack(pady=10, padx=10)
+optionmenu_1.set("te")
 
-# infinite loop
-ws.mainloop()
+app.mainloop()
