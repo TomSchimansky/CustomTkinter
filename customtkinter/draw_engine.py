@@ -1011,13 +1011,11 @@ class DrawEngine:
                                 y_position - (size / 5))
 
         elif self.preferred_drawing_method == "font_shapes":
-            return False
-
-            if not self._canvas.find_withtag("checkmark"):
-                self._canvas.create_text(0, 0, text="Z", font=("CustomTkinter_shapes_font", -size), tags=("checkmark", "create_text"), anchor=tkinter.CENTER)
-                self._canvas.tag_raise("checkmark")
+            if not self._canvas.find_withtag("dropdown_arrow"):
+                self._canvas.create_text(0, 0, text="Y", font=("CustomTkinter_shapes_font", -size), tags=("dropdown_arrow"), anchor=tkinter.CENTER)
+                self._canvas.tag_raise("dropdown_arrow")
                 requires_recoloring = True
 
-            self._canvas.coords("checkmark", round(width / 2), round(height / 2))
+            self._canvas.coords("dropdown_arrow", x_position, y_position)
 
         return requires_recoloring

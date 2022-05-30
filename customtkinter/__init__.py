@@ -31,7 +31,7 @@ FontManager.load_font(os.path.join(script_directory, "assets", "fonts", "Roboto"
 FontManager.load_font(os.path.join(script_directory, "assets", "fonts", "Roboto", "Roboto-Medium.ttf"))
 
 # load font necessary for rendering the widgets (used on Windows/Linux)
-if FontManager.load_font(os.path.join(script_directory, "assets", "fonts", "CustomTkinter_shapes_font-fine.otf")) is False:
+if FontManager.load_font(os.path.join(script_directory, "assets", "fonts", "CustomTkinter_shapes_font.otf")) is False:
     # change draw method if font loading failed
     if DrawEngine.preferred_drawing_method == "font_shapes":
         sys.stderr.write("customtkinter.__init__ warning: " +
