@@ -7,7 +7,7 @@ ws.geometry('400x300')
 
 def display_selected(choice):
     choice = variable.get()
-    print(choice)
+    print("display_selected", choice)
 
 countries = ['Bahamas','Canada', 'Cuba','United States']
 

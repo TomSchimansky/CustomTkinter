@@ -292,6 +292,13 @@ class CTkOptionMenu(CTkBaseClass):
             self.variable.set(self.current_value)
             self.variable_callback_blocked = False
 
+        if not from_variable_callback:
+            if self.function is not None:
+                try:
+                    self.function(self.current_value)
+                except Exception:
+                    pass
+
     def get(self) -> str:
         return self.current_value
 
@@ -303,9 +310,3 @@ class CTkOptionMenu(CTkBaseClass):
             self.on_leave()
             self.click_animation_running = True
             self.after(100, self.click_animation)
-
-            if self.function is not None:
-                try:
-                    self.function()
-                except Exception:
-                    pass

@@ -998,7 +998,7 @@ class DrawEngine:
 
         if self.preferred_drawing_method == "polygon_shapes" or self.preferred_drawing_method == "circle_shapes":
             if not self._canvas.find_withtag("dropdown_arrow"):
-                self._canvas.create_line(0, 0, 0, 0, tags=("dropdown_arrow"), width=round(size / 4), joinstyle=tkinter.MITER, capstyle=tkinter.ROUND)
+                self._canvas.create_line(0, 0, 0, 0, tags="dropdown_arrow", width=round(size / 3), joinstyle=tkinter.ROUND, capstyle=tkinter.ROUND)
                 self._canvas.tag_raise("dropdown_arrow")
                 requires_recoloring = True
 
@@ -1012,7 +1012,7 @@ class DrawEngine:
 
         elif self.preferred_drawing_method == "font_shapes":
             if not self._canvas.find_withtag("dropdown_arrow"):
-                self._canvas.create_text(0, 0, text="Y", font=("CustomTkinter_shapes_font", -size), tags=("dropdown_arrow"), anchor=tkinter.CENTER)
+                self._canvas.create_text(0, 0, text="Y", font=("CustomTkinter_shapes_font", -size), tags="dropdown_arrow", anchor=tkinter.CENTER)
                 self._canvas.tag_raise("dropdown_arrow")
                 requires_recoloring = True
 
