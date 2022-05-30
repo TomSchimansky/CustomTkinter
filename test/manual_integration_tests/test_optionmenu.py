@@ -1,10 +1,9 @@
 from tkinter import *
 import customtkinter
 
-ws = Tk()
+ws = customtkinter.CTk()
 ws.title('PythonGuides')
 ws.geometry('400x300')
-ws.config(bg='#F2B90C')
 
 def display_selected(choice):
     choice = variable.get()
@@ -17,17 +16,10 @@ variable = StringVar()
 variable.set("test")
 
 # creating widget
-dropdown = OptionMenu(
-    ws,
-    variable,
-    *countries,
-    command=display_selected
-)
+optionmenu_tk = OptionMenu(ws, variable, *countries, command=display_selected)
+optionmenu_tk.pack(pady=10, padx=10)
 
-# positioning widget
-dropdown.pack(pady=10, padx=10)
-
-optionmenu_1 = customtkinter.CTkOptionMenu(master=ws, values=["option 1", "option 2", "number 42"])
+optionmenu_1 = customtkinter.CTkOptionMenu(master=ws, variable=variable, values=countries, command=display_selected)
 optionmenu_1.pack(pady=10, padx=10)
 
 # infinite loop
