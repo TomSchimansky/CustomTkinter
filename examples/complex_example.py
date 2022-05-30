@@ -16,7 +16,6 @@ class App(customtkinter.CTk):
 
         self.title("CustomTkinter complex_example.py")
         self.geometry(f"{App.WIDTH}x{App.HEIGHT}")
-
         self.protocol("WM_DELETE_WINDOW", self.on_closing)  # call .on_closing() when app gets closed
 
         # ============ create two frames ============
@@ -196,10 +195,7 @@ class App(customtkinter.CTk):
     def on_closing(self, event=0):
         self.destroy()
 
-    def start(self):
-        self.mainloop()
-
 
 if __name__ == "__main__":
     app = App()
-    app.start()
+    app.mainloop()
