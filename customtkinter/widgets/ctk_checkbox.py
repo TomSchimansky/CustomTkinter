@@ -1,5 +1,6 @@
 import tkinter
 import sys
+from typing import Union
 
 from .ctk_canvas import CTkCanvas
 from ..theme_manager import ThemeManager
@@ -49,7 +50,7 @@ class CTkCheckBox(CTkBaseClass):
 
         # text
         self.text = text
-        self.text_label = None
+        self.text_label: Union[tkinter.Label, None] = None
         self.text_color = ThemeManager.theme["color"]["text"] if text_color == "default_theme" else text_color
         self.text_color_disabled = ThemeManager.theme["color"]["text_disabled"] if text_color_disabled == "default_theme" else text_color_disabled
         self.text_font = (ThemeManager.theme["text"]["font"], ThemeManager.theme["text"]["size"]) if text_font == "default_theme" else text_font
@@ -85,11 +86,8 @@ class CTkCheckBox(CTkBaseClass):
         self.canvas.grid(row=0, column=0, padx=0, pady=0, columnspan=1, rowspan=1)
         self.draw_engine = DrawEngine(self.canvas)
 
-        if self.hover is True:
-            self.canvas.bind("<Enter>", self.on_enter)
-            self.canvas.bind("<Leave>", self.on_leave)
-
-        self.canvas.bind("<Button-1>", self.toggle)
+        self.canvas.bind("<Enter>", self.on_enter)
+        self.canvas.bind("<Leave>", self.on_leave)
         self.canvas.bind("<Button-1>", self.toggle)
 
         # set select state according to variable
@@ -100,8 +98,8 @@ class CTkCheckBox(CTkBaseClass):
             elif self.variable.get() == self.offvalue:
                 self.deselect(from_variable_callback=True)
 
-        self.set_cursor()
         self.draw()  # initial draw
+        self.set_cursor()
 
     def set_scaling(self, *args, **kwargs):
         super().set_scaling(*args, **kwargs)
@@ -163,6 +161,10 @@ class CTkCheckBox(CTkBaseClass):
                                             font=self.apply_font_scaling(self.text_font))
             self.text_label.grid(row=0, column=2, padx=0, pady=0, sticky="w")
             self.text_label["anchor"] = "w"
+
+            self.text_label.bind("<Enter>", self.on_enter)
+            self.text_label.bind("<Leave>", self.on_leave)
+            self.text_label.bind("<Button-1>", self.toggle)
 
         if self.state == tkinter.DISABLED:
             self.text_label.configure(fg=(ThemeManager.single_color(self.text_color_disabled, self.appearance_mode)))
@@ -244,14 +246,22 @@ class CTkCheckBox(CTkBaseClass):
             if self.state == tkinter.DISABLED:
                 if sys.platform == "darwin" and Settings.cursor_manipulation_enabled:
                     self.canvas.configure(cursor="arrow")
+                    if self.text_label is not None:
+                        self.text_label.configure(cursor="arrow")
                 elif sys.platform.startswith("win") and Settings.cursor_manipulation_enabled:
                     self.canvas.configure(cursor="arrow")
+                    if self.text_label is not None:
+                        self.text_label.configure(cursor="arrow")
 
             elif self.state == tkinter.NORMAL:
                 if sys.platform == "darwin" and Settings.cursor_manipulation_enabled:
                     self.canvas.configure(cursor="pointinghand")
+                    if self.text_label is not None:
+                        self.text_label.configure(cursor="pointinghand")
                 elif sys.platform.startswith("win") and Settings.cursor_manipulation_enabled:
                     self.canvas.configure(cursor="hand2")
+                    if self.text_label is not None:
+                        self.text_label.configure(cursor="hand2")
 
     def set_text(self, text):
         self.text = text

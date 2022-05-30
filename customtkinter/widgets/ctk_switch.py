@@ -94,8 +94,8 @@ class CTkSwitch(CTkBaseClass):
         self.canvas.bind("<Leave>", self.on_leave)
         self.canvas.bind("<Button-1>", self.toggle)
 
-        self.set_cursor()
         self.draw()  # initial draw
+        self.set_cursor()
 
         if self.variable is not None:
             self.variable_callback_name = self.variable.trace_add("write", self.variable_callback)
@@ -126,13 +126,22 @@ class CTkSwitch(CTkBaseClass):
             if self.state == tkinter.DISABLED:
                 if sys.platform == "darwin" and Settings.cursor_manipulation_enabled:
                     self.canvas.configure(cursor="arrow")
+                    if self.text_label is not None:
+                        self.text_label.configure(cursor="arrow")
                 elif sys.platform.startswith("win") and Settings.cursor_manipulation_enabled:
                     self.canvas.configure(cursor="arrow")
-            else:
+                    if self.text_label is not None:
+                        self.text_label.configure(cursor="arrow")
+
+            elif self.state == tkinter.NORMAL:
                 if sys.platform == "darwin" and Settings.cursor_manipulation_enabled:
                     self.canvas.configure(cursor="pointinghand")
+                    if self.text_label is not None:
+                        self.text_label.configure(cursor="pointinghand")
                 elif sys.platform.startswith("win") and Settings.cursor_manipulation_enabled:
                     self.canvas.configure(cursor="hand2")
+                    if self.text_label is not None:
+                        self.text_label.configure(cursor="hand2")
 
     def draw(self, no_color_updates=False):
 
@@ -185,6 +194,11 @@ class CTkSwitch(CTkBaseClass):
                                             font=self.apply_font_scaling(self.text_font))
             self.text_label.grid(row=0, column=2, padx=0, pady=0, sticky="w")
             self.text_label["anchor"] = "w"
+
+            self.text_label.bind("<Enter>", self.on_enter)
+            self.text_label.bind("<Leave>", self.on_leave)
+            self.text_label.bind("<Button-1>", self.toggle)
+
             if self.textvariable is not None:
                 self.text_label.configure(textvariable=self.textvariable)
 
