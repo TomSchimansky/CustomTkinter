@@ -10,15 +10,11 @@ app.title("CustomTkinter simple_example.py")
 
 
 def button_function():
-    print("Button click", label_1.text_label.cget("text"))
+    print("Button click")
 
 
 def slider_function(value):
     progressbar_1.set(value)
-
-
-def check_box_function():
-    print("checkbox_1:", checkbox_1.get())
 
 
 y_padding = 13
@@ -42,7 +38,15 @@ slider_1.set(0.5)
 entry_1 = customtkinter.CTkEntry(master=frame_1, placeholder_text="CTkEntry")
 entry_1.pack(pady=y_padding, padx=10)
 
-checkbox_1 = customtkinter.CTkCheckBox(master=frame_1, command=check_box_function)
+optionmenu_1 = customtkinter.CTkOptionMenu(frame_1, values=["Option 1", "Option 2", "Option 42"])
+optionmenu_1.pack(pady=10, padx=10)
+optionmenu_1.set("CTkOptionMenu")
+
+combobox_1 = customtkinter.CTkComboBox(frame_1, values=["Option 1", "Option 2", "Option 42"])
+combobox_1.pack(pady=10, padx=10)
+combobox_1.set("CTkComboBox")
+
+checkbox_1 = customtkinter.CTkCheckBox(master=frame_1)
 checkbox_1.pack(pady=y_padding, padx=10)
 
 radiobutton_var = tkinter.IntVar(value=1)

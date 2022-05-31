@@ -17,12 +17,12 @@ class CTkEntry(CTkBaseClass):
                  corner_radius="default_theme",
                  border_width="default_theme",
                  border_color="default_theme",
-                 width=120,
+                 width=140,
                  height=28,
                  state=tkinter.NORMAL,
                  **kwargs):
 
-        # transfer basic functionality (bg_color, size, appearance_mode, scaling) to CTkBaseClass
+        # transfer basic functionality (bg_color, size, _appearance_mode, scaling) to CTkBaseClass
         if "master" in kwargs:
             super().__init__(*args, bg_color=bg_color, width=width, height=height, master=kwargs["master"])
             del kwargs["master"]
@@ -49,8 +49,8 @@ class CTkEntry(CTkBaseClass):
 
         self.canvas = CTkCanvas(master=self,
                                 highlightthickness=0,
-                                width=self.apply_widget_scaling(self.current_width),
-                                height=self.apply_widget_scaling(self.current_height))
+                                width=self.apply_widget_scaling(self._current_width),
+                                height=self.apply_widget_scaling(self._current_height))
         self.canvas.grid(column=0, row=0, sticky="we")
         self.draw_engine = DrawEngine(self.canvas)
 
@@ -78,14 +78,14 @@ class CTkEntry(CTkBaseClass):
         self.entry.grid(column=0, row=0, sticky="we",
                         padx=self.apply_widget_scaling(self.corner_radius) if self.corner_radius >= 6 else self.apply_widget_scaling(6))
 
-        self.canvas.configure(width=self.apply_widget_scaling(self.desired_width), height=self.apply_widget_scaling(self.desired_height))
+        self.canvas.configure(width=self.apply_widget_scaling(self._desired_width), height=self.apply_widget_scaling(self._desired_height))
         self.draw()
 
     def set_dimensions(self, width=None, height=None):
         super().set_dimensions(width, height)
 
-        self.canvas.configure(width=self.apply_widget_scaling(self.desired_width),
-                              height=self.apply_widget_scaling(self.desired_height))
+        self.canvas.configure(width=self.apply_widget_scaling(self._desired_width),
+                              height=self.apply_widget_scaling(self._desired_height))
         self.draw()
 
     def set_placeholder(self, event=None):
@@ -93,54 +93,54 @@ class CTkEntry(CTkBaseClass):
             if not self.placeholder_text_active and self.entry.get() == "":
                 self.placeholder_text_active = True
                 self.pre_placeholder_arguments = {"show": self.entry.cget("show")}
-                self.entry.config(fg=ThemeManager.single_color(self.placeholder_text_color, self.appearance_mode), show="")
+                self.entry.config(fg=ThemeManager.single_color(self.placeholder_text_color, self._appearance_mode), show="")
                 self.entry.delete(0, tkinter.END)
                 self.entry.insert(0, self.placeholder_text)
 
     def clear_placeholder(self, event=None):
         if self.placeholder_text_active:
             self.placeholder_text_active = False
-            self.entry.config(fg=ThemeManager.single_color(self.text_color, self.appearance_mode))
+            self.entry.config(fg=ThemeManager.single_color(self.text_color, self._appearance_mode))
             self.entry.delete(0, tkinter.END)
             for argument, value in self.pre_placeholder_arguments.items():
                 self.entry[argument] = value
 
     def draw(self, no_color_updates=False):
-        self.canvas.configure(bg=ThemeManager.single_color(self.bg_color, self.appearance_mode))
+        self.canvas.configure(bg=ThemeManager.single_color(self.bg_color, self._appearance_mode))
 
-        requires_recoloring = self.draw_engine.draw_rounded_rect_with_border(self.apply_widget_scaling(self.current_width),
-                                                                             self.apply_widget_scaling(self.current_height),
+        requires_recoloring = self.draw_engine.draw_rounded_rect_with_border(self.apply_widget_scaling(self._current_width),
+                                                                             self.apply_widget_scaling(self._current_height),
                                                                              self.apply_widget_scaling(self.corner_radius),
                                                                              self.apply_widget_scaling(self.border_width))
 
         if requires_recoloring or no_color_updates is False:
-            if ThemeManager.single_color(self.fg_color, self.appearance_mode) is not None:
+            if ThemeManager.single_color(self.fg_color, self._appearance_mode) is not None:
                 self.canvas.itemconfig("inner_parts",
-                                       fill=ThemeManager.single_color(self.fg_color, self.appearance_mode),
-                                       outline=ThemeManager.single_color(self.fg_color, self.appearance_mode))
-                self.entry.configure(bg=ThemeManager.single_color(self.fg_color, self.appearance_mode),
-                                     disabledbackground=ThemeManager.single_color(self.fg_color, self.appearance_mode),
-                                     highlightcolor=ThemeManager.single_color(self.fg_color, self.appearance_mode),
-                                     fg=ThemeManager.single_color(self.text_color, self.appearance_mode),
-                                     disabledforeground=ThemeManager.single_color(self.text_color, self.appearance_mode),
-                                     insertbackground=ThemeManager.single_color(self.text_color, self.appearance_mode))
+                                       fill=ThemeManager.single_color(self.fg_color, self._appearance_mode),
+                                       outline=ThemeManager.single_color(self.fg_color, self._appearance_mode))
+                self.entry.configure(bg=ThemeManager.single_color(self.fg_color, self._appearance_mode),
+                                     disabledbackground=ThemeManager.single_color(self.fg_color, self._appearance_mode),
+                                     highlightcolor=ThemeManager.single_color(self.fg_color, self._appearance_mode),
+                                     fg=ThemeManager.single_color(self.text_color, self._appearance_mode),
+                                     disabledforeground=ThemeManager.single_color(self.text_color, self._appearance_mode),
+                                     insertbackground=ThemeManager.single_color(self.text_color, self._appearance_mode))
             else:
                 self.canvas.itemconfig("inner_parts",
-                                       fill=ThemeManager.single_color(self.bg_color, self.appearance_mode),
-                                       outline=ThemeManager.single_color(self.bg_color, self.appearance_mode))
-                self.entry.configure(bg=ThemeManager.single_color(self.bg_color, self.appearance_mode),
-                                     disabledbackground=ThemeManager.single_color(self.bg_color, self.appearance_mode),
-                                     highlightcolor=ThemeManager.single_color(self.bg_color, self.appearance_mode),
-                                     fg=ThemeManager.single_color(self.text_color, self.appearance_mode),
-                                     disabledforeground=ThemeManager.single_color(self.text_color, self.appearance_mode),
-                                     insertbackground=ThemeManager.single_color(self.text_color, self.appearance_mode))
+                                       fill=ThemeManager.single_color(self.bg_color, self._appearance_mode),
+                                       outline=ThemeManager.single_color(self.bg_color, self._appearance_mode))
+                self.entry.configure(bg=ThemeManager.single_color(self.bg_color, self._appearance_mode),
+                                     disabledbackground=ThemeManager.single_color(self.bg_color, self._appearance_mode),
+                                     highlightcolor=ThemeManager.single_color(self.bg_color, self._appearance_mode),
+                                     fg=ThemeManager.single_color(self.text_color, self._appearance_mode),
+                                     disabledforeground=ThemeManager.single_color(self.text_color, self._appearance_mode),
+                                     insertbackground=ThemeManager.single_color(self.text_color, self._appearance_mode))
 
             self.canvas.itemconfig("border_parts",
-                                   fill=ThemeManager.single_color(self.border_color, self.appearance_mode),
-                                   outline=ThemeManager.single_color(self.border_color, self.appearance_mode))
+                                   fill=ThemeManager.single_color(self.border_color, self._appearance_mode),
+                                   outline=ThemeManager.single_color(self.border_color, self._appearance_mode))
 
             if self.placeholder_text_active:
-                self.entry.config(fg=ThemeManager.single_color(self.placeholder_text_color, self.appearance_mode))
+                self.entry.config(fg=ThemeManager.single_color(self.placeholder_text_color, self._appearance_mode))
 
     def bind(self, *args, **kwargs):
         self.entry.bind(*args, **kwargs)
@@ -179,10 +179,10 @@ class CTkEntry(CTkBaseClass):
         if "corner_radius" in kwargs:
             self.corner_radius = kwargs["corner_radius"]
 
-            if self.corner_radius * 2 > self.current_height:
-                self.corner_radius = self.current_height / 2
-            elif self.corner_radius * 2 > self.current_width:
-                self.corner_radius = self.current_width / 2
+            if self.corner_radius * 2 > self._current_height:
+                self.corner_radius = self._current_height / 2
+            elif self.corner_radius * 2 > self._current_width:
+                self.corner_radius = self._current_width / 2
 
             self.entry.grid(column=0, row=0, sticky="we", padx=self.apply_widget_scaling(self.corner_radius) if self.corner_radius >= 6 else self.apply_widget_scaling(6))
             del kwargs["corner_radius"]

@@ -21,6 +21,5 @@ optionmenu_tk.pack(pady=10, padx=10)
 
 optionmenu_1 = customtkinter.CTkOptionMenu(app, variable=variable, values=countries, command=select_callback)
 optionmenu_1.pack(pady=10, padx=10)
-optionmenu_1.set("te")
 
 app.mainloop()

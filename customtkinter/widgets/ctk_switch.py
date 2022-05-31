@@ -34,7 +34,7 @@ class CTkSwitch(CTkBaseClass):
                  state=tkinter.NORMAL,
                  **kwargs):
 
-        # transfer basic functionality (bg_color, size, appearance_mode, scaling) to CTkBaseClass
+        # transfer basic functionality (bg_color, size, _appearance_mode, scaling) to CTkBaseClass
         super().__init__(*args, bg_color=bg_color, width=width, height=height, **kwargs)
 
         # color
@@ -79,14 +79,14 @@ class CTkSwitch(CTkBaseClass):
 
         self.bg_canvas = CTkCanvas(master=self,
                                    highlightthickness=0,
-                                   width=self.apply_widget_scaling(self.current_width),
-                                   height=self.apply_widget_scaling(self.current_height))
+                                   width=self.apply_widget_scaling(self._current_width),
+                                   height=self.apply_widget_scaling(self._current_height))
         self.bg_canvas.grid(row=0, column=0, padx=0, pady=0, columnspan=3, rowspan=1, sticky="nswe")
 
         self.canvas = CTkCanvas(master=self,
                                 highlightthickness=0,
-                                width=self.apply_widget_scaling(self.current_width),
-                                height=self.apply_widget_scaling(self.current_height))
+                                width=self.apply_widget_scaling(self._current_width),
+                                height=self.apply_widget_scaling(self._current_height))
         self.canvas.grid(row=0, column=0, padx=0, pady=0, columnspan=1, sticky="nswe")
         self.draw_engine = DrawEngine(self.canvas)
 
@@ -110,8 +110,8 @@ class CTkSwitch(CTkBaseClass):
         self.grid_columnconfigure(1, weight=0, minsize=self.apply_widget_scaling(6))
         self.text_label.configure(font=self.apply_font_scaling(self.text_font))
 
-        self.bg_canvas.configure(width=self.apply_widget_scaling(self.desired_width), height=self.apply_widget_scaling(self.desired_height))
-        self.canvas.configure(width=self.apply_widget_scaling(self.desired_width), height=self.apply_widget_scaling(self.desired_height))
+        self.bg_canvas.configure(width=self.apply_widget_scaling(self._desired_width), height=self.apply_widget_scaling(self._desired_height))
+        self.canvas.configure(width=self.apply_widget_scaling(self._desired_width), height=self.apply_widget_scaling(self._desired_height))
         self.draw()
 
     def destroy(self):
@@ -146,16 +146,16 @@ class CTkSwitch(CTkBaseClass):
     def draw(self, no_color_updates=False):
 
         if self.check_state is True:
-            requires_recoloring = self.draw_engine.draw_rounded_slider_with_border_and_button(self.apply_widget_scaling(self.current_width),
-                                                                                              self.apply_widget_scaling(self.current_height),
+            requires_recoloring = self.draw_engine.draw_rounded_slider_with_border_and_button(self.apply_widget_scaling(self._current_width),
+                                                                                              self.apply_widget_scaling(self._current_height),
                                                                                               self.apply_widget_scaling(self.corner_radius),
                                                                                               self.apply_widget_scaling(self.border_width),
                                                                                               self.apply_widget_scaling(self.button_length),
                                                                                               self.apply_widget_scaling(self.corner_radius),
                                                                                               1, "w")
         else:
-            requires_recoloring = self.draw_engine.draw_rounded_slider_with_border_and_button(self.apply_widget_scaling(self.current_width),
-                                                                                              self.apply_widget_scaling(self.current_height),
+            requires_recoloring = self.draw_engine.draw_rounded_slider_with_border_and_button(self.apply_widget_scaling(self._current_width),
+                                                                                              self.apply_widget_scaling(self._current_height),
                                                                                               self.apply_widget_scaling(self.corner_radius),
                                                                                               self.apply_widget_scaling(self.border_width),
                                                                                               self.apply_widget_scaling(self.button_length),
@@ -163,28 +163,28 @@ class CTkSwitch(CTkBaseClass):
                                                                                               0, "w")
 
         if no_color_updates is False or requires_recoloring:
-            self.bg_canvas.configure(bg=ThemeManager.single_color(self.bg_color, self.appearance_mode))
-            self.canvas.configure(bg=ThemeManager.single_color(self.bg_color, self.appearance_mode))
+            self.bg_canvas.configure(bg=ThemeManager.single_color(self.bg_color, self._appearance_mode))
+            self.canvas.configure(bg=ThemeManager.single_color(self.bg_color, self._appearance_mode))
 
             if self.border_color is None:
-                self.canvas.itemconfig("border_parts", fill=ThemeManager.single_color(self.bg_color, self.appearance_mode),
-                                       outline=ThemeManager.single_color(self.bg_color, self.appearance_mode))
+                self.canvas.itemconfig("border_parts", fill=ThemeManager.single_color(self.bg_color, self._appearance_mode),
+                                       outline=ThemeManager.single_color(self.bg_color, self._appearance_mode))
             else:
-                self.canvas.itemconfig("border_parts", fill=ThemeManager.single_color(self.border_color, self.appearance_mode),
-                                       outline=ThemeManager.single_color(self.border_color, self.appearance_mode))
+                self.canvas.itemconfig("border_parts", fill=ThemeManager.single_color(self.border_color, self._appearance_mode),
+                                       outline=ThemeManager.single_color(self.border_color, self._appearance_mode))
 
-            self.canvas.itemconfig("inner_parts", fill=ThemeManager.single_color(self.fg_color, self.appearance_mode),
-                                   outline=ThemeManager.single_color(self.fg_color, self.appearance_mode))
+            self.canvas.itemconfig("inner_parts", fill=ThemeManager.single_color(self.fg_color, self._appearance_mode),
+                                   outline=ThemeManager.single_color(self.fg_color, self._appearance_mode))
 
             if self.progress_color is None:
-                self.canvas.itemconfig("progress_parts", fill=ThemeManager.single_color(self.fg_color, self.appearance_mode),
-                                       outline=ThemeManager.single_color(self.fg_color, self.appearance_mode))
+                self.canvas.itemconfig("progress_parts", fill=ThemeManager.single_color(self.fg_color, self._appearance_mode),
+                                       outline=ThemeManager.single_color(self.fg_color, self._appearance_mode))
             else:
-                self.canvas.itemconfig("progress_parts", fill=ThemeManager.single_color(self.progress_color, self.appearance_mode),
-                                       outline=ThemeManager.single_color(self.progress_color, self.appearance_mode))
+                self.canvas.itemconfig("progress_parts", fill=ThemeManager.single_color(self.progress_color, self._appearance_mode),
+                                       outline=ThemeManager.single_color(self.progress_color, self._appearance_mode))
 
-            self.canvas.itemconfig("slider_parts", fill=ThemeManager.single_color(self.button_color, self.appearance_mode),
-                                   outline=ThemeManager.single_color(self.button_color, self.appearance_mode))
+            self.canvas.itemconfig("slider_parts", fill=ThemeManager.single_color(self.button_color, self._appearance_mode),
+                                   outline=ThemeManager.single_color(self.button_color, self._appearance_mode))
 
         if self.text_label is None:
             self.text_label = tkinter.Label(master=self,
@@ -203,11 +203,11 @@ class CTkSwitch(CTkBaseClass):
                 self.text_label.configure(textvariable=self.textvariable)
 
         if self.state == tkinter.DISABLED:
-            self.text_label.configure(fg=(ThemeManager.single_color(self.text_color_disabled, self.appearance_mode)))
+            self.text_label.configure(fg=(ThemeManager.single_color(self.text_color_disabled, self._appearance_mode)))
         else:
-            self.text_label.configure(fg=ThemeManager.single_color(self.text_color, self.appearance_mode))
+            self.text_label.configure(fg=ThemeManager.single_color(self.text_color, self._appearance_mode))
 
-        self.text_label.configure(bg=ThemeManager.single_color(self.bg_color, self.appearance_mode))
+        self.text_label.configure(bg=ThemeManager.single_color(self.bg_color, self._appearance_mode))
 
         self.set_text(self.text)
 
@@ -239,13 +239,13 @@ class CTkSwitch(CTkBaseClass):
 
             self.draw(no_color_updates=True)
 
-            if self.callback_function is not None:
-                self.callback_function()
-
             if self.variable is not None and not from_variable_callback:
                 self.variable_callback_blocked = True
                 self.variable.set(self.onvalue)
                 self.variable_callback_blocked = False
+
+            if self.callback_function is not None:
+                self.callback_function()
 
     def deselect(self, from_variable_callback=False):
         if self.state is not tkinter.DISABLED or from_variable_callback:
@@ -253,13 +253,13 @@ class CTkSwitch(CTkBaseClass):
 
             self.draw(no_color_updates=True)
 
-            if self.callback_function is not None:
-                self.callback_function()
-
             if self.variable is not None and not from_variable_callback:
                 self.variable_callback_blocked = True
                 self.variable.set(self.offvalue)
                 self.variable_callback_blocked = False
+
+            if self.callback_function is not None:
+                self.callback_function()
 
     def get(self):
         return self.onvalue if self.check_state is True else self.offvalue
@@ -268,13 +268,13 @@ class CTkSwitch(CTkBaseClass):
         self.hover_state = True
 
         if self.state is not tkinter.DISABLED:
-            self.canvas.itemconfig("slider_parts", fill=ThemeManager.single_color(self.button_hover_color, self.appearance_mode),
-                                   outline=ThemeManager.single_color(self.button_hover_color, self.appearance_mode))
+            self.canvas.itemconfig("slider_parts", fill=ThemeManager.single_color(self.button_hover_color, self._appearance_mode),
+                                   outline=ThemeManager.single_color(self.button_hover_color, self._appearance_mode))
 
     def on_leave(self, event=0):
         self.hover_state = False
-        self.canvas.itemconfig("slider_parts", fill=ThemeManager.single_color(self.button_color, self.appearance_mode),
-                               outline=ThemeManager.single_color(self.button_color, self.appearance_mode))
+        self.canvas.itemconfig("slider_parts", fill=ThemeManager.single_color(self.button_color, self._appearance_mode),
+                               outline=ThemeManager.single_color(self.button_color, self._appearance_mode))
 
     def variable_callback(self, var_name, index, mode):
         if not self.variable_callback_blocked:

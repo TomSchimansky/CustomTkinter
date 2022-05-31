@@ -52,6 +52,7 @@ from .widgets.ctk_radiobutton import CTkRadioButton
 from .widgets.ctk_canvas import CTkCanvas
 from .widgets.ctk_switch import CTkSwitch
 from .widgets.ctk_optionmenu import CTkOptionMenu
+from .widgets.ctk_combobox import CTkComboBox
 
 # import windows
 from .windows.ctk_tk import CTk

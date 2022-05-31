@@ -9,7 +9,7 @@ from .widget_base_class import CTkBaseClass
 
 
 class CTkSlider(CTkBaseClass):
-    """ tkinter custom slider, always horizontal """
+    """ tkinter custom slider"""
 
     def __init__(self, *args,
                  bg_color=None,
@@ -44,7 +44,7 @@ class CTkSlider(CTkBaseClass):
             else:
                 height = 16
 
-        # transfer basic functionality (bg_color, size, appearance_mode, scaling) to CTkBaseClass
+        # transfer basic functionality (bg_color, size, _appearance_mode, scaling) to CTkBaseClass
         super().__init__(*args, bg_color=bg_color, width=width, height=height, **kwargs)
 
         # color
@@ -81,8 +81,8 @@ class CTkSlider(CTkBaseClass):
 
         self.canvas = CTkCanvas(master=self,
                                 highlightthickness=0,
-                                width=self.apply_widget_scaling(self.desired_width),
-                                height=self.apply_widget_scaling(self.desired_height))
+                                width=self.apply_widget_scaling(self._desired_width),
+                                height=self.apply_widget_scaling(self._desired_height))
         self.canvas.grid(column=0, row=0, rowspan=1, columnspan=1, sticky="nswe")
         self.draw_engine = DrawEngine(self.canvas)
 
@@ -106,14 +106,14 @@ class CTkSlider(CTkBaseClass):
     def set_scaling(self, *args, **kwargs):
         super().set_scaling(*args, **kwargs)
 
-        self.canvas.configure(width=self.apply_widget_scaling(self.desired_width), height=self.apply_widget_scaling(self.desired_height))
+        self.canvas.configure(width=self.apply_widget_scaling(self._desired_width), height=self.apply_widget_scaling(self._desired_height))
         self.draw()
 
     def set_dimensions(self, width=None, height=None):
         super().set_dimensions(width, height)
 
-        self.canvas.configure(width=self.apply_widget_scaling(self.desired_width),
-                              height=self.apply_widget_scaling(self.desired_height))
+        self.canvas.configure(width=self.apply_widget_scaling(self._desired_width),
+                              height=self.apply_widget_scaling(self._desired_height))
         self.draw()
 
     def destroy(self):
@@ -138,8 +138,8 @@ class CTkSlider(CTkBaseClass):
         else:
             orientation = "w"
 
-        requires_recoloring = self.draw_engine.draw_rounded_slider_with_border_and_button(self.apply_widget_scaling(self.current_width),
-                                                                                          self.apply_widget_scaling(self.current_height),
+        requires_recoloring = self.draw_engine.draw_rounded_slider_with_border_and_button(self.apply_widget_scaling(self._current_width),
+                                                                                          self.apply_widget_scaling(self._current_height),
                                                                                           self.apply_widget_scaling(self.corner_radius),
                                                                                           self.apply_widget_scaling(self.border_width),
                                                                                           self.apply_widget_scaling(self.button_length),
@@ -147,33 +147,33 @@ class CTkSlider(CTkBaseClass):
                                                                                           self.value, orientation)
 
         if no_color_updates is False or requires_recoloring:
-            self.canvas.configure(bg=ThemeManager.single_color(self.bg_color, self.appearance_mode))
+            self.canvas.configure(bg=ThemeManager.single_color(self.bg_color, self._appearance_mode))
 
             if self.border_color is None:
-                self.canvas.itemconfig("border_parts", fill=ThemeManager.single_color(self.bg_color, self.appearance_mode),
-                                       outline=ThemeManager.single_color(self.bg_color, self.appearance_mode))
+                self.canvas.itemconfig("border_parts", fill=ThemeManager.single_color(self.bg_color, self._appearance_mode),
+                                       outline=ThemeManager.single_color(self.bg_color, self._appearance_mode))
             else:
-                self.canvas.itemconfig("border_parts", fill=ThemeManager.single_color(self.border_color, self.appearance_mode),
-                                       outline=ThemeManager.single_color(self.border_color, self.appearance_mode))
+                self.canvas.itemconfig("border_parts", fill=ThemeManager.single_color(self.border_color, self._appearance_mode),
+                                       outline=ThemeManager.single_color(self.border_color, self._appearance_mode))
 
-            self.canvas.itemconfig("inner_parts", fill=ThemeManager.single_color(self.fg_color, self.appearance_mode),
-                                   outline=ThemeManager.single_color(self.fg_color, self.appearance_mode))
+            self.canvas.itemconfig("inner_parts", fill=ThemeManager.single_color(self.fg_color, self._appearance_mode),
+                                   outline=ThemeManager.single_color(self.fg_color, self._appearance_mode))
 
             if self.progress_color is None:
-                self.canvas.itemconfig("progress_parts", fill=ThemeManager.single_color(self.fg_color, self.appearance_mode),
-                                       outline=ThemeManager.single_color(self.fg_color, self.appearance_mode))
+                self.canvas.itemconfig("progress_parts", fill=ThemeManager.single_color(self.fg_color, self._appearance_mode),
+                                       outline=ThemeManager.single_color(self.fg_color, self._appearance_mode))
             else:
-                self.canvas.itemconfig("progress_parts", fill=ThemeManager.single_color(self.progress_color, self.appearance_mode),
-                                       outline=ThemeManager.single_color(self.progress_color, self.appearance_mode))
+                self.canvas.itemconfig("progress_parts", fill=ThemeManager.single_color(self.progress_color, self._appearance_mode),
+                                       outline=ThemeManager.single_color(self.progress_color, self._appearance_mode))
 
-            self.canvas.itemconfig("slider_parts", fill=ThemeManager.single_color(self.button_color, self.appearance_mode),
-                                   outline=ThemeManager.single_color(self.button_color, self.appearance_mode))
+            self.canvas.itemconfig("slider_parts", fill=ThemeManager.single_color(self.button_color, self._appearance_mode),
+                                   outline=ThemeManager.single_color(self.button_color, self._appearance_mode))
 
     def clicked(self, event=None):
         if self.orient.lower() == "horizontal":
-            self.value = (event.x / self.current_width) / self.widget_scaling
+            self.value = (event.x / self._current_width) / self._widget_scaling
         else:
-            self.value = 1 - (event.y / self.current_height) / self.widget_scaling
+            self.value = 1 - (event.y / self._current_height) / self._widget_scaling
 
         if self.value > 1:
             self.value = 1
@@ -195,13 +195,13 @@ class CTkSlider(CTkBaseClass):
 
     def on_enter(self, event=0):
         self.hover_state = True
-        self.canvas.itemconfig("slider_parts", fill=ThemeManager.single_color(self.button_hover_color, self.appearance_mode),
-                               outline=ThemeManager.single_color(self.button_hover_color, self.appearance_mode))
+        self.canvas.itemconfig("slider_parts", fill=ThemeManager.single_color(self.button_hover_color, self._appearance_mode),
+                               outline=ThemeManager.single_color(self.button_hover_color, self._appearance_mode))
 
     def on_leave(self, event=0):
         self.hover_state = False
-        self.canvas.itemconfig("slider_parts", fill=ThemeManager.single_color(self.button_color, self.appearance_mode),
-                               outline=ThemeManager.single_color(self.button_color, self.appearance_mode))
+        self.canvas.itemconfig("slider_parts", fill=ThemeManager.single_color(self.button_color, self._appearance_mode),
+                               outline=ThemeManager.single_color(self.button_color, self._appearance_mode))
 
     def round_to_step_size(self, value):
         if self.number_of_steps is not None:

@@ -35,7 +35,7 @@ class CTkCheckBox(CTkBaseClass):
                  textvariable=None,
                  **kwargs):
 
-        # transfer basic functionality (bg_color, size, appearance_mode, scaling) to CTkBaseClass
+        # transfer basic functionality (bg_color, size, _appearance_mode, scaling) to CTkBaseClass
         super().__init__(*args, bg_color=bg_color, width=width, height=height, **kwargs)
 
         # color
@@ -75,14 +75,14 @@ class CTkCheckBox(CTkBaseClass):
 
         self.bg_canvas = CTkCanvas(master=self,
                                    highlightthickness=0,
-                                   width=self.apply_widget_scaling(self.desired_width),
-                                   height=self.apply_widget_scaling(self.desired_height))
+                                   width=self.apply_widget_scaling(self._desired_width),
+                                   height=self.apply_widget_scaling(self._desired_height))
         self.bg_canvas.grid(row=0, column=0, padx=0, pady=0, columnspan=3, rowspan=1, sticky="nswe")
 
         self.canvas = CTkCanvas(master=self,
                                 highlightthickness=0,
-                                width=self.apply_widget_scaling(self.desired_width),
-                                height=self.apply_widget_scaling(self.desired_height))
+                                width=self.apply_widget_scaling(self._desired_width),
+                                height=self.apply_widget_scaling(self._desired_height))
         self.canvas.grid(row=0, column=0, padx=0, pady=0, columnspan=1, rowspan=1)
         self.draw_engine = DrawEngine(self.canvas)
 
@@ -107,8 +107,8 @@ class CTkCheckBox(CTkBaseClass):
         self.grid_columnconfigure(1, weight=0, minsize=self.apply_widget_scaling(6))
         self.text_label.configure(font=self.apply_font_scaling(self.text_font))
 
-        self.bg_canvas.configure(width=self.apply_widget_scaling(self.desired_width), height=self.apply_widget_scaling(self.desired_height))
-        self.canvas.configure(width=self.apply_widget_scaling(self.desired_width), height=self.apply_widget_scaling(self.desired_height))
+        self.bg_canvas.configure(width=self.apply_widget_scaling(self._desired_width), height=self.apply_widget_scaling(self._desired_height))
+        self.canvas.configure(width=self.apply_widget_scaling(self._desired_width), height=self.apply_widget_scaling(self._desired_height))
         self.draw()
 
     def destroy(self):
@@ -118,40 +118,40 @@ class CTkCheckBox(CTkBaseClass):
         super().destroy()
 
     def draw(self, no_color_updates=False):
-        requires_recoloring = self.draw_engine.draw_rounded_rect_with_border(self.apply_widget_scaling(self.current_width),
-                                                                             self.apply_widget_scaling(self.current_height),
+        requires_recoloring = self.draw_engine.draw_rounded_rect_with_border(self.apply_widget_scaling(self._current_width),
+                                                                             self.apply_widget_scaling(self._current_height),
                                                                              self.apply_widget_scaling(self.corner_radius),
                                                                              self.apply_widget_scaling(self.border_width))
 
         if self.check_state is True:
-            self.draw_engine.draw_checkmark(self.apply_widget_scaling(self.current_width),
-                                            self.apply_widget_scaling(self.current_height),
-                                            self.apply_widget_scaling(self.current_height * 0.58))
+            self.draw_engine.draw_checkmark(self.apply_widget_scaling(self._current_width),
+                                            self.apply_widget_scaling(self._current_height),
+                                            self.apply_widget_scaling(self._current_height * 0.58))
         else:
             self.canvas.delete("checkmark")
 
-        self.bg_canvas.configure(bg=ThemeManager.single_color(self.bg_color, self.appearance_mode))
-        self.canvas.configure(bg=ThemeManager.single_color(self.bg_color, self.appearance_mode))
+        self.bg_canvas.configure(bg=ThemeManager.single_color(self.bg_color, self._appearance_mode))
+        self.canvas.configure(bg=ThemeManager.single_color(self.bg_color, self._appearance_mode))
 
         if self.check_state is True:
             self.canvas.itemconfig("inner_parts",
-                                   outline=ThemeManager.single_color(self.fg_color, self.appearance_mode),
-                                   fill=ThemeManager.single_color(self.fg_color, self.appearance_mode))
+                                   outline=ThemeManager.single_color(self.fg_color, self._appearance_mode),
+                                   fill=ThemeManager.single_color(self.fg_color, self._appearance_mode))
             self.canvas.itemconfig("border_parts",
-                                   outline=ThemeManager.single_color(self.fg_color, self.appearance_mode),
-                                   fill=ThemeManager.single_color(self.fg_color, self.appearance_mode))
+                                   outline=ThemeManager.single_color(self.fg_color, self._appearance_mode),
+                                   fill=ThemeManager.single_color(self.fg_color, self._appearance_mode))
 
             if "create_line" in self.canvas.gettags("checkmark"):
-                self.canvas.itemconfig("checkmark", fill=ThemeManager.single_color(self.checkmark_color, self.appearance_mode))
+                self.canvas.itemconfig("checkmark", fill=ThemeManager.single_color(self.checkmark_color, self._appearance_mode))
             else:
-                self.canvas.itemconfig("checkmark", fill=ThemeManager.single_color(self.checkmark_color, self.appearance_mode))
+                self.canvas.itemconfig("checkmark", fill=ThemeManager.single_color(self.checkmark_color, self._appearance_mode))
         else:
             self.canvas.itemconfig("inner_parts",
-                                   outline=ThemeManager.single_color(self.bg_color, self.appearance_mode),
-                                   fill=ThemeManager.single_color(self.bg_color, self.appearance_mode))
+                                   outline=ThemeManager.single_color(self.bg_color, self._appearance_mode),
+                                   fill=ThemeManager.single_color(self.bg_color, self._appearance_mode))
             self.canvas.itemconfig("border_parts",
-                                   outline=ThemeManager.single_color(self.border_color, self.appearance_mode),
-                                   fill=ThemeManager.single_color(self.border_color, self.appearance_mode))
+                                   outline=ThemeManager.single_color(self.border_color, self._appearance_mode),
+                                   fill=ThemeManager.single_color(self.border_color, self._appearance_mode))
 
         if self.text_label is None:
             self.text_label = tkinter.Label(master=self,
@@ -167,10 +167,10 @@ class CTkCheckBox(CTkBaseClass):
             self.text_label.bind("<Button-1>", self.toggle)
 
         if self.state == tkinter.DISABLED:
-            self.text_label.configure(fg=(ThemeManager.single_color(self.text_color_disabled, self.appearance_mode)))
+            self.text_label.configure(fg=(ThemeManager.single_color(self.text_color_disabled, self._appearance_mode)))
         else:
-            self.text_label.configure(fg=ThemeManager.single_color(self.text_color, self.appearance_mode))
-        self.text_label.configure(bg=ThemeManager.single_color(self.bg_color, self.appearance_mode))
+            self.text_label.configure(fg=ThemeManager.single_color(self.text_color, self._appearance_mode))
+        self.text_label.configure(bg=ThemeManager.single_color(self.bg_color, self._appearance_mode))
 
         self.set_text(self.text)
 
@@ -274,32 +274,32 @@ class CTkCheckBox(CTkBaseClass):
         if self.hover is True and self.state == tkinter.NORMAL:
             if self.check_state is True:
                 self.canvas.itemconfig("inner_parts",
-                                       fill=ThemeManager.single_color(self.hover_color, self.appearance_mode),
-                                       outline=ThemeManager.single_color(self.hover_color, self.appearance_mode))
+                                       fill=ThemeManager.single_color(self.hover_color, self._appearance_mode),
+                                       outline=ThemeManager.single_color(self.hover_color, self._appearance_mode))
                 self.canvas.itemconfig("border_parts",
-                                       fill=ThemeManager.single_color(self.hover_color, self.appearance_mode),
-                                       outline=ThemeManager.single_color(self.hover_color, self.appearance_mode))
+                                       fill=ThemeManager.single_color(self.hover_color, self._appearance_mode),
+                                       outline=ThemeManager.single_color(self.hover_color, self._appearance_mode))
             else:
                 self.canvas.itemconfig("inner_parts",
-                                       fill=ThemeManager.single_color(self.hover_color, self.appearance_mode),
-                                       outline=ThemeManager.single_color(self.hover_color, self.appearance_mode))
+                                       fill=ThemeManager.single_color(self.hover_color, self._appearance_mode),
+                                       outline=ThemeManager.single_color(self.hover_color, self._appearance_mode))
 
     def on_leave(self, event=0):
         if self.hover is True:
             if self.check_state is True:
                 self.canvas.itemconfig("inner_parts",
-                                       fill=ThemeManager.single_color(self.fg_color, self.appearance_mode),
-                                       outline=ThemeManager.single_color(self.fg_color, self.appearance_mode))
+                                       fill=ThemeManager.single_color(self.fg_color, self._appearance_mode),
+                                       outline=ThemeManager.single_color(self.fg_color, self._appearance_mode))
                 self.canvas.itemconfig("border_parts",
-                                       fill=ThemeManager.single_color(self.fg_color, self.appearance_mode),
-                                       outline=ThemeManager.single_color(self.fg_color, self.appearance_mode))
+                                       fill=ThemeManager.single_color(self.fg_color, self._appearance_mode),
+                                       outline=ThemeManager.single_color(self.fg_color, self._appearance_mode))
             else:
                 self.canvas.itemconfig("inner_parts",
-                                       fill=ThemeManager.single_color(self.bg_color, self.appearance_mode),
-                                       outline=ThemeManager.single_color(self.bg_color, self.appearance_mode))
+                                       fill=ThemeManager.single_color(self.bg_color, self._appearance_mode),
+                                       outline=ThemeManager.single_color(self.bg_color, self._appearance_mode))
                 self.canvas.itemconfig("border_parts",
-                                       fill=ThemeManager.single_color(self.border_color, self.appearance_mode),
-                                       outline=ThemeManager.single_color(self.border_color, self.appearance_mode))
+                                       fill=ThemeManager.single_color(self.border_color, self._appearance_mode),
+                                       outline=ThemeManager.single_color(self.border_color, self._appearance_mode))
 
     def variable_callback(self, var_name, index, mode):
         if not self.variable_callback_blocked:
@@ -335,10 +335,7 @@ class CTkCheckBox(CTkBaseClass):
             self.variable_callback_blocked = False
 
         if self.function is not None:
-            try:
-                self.function()
-            except:
-                pass
+            self.function()
 
     def deselect(self, from_variable_callback=False):
         self.check_state = False

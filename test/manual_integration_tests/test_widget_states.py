@@ -40,8 +40,13 @@ button_4.pack(padx=20, pady=(10, 20))
 
 radiobutton_1 = customtkinter.CTkRadioButton(master=app, text="radiobutton_1")
 radiobutton_1.pack(padx=20, pady=(20, 10))
-button_5 = customtkinter.CTkButton(master=app, text="Disable/Enable entry_1", command=lambda: change_state(radiobutton_1))
+button_5 = customtkinter.CTkButton(master=app, text="Disable/Enable radiobutton_1", command=lambda: change_state(radiobutton_1))
 button_5.pack(padx=20, pady=(10, 20))
+
+optionmenu_1 = customtkinter.CTkOptionMenu(app, values=["test 1", "test 2"])
+optionmenu_1.pack(pady=10, padx=10)
+button_6 = customtkinter.CTkButton(master=app, text="Disable/Enable optionmenu_1", command=lambda: change_state(optionmenu_1))
+button_6.pack(padx=20, pady=(10, 20))
 
 
 app.mainloop()

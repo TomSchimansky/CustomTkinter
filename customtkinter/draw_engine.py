@@ -54,14 +54,14 @@ class DrawEngine:
             else:
                 return user_corner_radius
 
-    def draw_rounded_rect_with_border(self, width: int, height: int, corner_radius: Union[float, int], border_width: Union[float, int],
-                                      overwrite_preferred_drawing_method: str = None) -> bool:
+    def draw_rounded_rect_with_border(self, width: Union[float, int], height: Union[float, int], corner_radius: Union[float, int],
+                                      border_width: Union[float, int], overwrite_preferred_drawing_method: str = None) -> bool:
         """ Draws a rounded rectangle with a corner_radius and border_width on the canvas. The border elements have a 'border_parts' tag,
             the main foreground elements have an 'inner_parts' tag to color the elements accordingly.
 
             returns bool if recoloring is necessary """
 
-        width = math.floor(width / 2) * 2  # round (floor) current_width and current_height and restrict them to even values only
+        width = math.floor(width / 2) * 2  # round (floor) _current_width and _current_height and restrict them to even values only
         height = math.floor(height / 2) * 2
         corner_radius = round(corner_radius)
 
@@ -353,8 +353,8 @@ class DrawEngine:
 
         return requires_recoloring
 
-    def draw_rounded_rect_with_border_vertical_split(self, width: int, height: int, corner_radius: Union[float, int], border_width: Union[float, int],
-                                                     left_section_width: int) -> bool:
+    def draw_rounded_rect_with_border_vertical_split(self, width: Union[float, int], height: Union[float, int], corner_radius: Union[float, int],
+                                                     border_width: Union[float, int], left_section_width: int) -> bool:
         """ Draws a rounded rectangle with a corner_radius and border_width on the canvas which is split at left_section_width.
             The border elements have the tags 'border_parts_left', 'border_parts_lright',
             the main foreground elements have an 'inner_parts_left' and inner_parts_right' tag,
@@ -362,7 +362,7 @@ class DrawEngine:
 
             returns bool if recoloring is necessary """
 
-        width = math.floor(width / 2) * 2  # round (floor) current_width and current_height and restrict them to even values only
+        width = math.floor(width / 2) * 2  # round (floor) _current_width and _current_height and restrict them to even values only
         height = math.floor(height / 2) * 2
         corner_radius = round(corner_radius)
 
@@ -394,10 +394,10 @@ class DrawEngine:
         # create border button parts (only if border exists)
         if border_width > 0:
             if not self._canvas.find_withtag("border_parts"):
-                self._canvas.create_polygon((0, 0, 0, 0), tags=("border_line_left_1", "border_parts_left", "border_parts"))
-                self._canvas.create_polygon((0, 0, 0, 0), tags=("border_line_right_1", "border_parts_right", "border_parts"))
-                self._canvas.create_rectangle((0, 0, 0, 0), tags=("border_rect_left_1", "border_parts_left", "border_parts"))
-                self._canvas.create_rectangle((0, 0, 0, 0), tags=("border_rect_right_1", "border_parts_right", "border_parts"))
+                self._canvas.create_polygon((0, 0, 0, 0), tags=("border_line_left_1", "border_parts_left", "border_parts", "left_parts"))
+                self._canvas.create_polygon((0, 0, 0, 0), tags=("border_line_right_1", "border_parts_right", "border_parts", "right_parts"))
+                self._canvas.create_rectangle((0, 0, 0, 0), tags=("border_rect_left_1", "border_parts_left", "border_parts", "left_parts"))
+                self._canvas.create_rectangle((0, 0, 0, 0), tags=("border_rect_right_1", "border_parts_right", "border_parts", "right_parts"))
                 requires_recoloring = True
 
             self._canvas.coords("border_line_left_1",
@@ -436,29 +436,29 @@ class DrawEngine:
 
         # create inner button parts
         if not self._canvas.find_withtag("inner_parts"):
-            self._canvas.create_polygon((0, 0, 0, 0), tags=("inner_line_left_1", "inner_parts_left", "inner_parts"), joinstyle=tkinter.ROUND)
-            self._canvas.create_polygon((0, 0, 0, 0), tags=("inner_line_right_1", "inner_parts_right", "inner_parts"), joinstyle=tkinter.ROUND)
-            self._canvas.create_rectangle((0, 0, 0, 0), tags=("inner_rect_left_1", "inner_parts_left", "inner_parts"))
-            self._canvas.create_rectangle((0, 0, 0, 0), tags=("inner_rect_right_1", "inner_parts_right", "inner_parts"))
+            self._canvas.create_polygon((0, 0, 0, 0), tags=("inner_line_left_1", "inner_parts_left", "inner_parts", "left_parts"), joinstyle=tkinter.ROUND)
+            self._canvas.create_polygon((0, 0, 0, 0), tags=("inner_line_right_1", "inner_parts_right", "inner_parts", "right_parts"), joinstyle=tkinter.ROUND)
+            self._canvas.create_rectangle((0, 0, 0, 0), tags=("inner_rect_left_1", "inner_parts_left", "inner_parts", "left_parts"), width=0)
+            self._canvas.create_rectangle((0, 0, 0, 0), tags=("inner_rect_right_1", "inner_parts_right", "inner_parts", "right_parts"), width=0)
             requires_recoloring = True
 
         self._canvas.coords("inner_line_left_1",
                             corner_radius,
                             corner_radius,
-                            left_section_width - corner_radius,
+                            left_section_width - inner_corner_radius,
                             corner_radius,
-                            left_section_width - corner_radius,
+                            left_section_width - inner_corner_radius,
                             height - corner_radius,
                             corner_radius,
                             height - corner_radius)
         self._canvas.coords("inner_line_right_1",
-                            left_section_width + corner_radius,
+                            left_section_width + inner_corner_radius,
                             corner_radius,
                             width - corner_radius,
                             corner_radius,
                             width - corner_radius,
                             height - corner_radius,
-                            left_section_width + corner_radius,
+                            left_section_width + inner_corner_radius,
                             height - corner_radius)
         self._canvas.coords("inner_rect_left_1",
                             (left_section_width - inner_corner_radius,
@@ -632,15 +632,15 @@ class DrawEngine:
 
         return requires_recoloring
 
-    def draw_rounded_progress_bar_with_border(self, width: int, height: int, corner_radius: Union[float, int], border_width: Union[float, int],
-                                              progress_value: float, orientation: str) -> bool:
+    def draw_rounded_progress_bar_with_border(self, width: Union[float, int], height: Union[float, int], corner_radius: Union[float, int],
+                                              border_width: Union[float, int], progress_value: float, orientation: str) -> bool:
         """ Draws a rounded bar on the canvas, which is split in half according to the argument 'progress_value' (0 - 1).
             The border elements get the 'border_parts' tag", the main elements get the 'inner_parts' tag and
             the progress elements get the 'progress_parts' tag. The 'orientation' argument defines from which direction the progress starts (n, w, s, e).
 
             returns bool if recoloring is necessary """
 
-        width = math.floor(width / 2) * 2  # round current_width and current_height and restrict them to even values only
+        width = math.floor(width / 2) * 2  # round _current_width and _current_height and restrict them to even values only
         height = math.floor(height / 2) * 2
 
         if corner_radius > width / 2 or corner_radius > height / 2:  # restrict corner_radius if it's too larger
@@ -800,11 +800,11 @@ class DrawEngine:
 
         return requires_recoloring or requires_recoloring_2
 
-    def draw_rounded_slider_with_border_and_button(self, width: int, height: int, corner_radius: Union[float, int], border_width: Union[float, int],
-                                                   button_length: Union[float, int], button_corner_radius: Union[float, int], slider_value: float,
-                                                   orientation: str) -> bool:
+    def draw_rounded_slider_with_border_and_button(self, width: Union[float, int], height: Union[float, int], corner_radius: Union[float, int],
+                                                   border_width: Union[float, int], button_length: Union[float, int], button_corner_radius: Union[float, int],
+                                                   slider_value: float, orientation: str) -> bool:
 
-        width = math.floor(width / 2) * 2  # round current_width and current_height and restrict them to even values only
+        width = math.floor(width / 2) * 2  # round _current_width and _current_height and restrict them to even values only
         height = math.floor(height / 2) * 2
 
         if corner_radius > width / 2 or corner_radius > height / 2:  # restrict corner_radius if it's too larger
@@ -958,7 +958,7 @@ class DrawEngine:
 
         return requires_recoloring
 
-    def draw_checkmark(self, width: int, height: int, size: Union[int, float]) -> bool:
+    def draw_checkmark(self, width: Union[float, int], height: Union[float, int], size: Union[int, float]) -> bool:
         """ Draws a rounded rectangle with a corner_radius and border_width on the canvas. The border elements have a 'border_parts' tag,
             the main foreground elements have an 'inner_parts' tag to color the elements accordingly.
 

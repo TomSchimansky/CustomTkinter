@@ -16,7 +16,7 @@ class CTkFrame(CTkBaseClass):
                  overwrite_preferred_drawing_method: str = None,
                  **kwargs):
 
-        # transfer basic functionality (bg_color, size, appearance_mode, scaling) to CTkBaseClass
+        # transfer basic functionality (bg_color, size, _appearance_mode, scaling) to CTkBaseClass
         super().__init__(*args, bg_color=bg_color, width=width, height=height, **kwargs)
 
         # color
@@ -40,10 +40,10 @@ class CTkFrame(CTkBaseClass):
 
         self.canvas = CTkCanvas(master=self,
                                 highlightthickness=0,
-                                width=self.apply_widget_scaling(self.current_width),
-                                height=self.apply_widget_scaling(self.current_height))
+                                width=self.apply_widget_scaling(self._current_width),
+                                height=self.apply_widget_scaling(self._current_height))
         self.canvas.place(x=0, y=0, relwidth=1, relheight=1)
-        self.canvas.configure(bg=ThemeManager.single_color(self.bg_color, self.appearance_mode))
+        self.canvas.configure(bg=ThemeManager.single_color(self.bg_color, self._appearance_mode))
         self.draw_engine = DrawEngine(self.canvas)
         self._overwrite_preferred_drawing_method = overwrite_preferred_drawing_method
 
@@ -65,20 +65,20 @@ class CTkFrame(CTkBaseClass):
     def set_scaling(self, *args, **kwargs):
         super().set_scaling(*args, **kwargs)
 
-        self.canvas.configure(width=self.apply_widget_scaling(self.desired_width), height=self.apply_widget_scaling(self.desired_height))
+        self.canvas.configure(width=self.apply_widget_scaling(self._desired_width), height=self.apply_widget_scaling(self._desired_height))
         self.draw()
 
     def set_dimensions(self, width=None, height=None):
         super().set_dimensions(width, height)
 
-        self.canvas.configure(width=self.apply_widget_scaling(self.desired_width),
-                              height=self.apply_widget_scaling(self.desired_height))
+        self.canvas.configure(width=self.apply_widget_scaling(self._desired_width),
+                              height=self.apply_widget_scaling(self._desired_height))
         self.draw()
 
     def draw(self, no_color_updates=False):
 
-        requires_recoloring = self.draw_engine.draw_rounded_rect_with_border(self.apply_widget_scaling(self.current_width),
-                                                                             self.apply_widget_scaling(self.current_height),
+        requires_recoloring = self.draw_engine.draw_rounded_rect_with_border(self.apply_widget_scaling(self._current_width),
+                                                                             self.apply_widget_scaling(self._current_height),
                                                                              self.apply_widget_scaling(self.corner_radius),
                                                                              self.apply_widget_scaling(self.border_width),
                                                                              overwrite_preferred_drawing_method=self._overwrite_preferred_drawing_method)
@@ -86,17 +86,17 @@ class CTkFrame(CTkBaseClass):
         if no_color_updates is False or requires_recoloring:
             if self.fg_color is None:
                 self.canvas.itemconfig("inner_parts",
-                                       fill=ThemeManager.single_color(self.bg_color, self.appearance_mode),
-                                       outline=ThemeManager.single_color(self.bg_color, self.appearance_mode))
+                                       fill=ThemeManager.single_color(self.bg_color, self._appearance_mode),
+                                       outline=ThemeManager.single_color(self.bg_color, self._appearance_mode))
             else:
                 self.canvas.itemconfig("inner_parts",
-                                       fill=ThemeManager.single_color(self.fg_color, self.appearance_mode),
-                                       outline=ThemeManager.single_color(self.fg_color, self.appearance_mode))
+                                       fill=ThemeManager.single_color(self.fg_color, self._appearance_mode),
+                                       outline=ThemeManager.single_color(self.fg_color, self._appearance_mode))
 
             self.canvas.itemconfig("border_parts",
-                                   fill=ThemeManager.single_color(self.border_color, self.appearance_mode),
-                                   outline=ThemeManager.single_color(self.border_color, self.appearance_mode))
-            self.canvas.configure(bg=ThemeManager.single_color(self.bg_color, self.appearance_mode))
+                                   fill=ThemeManager.single_color(self.border_color, self._appearance_mode),
+                                   outline=ThemeManager.single_color(self.border_color, self._appearance_mode))
+            self.canvas.configure(bg=ThemeManager.single_color(self.bg_color, self._appearance_mode))
 
         self.canvas.tag_lower("inner_parts")
         self.canvas.tag_lower("border_parts")

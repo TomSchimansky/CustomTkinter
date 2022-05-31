@@ -68,7 +68,7 @@ class CTk(tkinter.Tk):
 
         if self.current_width != round(detected_width / self.window_scaling) or self.current_height != round(detected_height / self.window_scaling):
             self.current_width = round(detected_width / self.window_scaling)  # adjust current size according to new size given by event
-            self.current_height = round(detected_height / self.window_scaling)  # current_width and current_height are independent of the scale
+            self.current_height = round(detected_height / self.window_scaling)  # _current_width and _current_height are independent of the scale
 
     def set_scaling(self, new_widget_scaling, new_spacing_scaling, new_window_scaling):
         self.window_scaling = new_window_scaling

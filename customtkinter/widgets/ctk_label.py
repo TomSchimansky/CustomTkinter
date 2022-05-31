@@ -12,13 +12,13 @@ class CTkLabel(CTkBaseClass):
                  fg_color="default_theme",
                  text_color="default_theme",
                  corner_radius="default_theme",
-                 width=120,
+                 width=140,
                  height=28,
                  text="CTkLabel",
                  text_font="default_theme",
                  **kwargs):
 
-        # transfer basic functionality (bg_color, size, appearance_mode, scaling) to CTkBaseClass
+        # transfer basic functionality (bg_color, size, _appearance_mode, scaling) to CTkBaseClass
         if "master" in kwargs:
             super().__init__(*args, bg_color=bg_color, width=width, height=height, master=kwargs["master"])
             del kwargs["master"]
@@ -44,8 +44,8 @@ class CTkLabel(CTkBaseClass):
 
         self.canvas = CTkCanvas(master=self,
                                 highlightthickness=0,
-                                width=self.apply_widget_scaling(self.desired_width),
-                                height=self.apply_widget_scaling(self.desired_height))
+                                width=self.apply_widget_scaling(self._desired_width),
+                                height=self.apply_widget_scaling(self._desired_height))
         self.canvas.grid(row=0, column=0, sticky="nswe")
         self.draw_engine = DrawEngine(self.canvas)
 
@@ -63,7 +63,7 @@ class CTkLabel(CTkBaseClass):
     def set_scaling(self, *args, **kwargs):
         super().set_scaling(*args, **kwargs)
 
-        self.canvas.configure(width=self.apply_widget_scaling(self.desired_width), height=self.apply_widget_scaling(self.desired_height))
+        self.canvas.configure(width=self.apply_widget_scaling(self._desired_width), height=self.apply_widget_scaling(self._desired_height))
         self.text_label.configure(font=self.apply_font_scaling(self.text_font))
         self.text_label.grid(row=0, column=0, padx=self.apply_widget_scaling(self.corner_radius))
 
@@ -72,33 +72,33 @@ class CTkLabel(CTkBaseClass):
     def set_dimensions(self, width=None, height=None):
         super().set_dimensions(width, height)
 
-        self.canvas.configure(width=self.apply_widget_scaling(self.desired_width),
-                              height=self.apply_widget_scaling(self.desired_height))
+        self.canvas.configure(width=self.apply_widget_scaling(self._desired_width),
+                              height=self.apply_widget_scaling(self._desired_height))
         self.draw()
 
     def draw(self, no_color_updates=False):
-        requires_recoloring = self.draw_engine.draw_rounded_rect_with_border(self.apply_widget_scaling(self.current_width),
-                                                                             self.apply_widget_scaling(self.current_height),
+        requires_recoloring = self.draw_engine.draw_rounded_rect_with_border(self.apply_widget_scaling(self._current_width),
+                                                                             self.apply_widget_scaling(self._current_height),
                                                                              self.apply_widget_scaling(self.corner_radius),
                                                                              0)
 
         if no_color_updates is False or requires_recoloring:
-            if ThemeManager.single_color(self.fg_color, self.appearance_mode) is not None:
+            if ThemeManager.single_color(self.fg_color, self._appearance_mode) is not None:
                 self.canvas.itemconfig("inner_parts",
-                                       fill=ThemeManager.single_color(self.fg_color, self.appearance_mode),
-                                       outline=ThemeManager.single_color(self.fg_color, self.appearance_mode))
+                                       fill=ThemeManager.single_color(self.fg_color, self._appearance_mode),
+                                       outline=ThemeManager.single_color(self.fg_color, self._appearance_mode))
 
-                self.text_label.configure(fg=ThemeManager.single_color(self.text_color, self.appearance_mode),
-                                          bg=ThemeManager.single_color(self.fg_color, self.appearance_mode))
+                self.text_label.configure(fg=ThemeManager.single_color(self.text_color, self._appearance_mode),
+                                          bg=ThemeManager.single_color(self.fg_color, self._appearance_mode))
             else:
                 self.canvas.itemconfig("inner_parts",
-                                       fill=ThemeManager.single_color(self.bg_color, self.appearance_mode),
-                                       outline=ThemeManager.single_color(self.bg_color, self.appearance_mode))
+                                       fill=ThemeManager.single_color(self.bg_color, self._appearance_mode),
+                                       outline=ThemeManager.single_color(self.bg_color, self._appearance_mode))
 
-                self.text_label.configure(fg=ThemeManager.single_color(self.text_color, self.appearance_mode),
-                                          bg=ThemeManager.single_color(self.bg_color, self.appearance_mode))
+                self.text_label.configure(fg=ThemeManager.single_color(self.text_color, self._appearance_mode),
+                                          bg=ThemeManager.single_color(self.bg_color, self._appearance_mode))
 
-            self.canvas.configure(bg=ThemeManager.single_color(self.bg_color, self.appearance_mode))
+            self.canvas.configure(bg=ThemeManager.single_color(self.bg_color, self._appearance_mode))
 
     def configure(self, *args, **kwargs):
         require_redraw = False  # some attribute changes require a call of self.draw() at the end

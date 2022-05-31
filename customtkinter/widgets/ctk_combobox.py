@@ -11,11 +11,12 @@ from ..draw_engine import DrawEngine
 from .widget_base_class import CTkBaseClass
 
 
-class CTkOptionMenu(CTkBaseClass):
+class CTkComboBox(CTkBaseClass):
 
     def __init__(self, *args,
                  bg_color=None,
                  fg_color="default_theme",
+                 border_color="default_theme",
                  button_color="default_theme",
                  button_hover_color="default_theme",
                  dropdown_color="default_theme",
@@ -27,6 +28,7 @@ class CTkOptionMenu(CTkBaseClass):
                  width=140,
                  height=28,
                  corner_radius="default_theme",
+                 border_width="default_theme",
                  text_font="default_theme",
                  text_color="default_theme",
                  text_color_disabled="default_theme",
@@ -38,15 +40,17 @@ class CTkOptionMenu(CTkBaseClass):
         super().__init__(*args, bg_color=bg_color, width=width, height=height, **kwargs)
 
         # color variables
-        self.fg_color = ThemeManager.theme["color"]["button"] if fg_color == "default_theme" else fg_color
-        self.button_color = ThemeManager.theme["color"]["optionmenu_button"] if button_color == "default_theme" else button_color
-        self.button_hover_color = ThemeManager.theme["color"]["optionmenu_button_hover"] if button_hover_color == "default_theme" else button_hover_color
+        self.fg_color = ThemeManager.theme["color"]["entry"] if fg_color == "default_theme" else fg_color
+        self.border_color = ThemeManager.theme["color"]["combobox_border"] if border_color == "default_theme" else border_color
+        self.button_color = ThemeManager.theme["color"]["combobox_border"] if button_color == "default_theme" else button_color
+        self.button_hover_color = ThemeManager.theme["color"]["combobox_button_hover"] if button_hover_color == "default_theme" else button_hover_color
         self.dropdown_color = ThemeManager.theme["color"]["dropdown_color"] if dropdown_color == "default_theme" else dropdown_color
         self.dropdown_hover_color = ThemeManager.theme["color"]["dropdown_hover"] if dropdown_hover_color == "default_theme" else dropdown_hover_color
         self.dropdown_text_color = ThemeManager.theme["color"]["dropdown_text"] if dropdown_text_color == "default_theme" else dropdown_text_color
 
         # shape
         self.corner_radius = ThemeManager.theme["shape"]["button_corner_radius"] if corner_radius == "default_theme" else corner_radius
+        self.border_width = ThemeManager.theme["shape"]["entry_border_width"] if border_width == "default_theme" else border_width
 
         # text and font
         self.text_label = None
@@ -64,14 +68,14 @@ class CTkOptionMenu(CTkBaseClass):
         self.click_animation_running = False
 
         if values is None:
-            self.values = ["CTkOptionMenu"]
+            self.values = ["CTkComboBox"]
         else:
             self.values = values
 
         if len(self.values) > 0:
             self.current_value = self.values[0]
         else:
-            self.current_value = "CTkOptionMenu"
+            self.current_value = "CTkComboBox"
 
         self.dropdown_menu: Union[DropdownMenu, None] = None
 
@@ -86,15 +90,26 @@ class CTkOptionMenu(CTkBaseClass):
         self.canvas.grid(row=0, column=0, rowspan=1, columnspan=1, sticky="nsew")
         self.draw_engine = DrawEngine(self.canvas)
 
-        # event bindings
-        self.canvas.bind("<Enter>", self.on_enter)
-        self.canvas.bind("<Leave>", self.on_leave)
-        self.canvas.bind("<Button-1>", self.clicked)
-        self.canvas.bind("<Button-1>", self.clicked)
-        self.bind('<Configure>', self.update_dimensions_event)
+        self.entry = tkinter.Entry(master=self,
+                                   width=0,
+                                   bd=0,
+                                   highlightthickness=0,
+                                   font=self.apply_font_scaling(self.text_font))
+        left_section_width = self._current_width - self._current_height
+        self.entry.grid(row=0, column=0, rowspan=1, columnspan=1, sticky="w",
+                        padx=(self.apply_widget_scaling(max(self.corner_radius, 3)),
+                              self.apply_widget_scaling(max(self._current_width - left_section_width + 3, 3))))
 
-        self.set_cursor()
         self.draw()  # initial draw
+
+        # event bindings
+        self.canvas.tag_bind("right_parts", "<Enter>", self.on_enter)
+        self.canvas.tag_bind("dropdown_arrow", "<Enter>", self.on_enter)
+        self.canvas.tag_bind("right_parts", "<Leave>", self.on_leave)
+        self.canvas.tag_bind("dropdown_arrow", "<Leave>", self.on_leave)
+        self.canvas.tag_bind("right_parts", "<Button-1>", self.clicked)
+        self.canvas.tag_bind("dropdown_arrow", "<Button-1>", self.clicked)
+        self.bind('<Configure>', self.update_dimensions_event)
 
         if self.variable is not None:
             self.variable_callback_name = self.variable.trace_add("write", self.variable_callback)
@@ -123,26 +138,16 @@ class CTkOptionMenu(CTkBaseClass):
         requires_recoloring = self.draw_engine.draw_rounded_rect_with_border_vertical_split(self.apply_widget_scaling(self._current_width),
                                                                                             self.apply_widget_scaling(self._current_height),
                                                                                             self.apply_widget_scaling(self.corner_radius),
-                                                                                            0,
+                                                                                            self.apply_widget_scaling(self.border_width),
                                                                                             self.apply_widget_scaling(left_section_width))
 
         requires_recoloring_2 = self.draw_engine.draw_dropdown_arrow(self.apply_widget_scaling(self._current_width - (self._current_height / 2)),
                                                                      self.apply_widget_scaling(self._current_height / 2),
                                                                      self.apply_widget_scaling(self._current_height / 3))
-        if self.text_label is None:
-            self.text_label = tkinter.Label(master=self,
-                                            font=self.apply_font_scaling(self.text_font))
-            self.text_label.grid(row=0, column=0, rowspan=1, columnspan=1, sticky="w",
-                                 padx=(max(self.apply_widget_scaling(self.corner_radius), 3),
-                                       max(self._current_width - left_section_width + 3, 3)))
-
-            self.text_label.bind("<Enter>", self.on_enter)
-            self.text_label.bind("<Leave>", self.on_leave)
-            self.text_label.bind("<Button-1>", self.clicked)
-            self.text_label.bind("<Button-1>", self.clicked)
 
         if self.current_value is not None:
-            self.text_label.configure(text=self.current_value)
+            self.entry.delete(0, tkinter.END)
+            self.entry.insert(0, self.current_value)
 
         if no_color_updates is False or requires_recoloring or requires_recoloring_2:
 
@@ -151,34 +156,34 @@ class CTkOptionMenu(CTkBaseClass):
             self.canvas.itemconfig("inner_parts_left",
                                    outline=ThemeManager.single_color(self.fg_color, self._appearance_mode),
                                    fill=ThemeManager.single_color(self.fg_color, self._appearance_mode))
+            self.canvas.itemconfig("border_parts_left",
+                                   outline=ThemeManager.single_color(self.border_color, self._appearance_mode),
+                                   fill=ThemeManager.single_color(self.border_color, self._appearance_mode))
             self.canvas.itemconfig("inner_parts_right",
-                                   outline=ThemeManager.single_color(self.button_color, self._appearance_mode),
-                                   fill=ThemeManager.single_color(self.button_color, self._appearance_mode))
+                                   outline=ThemeManager.single_color(self.border_color, self._appearance_mode),
+                                   fill=ThemeManager.single_color(self.border_color, self._appearance_mode))
+            self.canvas.itemconfig("border_parts_right",
+                                   outline=ThemeManager.single_color(self.border_color, self._appearance_mode),
+                                   fill=ThemeManager.single_color(self.border_color, self._appearance_mode))
 
-            self.text_label.configure(fg=ThemeManager.single_color(self.text_color, self._appearance_mode))
+            self.entry.configure(fg=ThemeManager.single_color(self.text_color, self._appearance_mode))
+            self.entry.configure(bg=ThemeManager.single_color(self.fg_color, self._appearance_mode))
 
             if self.state == tkinter.DISABLED:
-                self.text_label.configure(fg=(ThemeManager.single_color(self.text_color_disabled, self._appearance_mode)))
-                self.canvas.itemconfig("dropdown_arrow",
-                                       fill=ThemeManager.single_color(self.text_color_disabled, self._appearance_mode))
+                self.entry.configure(fg=(ThemeManager.single_color(self.text_color_disabled, self._appearance_mode)))
             else:
-                self.text_label.configure(fg=ThemeManager.single_color(self.text_color, self._appearance_mode))
-                self.canvas.itemconfig("dropdown_arrow",
-                                       fill=ThemeManager.single_color(self.text_color, self._appearance_mode))
-
-            self.text_label.configure(bg=ThemeManager.single_color(self.fg_color, self._appearance_mode))
+                self.entry.configure(fg=ThemeManager.single_color(self.text_color, self._appearance_mode))
 
     def open_dropdown_menu(self):
-        if len(self.values) > 0:
-            self.dropdown_menu = DropdownMenu(x_position=self.winfo_rootx(),
-                                              y_position=self.winfo_rooty() + self.apply_widget_scaling(self._current_height + 4),
-                                              width=self._current_width,
-                                              values=self.values,
-                                              command=self.set,
-                                              fg_color=self.dropdown_color,
-                                              button_hover_color=self.dropdown_hover_color,
-                                              button_color=self.dropdown_color,
-                                              text_color=self.dropdown_text_color)
+        self.dropdown_menu = DropdownMenu(x_position=self.winfo_rootx(),
+                                          y_position=self.winfo_rooty() + self.apply_widget_scaling(self._current_height + 4),
+                                          width=self._current_width,
+                                          values=self.values,
+                                          command=self.set,
+                                          fg_color=self.dropdown_color,
+                                          button_hover_color=self.dropdown_hover_color,
+                                          button_color=self.dropdown_color,
+                                          text_color=self.dropdown_text_color)
 
     def configure(self, *args, **kwargs):
         require_redraw = False  # some attribute changes require a call of self.draw() at the end
@@ -243,34 +248,23 @@ class CTkOptionMenu(CTkBaseClass):
             self.set_dimensions(height=kwargs["height"])
             del kwargs["height"]
 
-        if "values" in kwargs:
-            self.values = kwargs["values"]
-            del kwargs["values"]
-            self.set_cursor()
-
         super().configure(*args, **kwargs)
 
         if require_redraw:
             self.draw()
 
-    def set_cursor(self):
-        if Settings.cursor_manipulation_enabled:
-            if self.state == tkinter.DISABLED:
-                if sys.platform == "darwin" and len(self.values) > 0 and Settings.cursor_manipulation_enabled:
-                    self.configure(cursor="arrow")
-                elif sys.platform.startswith("win") and len(self.values) > 0 and Settings.cursor_manipulation_enabled:
-                    self.configure(cursor="arrow")
-
-            elif self.state == tkinter.NORMAL:
-                if sys.platform == "darwin" and len(self.values) > 0 and Settings.cursor_manipulation_enabled:
-                    self.configure(cursor="pointinghand")
-                elif sys.platform.startswith("win") and len(self.values) > 0 and Settings.cursor_manipulation_enabled:
-                    self.configure(cursor="hand2")
-
     def on_enter(self, event=0):
         if self.hover is True and self.state == tkinter.NORMAL:
+            if sys.platform == "darwin" and len(self.values) > 0 and Settings.cursor_manipulation_enabled:
+                self.canvas.configure(cursor="pointinghand")
+            elif sys.platform.startswith("win") and len(self.values) > 0 and Settings.cursor_manipulation_enabled:
+                self.canvas.configure(cursor="hand2")
+
             # set color of inner button parts to hover color
             self.canvas.itemconfig("inner_parts_right",
+                                   outline=ThemeManager.single_color(self.button_hover_color, self._appearance_mode),
+                                   fill=ThemeManager.single_color(self.button_hover_color, self._appearance_mode))
+            self.canvas.itemconfig("border_parts_right",
                                    outline=ThemeManager.single_color(self.button_hover_color, self._appearance_mode),
                                    fill=ThemeManager.single_color(self.button_hover_color, self._appearance_mode))
 
@@ -278,8 +272,16 @@ class CTkOptionMenu(CTkBaseClass):
         self.click_animation_running = False
 
         if self.hover is True:
+            if sys.platform == "darwin" and len(self.values) > 0 and Settings.cursor_manipulation_enabled:
+                self.canvas.configure(cursor="arrow")
+            elif sys.platform.startswith("win") and len(self.values) > 0 and Settings.cursor_manipulation_enabled:
+                self.canvas.configure(cursor="arrow")
+
             # set color of inner button parts
             self.canvas.itemconfig("inner_parts_right",
+                                   outline=ThemeManager.single_color(self.button_color, self._appearance_mode),
+                                   fill=ThemeManager.single_color(self.button_color, self._appearance_mode))
+            self.canvas.itemconfig("border_parts_right",
                                    outline=ThemeManager.single_color(self.button_color, self._appearance_mode),
                                    fill=ThemeManager.single_color(self.button_color, self._appearance_mode))
 
@@ -294,10 +296,8 @@ class CTkOptionMenu(CTkBaseClass):
     def set(self, value: str, from_variable_callback: bool = False):
         self.current_value = value
 
-        if self.text_label is not None:
-            self.text_label.configure(text=self.current_value)
-        else:
-            self.draw()
+        self.entry.delete(0, tkinter.END)
+        self.entry.insert(0, self.current_value)
 
         if self.variable is not None and not from_variable_callback:
             self.variable_callback_blocked = True

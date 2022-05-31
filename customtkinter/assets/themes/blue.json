@@ -29,8 +29,10 @@
     "switch_button_hover": ["gray20", "gray100"],
     "optionmenu_button": ["#36719F", "#144870"],
     "optionmenu_button_hover": ["#27577D", "#203A4F"],
+    "combobox_border": ["#979DA2", "#565B5E"],
+    "combobox_button_hover": ["#6E7174", "#7A848D"],
     "dropdown_color": ["#A8ACB1", "#535353"],
-    "dropdown_hover": ["#D6DCE2", "#46484A"],
+    "dropdown_hover": ["#D6DCE2", "#393D40"],
     "dropdown_text": ["gray10", "#DCE4EE"]
   },
   "text": {

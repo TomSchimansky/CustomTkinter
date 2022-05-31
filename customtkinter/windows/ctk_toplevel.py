@@ -47,7 +47,7 @@ class CTkToplevel(tkinter.Toplevel):
         AppearanceModeTracker.add(self.set_appearance_mode, self)
         super().configure(bg=ThemeManager.single_color(self.fg_color, self.appearance_mode))
         super().title("CTkToplevel")
-        # self.geometry(f"{self.current_width}x{self.current_height}")
+        # self.geometry(f"{self._current_width}x{self._current_height}")
 
         if sys.platform.startswith("win"):
             if self.appearance_mode == 1:
@@ -63,7 +63,7 @@ class CTkToplevel(tkinter.Toplevel):
 
         if self.current_width != round(detected_width / self.window_scaling) or self.current_height != round(detected_height / self.window_scaling):
             self.current_width = round(detected_width / self.window_scaling)  # adjust current size according to new size given by event
-            self.current_height = round(detected_height / self.window_scaling)  # current_width and current_height are independent of the scale
+            self.current_height = round(detected_height / self.window_scaling)  # _current_width and _current_height are independent of the scale
 
     def set_scaling(self, new_widget_scaling, new_spacing_scaling, new_window_scaling):
         self.window_scaling = new_window_scaling

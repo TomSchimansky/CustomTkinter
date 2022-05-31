@@ -40,13 +40,14 @@ class DropdownMenu(tkinter.Toplevel):
         self.text_color = text_color
 
         # shape
-        self.width = width
         self.corner_radius = corner_radius
         self.button_corner_radius = button_corner_radius
         self.button_height = button_height
+        self.width = width
+        self.height = max(len(self.values), 1) * (self.button_height + y_spacing) + y_spacing
 
         self.geometry(f"{round(self.apply_widget_scaling(self.width))}x" +
-                      f"{round(self.apply_widget_scaling(len(self.values) * (self.button_height + y_spacing) + y_spacing))}+" +
+                      f"{round(self.apply_widget_scaling(self.height))}+" +
                       f"{round(x_position)}+{round(y_position)}")
         self.grid_columnconfigure(0, weight=1)
 
