@@ -42,10 +42,6 @@ optionmenu_1 = customtkinter.CTkOptionMenu(frame_1, values=["Option 1", "Option 
 optionmenu_1.pack(pady=10, padx=10)
 optionmenu_1.set("CTkOptionMenu")
 
-combobox_1 = customtkinter.CTkComboBox(frame_1, values=["Option 1", "Option 2", "Option 42"])
-combobox_1.pack(pady=10, padx=10)
-combobox_1.set("CTkComboBox")
-
 checkbox_1 = customtkinter.CTkCheckBox(master=frame_1)
 checkbox_1.pack(pady=y_padding, padx=10)
 
