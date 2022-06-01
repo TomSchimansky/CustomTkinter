@@ -61,8 +61,6 @@ class CTkComboBox(CTkBaseClass):
         # callback and hover functionality
         self.function = command
         self.variable = variable
-        self.variable_callback_blocked = False
-        self.variable_callback_name = None
         self.state = state
         self.hover = hover
         self.click_animation_running = False
@@ -91,12 +89,13 @@ class CTkComboBox(CTkBaseClass):
         self.draw_engine = DrawEngine(self.canvas)
 
         self.entry = tkinter.Entry(master=self,
-                                   width=0,
+                                   state=self.state,
+                                   width=1,
                                    bd=0,
                                    highlightthickness=0,
                                    font=self.apply_font_scaling(self.text_font))
         left_section_width = self._current_width - self._current_height
-        self.entry.grid(row=0, column=0, rowspan=1, columnspan=1, sticky="w",
+        self.entry.grid(row=0, column=0, rowspan=1, columnspan=1, sticky="ew",
                         padx=(self.apply_widget_scaling(max(self.corner_radius, 3)),
                               self.apply_widget_scaling(max(self._current_width - left_section_width + 3, 3))))
 
@@ -112,15 +111,14 @@ class CTkComboBox(CTkBaseClass):
         self.bind('<Configure>', self.update_dimensions_event)
 
         if self.variable is not None:
-            self.variable_callback_name = self.variable.trace_add("write", self.variable_callback)
-            self.set(self.variable.get(), from_variable_callback=True)
+            self.entry.configure(textvariable=self.variable)
+
+       # if self.variable is not None:
+       #     self.variable_callback_name = self.variable.trace_add("write", self.variable_callback)
+       #     self.set(self.variable.get(), from_variable_callback=True)
 
     def set_scaling(self, *args, **kwargs):
         super().set_scaling(*args, **kwargs)
-
-        if self.text_label is not None:
-            self.text_label.destroy()
-            self.text_label = None
 
         self.canvas.configure(width=self.apply_widget_scaling(self._desired_width),
                               height=self.apply_widget_scaling(self._desired_height))
@@ -190,7 +188,7 @@ class CTkComboBox(CTkBaseClass):
 
         if "state" in kwargs:
             self.state = kwargs["state"]
-            self.set_cursor()
+            self.entry.configure(state=self.state)
             require_redraw = True
             del kwargs["state"]
 
@@ -227,17 +225,8 @@ class CTkComboBox(CTkBaseClass):
             del kwargs["command"]
 
         if "variable" in kwargs:
-            if self.variable is not None:  # remove old callback
-                self.variable.trace_remove("write", self.variable_callback_name)
-
             self.variable = kwargs["variable"]
-
-            if self.variable is not None and self.variable != "":
-                self.variable_callback_name = self.variable.trace_add("write", self.variable_callback)
-                self.set(self.variable.get(), from_variable_callback=True)
-            else:
-                self.variable = None
-
+            self.entry.configure(textvariable=self.variable)
             del kwargs["variable"]
 
         if "width" in kwargs:
@@ -248,13 +237,17 @@ class CTkComboBox(CTkBaseClass):
             self.set_dimensions(height=kwargs["height"])
             del kwargs["height"]
 
+        if "values" in kwargs:
+            self.values = kwargs["values"]
+            del kwargs["values"]
+
         super().configure(*args, **kwargs)
 
         if require_redraw:
             self.draw()
 
     def on_enter(self, event=0):
-        if self.hover is True and self.state == tkinter.NORMAL:
+        if self.hover is True and self.state == tkinter.NORMAL and len(self.values) > 0:
             if sys.platform == "darwin" and len(self.values) > 0 and Settings.cursor_manipulation_enabled:
                 self.canvas.configure(cursor="pointinghand")
             elif sys.platform.startswith("win") and len(self.values) > 0 and Settings.cursor_manipulation_enabled:
@@ -289,30 +282,21 @@ class CTkComboBox(CTkBaseClass):
         if self.click_animation_running:
             self.on_enter()
 
-    def variable_callback(self, var_name, index, mode):
-        if not self.variable_callback_blocked:
-            self.set(self.variable.get(), from_variable_callback=True)
-
     def set(self, value: str, from_variable_callback: bool = False):
         self.current_value = value
 
         self.entry.delete(0, tkinter.END)
         self.entry.insert(0, self.current_value)
 
-        if self.variable is not None and not from_variable_callback:
-            self.variable_callback_blocked = True
-            self.variable.set(self.current_value)
-            self.variable_callback_blocked = False
-
         if not from_variable_callback:
             if self.function is not None:
                 self.function(self.current_value)
 
     def get(self) -> str:
-        return self.current_value
+        return self.entry.get()
 
     def clicked(self, event=0):
-        if self.state is not tkinter.DISABLED:
+        if self.state is not tkinter.DISABLED and len(self.values) > 0:
             self.open_dropdown_menu()
 
             # click animation: change color with .on_leave() and back to normal after 100ms with click_animation()

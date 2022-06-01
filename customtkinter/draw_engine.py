@@ -354,7 +354,7 @@ class DrawEngine:
         return requires_recoloring
 
     def draw_rounded_rect_with_border_vertical_split(self, width: Union[float, int], height: Union[float, int], corner_radius: Union[float, int],
-                                                     border_width: Union[float, int], left_section_width: int) -> bool:
+                                                     border_width: Union[float, int], left_section_width: Union[float, int]) -> bool:
         """ Draws a rounded rectangle with a corner_radius and border_width on the canvas which is split at left_section_width.
             The border elements have the tags 'border_parts_left', 'border_parts_lright',
             the main foreground elements have an 'inner_parts_left' and inner_parts_right' tag,
@@ -362,6 +362,7 @@ class DrawEngine:
 
             returns bool if recoloring is necessary """
 
+        left_section_width = round(left_section_width)
         width = math.floor(width / 2) * 2  # round (floor) _current_width and _current_height and restrict them to even values only
         height = math.floor(height / 2) * 2
         corner_radius = round(corner_radius)

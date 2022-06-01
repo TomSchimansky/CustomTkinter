@@ -48,5 +48,10 @@ optionmenu_1.pack(pady=10, padx=10)
 button_6 = customtkinter.CTkButton(master=app, text="Disable/Enable optionmenu_1", command=lambda: change_state(optionmenu_1))
 button_6.pack(padx=20, pady=(10, 20))
 
+combobox_1 = customtkinter.CTkComboBox(app, values=["test 1", "test 2"])
+combobox_1.pack(pady=10, padx=10)
+button_7 = customtkinter.CTkButton(master=app, text="Disable/Enable combobox_1", command=lambda: change_state(combobox_1))
+button_7.pack(padx=20, pady=(10, 20))
+
 
 app.mainloop()

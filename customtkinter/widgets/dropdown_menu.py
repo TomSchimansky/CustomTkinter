@@ -97,6 +97,7 @@ class DropdownMenu(tkinter.Toplevel):
                                              hover_color=self.button_hover_color,
                                              corner_radius=self.button_corner_radius,
                                              command=lambda i=index: self.button_callback(i))
+            button.text_label.configure(anchor="w")
             button.text_label.grid(row=0, column=0, rowspan=2, columnspan=2, sticky="w")
             button.grid(row=index, column=0,
                         padx=x_spacing,

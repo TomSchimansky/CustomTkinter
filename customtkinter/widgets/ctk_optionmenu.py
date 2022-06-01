@@ -93,7 +93,6 @@ class CTkOptionMenu(CTkBaseClass):
         self.canvas.bind("<Button-1>", self.clicked)
         self.bind('<Configure>', self.update_dimensions_event)
 
-        self.set_cursor()
         self.draw()  # initial draw
 
         if self.variable is not None:
@@ -169,23 +168,21 @@ class CTkOptionMenu(CTkBaseClass):
             self.text_label.configure(bg=ThemeManager.single_color(self.fg_color, self._appearance_mode))
 
     def open_dropdown_menu(self):
-        if len(self.values) > 0:
-            self.dropdown_menu = DropdownMenu(x_position=self.winfo_rootx(),
-                                              y_position=self.winfo_rooty() + self.apply_widget_scaling(self._current_height + 4),
-                                              width=self._current_width,
-                                              values=self.values,
-                                              command=self.set,
-                                              fg_color=self.dropdown_color,
-                                              button_hover_color=self.dropdown_hover_color,
-                                              button_color=self.dropdown_color,
-                                              text_color=self.dropdown_text_color)
+        self.dropdown_menu = DropdownMenu(x_position=self.winfo_rootx(),
+                                          y_position=self.winfo_rooty() + self.apply_widget_scaling(self._current_height + 4),
+                                          width=self._current_width,
+                                          values=self.values,
+                                          command=self.set,
+                                          fg_color=self.dropdown_color,
+                                          button_hover_color=self.dropdown_hover_color,
+                                          button_color=self.dropdown_color,
+                                          text_color=self.dropdown_text_color)
 
     def configure(self, *args, **kwargs):
         require_redraw = False  # some attribute changes require a call of self.draw() at the end
 
         if "state" in kwargs:
             self.state = kwargs["state"]
-            self.set_cursor()
             require_redraw = True
             del kwargs["state"]
 
@@ -246,29 +243,19 @@ class CTkOptionMenu(CTkBaseClass):
         if "values" in kwargs:
             self.values = kwargs["values"]
             del kwargs["values"]
-            self.set_cursor()
 
         super().configure(*args, **kwargs)
 
         if require_redraw:
             self.draw()
 
-    def set_cursor(self):
-        if Settings.cursor_manipulation_enabled:
-            if self.state == tkinter.DISABLED:
-                if sys.platform == "darwin" and len(self.values) > 0 and Settings.cursor_manipulation_enabled:
-                    self.configure(cursor="arrow")
-                elif sys.platform.startswith("win") and len(self.values) > 0 and Settings.cursor_manipulation_enabled:
-                    self.configure(cursor="arrow")
-
-            elif self.state == tkinter.NORMAL:
-                if sys.platform == "darwin" and len(self.values) > 0 and Settings.cursor_manipulation_enabled:
-                    self.configure(cursor="pointinghand")
-                elif sys.platform.startswith("win") and len(self.values) > 0 and Settings.cursor_manipulation_enabled:
-                    self.configure(cursor="hand2")
-
     def on_enter(self, event=0):
-        if self.hover is True and self.state == tkinter.NORMAL:
+        if self.hover is True and self.state == tkinter.NORMAL and len(self.values) > 0:
+            if sys.platform == "darwin" and len(self.values) > 0 and Settings.cursor_manipulation_enabled:
+                self.configure(cursor="pointinghand")
+            elif sys.platform.startswith("win") and len(self.values) > 0 and Settings.cursor_manipulation_enabled:
+                self.configure(cursor="hand2")
+
             # set color of inner button parts to hover color
             self.canvas.itemconfig("inner_parts_right",
                                    outline=ThemeManager.single_color(self.button_hover_color, self._appearance_mode),
@@ -278,6 +265,11 @@ class CTkOptionMenu(CTkBaseClass):
         self.click_animation_running = False
 
         if self.hover is True:
+            if sys.platform == "darwin" and len(self.values) > 0 and Settings.cursor_manipulation_enabled:
+                self.configure(cursor="arrow")
+            elif sys.platform.startswith("win") and len(self.values) > 0 and Settings.cursor_manipulation_enabled:
+                self.configure(cursor="arrow")
+
             # set color of inner button parts
             self.canvas.itemconfig("inner_parts_right",
                                    outline=ThemeManager.single_color(self.button_color, self._appearance_mode),
@@ -312,7 +304,7 @@ class CTkOptionMenu(CTkBaseClass):
         return self.current_value
 
     def clicked(self, event=0):
-        if self.state is not tkinter.DISABLED:
+        if self.state is not tkinter.DISABLED and len(self.values) > 0:
             self.open_dropdown_menu()
 
             # click animation: change color with .on_leave() and back to normal after 100ms with click_animation()
