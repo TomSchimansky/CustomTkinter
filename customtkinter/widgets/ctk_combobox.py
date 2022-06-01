@@ -113,10 +113,6 @@ class CTkComboBox(CTkBaseClass):
         if self.variable is not None:
             self.entry.configure(textvariable=self.variable)
 
-       # if self.variable is not None:
-       #     self.variable_callback_name = self.variable.trace_add("write", self.variable_callback)
-       #     self.set(self.variable.get(), from_variable_callback=True)
-
     def set_scaling(self, *args, **kwargs):
         super().set_scaling(*args, **kwargs)
 
@@ -169,8 +165,12 @@ class CTkComboBox(CTkBaseClass):
 
             if self.state == tkinter.DISABLED:
                 self.entry.configure(fg=(ThemeManager.single_color(self.text_color_disabled, self._appearance_mode)))
+                self.canvas.itemconfig("dropdown_arrow",
+                                       fill=ThemeManager.single_color(self.text_color_disabled, self._appearance_mode))
             else:
                 self.entry.configure(fg=ThemeManager.single_color(self.text_color, self._appearance_mode))
+                self.canvas.itemconfig("dropdown_arrow",
+                                       fill=ThemeManager.single_color(self.text_color, self._appearance_mode))
 
     def open_dropdown_menu(self):
         self.dropdown_menu = DropdownMenu(x_position=self.winfo_rootx(),

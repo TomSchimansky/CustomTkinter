@@ -1,6 +1,7 @@
 import customtkinter
 import tkinter
 import sys
+from typing import Union
 
 from ..theme_manager import ThemeManager
 from ..appearance_mode_tracker import AppearanceModeTracker
@@ -27,7 +28,8 @@ class DropdownMenu(tkinter.Toplevel):
         super().__init__(*args, **kwargs)
 
         ScalingTracker.add_widget(self.set_scaling, self)
-        self.widget_scaling = ScalingTracker.get_widget_scaling(self)
+        self._widget_scaling = ScalingTracker.get_widget_scaling(self)
+        self._spacing_scaling = ScalingTracker.get_spacing_scaling(self)
 
         self.values = values
         self.command = command
@@ -44,12 +46,13 @@ class DropdownMenu(tkinter.Toplevel):
         self.button_corner_radius = button_corner_radius
         self.button_height = button_height
         self.width = width
-        self.height = max(len(self.values), 1) * (self.button_height + y_spacing) + y_spacing
+        self.height = max(len(self.values), 1) * (self.button_height + self.apply_spacing_scaling(y_spacing)) + self.apply_spacing_scaling(y_spacing)
 
         self.geometry(f"{round(self.apply_widget_scaling(self.width))}x" +
                       f"{round(self.apply_widget_scaling(self.height))}+" +
                       f"{round(x_position)}+{round(y_position)}")
         self.grid_columnconfigure(0, weight=1)
+        self.grid_rowconfigure(0, weight=1)
 
         if sys.platform.startswith("darwin"):
             self.overrideredirect(True)  # remove title-bar
@@ -82,8 +85,8 @@ class DropdownMenu(tkinter.Toplevel):
                                                 corner_radius=self.corner_radius,
                                                 fg_color=self.fg_color, overwrite_preferred_drawing_method="circle_shapes")
 
-        self.frame.grid(row=0, column=0, sticky="nsew", rowspan=len(self.values) + 1)
-        self.frame.grid_rowconfigure(len(self.values) + 1, minsize=y_spacing)  # add spacing at the bottom
+        self.frame.grid(row=0, column=0, sticky="nsew", rowspan=1)
+        self.frame.grid_rowconfigure(len(self.values) + 1, minsize=self.apply_spacing_scaling(y_spacing))  # add spacing at the bottom
         self.frame.grid_columnconfigure(0, weight=1)
 
         self.button_list = []
@@ -91,7 +94,7 @@ class DropdownMenu(tkinter.Toplevel):
             button = customtkinter.CTkButton(self.frame,
                                              text=option,
                                              height=self.button_height,
-                                             width=self.width - 2 * x_spacing,
+                                             width=self.width - 2 * self.apply_widget_scaling(x_spacing),
                                              fg_color=self.button_color,
                                              text_color=self.text_color,
                                              hover_color=self.button_hover_color,
@@ -100,16 +103,22 @@ class DropdownMenu(tkinter.Toplevel):
             button.text_label.configure(anchor="w")
             button.text_label.grid(row=0, column=0, rowspan=2, columnspan=2, sticky="w")
             button.grid(row=index, column=0,
-                        padx=x_spacing,
-                        pady=(y_spacing, 0), sticky="ew")
+                        padx=self.apply_widget_scaling(x_spacing),
+                        pady=(self.apply_widget_scaling(y_spacing), 0), sticky="ew")
             self.button_list.append(button)
 
         self.bind("<FocusOut>", self.focus_loss_event)
         self.frame.canvas.bind("<Button-1>", self.focus_loss_event)
 
-    def apply_widget_scaling(self, value):
+    def apply_widget_scaling(self, value: Union[int, float, str]) -> Union[float, str]:
         if isinstance(value, (int, float)):
-            return value * self.widget_scaling
+            return value * self._widget_scaling
+        else:
+            return value
+
+    def apply_spacing_scaling(self, value: Union[int, float, str]) -> Union[float, str]:
+        if isinstance(value, (int, float)):
+            return value * self._spacing_scaling
         else:
             return value
 

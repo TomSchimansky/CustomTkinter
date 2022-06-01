@@ -11,7 +11,7 @@ app.title("Tkinter Variable Test")
 txt_var = tkinter.StringVar(value="")
 entry_1 = customtkinter.CTkEntry(app, width=200, textvariable=txt_var)
 entry_1.pack(pady=15)
-txt_var.set("new text wjkfjdshkjfb")
+txt_var.set("new text test")
 if TEST_CONFIGURE: entry_1.configure(textvariable=txt_var)
 if TEST_REMOVING: entry_1.configure(textvariable="")
 
