@@ -159,7 +159,7 @@ class CTkBaseClass(tkinter.Frame):
             elif hasattr(master_widget.master, "master"):
                 return self.detect_color_of_master(self.master.master)
 
-        elif isinstance(master_widget, (ttk.Frame, ttk.LabelFrame, ttk.Notebook)):  # master is ttk widget
+        elif isinstance(master_widget, (ttk.Frame, ttk.LabelFrame, ttk.Notebook, ttk.Label)):  # master is ttk widget
             try:
                 ttk_style = ttk.Style()
                 return ttk_style.lookup(master_widget.winfo_class(), 'background')

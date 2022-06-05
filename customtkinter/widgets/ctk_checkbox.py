@@ -49,7 +49,11 @@ class CTkCheckBox(CTkBaseClass):
         self.border_width = ThemeManager.theme["shape"]["checkbox_border_width"] if border_width == "default_theme" else border_width
 
         # text
-        self.text = text
+        if textvariable is None:
+            self.text = text
+        else:
+            self.text = textvariable.get()
+
         self.text_label: Union[tkinter.Label, None] = None
         self.text_color = ThemeManager.theme["color"]["text"] if text_color == "default_theme" else text_color
         self.text_color_disabled = ThemeManager.theme["color"]["text_disabled"] if text_color_disabled == "default_theme" else text_color_disabled
@@ -59,12 +63,12 @@ class CTkCheckBox(CTkBaseClass):
         self.function = command
         self.state = state
         self.hover = hover
-        self.check_state = False
+        self.check_state = (variable.get() == onvalue)
         self.onvalue = onvalue
         self.offvalue = offvalue
         self.variable: tkinter.Variable = variable
         self.variable_callback_blocked = False
-        self.textvariable = textvariable
+        self.textvariable: tkinter.Variable = textvariable
         self.variable_callback_name = None
 
         # configure grid system (1x3)
@@ -93,11 +97,10 @@ class CTkCheckBox(CTkBaseClass):
         # set select state according to variable
         if self.variable is not None:
             self.variable_callback_name = self.variable.trace_add("write", self.variable_callback)
-            if self.variable.get() == self.onvalue:
-                self.select(from_variable_callback=True)
-            elif self.variable.get() == self.offvalue:
-                self.deselect(from_variable_callback=True)
-
+        
+        if self.textvariable is not None:
+            self.textvariable_callback_name = self.textvariable.trace_add("write", self.textvariable_callback)
+       
         self.draw()  # initial draw
         self.set_cursor()
 
@@ -235,6 +238,20 @@ class CTkCheckBox(CTkBaseClass):
                 self.variable = None
 
             del kwargs["variable"]
+        
+        if "textvariable" in kwargs:
+            if self.textvariable is not None:
+                self.textvariable.trace_remove("write", self.textvariable_callback_name)
+
+            self.textvariable = kwargs["textvariable"]
+
+            if self.textvariable is not None and self.textvariable != "":
+                self.textvariable_callback_name = self.textvariable.trace_add("write", self.textvariable_callback)
+                self.set_text(self.textvariable.get())
+            else:
+                self.textvariable = None
+
+            del kwargs["textvariable"]
 
         super().configure(*args, **kwargs)
 
@@ -308,6 +325,9 @@ class CTkCheckBox(CTkBaseClass):
             elif self.variable.get() == self.offvalue:
                 self.deselect(from_variable_callback=True)
 
+    def textvariable_callback(self, var_name, index, mode):
+        self.set_text(self.textvariable.get())
+    
     def toggle(self, event=0):
         if self.state == tkinter.NORMAL:
             if self.check_state is True:
@@ -317,13 +337,13 @@ class CTkCheckBox(CTkBaseClass):
                 self.check_state = True
                 self.draw()
 
-            if self.function is not None:
-                self.function()
-
             if self.variable is not None:
                 self.variable_callback_blocked = True
                 self.variable.set(self.onvalue if self.check_state is True else self.offvalue)
                 self.variable_callback_blocked = False
+
+            if self.function is not None:
+                self.function()
 
     def select(self, from_variable_callback=False):
         self.check_state = True
