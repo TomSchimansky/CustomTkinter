@@ -226,27 +226,33 @@ class CTkButton(CTkBaseClass):
                                       padx=(2,2),
                                       pady=(self.apply_widget_scaling(self.border_width), self.apply_widget_scaling(self.border_width) + 1))
                 self.text_label.grid(row=0, column=1, sticky="w", rowspan=2, columnspan=1,
-                                     padx=(2, max(self.apply_widget_scaling(self.corner_radius), self.apply_widget_scaling(self.border_width))),
+                                     padx=(2,2),
                                      pady=(self.apply_widget_scaling(self.border_width), self.apply_widget_scaling(self.border_width) + 1))
             elif self.compound == tkinter.TOP or self.compound == "top":
-                self.image_label.grid(row=0, column=0, sticky="s", columnspan=2, rowspan=1,
+                image_sticky = self.align_content if (self.align_content == "e" or self.align_content == "w") else "s"
+                text_sticky = self.align_content if (self.align_content == "e" or self.align_content == "w") else "n"
+
+                self.image_label.grid(row=0, column=0, sticky=image_sticky, columnspan=2, rowspan=1,
                                       padx=(2,2),
                                       pady=(self.apply_widget_scaling(self.border_width), 2))
-                self.text_label.grid(row=1, column=0, sticky="n", columnspan=2, rowspan=1,
+                self.text_label.grid(row=1, column=0, sticky=text_sticky, columnspan=2, rowspan=1,
                                      padx=(2,2),
                                      pady=(2, self.apply_widget_scaling(self.border_width)))
             elif self.compound == tkinter.RIGHT or self.compound == "right":
                 self.image_label.grid(row=0, column=1, sticky="w", rowspan=2, columnspan=1,
-                                      padx=(2, 2),
+                                      padx=(2,2),
                                       pady=(self.apply_widget_scaling(self.border_width), self.apply_widget_scaling(self.border_width) + 1))
                 self.text_label.grid(row=0, column=0, sticky="e", rowspan=2, columnspan=1,
-                                     padx=(max(self.apply_widget_scaling(self.corner_radius), self.apply_widget_scaling(self.border_width)), 2),
+                                     padx=(2,2),
                                      pady=(self.apply_widget_scaling(self.border_width), self.apply_widget_scaling(self.border_width) + 1))
             elif self.compound == tkinter.BOTTOM or self.compound == "bottom":
-                self.image_label.grid(row=1, column=0, sticky="n", columnspan=2, rowspan=1,
+                image_sticky = self.align_content if (self.align_content == "e" or self.align_content == "w") else "n"
+                text_sticky = self.align_content if (self.align_content == "e" or self.align_content == "w") else "s"
+
+                self.image_label.grid(row=1, column=0, sticky=image_sticky, columnspan=2, rowspan=1,
                                       padx=(2,2),
                                       pady=(2, self.apply_widget_scaling(self.border_width)))
-                self.text_label.grid(row=0, column=0, sticky="s", columnspan=2, rowspan=1,
+                self.text_label.grid(row=0, column=0, sticky=text_sticky, columnspan=2, rowspan=1,
                                      padx=(2,2),
                                      pady=(self.apply_widget_scaling(self.border_width), 2))
 
