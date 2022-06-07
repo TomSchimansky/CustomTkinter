@@ -224,42 +224,43 @@ class CTkButton(CTkBaseClass):
             if self.compound == tkinter.LEFT or self.compound == "left":
                 self.image_label.grid(row=0, column=0, sticky="e", rowspan=2, columnspan=1,
                                       padx=(2,2),
-                                      pady=(self.apply_widget_scaling(self.border_width), self.apply_widget_scaling(self.border_width) + 1))
+                                      pady=(2,2))
                 self.text_label.grid(row=0, column=1, sticky="w", rowspan=2, columnspan=1,
                                      padx=(2,2),
-                                     pady=(self.apply_widget_scaling(self.border_width), self.apply_widget_scaling(self.border_width) + 1))
+                                     pady=(2,2))
             elif self.compound == tkinter.TOP or self.compound == "top":
                 image_sticky = self.align_content if (self.align_content == "e" or self.align_content == "w") else "s"
                 text_sticky = self.align_content if (self.align_content == "e" or self.align_content == "w") else "n"
 
                 self.image_label.grid(row=0, column=0, sticky=image_sticky, columnspan=2, rowspan=1,
                                       padx=(2,2),
-                                      pady=(self.apply_widget_scaling(self.border_width), 2))
+                                      pady=(2,2))
                 self.text_label.grid(row=1, column=0, sticky=text_sticky, columnspan=2, rowspan=1,
                                      padx=(2,2),
-                                     pady=(2, self.apply_widget_scaling(self.border_width)))
+                                     pady=(2,2))
             elif self.compound == tkinter.RIGHT or self.compound == "right":
                 self.image_label.grid(row=0, column=1, sticky="w", rowspan=2, columnspan=1,
                                       padx=(2,2),
-                                      pady=(self.apply_widget_scaling(self.border_width), self.apply_widget_scaling(self.border_width) + 1))
+                                      pady=(2,2))
                 self.text_label.grid(row=0, column=0, sticky="e", rowspan=2, columnspan=1,
                                      padx=(2,2),
-                                     pady=(self.apply_widget_scaling(self.border_width), self.apply_widget_scaling(self.border_width) + 1))
+                                     pady=(2,2))
             elif self.compound == tkinter.BOTTOM or self.compound == "bottom":
                 image_sticky = self.align_content if (self.align_content == "e" or self.align_content == "w") else "n"
                 text_sticky = self.align_content if (self.align_content == "e" or self.align_content == "w") else "s"
 
                 self.image_label.grid(row=1, column=0, sticky=image_sticky, columnspan=2, rowspan=1,
                                       padx=(2,2),
-                                      pady=(2, self.apply_widget_scaling(self.border_width)))
+                                      pady=(2,2))
                 self.text_label.grid(row=0, column=0, sticky=text_sticky, columnspan=2, rowspan=1,
                                      padx=(2,2),
-                                     pady=(self.apply_widget_scaling(self.border_width), 2))
+                                     pady=(2,2))
 
         # put central content onto frame
         self.content_frame.grid(row=0, column=0, rowspan=2, columnspan=2, sticky=self.align_content,
                           padx=(max(self.apply_widget_scaling(self.corner_radius), self.apply_widget_scaling(self.border_width)),
-                                max(self.apply_widget_scaling(self.corner_radius), self.apply_widget_scaling(self.border_width))))
+                                max(self.apply_widget_scaling(self.corner_radius), self.apply_widget_scaling(self.border_width))),
+                          pady=(self.apply_widget_scaling(self.border_width), self.apply_widget_scaling(self.border_width) + 1))
         
     def configure(self, *args, **kwargs):
         require_redraw = False  # some attribute changes require a call of self.draw() at the end
