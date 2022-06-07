@@ -65,7 +65,7 @@ class CTkButton(CTkBaseClass):
         self.compound = compound
         self.click_animation_running = False
 
-        self.canvas = CTkCanvas(self,
+        self.canvas = CTkCanvas(master=self,
                                 highlightthickness=0,
                                 width=self.apply_widget_scaling(self._desired_width),
                                 height=self.apply_widget_scaling(self._desired_height))
