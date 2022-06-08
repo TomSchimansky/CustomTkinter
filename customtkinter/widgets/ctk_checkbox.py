@@ -63,7 +63,10 @@ class CTkCheckBox(CTkBaseClass):
         self.function = command
         self.state = state
         self.hover = hover
-        self.check_state = (variable.get() == onvalue)
+        if variable == None:
+            self.check_state = False
+        else:
+            self.check_state = (variable.get() == onvalue)
         self.onvalue = onvalue
         self.offvalue = offvalue
         self.variable: tkinter.Variable = variable
