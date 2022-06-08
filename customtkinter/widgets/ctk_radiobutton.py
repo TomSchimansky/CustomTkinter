@@ -287,11 +287,11 @@ class CTkRadioButton(CTkBaseClass):
                 self.check_state = True
                 self.select()
 
-        if self.function is not None:
-            try:
-                self.function()
-            except:
-                pass
+            if self.function is not None:
+                try:
+                    self.function()
+                except:
+                    pass
 
     def select(self, from_variable_callback=False):
         self.check_state = True
