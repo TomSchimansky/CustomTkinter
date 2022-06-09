@@ -43,6 +43,8 @@ if FontManager.load_font(os.path.join(script_directory, "assets", "fonts", "Cust
 # import widgets
 from .widgets.ctk_button import CTkButton
 from .widgets.ctk_checkbox import CTkCheckBox
+from .widgets.ctk_hdivider import CTkHorizontalDivider
+from .widgets.ctk_vdivider import CTkVerticalDivider
 from .widgets.ctk_entry import CTkEntry
 from .widgets.ctk_slider import CTkSlider
 from .widgets.ctk_frame import CTkFrame
