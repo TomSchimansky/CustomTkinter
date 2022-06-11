@@ -56,7 +56,6 @@ class DropdownMenu(tkinter.Toplevel):
 
         if sys.platform.startswith("darwin"):
             self.overrideredirect(True)  # remove title-bar
-            self.overrideredirect(False)
             self.wm_attributes("-transparent", True)  # turn off window shadow
             self.config(bg='systemTransparent')  # transparent bg
             self.frame = customtkinter.CTkFrame(self,
