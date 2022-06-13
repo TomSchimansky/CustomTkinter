@@ -51,7 +51,7 @@ class CTkEntry(CTkBaseClass):
                                 highlightthickness=0,
                                 width=self.apply_widget_scaling(self._current_width),
                                 height=self.apply_widget_scaling(self._current_height))
-        self.canvas.grid(column=0, row=0, sticky="we")
+        self.canvas.grid(column=0, row=0, sticky="nswe")
         self.draw_engine = DrawEngine(self.canvas)
 
         self.entry = tkinter.Entry(master=self,
@@ -61,8 +61,9 @@ class CTkEntry(CTkBaseClass):
                                    font=self.apply_font_scaling(self.text_font),
                                    state=self.state,
                                    **kwargs)
-        self.entry.grid(column=0, row=0, sticky="we",
-                        padx=self.apply_widget_scaling(self.corner_radius) if self.corner_radius >= 6 else self.apply_widget_scaling(6))
+        self.entry.grid(column=0, row=0, sticky="nswe",
+                        padx=self.apply_widget_scaling(self.corner_radius) if self.corner_radius >= 6 else self.apply_widget_scaling(6),
+                        pady=(self.apply_widget_scaling(self.border_width), self.apply_widget_scaling(self.border_width + 1)))
 
         super().bind('<Configure>', self.update_dimensions_event)
         self.entry.bind('<FocusOut>', self.set_placeholder)

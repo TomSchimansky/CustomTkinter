@@ -3,6 +3,7 @@ import sys
 from typing import Union
 
 from .dropdown_menu import DropdownMenu
+from .dropdown_menu_fallback import DropdownMenuFallback
 
 from .ctk_canvas import CTkCanvas
 from ..theme_manager import ThemeManager
@@ -168,15 +169,22 @@ class CTkOptionMenu(CTkBaseClass):
             self.text_label.configure(bg=ThemeManager.single_color(self.fg_color, self._appearance_mode))
 
     def open_dropdown_menu(self):
-        self.dropdown_menu = DropdownMenu(x_position=self.winfo_rootx(),
-                                          y_position=self.winfo_rooty() + self.apply_widget_scaling(self._current_height + 4),
-                                          width=self._current_width,
-                                          values=self.values,
-                                          command=self.set,
-                                          fg_color=self.dropdown_color,
-                                          button_hover_color=self.dropdown_hover_color,
-                                          button_color=self.dropdown_color,
-                                          text_color=self.dropdown_text_color)
+        if not Settings.use_dropdown_fallback:
+            self.dropdown_menu = DropdownMenu(x_position=self.winfo_rootx(),
+                                              y_position=self.winfo_rooty() + self.apply_widget_scaling(self._current_height + 4),
+                                              width=self._current_width,
+                                              values=self.values,
+                                              command=self.set,
+                                              fg_color=self.dropdown_color,
+                                              button_hover_color=self.dropdown_hover_color,
+                                              button_color=self.dropdown_color,
+                                              text_color=self.dropdown_text_color)
+        else:
+            self.dropdown_menu = DropdownMenuFallback(master=self,
+                                                      values=self.values,
+                                                      command=self.set)
+            self.dropdown_menu.open(x=self.winfo_rootx(),
+                                    y=self.winfo_rooty() + self.apply_widget_scaling(self._current_height + 0))
 
     def configure(self, *args, **kwargs):
         require_redraw = False  # some attribute changes require a call of self.draw() at the end

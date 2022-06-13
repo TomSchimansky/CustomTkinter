@@ -1,6 +1,8 @@
 import customtkinter
 import tkinter
 import sys
+from distutils.version import StrictVersion as Version
+import platform
 from typing import Union
 
 from ..theme_manager import ThemeManager
@@ -55,8 +57,15 @@ class DropdownMenu(tkinter.Toplevel):
         self.grid_rowconfigure(0, weight=1)
 
         if sys.platform.startswith("darwin"):
-            self.overrideredirect(True)  # remove title-bar
-            self.overrideredirect(False)
+            if Version(platform.python_version()) < Version("3.10"):
+                self.focus()
+                self.overrideredirect(True)  # remove title-bar
+                self.overrideredirect(False)
+            else:
+                self.overrideredirect(True)
+                self.geometry(f"+{round(x_position)}+{round(y_position)}")
+                self.focus_set()
+
             self.wm_attributes("-transparent", True)  # turn off window shadow
             self.config(bg='systemTransparent')  # transparent bg
             self.frame = customtkinter.CTkFrame(self,
@@ -74,16 +83,17 @@ class DropdownMenu(tkinter.Toplevel):
                                                 border_width=0,
                                                 width=self.width,
                                                 corner_radius=self.corner_radius,
-                                                fg_color=self.fg_color, overwrite_preferred_drawing_method="circle_shapes")
-        else:
+                                                fg_color=self.fg_color,
+                                                overwrite_preferred_drawing_method="circle_shapes")
+        else:  # Linux
             self.overrideredirect(True)  # remove title-bar
-            self.configure(bg="#010302")
-            self.wm_attributes("-transparentcolor", "#010302")
+            # self.configure(bg="#010302")
+            # self.wm_attributes("-transparentcolor", "#010302")
             self.frame = customtkinter.CTkFrame(self,
                                                 border_width=0,
                                                 width=self.width,
-                                                corner_radius=self.corner_radius,
-                                                fg_color=self.fg_color, overwrite_preferred_drawing_method="circle_shapes")
+                                                corner_radius=0,
+                                                fg_color=self.fg_color)
 
         self.frame.grid(row=0, column=0, sticky="nsew", rowspan=1)
         self.frame.grid_rowconfigure(len(self.values) + 1, minsize=self.apply_spacing_scaling(y_spacing))  # add spacing at the bottom
@@ -108,7 +118,6 @@ class DropdownMenu(tkinter.Toplevel):
             self.button_list.append(button)
 
         self.bind("<FocusOut>", self.focus_loss_event)
-        self.frame.canvas.bind("<Button-1>", self.focus_loss_event)
 
     def apply_widget_scaling(self, value: Union[int, float, str]) -> Union[float, str]:
         if isinstance(value, (int, float)):
