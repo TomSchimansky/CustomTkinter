@@ -1,8 +1,6 @@
 import tkinter
 import customtkinter
 
-customtkinter.set_widget_scaling(2)
-
 customtkinter.set_appearance_mode("dark")  # Modes: "System" (standard), "Dark", "Light"
 customtkinter.set_default_color_theme("blue")  # Themes: "blue" (standard), "green", "dark-blue"
 
@@ -42,7 +40,7 @@ optionmenu_1 = customtkinter.CTkOptionMenu(frame_1, values=["Option 1", "Option 
 optionmenu_1.pack(pady=12, padx=10)
 optionmenu_1.set("CTkOptionMenu")
 
-combobox_1 = customtkinter.CTkComboBox(frame_1, values=["Option 1", "Option 2", "Option 42"])
+combobox_1 = customtkinter.CTkComboBox(frame_1, values=["Option 1", "Option 2", "Option 42 long long long..."])
 combobox_1.pack(pady=12, padx=10)
 optionmenu_1.set("CTkComboBox")
 

@@ -1,8 +1,7 @@
-import customtkinter
 import tkinter
 import sys
-from distutils.version import StrictVersion as Version
-import platform
+import copy
+import re
 from typing import Union
 
 from ..theme_manager import ThemeManager
@@ -10,20 +9,13 @@ from ..appearance_mode_tracker import AppearanceModeTracker
 from ..scaling_tracker import ScalingTracker
 
 
-class DropdownMenu(tkinter.Toplevel):
+class DropdownMenu(tkinter.Menu):
     def __init__(self, *args,
-                 fg_color="#555555",
-                 button_color="gray50",
-                 button_hover_color="gray35",
-                 text_color="black",
-                 corner_radius=6,
-                 button_corner_radius=3,
-                 width=120,
-                 button_height=24,
-                 x_position=0,
-                 y_position=0,
-                 x_spacing=3,
-                 y_spacing=3,
+                 min_character_width=18,
+                 fg_color="default_theme",
+                 hover_color="default_theme",
+                 text_color="default_theme",
+                 text_font="default_theme",
                  command=None,
                  values=None,
                  **kwargs):
@@ -33,92 +25,93 @@ class DropdownMenu(tkinter.Toplevel):
         self._widget_scaling = ScalingTracker.get_widget_scaling(self)
         self._spacing_scaling = ScalingTracker.get_spacing_scaling(self)
 
+        AppearanceModeTracker.add(self.set_appearance_mode, self)
+        self._appearance_mode = AppearanceModeTracker.get_mode()  # 0: "Light" 1: "Dark"
+
+        self.min_character_width = min_character_width
+        self.fg_color = ThemeManager.theme["color"]["dropdown_color"] if fg_color == "default_theme" else fg_color
+        self.hover_color = ThemeManager.theme["color"]["dropdown_hover"] if hover_color == "default_theme" else hover_color
+        self.text_color = ThemeManager.theme["color"]["text"] if text_color == "default_theme" else text_color
+        self.text_font = (ThemeManager.theme["text"]["font"], ThemeManager.theme["text"]["size"]) if text_font == "default_theme" else text_font
+
+        if sys.platform == "darwin":
+            self.configure(tearoff=False,
+                           font=self.apply_font_scaling(self.text_font))
+
+        elif sys.platform.startswith("win"):
+            self.configure(tearoff=False,
+                           relief="flat",
+                           activebackground=ThemeManager.single_color(self.hover_color, self._appearance_mode),
+                           borderwidth=0,
+                           activeborderwidth=self.apply_widget_scaling(4),
+                           bg=ThemeManager.single_color(self.fg_color, self._appearance_mode),
+                           fg=ThemeManager.single_color(self.text_color, self._appearance_mode),
+                           activeforeground=ThemeManager.single_color(self.text_color, self._appearance_mode),
+                           font=self.apply_font_scaling(self.text_font),
+                           cursor="hand2")
+
+        else:
+            self.configure(tearoff=False,
+                           relief="flat",
+                           activebackground=ThemeManager.single_color(self.hover_color, self._appearance_mode),
+                           borderwidth=0,
+                           activeborderwidth=0,
+                           bg=ThemeManager.single_color(self.fg_color, self._appearance_mode),
+                           fg=ThemeManager.single_color(self.text_color, self._appearance_mode),
+                           activeforeground=ThemeManager.single_color(self.text_color, self._appearance_mode),
+                           font=self.apply_font_scaling(self.text_font))
+
         self.values = values
         self.command = command
 
-        # color
-        self.appearance_mode = AppearanceModeTracker.get_mode()  # 0: "Light" 1: "Dark"
-        self.fg_color = fg_color
-        self.button_color = button_color
-        self.button_hover_color = button_hover_color
-        self.text_color = text_color
+        self.add_menu_commands()
 
-        # shape
-        self.corner_radius = corner_radius
-        self.button_corner_radius = button_corner_radius
-        self.button_height = button_height
-        self.width = width
-        self.height = max(len(self.values), 1) * (self.button_height + self.apply_spacing_scaling(y_spacing)) + self.apply_spacing_scaling(y_spacing)
+    def add_menu_commands(self):
+        for value in self.values:
+            self.add_command(label=value.ljust(self.min_character_width),
+                             command=lambda v=value: self.button_callback(v),
+                             compound="left")
 
-        self.geometry(f"{round(self.apply_widget_scaling(self.width))}x" +
-                      f"{round(self.apply_widget_scaling(self.height))}+" +
-                      f"{round(x_position)}+{round(y_position)}")
-        self.grid_columnconfigure(0, weight=1)
-        self.grid_rowconfigure(0, weight=1)
+    def open(self, x: Union[int, float], y: Union[int, float]):
+        if sys.platform == "darwin":
+            y += self.apply_widget_scaling(8)
+        else:
+            y += self.apply_widget_scaling(3)
 
-        if sys.platform.startswith("darwin"):
-            if Version(platform.python_version()) < Version("3.10"):
-                self.focus()
-                self.overrideredirect(True)  # remove title-bar
-                self.overrideredirect(False)
-            else:
-                self.overrideredirect(True)
-                self.geometry(f"+{round(x_position)}+{round(y_position)}")
-                self.focus_set()
+        self.post(int(x), int(y))
 
-            self.wm_attributes("-transparent", True)  # turn off window shadow
-            self.config(bg='systemTransparent')  # transparent bg
-            self.frame = customtkinter.CTkFrame(self,
-                                                border_width=0,
-                                                width=self.width,
-                                                corner_radius=self.corner_radius,
-                                                fg_color=ThemeManager.single_color(self.fg_color, self.appearance_mode))
+    def button_callback(self, value):
+        if self.command is not None:
+            self.command(value)
 
-        elif sys.platform.startswith("win"):
-            self.overrideredirect(True)  # remove title-bar
-            #self.configure(bg="#010302")
-            #self.wm_attributes("-transparent", "#010302")
-            self.focus()
-            self.focus()
-            self.frame = customtkinter.CTkFrame(self,
-                                                border_width=0,
-                                                width=self.width,
-                                                corner_radius=0,
-                                                fg_color=self.fg_color,
-                                                overwrite_preferred_drawing_method="circle_shapes")
-        else:  # Linux
-            self.overrideredirect(True)  # remove title-bar
-            # self.configure(bg="#010302")
-            # self.wm_attributes("-transparentcolor", "#010302")
-            self.frame = customtkinter.CTkFrame(self,
-                                                border_width=0,
-                                                width=self.width,
-                                                corner_radius=0,
-                                                fg_color=self.fg_color)
+    def configure(self, **kwargs):
+        if "values" in kwargs:
+            self.values = kwargs["values"]
+            del kwargs["values"]
+            self.delete(0, "end")  # delete all old commands
+            self.add_menu_commands()
 
-        self.frame.grid(row=0, column=0, sticky="nsew", rowspan=1)
-        self.frame.grid_rowconfigure(len(self.values) + 1, minsize=self.apply_spacing_scaling(y_spacing))  # add spacing at the bottom
-        self.frame.grid_columnconfigure(0, weight=1)
+        if "fg_color" in kwargs:
+            self.fg_color = kwargs["fg_color"]
+            del kwargs["fg_color"]
+            self.configure(bg=ThemeManager.single_color(self.fg_color, self._appearance_mode))
 
-        self.button_list = []
-        for index, option in enumerate(self.values):
-            button = customtkinter.CTkButton(self.frame,
-                                             text=option,
-                                             height=self.button_height,
-                                             width=self.width - 2 * self.apply_widget_scaling(x_spacing),
-                                             fg_color=self.button_color,
-                                             text_color=self.text_color,
-                                             hover_color=self.button_hover_color,
-                                             corner_radius=self.button_corner_radius,
-                                             command=lambda i=index: self.button_callback(i))
-            button.text_label.configure(anchor="w")
-            button.text_label.grid(row=0, column=0, rowspan=2, columnspan=2, sticky="w")
-            button.grid(row=index, column=0,
-                        padx=self.apply_widget_scaling(x_spacing),
-                        pady=(self.apply_widget_scaling(y_spacing), 0), sticky="ew")
-            self.button_list.append(button)
+        if "hover_color" in kwargs:
+            self.hover_color = kwargs["hover_color"]
+            del kwargs["hover_color"]
+            self.configure(activebackground=ThemeManager.single_color(self.hover_color, self._appearance_mode))
 
-        self.bind("<FocusOut>", self.focus_loss_event)
+        if "text_color" in kwargs:
+            self.text_color = kwargs["text_color"]
+            del kwargs["text_color"]
+            self.configure(fg=ThemeManager.single_color(self.text_color, self._appearance_mode))
+
+        if "text_font" in kwargs:
+            self.text_font = kwargs["text_font"]
+            del kwargs["text_font"]
+            self.configure(font=self.apply_font_scaling(self.text_font))
+
+        super().configure(**kwargs)
 
     def apply_widget_scaling(self, value: Union[int, float, str]) -> Union[float, str]:
         if isinstance(value, (int, float)):
@@ -126,24 +119,41 @@ class DropdownMenu(tkinter.Toplevel):
         else:
             return value
 
-    def apply_spacing_scaling(self, value: Union[int, float, str]) -> Union[float, str]:
-        if isinstance(value, (int, float)):
-            return value * self._spacing_scaling
+    def apply_font_scaling(self, font):
+        if type(font) == tuple or type(font) == list:
+            font_list = list(font)
+            for i in range(len(font_list)):
+                if (type(font_list[i]) == int or type(font_list[i]) == float) and font_list[i] < 0:
+                    font_list[i] = int(font_list[i] * self._widget_scaling)
+            return tuple(font_list)
+
+        elif type(font) == str:
+            for negative_number in re.findall(r" -\d* ", font):
+                font = font.replace(negative_number, f" {int(int(negative_number) * self._widget_scaling)} ")
+            return font
+
+        elif isinstance(font, tkinter.font.Font):
+            new_font_object = copy.copy(font)
+            if font.cget("size") < 0:
+                new_font_object.config(size=int(font.cget("size") * self._widget_scaling))
+            return new_font_object
+
         else:
-            return value
+            return font
 
     def set_scaling(self, new_widget_scaling, new_spacing_scaling, new_window_scaling):
-        return
+        self._widget_scaling = new_widget_scaling
+        self._spacing_scaling = new_spacing_scaling
 
-    def focus_loss_event(self, event):
-        self.destroy()
-        if sys.platform.startswith("darwin"):
-            self.update()
+        self.configure(font=self.apply_font_scaling(self.text_font))
 
-    def button_callback(self, index):
-        self.destroy()
-        if sys.platform.startswith("darwin"):
-            self.update()
+        if sys.platform.startswith("win"):
+            self.configure(activeborderwidth=self.apply_widget_scaling(4))
 
-        if self.command is not None:
-            self.command(self.values[index])
+    def set_appearance_mode(self, mode_string):
+        """ colors won't update on appearance mode change when dropdown is open, because it's not necessary """
+
+        if mode_string.lower() == "dark":
+            self._appearance_mode = 1
+        elif mode_string.lower() == "light":
+            self._appearance_mode = 0

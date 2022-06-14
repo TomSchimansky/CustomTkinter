@@ -2,8 +2,8 @@ import tkinter
 import sys
 from typing import Union
 
+from .dropdown_menu_old import DropdownMenu
 from .dropdown_menu import DropdownMenu
-from .dropdown_menu_fallback import DropdownMenuFallback
 
 from .ctk_canvas import CTkCanvas
 from ..theme_manager import ThemeManager
@@ -18,6 +18,8 @@ class CTkOptionMenu(CTkBaseClass):
                  fg_color="default_theme",
                  button_color="default_theme",
                  button_hover_color="default_theme",
+                 text_color="default_theme",
+                 text_color_disabled="default_theme",
                  dropdown_color="default_theme",
                  dropdown_hover_color="default_theme",
                  dropdown_text_color="default_theme",
@@ -28,8 +30,7 @@ class CTkOptionMenu(CTkBaseClass):
                  height=28,
                  corner_radius="default_theme",
                  text_font="default_theme",
-                 text_color="default_theme",
-                 text_color_disabled="default_theme",
+                 dropdown_text_font="default_theme",
                  hover=True,
                  state=tkinter.NORMAL,
                  **kwargs):
@@ -41,18 +42,15 @@ class CTkOptionMenu(CTkBaseClass):
         self.fg_color = ThemeManager.theme["color"]["button"] if fg_color == "default_theme" else fg_color
         self.button_color = ThemeManager.theme["color"]["optionmenu_button"] if button_color == "default_theme" else button_color
         self.button_hover_color = ThemeManager.theme["color"]["optionmenu_button_hover"] if button_hover_color == "default_theme" else button_hover_color
-        self.dropdown_color = ThemeManager.theme["color"]["dropdown_color"] if dropdown_color == "default_theme" else dropdown_color
-        self.dropdown_hover_color = ThemeManager.theme["color"]["dropdown_hover"] if dropdown_hover_color == "default_theme" else dropdown_hover_color
-        self.dropdown_text_color = ThemeManager.theme["color"]["dropdown_text"] if dropdown_text_color == "default_theme" else dropdown_text_color
 
         # shape
         self.corner_radius = ThemeManager.theme["shape"]["button_corner_radius"] if corner_radius == "default_theme" else corner_radius
 
         # text and font
-        self.text_label = None
         self.text_color = ThemeManager.theme["color"]["text"] if text_color == "default_theme" else text_color
         self.text_color_disabled = ThemeManager.theme["color"]["text_button_disabled"] if text_color_disabled == "default_theme" else text_color_disabled
         self.text_font = (ThemeManager.theme["text"]["font"], ThemeManager.theme["text"]["size"]) if text_font == "default_theme" else text_font
+        self.dropdown_text_font = dropdown_text_font
 
         # callback and hover functionality
         self.function = command
@@ -61,7 +59,6 @@ class CTkOptionMenu(CTkBaseClass):
         self.variable_callback_name = None
         self.state = state
         self.hover = hover
-        self.click_animation_running = False
 
         if values is None:
             self.values = ["CTkOptionMenu"]
@@ -73,9 +70,13 @@ class CTkOptionMenu(CTkBaseClass):
         else:
             self.current_value = "CTkOptionMenu"
 
-        self.dropdown_menu: Union[DropdownMenu, DropdownMenuFallback, None] = DropdownMenuFallback(master=self,
-                                                                                                   values=self.values,
-                                                                                                   command=self.set)
+        self.dropdown_menu = DropdownMenu(master=self,
+                                          values=self.values,
+                                          command=self.set,
+                                          fg_color=dropdown_color,
+                                          hover_color=dropdown_hover_color,
+                                          text_color=dropdown_text_color,
+                                          text_font=dropdown_text_font)
 
         # configure grid system (1x1)
         self.grid_rowconfigure(0, weight=1)
@@ -88,6 +89,12 @@ class CTkOptionMenu(CTkBaseClass):
         self.canvas.grid(row=0, column=0, rowspan=1, columnspan=1, sticky="nsew")
         self.draw_engine = DrawEngine(self.canvas)
 
+        left_section_width = self._current_width - self._current_height
+        self.text_label = tkinter.Label(master=self, font=self.apply_font_scaling(self.text_font))
+        self.text_label.grid(row=0, column=0, sticky="w",
+                             padx=(max(self.apply_widget_scaling(self.corner_radius), self.apply_widget_scaling(3)),
+                                   max(self.apply_widget_scaling(self._current_width - left_section_width + 3), self.apply_widget_scaling(3))))
+
         if Settings.cursor_manipulation_enabled:
             if sys.platform == "darwin":
                 self.configure(cursor="pointinghand")
@@ -99,6 +106,12 @@ class CTkOptionMenu(CTkBaseClass):
         self.canvas.bind("<Leave>", self.on_leave)
         self.canvas.bind("<Button-1>", self.clicked)
         self.canvas.bind("<Button-1>", self.clicked)
+
+        self.text_label.bind("<Enter>", self.on_enter)
+        self.text_label.bind("<Leave>", self.on_leave)
+        self.text_label.bind("<Button-1>", self.clicked)
+        self.text_label.bind("<Button-1>", self.clicked)
+
         self.bind('<Configure>', self.update_dimensions_event)
 
         self.draw()  # initial draw
@@ -136,17 +149,6 @@ class CTkOptionMenu(CTkBaseClass):
         requires_recoloring_2 = self.draw_engine.draw_dropdown_arrow(self.apply_widget_scaling(self._current_width - (self._current_height / 2)),
                                                                      self.apply_widget_scaling(self._current_height / 2),
                                                                      self.apply_widget_scaling(self._current_height / 3))
-        if self.text_label is None:
-            self.text_label = tkinter.Label(master=self,
-                                            font=self.apply_font_scaling(self.text_font))
-            self.text_label.grid(row=0, column=0, sticky="w",
-                                 padx=(max(self.apply_widget_scaling(self.corner_radius), self.apply_widget_scaling(3)),
-                                       max(self.apply_widget_scaling(self._current_width - left_section_width + 3), self.apply_widget_scaling(3))))
-
-            self.text_label.bind("<Enter>", self.on_enter)
-            self.text_label.bind("<Leave>", self.on_leave)
-            self.text_label.bind("<Button-1>", self.clicked)
-            self.text_label.bind("<Button-1>", self.clicked)
 
         if self.current_value is not None:
             self.text_label.configure(text=self.current_value)
@@ -245,6 +247,22 @@ class CTkOptionMenu(CTkBaseClass):
             self.values = kwargs["values"]
             del kwargs["values"]
             self.dropdown_menu.configure(values=self.values)
+
+        if "dropdown_color" in kwargs:
+            self.dropdown_menu.configure(fg_color=kwargs["dropdown_color"])
+            del kwargs["dropdown_color"]
+
+        if "dropdown_hover_color" in kwargs:
+            self.dropdown_menu.configure(hover_color=kwargs["dropdown_hover_color"])
+            del kwargs["dropdown_hover_color"]
+
+        if "dropdown_text_color" in kwargs:
+            self.dropdown_menu.configure(text_color=kwargs["dropdown_text_color"])
+            del kwargs["dropdown_text_color"]
+
+        if "dropdown_text_font" in kwargs:
+            self.dropdown_menu.configure(text_font=kwargs["dropdown_text_font"])
+            del kwargs["dropdown_text_font"]
 
         super().configure(*args, **kwargs)
 

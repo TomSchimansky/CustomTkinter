@@ -27,7 +27,13 @@
     "switch_progress": ["#00e6c3", "#00e6c3"],
     "switch_button": ["#2e324a", "#2e324a"],
     "switch_button_hover": ["#2e324a", "#2e324a"],
-    "darken_factor": 0.1
+    "optionmenu_button": ["#36719F", "#144870"],
+    "optionmenu_button_hover": ["#27577D", "#203A4F"],
+    "combobox_border": ["#979DA2", "#565B5E"],
+    "combobox_button_hover": ["#6E7174", "#7A848D"],
+    "dropdown_color": ["gray90", "gray20"],
+    "dropdown_hover": ["gray75", "gray28"],
+    "dropdown_text": ["gray10", "#DCE4EE"]
   },
   "text": {
     "macOS": {
