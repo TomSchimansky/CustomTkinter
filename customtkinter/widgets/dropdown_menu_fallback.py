@@ -35,7 +35,11 @@ class DropdownMenuFallback(tkinter.Menu):
         self.text_color = ThemeManager.theme["color"]["text"] if text_color == "default_theme" else text_color
         self.text_font = (ThemeManager.theme["text"]["font"], ThemeManager.theme["text"]["size"]) if text_font == "default_theme" else text_font
 
-        if sys.platform.startswith("win"):
+        if sys.platform == "darwin":
+            self.configure(tearoff=False,
+                           font=self.apply_font_scaling(self.text_font))
+
+        elif sys.platform.startswith("win"):
             self.configure(tearoff=False,
                            relief="flat",
                            activebackground=ThemeManager.single_color(self.button_hover_color, self._appearance_mode),
