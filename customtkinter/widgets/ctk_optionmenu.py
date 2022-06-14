@@ -13,7 +13,6 @@ from .widget_base_class import CTkBaseClass
 
 
 class CTkOptionMenu(CTkBaseClass):
-
     def __init__(self, *args,
                  bg_color=None,
                  fg_color="default_theme",
@@ -74,7 +73,9 @@ class CTkOptionMenu(CTkBaseClass):
         else:
             self.current_value = "CTkOptionMenu"
 
-        self.dropdown_menu: Union[DropdownMenu, None] = None
+        self.dropdown_menu: Union[DropdownMenu, DropdownMenuFallback, None] = DropdownMenuFallback(master=self,
+                                                                                                   values=self.values,
+                                                                                                   command=self.set)
 
         # configure grid system (1x1)
         self.grid_rowconfigure(0, weight=1)
@@ -86,6 +87,12 @@ class CTkOptionMenu(CTkBaseClass):
                                 height=self.apply_widget_scaling(self._desired_height))
         self.canvas.grid(row=0, column=0, rowspan=1, columnspan=1, sticky="nsew")
         self.draw_engine = DrawEngine(self.canvas)
+
+        if Settings.cursor_manipulation_enabled:
+            if sys.platform == "darwin":
+                self.configure(cursor="pointinghand")
+            elif sys.platform.startswith("win"):
+                self.configure(cursor="hand2")
 
         # event bindings
         self.canvas.bind("<Enter>", self.on_enter)
@@ -132,9 +139,9 @@ class CTkOptionMenu(CTkBaseClass):
         if self.text_label is None:
             self.text_label = tkinter.Label(master=self,
                                             font=self.apply_font_scaling(self.text_font))
-            self.text_label.grid(row=0, column=0, rowspan=1, columnspan=1, sticky="w",
-                                 padx=(max(self.apply_widget_scaling(self.corner_radius), 3),
-                                       max(self._current_width - left_section_width + 3, 3)))
+            self.text_label.grid(row=0, column=0, sticky="w",
+                                 padx=(max(self.apply_widget_scaling(self.corner_radius), self.apply_widget_scaling(3)),
+                                       max(self.apply_widget_scaling(self._current_width - left_section_width + 3), self.apply_widget_scaling(3))))
 
             self.text_label.bind("<Enter>", self.on_enter)
             self.text_label.bind("<Leave>", self.on_leave)
@@ -169,22 +176,8 @@ class CTkOptionMenu(CTkBaseClass):
             self.text_label.configure(bg=ThemeManager.single_color(self.fg_color, self._appearance_mode))
 
     def open_dropdown_menu(self):
-        if not Settings.use_dropdown_fallback:
-            self.dropdown_menu = DropdownMenu(x_position=self.winfo_rootx(),
-                                              y_position=self.winfo_rooty() + self.apply_widget_scaling(self._current_height + 4),
-                                              width=self._current_width,
-                                              values=self.values,
-                                              command=self.set,
-                                              fg_color=self.dropdown_color,
-                                              button_hover_color=self.dropdown_hover_color,
-                                              button_color=self.dropdown_color,
-                                              text_color=self.dropdown_text_color)
-        else:
-            self.dropdown_menu = DropdownMenuFallback(master=self,
-                                                      values=self.values,
-                                                      command=self.set)
-            self.dropdown_menu.open(x=self.winfo_rootx(),
-                                    y=self.winfo_rooty() + self.apply_widget_scaling(self._current_height + 0))
+        self.dropdown_menu.open(self.winfo_rootx(),
+                                self.winfo_rooty() + self.apply_widget_scaling(self._current_height + 0))
 
     def configure(self, *args, **kwargs):
         require_redraw = False  # some attribute changes require a call of self.draw() at the end
@@ -251,6 +244,7 @@ class CTkOptionMenu(CTkBaseClass):
         if "values" in kwargs:
             self.values = kwargs["values"]
             del kwargs["values"]
+            self.dropdown_menu.configure(values=self.values)
 
         super().configure(*args, **kwargs)
 
@@ -259,33 +253,17 @@ class CTkOptionMenu(CTkBaseClass):
 
     def on_enter(self, event=0):
         if self.hover is True and self.state == tkinter.NORMAL and len(self.values) > 0:
-            if sys.platform == "darwin" and len(self.values) > 0 and Settings.cursor_manipulation_enabled:
-                self.configure(cursor="pointinghand")
-            elif sys.platform.startswith("win") and len(self.values) > 0 and Settings.cursor_manipulation_enabled:
-                self.configure(cursor="hand2")
-
             # set color of inner button parts to hover color
             self.canvas.itemconfig("inner_parts_right",
                                    outline=ThemeManager.single_color(self.button_hover_color, self._appearance_mode),
                                    fill=ThemeManager.single_color(self.button_hover_color, self._appearance_mode))
 
     def on_leave(self, event=0):
-        self.click_animation_running = False
-
         if self.hover is True:
-            if sys.platform == "darwin" and len(self.values) > 0 and Settings.cursor_manipulation_enabled:
-                self.configure(cursor="arrow")
-            elif sys.platform.startswith("win") and len(self.values) > 0 and Settings.cursor_manipulation_enabled:
-                self.configure(cursor="arrow")
-
             # set color of inner button parts
             self.canvas.itemconfig("inner_parts_right",
                                    outline=ThemeManager.single_color(self.button_color, self._appearance_mode),
                                    fill=ThemeManager.single_color(self.button_color, self._appearance_mode))
-
-    def click_animation(self):
-        if self.click_animation_running:
-            self.on_enter()
 
     def variable_callback(self, var_name, index, mode):
         if not self.variable_callback_blocked:
@@ -314,8 +292,3 @@ class CTkOptionMenu(CTkBaseClass):
     def clicked(self, event=0):
         if self.state is not tkinter.DISABLED and len(self.values) > 0:
             self.open_dropdown_menu()
-
-            # click animation: change color with .on_leave() and back to normal after 100ms with click_animation()
-            self.on_leave()
-            self.click_animation_running = True
-            self.after(100, self.click_animation)
