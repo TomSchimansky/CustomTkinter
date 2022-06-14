@@ -76,13 +76,14 @@ class DropdownMenu(tkinter.Toplevel):
 
         elif sys.platform.startswith("win"):
             self.overrideredirect(True)  # remove title-bar
-            self.configure(bg="#010302")
-            self.wm_attributes("-transparentcolor", "#010302")
+            #self.configure(bg="#010302")
+            #self.wm_attributes("-transparent", "#010302")
+            self.focus()
             self.focus()
             self.frame = customtkinter.CTkFrame(self,
                                                 border_width=0,
                                                 width=self.width,
-                                                corner_radius=self.corner_radius,
+                                                corner_radius=0,
                                                 fg_color=self.fg_color,
                                                 overwrite_preferred_drawing_method="circle_shapes")
         else:  # Linux

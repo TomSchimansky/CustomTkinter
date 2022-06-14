@@ -1,8 +1,6 @@
 import tkinter
 import sys
 import copy
-from distutils.version import StrictVersion as Version
-import platform
 from typing import Union
 
 from ..theme_manager import ThemeManager
@@ -51,6 +49,17 @@ class DropdownMenuFallback(tkinter.Menu):
                            font=self.apply_font_scaling(self.text_font),
                            cursor="hand2")
 
+        else:
+            self.configure(tearoff=False,
+                           relief="flat",
+                           activebackground=ThemeManager.single_color(self.button_hover_color, self._appearance_mode),
+                           borderwidth=0,
+                           activeborderwidth=0,
+                           bg=ThemeManager.single_color(self.fg_color, self._appearance_mode),
+                           fg=ThemeManager.single_color(self.text_color, self._appearance_mode),
+                           activeforeground=ThemeManager.single_color(self.text_color, self._appearance_mode),
+                           font=self.apply_font_scaling(self.text_font))
+
         self.values = values
         self.command = command
 
@@ -58,12 +67,14 @@ class DropdownMenuFallback(tkinter.Menu):
 
     def add_menu_commands(self):
         for value in self.values:
-            self.add_command(label=value.ljust(self.min_character_width), command=lambda v=value: self.button_callback(v), compound="left")
+            self.add_command(label=value.ljust(self.min_character_width),
+                             command=lambda v=value: self.button_callback(v),
+                             compound="left")
 
     def open(self, x: Union[int, float], y: Union[int, float]):
         if sys.platform == "darwin":
             y += self.apply_widget_scaling(8)
-        elif sys.platform.startswith("win"):
+        else:
             y += self.apply_widget_scaling(3)
 
         self.post(int(x), int(y))
@@ -113,8 +124,10 @@ class DropdownMenuFallback(tkinter.Menu):
         self._widget_scaling = new_widget_scaling
         self._spacing_scaling = new_spacing_scaling
 
-        self.configure(font=self.apply_font_scaling(self.text_font),
-                       activeborderwidth=self.apply_widget_scaling(4),)
+        self.configure(font=self.apply_font_scaling(self.text_font))
+
+        if sys.platform.startswith("win"):
+            self.configure(activeborderwidth=self.apply_widget_scaling(4))
 
     def set_appearance_mode(self, mode_string):
         if mode_string.lower() == "dark":
