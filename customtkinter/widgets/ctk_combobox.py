@@ -161,15 +161,15 @@ class CTkComboBox(CTkBaseClass):
                                    outline=ThemeManager.single_color(self.border_color, self._appearance_mode),
                                    fill=ThemeManager.single_color(self.border_color, self._appearance_mode))
 
-            self.entry.configure(fg=ThemeManager.single_color(self.text_color, self._appearance_mode))
-            self.entry.configure(bg=ThemeManager.single_color(self.fg_color, self._appearance_mode))
+            self.entry.configure(bg=ThemeManager.single_color(self.fg_color, self._appearance_mode),
+                                 fg=ThemeManager.single_color(self.text_color, self._appearance_mode),
+                                 disabledforeground=ThemeManager.single_color(self.text_color_disabled, self._appearance_mode),
+                                 disabledbackground=ThemeManager.single_color(self.fg_color, self._appearance_mode))
 
             if self.state == tkinter.DISABLED:
-                self.entry.configure(fg=(ThemeManager.single_color(self.text_color_disabled, self._appearance_mode)))
                 self.canvas.itemconfig("dropdown_arrow",
                                        fill=ThemeManager.single_color(self.text_color_disabled, self._appearance_mode))
             else:
-                self.entry.configure(fg=ThemeManager.single_color(self.text_color, self._appearance_mode))
                 self.canvas.itemconfig("dropdown_arrow",
                                        fill=ThemeManager.single_color(self.text_color, self._appearance_mode))
 
