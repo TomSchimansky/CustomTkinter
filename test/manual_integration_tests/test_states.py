@@ -3,7 +3,7 @@ import customtkinter
 
 
 app = customtkinter.CTk()
-app.geometry("400x800")
+app.geometry("400x900")
 app.title("CustomTkinter Test")
 
 
@@ -52,6 +52,11 @@ combobox_1 = customtkinter.CTkComboBox(app, values=["test 1", "test 2"])
 combobox_1.pack(pady=10, padx=10)
 button_7 = customtkinter.CTkButton(master=app, text="Disable/Enable combobox_1", command=lambda: change_state(combobox_1))
 button_7.pack(padx=20, pady=(10, 20))
+
+slider_1 = customtkinter.CTkSlider(app)
+slider_1.pack(pady=10, padx=10)
+button_8 = customtkinter.CTkButton(master=app, text="Disable/Enable slider_1", command=lambda: change_state(slider_1))
+button_8.pack(padx=20, pady=(10, 20))
 
 
 app.mainloop()

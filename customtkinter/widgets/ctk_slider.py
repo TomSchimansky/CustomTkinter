@@ -30,6 +30,7 @@ class CTkSlider(CTkBaseClass):
                  command=None,
                  variable=None,
                  orient="horizontal",
+                 state="normal",
                  **kwargs):
 
         # set default dimensions according to orientation
@@ -75,6 +76,7 @@ class CTkSlider(CTkBaseClass):
         self.variable: tkinter.Variable = variable
         self.variable_callback_blocked = False
         self.variable_callback_name = None
+        self.state = state
 
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
@@ -124,11 +126,17 @@ class CTkSlider(CTkBaseClass):
         super().destroy()
 
     def set_cursor(self):
-        if Settings.cursor_manipulation_enabled:
+        if self.state == "normal" and Settings.cursor_manipulation_enabled:
             if sys.platform == "darwin":
                 self.configure(cursor="pointinghand")
             elif sys.platform.startswith("win"):
                 self.configure(cursor="hand2")
+
+        elif self.state == "disabled" and Settings.cursor_manipulation_enabled:
+            if sys.platform == "darwin":
+                self.configure(cursor="arrow")
+            elif sys.platform.startswith("win"):
+                self.configure(cursor="arrow")
 
     def draw(self, no_color_updates=False):
         if self.orient.lower() == "horizontal":
@@ -166,41 +174,51 @@ class CTkSlider(CTkBaseClass):
                 self.canvas.itemconfig("progress_parts", fill=ThemeManager.single_color(self.progress_color, self._appearance_mode),
                                        outline=ThemeManager.single_color(self.progress_color, self._appearance_mode))
 
-            self.canvas.itemconfig("slider_parts", fill=ThemeManager.single_color(self.button_color, self._appearance_mode),
-                                   outline=ThemeManager.single_color(self.button_color, self._appearance_mode))
+            if self.hover_state is True:
+                self.canvas.itemconfig("slider_parts",
+                                       fill=ThemeManager.single_color(self.button_hover_color, self._appearance_mode),
+                                       outline=ThemeManager.single_color(self.button_hover_color, self._appearance_mode))
+            else:
+                self.canvas.itemconfig("slider_parts",
+                                       fill=ThemeManager.single_color(self.button_color, self._appearance_mode),
+                                       outline=ThemeManager.single_color(self.button_color, self._appearance_mode))
 
     def clicked(self, event=None):
-        if self.orient.lower() == "horizontal":
-            self.value = (event.x / self._current_width) / self._widget_scaling
-        else:
-            self.value = 1 - (event.y / self._current_height) / self._widget_scaling
+        if self.state == "normal":
+            if self.orient.lower() == "horizontal":
+                self.value = (event.x / self._current_width) / self._widget_scaling
+            else:
+                self.value = 1 - (event.y / self._current_height) / self._widget_scaling
 
-        if self.value > 1:
-            self.value = 1
-        if self.value < 0:
-            self.value = 0
+            if self.value > 1:
+                self.value = 1
+            if self.value < 0:
+                self.value = 0
 
-        self.output_value = self.round_to_step_size(self.from_ + (self.value * (self.to - self.from_)))
-        self.value = (self.output_value - self.from_) / (self.to - self.from_)
+            self.output_value = self.round_to_step_size(self.from_ + (self.value * (self.to - self.from_)))
+            self.value = (self.output_value - self.from_) / (self.to - self.from_)
 
-        self.draw(no_color_updates=False)
+            self.draw(no_color_updates=False)
 
-        if self.callback_function is not None:
-            self.callback_function(self.output_value)
+            if self.variable is not None:
+                self.variable_callback_blocked = True
+                self.variable.set(round(self.output_value) if isinstance(self.variable, tkinter.IntVar) else self.output_value)
+                self.variable_callback_blocked = False
 
-        if self.variable is not None:
-            self.variable_callback_blocked = True
-            self.variable.set(round(self.output_value) if isinstance(self.variable, tkinter.IntVar) else self.output_value)
-            self.variable_callback_blocked = False
+            if self.callback_function is not None:
+                self.callback_function(self.output_value)
 
     def on_enter(self, event=0):
-        self.hover_state = True
-        self.canvas.itemconfig("slider_parts", fill=ThemeManager.single_color(self.button_hover_color, self._appearance_mode),
-                               outline=ThemeManager.single_color(self.button_hover_color, self._appearance_mode))
+        if self.state == "normal":
+            self.hover_state = True
+            self.canvas.itemconfig("slider_parts",
+                                   fill=ThemeManager.single_color(self.button_hover_color, self._appearance_mode),
+                                   outline=ThemeManager.single_color(self.button_hover_color, self._appearance_mode))
 
     def on_leave(self, event=0):
         self.hover_state = False
-        self.canvas.itemconfig("slider_parts", fill=ThemeManager.single_color(self.button_color, self._appearance_mode),
+        self.canvas.itemconfig("slider_parts",
+                               fill=ThemeManager.single_color(self.button_color, self._appearance_mode),
                                outline=ThemeManager.single_color(self.button_color, self._appearance_mode))
 
     def round_to_step_size(self, value):
@@ -231,8 +249,8 @@ class CTkSlider(CTkBaseClass):
 
         self.draw(no_color_updates=False)
 
-        if self.callback_function is not None:
-            self.callback_function(self.output_value)
+        # if self.callback_function is not None and not from_variable_callback:
+        #     self.callback_function(self.output_value)
 
         if self.variable is not None and not from_variable_callback:
             self.variable_callback_blocked = True
@@ -245,6 +263,12 @@ class CTkSlider(CTkBaseClass):
 
     def configure(self, *args, **kwargs):
         require_redraw = False  # some attribute changes require a call of self.draw() at the end
+
+        if "state" in kwargs:
+            self.state = kwargs["state"]
+            self.set_cursor()
+            require_redraw = True
+            del kwargs["state"]
 
         if "fg_color" in kwargs:
             self.fg_color = kwargs["fg_color"]
