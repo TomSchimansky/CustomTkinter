@@ -2,7 +2,6 @@ import tkinter
 import sys
 from typing import Union
 
-from .dropdown_menu_old import DropdownMenu
 from .dropdown_menu import DropdownMenu
 
 from .ctk_canvas import CTkCanvas
