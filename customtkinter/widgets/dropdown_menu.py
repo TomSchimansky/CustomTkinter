@@ -70,10 +70,16 @@ class DropdownMenu(tkinter.Menu):
                            font=self.apply_font_scaling(self.text_font))
 
     def add_menu_commands(self):
-        for value in self.values:
-            self.add_command(label=value.ljust(self.min_character_width),
-                             command=lambda v=value: self.button_callback(v),
-                             compound="left")
+        if sys.platform.startswith("linux"):
+            for value in self.values:
+                self.add_command(label="  " + value.ljust(self.min_character_width) + "  ",
+                                 command=lambda v=value: self.button_callback(v),
+                                 compound="left")
+        else:
+            for value in self.values:
+                self.add_command(label=value.ljust(self.min_character_width),
+                                 command=lambda v=value: self.button_callback(v),
+                                 compound="left")
 
     def open(self, x: Union[int, float], y: Union[int, float]):
         if sys.platform == "darwin":
