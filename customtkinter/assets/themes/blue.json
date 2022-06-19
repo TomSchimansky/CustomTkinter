@@ -33,7 +33,9 @@
     "combobox_button_hover": ["#6E7174", "#7A848D"],
     "dropdown_color": ["gray90", "gray20"],
     "dropdown_hover": ["gray75", "gray28"],
-    "dropdown_text": ["gray10", "#DCE4EE"]
+    "dropdown_text": ["gray10", "#DCE4EE"],
+    "scrollbar": ["gray75", "gray25"],
+    "scrollbar_hover": ["gray50", "gray40"]
   },
   "text": {
     "macOS": {
@@ -70,6 +72,8 @@
     "switch_border_width": 3,
     "switch_corner_radius": 1000,
     "switch_button_corner_radius": 1000,
-    "switch_button_length": 0
+    "switch_button_length": 0,
+    "scrollbar_corner_radius": 6,
+    "scrollbar_border_spacing": 4
   }
 }
