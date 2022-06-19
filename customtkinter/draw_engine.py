@@ -1062,16 +1062,16 @@ class DrawEngine:
         else:
             self._canvas.delete("scrollbar_corner_part")
 
-        if not self._canvas.find_withtag("scrollbar_rectangle_1") and width > 2 * corner_radius:
+        if not self._canvas.find_withtag("scrollbar_rectangle_1") and height > 2 * corner_radius:
             self._canvas.create_rectangle(0, 0, 0, 0, tags=("scrollbar_rectangle_1", "scrollbar_rectangle_part", "scrollbar_parts"), width=0)
             requires_recoloring = True
-        elif self._canvas.find_withtag("scrollbar_rectangle_1") and not width > 2 * corner_radius:
+        elif self._canvas.find_withtag("scrollbar_rectangle_1") and not height > 2 * corner_radius:
             self._canvas.delete("scrollbar_rectangle_1")
 
-        if not self._canvas.find_withtag("scrollbar_rectangle_2"):
+        if not self._canvas.find_withtag("scrollbar_rectangle_2") and width > 2 * corner_radius:
             self._canvas.create_rectangle(0, 0, 0, 0, tags=("scrollbar_rectangle_2", "scrollbar_rectangle_part", "scrollbar_parts"), width=0)
             requires_recoloring = True
-        elif self._canvas.find_withtag("scrollbar_rectangle_2") and not height > 2 * corner_radius:
+        elif self._canvas.find_withtag("scrollbar_rectangle_2") and not width > 2 * corner_radius:
             self._canvas.delete("scrollbar_rectangle_2")
 
         self._canvas.coords("scrollbar_rectangle_1",

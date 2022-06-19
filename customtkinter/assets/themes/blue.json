@@ -34,8 +34,8 @@
     "dropdown_color": ["gray90", "gray20"],
     "dropdown_hover": ["gray75", "gray28"],
     "dropdown_text": ["gray10", "#DCE4EE"],
-    "scrollbar": ["gray75", "gray25"],
-    "scrollbar_hover": ["gray50", "gray40"]
+    "scrollbar": ["gray60", "gray38"],
+    "scrollbar_hover": ["gray45", "gray50"]
   },
   "text": {
     "macOS": {
@@ -73,7 +73,7 @@
     "switch_corner_radius": 1000,
     "switch_button_corner_radius": 1000,
     "switch_button_length": 0,
-    "scrollbar_corner_radius": 6,
+    "scrollbar_corner_radius": 1000,
     "scrollbar_border_spacing": 4
   }
 }

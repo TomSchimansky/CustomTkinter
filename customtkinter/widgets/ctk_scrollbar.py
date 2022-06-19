@@ -1,3 +1,5 @@
+import sys
+
 from .ctk_canvas import CTkCanvas
 from ..theme_manager import ThemeManager
 from ..draw_engine import DrawEngine
@@ -196,5 +198,8 @@ class CTkScrollbar(CTkBaseClass):
 
     def mouse_scroll_event(self, event=None):
         if self.command is not None:
-            self.command('scroll', event.delta, 'units')
+            if sys.platform.startswith("win"):
+                self.command('scroll', -int(event.delta/40), 'units')
+            else:
+                self.command('scroll', -event.delta, 'units')
 
