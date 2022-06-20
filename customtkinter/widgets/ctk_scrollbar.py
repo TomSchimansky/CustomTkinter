@@ -1,5 +1,7 @@
 import sys
+import tkinter
 
+from .ctk_frame import CTkFrame
 from .ctk_canvas import CTkCanvas
 from ..theme_manager import ThemeManager
 from ..draw_engine import DrawEngine
@@ -9,7 +11,7 @@ from .widget_base_class import CTkBaseClass
 class CTkScrollbar(CTkBaseClass):
     def __init__(self, *args,
                  bg_color=None,
-                 fg_color=None,
+                 fg_color="default_theme",
                  scrollbar_color="default_theme",
                  scrollbar_hover_color="default_theme",
                  border_spacing="default_theme",
@@ -37,9 +39,9 @@ class CTkScrollbar(CTkBaseClass):
         super().__init__(*args, bg_color=bg_color, width=width, height=height, **kwargs)
 
         # color
-        self.fg_color = fg_color
-        self.scrollbar_color = ThemeManager.theme["color"]["scrollbar"] if scrollbar_color == "default_theme" else scrollbar_color
-        self.scrollbar_hover_color = ThemeManager.theme["color"]["scrollbar_hover"] if scrollbar_hover_color == "default_theme" else scrollbar_hover_color
+        self.fg_color = ThemeManager.theme["color"]["frame_high"] if fg_color == "default_theme" else fg_color
+        self.scrollbar_color = ThemeManager.theme["color"]["scrollbar_button"] if scrollbar_color == "default_theme" else scrollbar_color
+        self.scrollbar_hover_color = ThemeManager.theme["color"]["scrollbar_button_hover"] if scrollbar_hover_color == "default_theme" else scrollbar_hover_color
 
         # shape
         self.corner_radius = ThemeManager.theme["shape"]["scrollbar_corner_radius"] if corner_radius == "default_theme" else corner_radius
@@ -57,7 +59,6 @@ class CTkScrollbar(CTkBaseClass):
                                 width=self.apply_widget_scaling(self._current_width),
                                 height=self.apply_widget_scaling(self._current_height))
         self.canvas.place(x=0, y=0, relwidth=1, relheight=1)
-        self.canvas.configure(bg="green")
         self.draw_engine = DrawEngine(self.canvas)
 
         self.canvas.bind("<Enter>", self.on_enter)
@@ -108,6 +109,8 @@ class CTkScrollbar(CTkBaseClass):
                 self.canvas.itemconfig("border_parts",
                                        fill=ThemeManager.single_color(self.fg_color, self._appearance_mode),
                                        outline=ThemeManager.single_color(self.fg_color, self._appearance_mode))
+
+        self.canvas.update_idletasks()
 
     def set(self, start_value: float, end_value: float):
         self.start_value = float(start_value)

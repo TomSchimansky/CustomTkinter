@@ -8,35 +8,42 @@ import customtkinter
 
 customtkinter.set_appearance_mode("light")
 
-
-def to_scollbar(*args, **kwargs):
-    #tk_textbox_scrollbar.set(*args, **kwargs)
-    ctk_textbox_scrollbar.set(*args, **kwargs)
-    ctk_textbox_scrollbar.update_idletasks()
-    #tk_textbox_scrollbar.update_idletasks()
-    #print(*args)
-
-
-def from_scrollbar(*args, **kwargs):
-    tk_textbox.yview(*args, **kwargs)
-    #print(*args)
-
-
 app = customtkinter.CTk()
 app.grid_rowconfigure(0, weight=1)
-app.grid_columnconfigure(0, weight=1)
+app.grid_columnconfigure((0, 2), weight=1)
 
-tk_textbox = tkinter.Text(app)
-tk_textbox.grid(row=0, column=0, sticky="ns")
-
-ctk_textbox_scrollbar = customtkinter.CTkScrollbar(app, command=from_scrollbar)
+tk_textbox = tkinter.Text(app, highlightthickness=0, padx=5, pady=5)
+tk_textbox.grid(row=0, column=0, sticky="nsew")
+ctk_textbox_scrollbar = customtkinter.CTkScrollbar(app, command=tk_textbox.yview)
 ctk_textbox_scrollbar.grid(row=0, column=1, padx=0, sticky="ns")
+tk_textbox.configure(yscrollcommand=ctk_textbox_scrollbar.set)
 
-#tk_textbox_scrollbar = tkinter.Scrollbar(app, command=from_scrollbar)
-#tk_textbox_scrollbar.grid(row=0, column=2, padx=1, sticky="ns")
+frame_1 = customtkinter.CTkFrame(app)
+frame_1.grid(row=0, column=2, padx=10, pady=10, sticky="nsew")
+frame_1.grid_rowconfigure((0, 1), weight=1)
+frame_1.grid_columnconfigure((0, ), weight=1)
+tk_textbox_1 = tkinter.Text(frame_1, highlightthickness=0, padx=5, pady=5)
+tk_textbox_1.grid(row=0, column=0, sticky="nsew", padx=(5, 0), pady=5)
+ctk_textbox_scrollbar_1 = customtkinter.CTkScrollbar(frame_1, command=tk_textbox_1.yview)
+ctk_textbox_scrollbar_1.grid(row=0, column=1, sticky="ns", padx=(0, 5), pady=5)
+tk_textbox_1.configure(yscrollcommand=ctk_textbox_scrollbar_1.set)
 
-tk_textbox.configure(yscrollcommand=to_scollbar)
+frame_2 = customtkinter.CTkFrame(frame_1)
+frame_2.grid(row=1, column=0, columnspan=2, padx=20, pady=20, sticky="nsew")
+frame_2.grid_rowconfigure((0, 1), weight=1)
+frame_2.grid_columnconfigure((0, ), weight=1)
+tk_textbox_2 = tkinter.Text(frame_2, highlightthickness=0, padx=5, pady=5)
+tk_textbox_2.grid(row=0, column=0, sticky="nsew", padx=(5, 0), pady=5)
+ctk_textbox_scrollbar_2 = customtkinter.CTkScrollbar(frame_2, command=tk_textbox_2.yview)
+ctk_textbox_scrollbar_2.grid(row=0, column=1, sticky="ns", padx=(0, 5), pady=5)
+tk_textbox_2.configure(yscrollcommand=ctk_textbox_scrollbar_2.set)
+
+tk_textbox.configure(font=(customtkinter.ThemeManager.theme["text"]["font"], customtkinter.ThemeManager.theme["text"]["size"]))
+tk_textbox_1.configure(font=(customtkinter.ThemeManager.theme["text"]["font"], customtkinter.ThemeManager.theme["text"]["size"]))
+tk_textbox_2.configure(font=(customtkinter.ThemeManager.theme["text"]["font"], customtkinter.ThemeManager.theme["text"]["size"]))
 
 tk_textbox.insert("insert", "\n".join([str(i) for i in range(100)]))
+tk_textbox_1.insert("insert", "\n".join([str(i) for i in range(1000)]))
+tk_textbox_2.insert("insert", "\n".join([str(i) for i in range(10000)]))
 
 app.mainloop()
