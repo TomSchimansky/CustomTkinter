@@ -398,8 +398,8 @@ class DrawEngine:
             if not self._canvas.find_withtag("border_parts"):
                 self._canvas.create_polygon((0, 0, 0, 0), tags=("border_line_left_1", "border_parts_left", "border_parts", "left_parts"))
                 self._canvas.create_polygon((0, 0, 0, 0), tags=("border_line_right_1", "border_parts_right", "border_parts", "right_parts"))
-                self._canvas.create_rectangle((0, 0, 0, 0), tags=("border_rect_left_1", "border_parts_left", "border_parts", "left_parts"))
-                self._canvas.create_rectangle((0, 0, 0, 0), tags=("border_rect_right_1", "border_parts_right", "border_parts", "right_parts"))
+                self._canvas.create_rectangle((0, 0, 0, 0), tags=("border_rect_left_1", "border_parts_left", "border_parts", "left_parts"), width=0)
+                self._canvas.create_rectangle((0, 0, 0, 0), tags=("border_rect_right_1", "border_parts_right", "border_parts", "right_parts"), width=0)
                 requires_recoloring = True
 
             self._canvas.coords("border_line_left_1",

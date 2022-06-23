@@ -100,6 +100,9 @@ class CTkComboBox(CTkBaseClass):
                         padx=(max(self.apply_widget_scaling(self.corner_radius), self.apply_widget_scaling(3)),
                               max(self.apply_widget_scaling(self._current_width - left_section_width + 3), self.apply_widget_scaling(3))))
 
+        self.entry.delete(0, tkinter.END)
+        self.entry.insert(0, self.current_value)
+
         self.draw()  # initial draw
 
         # event bindings
@@ -139,10 +142,6 @@ class CTkComboBox(CTkBaseClass):
         requires_recoloring_2 = self.draw_engine.draw_dropdown_arrow(self.apply_widget_scaling(self._current_width - (self._current_height / 2)),
                                                                      self.apply_widget_scaling(self._current_height / 2),
                                                                      self.apply_widget_scaling(self._current_height / 3))
-
-        if self.current_value is not None:
-            self.entry.delete(0, tkinter.END)
-            self.entry.insert(0, self.current_value)
 
         if no_color_updates is False or requires_recoloring or requires_recoloring_2:
 
