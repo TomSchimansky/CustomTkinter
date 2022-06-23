@@ -33,7 +33,7 @@ ctk_textbox_scrollbar_1.configure(scrollbar_color="red", scrollbar_hover_color="
 
 frame_2 = customtkinter.CTkFrame(frame_1)
 frame_2.grid(row=1, column=0, columnspan=2, padx=20, pady=20, sticky="nsew")
-frame_2.grid_rowconfigure((0, 1), weight=1)
+frame_2.grid_rowconfigure((0, ), weight=1)
 frame_2.grid_columnconfigure((0, ), weight=1)
 tk_textbox_2 = tkinter.Text(frame_2, highlightthickness=0, padx=5, pady=5, wrap="none")
 tk_textbox_2.grid(row=0, column=0, sticky="nsew", padx=(5, 0), pady=5)

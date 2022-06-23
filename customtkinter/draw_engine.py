@@ -1074,14 +1074,14 @@ class DrawEngine:
         elif self._canvas.find_withtag("scrollbar_rectangle_2") and not width > 2 * corner_radius:
             self._canvas.delete("scrollbar_rectangle_2")
 
-        self._canvas.coords("scrollbar_rectangle_1",
-                            corner_radius - inner_corner_radius, corner_radius + (height - 2 * corner_radius) * start_value,
-                            width - (corner_radius - inner_corner_radius), corner_radius + (height - 2 * corner_radius) * end_value)
-        self._canvas.coords("scrollbar_rectangle_2",
-                            corner_radius, corner_radius - inner_corner_radius + (height - 2 * corner_radius) * start_value,
-                            width - (corner_radius), corner_radius + inner_corner_radius + (height - 2 * corner_radius) * end_value)
-
         if orientation == "vertical":
+            self._canvas.coords("scrollbar_rectangle_1",
+                                corner_radius - inner_corner_radius, corner_radius + (height - 2 * corner_radius) * start_value,
+                                width - (corner_radius - inner_corner_radius), corner_radius + (height - 2 * corner_radius) * end_value)
+            self._canvas.coords("scrollbar_rectangle_2",
+                                corner_radius, corner_radius - inner_corner_radius + (height - 2 * corner_radius) * start_value,
+                                width - (corner_radius), corner_radius + inner_corner_radius + (height - 2 * corner_radius) * end_value)
+
             self._canvas.coords("scrollbar_oval_1_a", corner_radius, corner_radius + (height - 2 * corner_radius) * start_value, inner_corner_radius)
             self._canvas.coords("scrollbar_oval_1_b", corner_radius, corner_radius + (height - 2 * corner_radius) * start_value, inner_corner_radius)
             self._canvas.coords("scrollbar_oval_2_a", width - corner_radius, corner_radius + (height - 2 * corner_radius) * start_value, inner_corner_radius)
@@ -1090,7 +1090,15 @@ class DrawEngine:
             self._canvas.coords("scrollbar_oval_3_b", width - corner_radius, corner_radius + (height - 2 * corner_radius) * end_value, inner_corner_radius)
             self._canvas.coords("scrollbar_oval_4_a", corner_radius, corner_radius + (height - 2 * corner_radius) * end_value, inner_corner_radius)
             self._canvas.coords("scrollbar_oval_4_b", corner_radius, corner_radius + (height - 2 * corner_radius) * end_value, inner_corner_radius)
+
         if orientation == "horizontal":
+            self._canvas.coords("scrollbar_rectangle_1",
+                                corner_radius - inner_corner_radius + (width - 2 * corner_radius) * start_value, corner_radius,
+                                corner_radius + inner_corner_radius + (width - 2 * corner_radius) * end_value, height - corner_radius)
+            self._canvas.coords("scrollbar_rectangle_2",
+                                corner_radius + (width - 2 * corner_radius) * start_value, corner_radius - inner_corner_radius,
+                                corner_radius + (width - 2 * corner_radius) * end_value, height - (corner_radius - inner_corner_radius))
+
             self._canvas.coords("scrollbar_oval_1_a", corner_radius + (width - 2 * corner_radius) * start_value, corner_radius, inner_corner_radius)
             self._canvas.coords("scrollbar_oval_1_b", corner_radius + (width - 2 * corner_radius) * start_value, corner_radius, inner_corner_radius)
             self._canvas.coords("scrollbar_oval_2_a", corner_radius + (width - 2 * corner_radius) * end_value, corner_radius, inner_corner_radius)
