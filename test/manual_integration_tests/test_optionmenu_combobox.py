@@ -12,7 +12,7 @@ def select_callback(choice):
     print("display_selected", choice)
 
 
-countries = ['Bahamas', 'Canada', 'Cuba', 'United States']
+countries = ['Bahamas', 'Canada', 'Cuba', 'United States', "long sdhfhjgdshjafghdgshfhjdsfj"]
 
 variable = tkinter.StringVar()
 variable.set("test")
