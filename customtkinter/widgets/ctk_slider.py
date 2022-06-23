@@ -61,7 +61,7 @@ class CTkSlider(CTkBaseClass):
         self.border_width = ThemeManager.theme["shape"]["slider_border_width"] if border_width == "default_theme" else border_width
         self.button_length = ThemeManager.theme["shape"]["slider_button_length"] if button_length == "default_theme" else button_length
         self.value = 0.5  # initial value of slider in percent
-        self.orient = orient
+        self.orientation = orient
         self.hover_state = False
         self.from_ = from_
         self.to = to
@@ -139,9 +139,9 @@ class CTkSlider(CTkBaseClass):
                 self.configure(cursor="arrow")
 
     def draw(self, no_color_updates=False):
-        if self.orient.lower() == "horizontal":
+        if self.orientation.lower() == "horizontal":
             orientation = "w"
-        elif self.orient.lower() == "vertical":
+        elif self.orientation.lower() == "vertical":
             orientation = "s"
         else:
             orientation = "w"
@@ -185,7 +185,7 @@ class CTkSlider(CTkBaseClass):
 
     def clicked(self, event=None):
         if self.state == "normal":
-            if self.orient.lower() == "horizontal":
+            if self.orientation.lower() == "horizontal":
                 self.value = (event.x / self._current_width) / self._widget_scaling
             else:
                 self.value = 1 - (event.y / self._current_height) / self._widget_scaling

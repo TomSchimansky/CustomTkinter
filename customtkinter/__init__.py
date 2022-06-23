@@ -1,4 +1,4 @@
-__version__ = "4.4.1"
+__version__ = "4.5.0"
 
 import os
 import sys
@@ -14,7 +14,15 @@ from .font_manager import FontManager
 from .draw_engine import DrawEngine
 
 AppearanceModeTracker.init_appearance_mode()
-ThemeManager.load_theme("blue")  # load default theme
+
+# load default blue theme
+try:
+    ThemeManager.load_theme("blue")
+except FileNotFoundError as err:
+    raise FileNotFoundError(f"{err}\n\nThe .json theme file for CustomTkinter could not be found.\n" +
+                            f"If packaging with pyinstaller was used, have a look at the wiki:\n" +
+                            f"https://github.com/TomSchimansky/CustomTkinter/wiki/Packaging#windows-pyinstaller-auto-py-to-exe")
+
 FontManager.init_font_manager()
 
 # determine draw method based on current platform
@@ -53,6 +61,7 @@ from .widgets.ctk_canvas import CTkCanvas
 from .widgets.ctk_switch import CTkSwitch
 from .widgets.ctk_optionmenu import CTkOptionMenu
 from .widgets.ctk_combobox import CTkComboBox
+from .widgets.ctk_scrollbar import CTkScrollbar
 
 # import windows
 from .windows.ctk_tk import CTk

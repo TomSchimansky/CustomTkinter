@@ -33,7 +33,9 @@
     "combobox_button_hover": ["#6E7174", "#7A848D"],
     "dropdown_color": ["gray90", "gray20"],
     "dropdown_hover": ["gray75", "gray28"],
-    "dropdown_text": ["gray10", "#DCE4EE"]
+    "dropdown_text": ["gray10", "#DCE4EE"],
+    "scrollbar_button": ["gray55", "gray41"],
+    "scrollbar_button_hover": ["gray40", "gray53"]
   },
   "text": {
     "macOS": {
