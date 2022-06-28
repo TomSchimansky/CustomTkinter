@@ -218,3 +218,9 @@ class CTkEntry(CTkBaseClass):
             return ""
         else:
             return self.entry.get()
+
+    def focus(self):
+        self.entry.focus()
+
+    def focus_force(self):
+        self.entry.focus_force()
