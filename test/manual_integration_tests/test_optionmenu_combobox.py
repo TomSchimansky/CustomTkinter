@@ -4,7 +4,7 @@ import customtkinter
 
 app = customtkinter.CTk()
 app.title('Test OptionMenu ComboBox.py')
-app.geometry('400x300')
+app.geometry('400x500')
 
 
 def select_callback(choice):
@@ -32,5 +32,13 @@ combobox_tk.pack(pady=10, padx=10)
 
 combobox_1 = customtkinter.CTkComboBox(app, variable=None, values=countries, command=select_callback, width=300)
 combobox_1.pack(pady=20, padx=10)
+
+def set_new_scaling(scaling):
+    customtkinter.set_spacing_scaling(scaling)
+    customtkinter.set_window_scaling(scaling)
+    customtkinter.set_widget_scaling(scaling)
+
+scaling_slider = customtkinter.CTkSlider(app, command=set_new_scaling, from_=0, to=2)
+scaling_slider.pack(pady=20, padx=10)
 
 app.mainloop()

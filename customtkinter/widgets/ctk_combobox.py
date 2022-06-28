@@ -120,6 +120,13 @@ class CTkComboBox(CTkBaseClass):
     def set_scaling(self, *args, **kwargs):
         super().set_scaling(*args, **kwargs)
 
+        # change entry font size and grid padding
+        left_section_width = self._current_width - self._current_height
+        self.entry.configure(font=self.apply_font_scaling(self.text_font))
+        self.entry.grid(row=0, column=0, rowspan=1, columnspan=1, sticky="ew",
+                        padx=(max(self.apply_widget_scaling(self.corner_radius), self.apply_widget_scaling(3)),
+                              max(self.apply_widget_scaling(self._current_width - left_section_width + 3), self.apply_widget_scaling(3))))
+
         self.canvas.configure(width=self.apply_widget_scaling(self._desired_width),
                               height=self.apply_widget_scaling(self._desired_height))
         self.draw()

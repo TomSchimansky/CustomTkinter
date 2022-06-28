@@ -62,6 +62,7 @@ from .widgets.ctk_switch import CTkSwitch
 from .widgets.ctk_optionmenu import CTkOptionMenu
 from .widgets.ctk_combobox import CTkComboBox
 from .widgets.ctk_scrollbar import CTkScrollbar
+from .widgets.ctk_textbox import CTkTextbox
 
 # import windows
 from .windows.ctk_tk import CTk

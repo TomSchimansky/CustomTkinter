@@ -126,9 +126,12 @@ class CTkOptionMenu(CTkBaseClass):
     def set_scaling(self, *args, **kwargs):
         super().set_scaling(*args, **kwargs)
 
-        if self.text_label is not None:
-            self.text_label.destroy()
-            self.text_label = None
+        # change label text size and grid padding
+        left_section_width = self._current_width - self._current_height
+        self.text_label.configure(font=self.apply_font_scaling(self.text_font))
+        self.text_label.grid(row=0, column=0, sticky="w",
+                             padx=(max(self.apply_widget_scaling(self.corner_radius), self.apply_widget_scaling(3)),
+                                   max(self.apply_widget_scaling(self._current_width - left_section_width + 3), self.apply_widget_scaling(3))))
 
         self.canvas.configure(width=self.apply_widget_scaling(self._desired_width),
                               height=self.apply_widget_scaling(self._desired_height))
@@ -152,9 +155,6 @@ class CTkOptionMenu(CTkBaseClass):
         requires_recoloring_2 = self.draw_engine.draw_dropdown_arrow(self.apply_widget_scaling(self._current_width - (self._current_height / 2)),
                                                                      self.apply_widget_scaling(self._current_height / 2),
                                                                      self.apply_widget_scaling(self._current_height / 3))
-
-        if self.current_value is not None:
-            self.text_label.configure(text=self.current_value)
 
         if no_color_updates is False or requires_recoloring or requires_recoloring_2:
 
@@ -287,10 +287,7 @@ class CTkOptionMenu(CTkBaseClass):
     def set(self, value: str, from_variable_callback: bool = False):
         self.current_value = value
 
-        if self.text_label is not None:
-            self.text_label.configure(text=self.current_value)
-        else:
-            self.draw()
+        self.text_label.configure(text=self.current_value)
 
         if self.variable is not None and not from_variable_callback:
             self.variable_callback_blocked = True
