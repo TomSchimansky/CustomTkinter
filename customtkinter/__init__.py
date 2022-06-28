@@ -49,6 +49,7 @@ if FontManager.load_font(os.path.join(script_directory, "assets", "fonts", "Cust
         DrawEngine.preferred_drawing_method = "circle_shapes"
 
 # import widgets
+from .widgets.widget_base_class import CTkBaseClass
 from .widgets.ctk_button import CTkButton
 from .widgets.ctk_checkbox import CTkCheckBox
 from .widgets.ctk_entry import CTkEntry
