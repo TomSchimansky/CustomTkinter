@@ -44,7 +44,7 @@ class CTkSwitch(CTkBaseClass):
         self.button_color = ThemeManager.theme["color"]["switch_button"] if button_color == "default_theme" else button_color
         self.button_hover_color = ThemeManager.theme["color"]["switch_button_hover"] if button_hover_color == "default_theme" else button_hover_color
         self.text_color = ThemeManager.theme["color"]["text"] if text_color == "default_theme" else text_color
-        self.text_color_disabled = ThemeManager.theme["color"]["text_button_disabled"] if text_color_disabled == "default_theme" else text_color_disabled
+        self.text_color_disabled = ThemeManager.theme["color"]["text_disabled"] if text_color_disabled == "default_theme" else text_color_disabled
 
         # text
         self.text = text

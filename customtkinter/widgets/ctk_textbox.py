@@ -20,7 +20,7 @@ class CTkTextbox(CTkBaseClass):
                  **kwargs):
 
         # transfer basic functionality (bg_color, size, _appearance_mode, scaling) to CTkBaseClass
-        super().__init__(*args, bg_color=bg_color, width=width, height=height, **kwargs)
+        super().__init__(*args, bg_color=bg_color, width=width, height=height)
 
         # color
         self.fg_color = ThemeManager.theme["color"]["entry"] if fg_color == "default_theme" else fg_color
@@ -45,6 +45,8 @@ class CTkTextbox(CTkBaseClass):
         self.canvas.configure(bg=ThemeManager.single_color(self.bg_color, self._appearance_mode))
         self.draw_engine = DrawEngine(self.canvas)
 
+        for arg in ["highlightthickness", "fg", "bg"]:
+            kwargs.pop(arg, None)
         self.textbox = tkinter.Text(self,
                                     fg=ThemeManager.single_color(self.text_color, self._appearance_mode),
                                     width=0,
@@ -108,13 +110,21 @@ class CTkTextbox(CTkBaseClass):
         self.canvas.tag_lower("inner_parts")
         self.canvas.tag_lower("border_parts")
 
+    def yview(self, args, kwargs):
+        self.textbox.yview(args, kwargs)
+
+    def xview(self, args, kwargs):
+        self.textbox.xview(args, kwargs)
+
+    def insert(self, args, kwargs):
+        self.textbox.insert(args, kwargs)
+
     def configure(self, *args, **kwargs):
         require_redraw = False  # some attribute changes require a call of self.draw() at the end
 
         if "fg_color" in kwargs:
-            self.fg_color = kwargs["fg_color"]
+            self.fg_color = kwargs.pop("fg_color")
             require_redraw = True
-            del kwargs["fg_color"]
 
             # check if CTk widgets are children of the frame and change their bg_color to new frame fg_color
             for child in self.winfo_children():
@@ -122,36 +132,30 @@ class CTkTextbox(CTkBaseClass):
                     child.configure(bg_color=self.fg_color)
 
         if "bg_color" in kwargs:
-            if kwargs["bg_color"] is None:
+            new_bg_color = kwargs.pop("bg_color")
+            if new_bg_color is None:
                 self.bg_color = self.detect_color_of_master()
             else:
-                self.bg_color = kwargs["bg_color"]
+                self.bg_color = new_bg_color
             require_redraw = True
-
-            del kwargs["bg_color"]
 
         if "border_color" in kwargs:
-            self.border_color = kwargs["border_color"]
+            self.border_color = kwargs.pop("border_color")
             require_redraw = True
-            del kwargs["border_color"]
 
         if "corner_radius" in kwargs:
-            self.corner_radius = kwargs["corner_radius"]
+            self.corner_radius = kwargs.pop("corner_radius")
             require_redraw = True
-            del kwargs["corner_radius"]
 
         if "border_width" in kwargs:
-            self.border_width = kwargs["border_width"]
+            self.border_width = kwargs.pop("border_width")
             require_redraw = True
-            del kwargs["border_width"]
 
         if "width" in kwargs:
-            self.set_dimensions(width=kwargs["width"])
-            del kwargs["width"]
+            self.set_dimensions(width=kwargs.pop("width"))
 
         if "height" in kwargs:
-            self.set_dimensions(height=kwargs["height"])
-            del kwargs["height"]
+            self.set_dimensions(height=kwargs.pop("height"))
 
         self.textbox.configure(*args, **kwargs)
 

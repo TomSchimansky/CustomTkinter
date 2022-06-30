@@ -90,7 +90,10 @@ class CTkOptionMenu(CTkBaseClass):
         self.draw_engine = DrawEngine(self.canvas)
 
         left_section_width = self._current_width - self._current_height
-        self.text_label = tkinter.Label(master=self, font=self.apply_font_scaling(self.text_font), anchor="w")
+        self.text_label = tkinter.Label(master=self,
+                                        font=self.apply_font_scaling(self.text_font),
+                                        anchor="w",
+                                        text=self.current_value)
         self.text_label.grid(row=0, column=0, sticky="w",
                              padx=(max(self.apply_widget_scaling(self.corner_radius), self.apply_widget_scaling(3)),
                                    max(self.apply_widget_scaling(self._current_width - left_section_width + 3), self.apply_widget_scaling(3))))

@@ -151,7 +151,7 @@ class CTkBaseClass(tkinter.Frame):
         if master_widget is None:
             master_widget = self.master
 
-        if isinstance(master_widget, CTkBaseClass) and hasattr(master_widget, "fg_color"):  # master is CTkFrame
+        if isinstance(master_widget, (CTkBaseClass, CTk, CTkToplevel)) and hasattr(master_widget, "fg_color"):
             if master_widget.fg_color is not None:
                 return master_widget.fg_color
 
@@ -177,11 +177,6 @@ class CTkBaseClass(tkinter.Frame):
             self._appearance_mode = 1
         elif mode_string.lower() == "light":
             self._appearance_mode = 0
-
-        if isinstance(self.master, (CTkBaseClass, CTk)) and hasattr(self.master, "fg_color"):
-            self.bg_color = self.master.fg_color
-        else:
-            self.bg_color = self.master.cget("bg")
 
         self.draw()
 
