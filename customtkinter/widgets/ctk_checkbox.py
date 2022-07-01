@@ -90,6 +90,19 @@ class CTkCheckBox(CTkBaseClass):
         self.canvas.bind("<Leave>", self.on_leave)
         self.canvas.bind("<Button-1>", self.toggle)
 
+        self.text_label = tkinter.Label(master=self,
+                                        bd=0,
+                                        text=self.text,
+                                        justify=tkinter.LEFT,
+                                        font=self.apply_font_scaling(self.text_font),
+                                        textvariable=self.textvariable)
+        self.text_label.grid(row=0, column=2, padx=0, pady=0, sticky="w")
+        self.text_label["anchor"] = "w"
+
+        self.text_label.bind("<Enter>", self.on_enter)
+        self.text_label.bind("<Leave>", self.on_leave)
+        self.text_label.bind("<Button-1>", self.toggle)
+
         # set select state according to variable
         if self.variable is not None:
             self.variable_callback_name = self.variable.trace_add("write", self.variable_callback)
@@ -153,32 +166,18 @@ class CTkCheckBox(CTkBaseClass):
                                    outline=ThemeManager.single_color(self.border_color, self._appearance_mode),
                                    fill=ThemeManager.single_color(self.border_color, self._appearance_mode))
 
-        if self.text_label is None:
-            self.text_label = tkinter.Label(master=self,
-                                            bd=0,
-                                            text=self.text,
-                                            justify=tkinter.LEFT,
-                                            font=self.apply_font_scaling(self.text_font))
-            self.text_label.grid(row=0, column=2, padx=0, pady=0, sticky="w")
-            self.text_label["anchor"] = "w"
-
-            self.text_label.bind("<Enter>", self.on_enter)
-            self.text_label.bind("<Leave>", self.on_leave)
-            self.text_label.bind("<Button-1>", self.toggle)
-
         if self.state == tkinter.DISABLED:
             self.text_label.configure(fg=(ThemeManager.single_color(self.text_color_disabled, self._appearance_mode)))
         else:
             self.text_label.configure(fg=ThemeManager.single_color(self.text_color, self._appearance_mode))
         self.text_label.configure(bg=ThemeManager.single_color(self.bg_color, self._appearance_mode))
 
-        self.set_text(self.text)
-
     def configure(self, *args, **kwargs):
         require_redraw = False  # some attribute changes require a call of self.draw()
 
         if "text" in kwargs:
-            self.set_text(kwargs["text"])
+            self.text = kwargs["text"]
+            self.text_label.configure(text=self.text)
             del kwargs["text"]
 
         if "state" in kwargs:
@@ -218,6 +217,11 @@ class CTkCheckBox(CTkBaseClass):
         if "command" in kwargs:
             self.function = kwargs["command"]
             del kwargs["command"]
+
+        if "textvariable" in kwargs:
+            self.textvariable = kwargs["textvariable"]
+            self.text_label.configure(textvariable=self.textvariable)
+            del kwargs["textvariable"]
 
         if "variable" in kwargs:
             if self.variable is not None:
@@ -262,13 +266,6 @@ class CTkCheckBox(CTkBaseClass):
                     self.canvas.configure(cursor="hand2")
                     if self.text_label is not None:
                         self.text_label.configure(cursor="hand2")
-
-    def set_text(self, text):
-        self.text = text
-        if self.text_label is not None:
-            self.text_label.configure(text=self.text)
-        else:
-            sys.stderr.write("ERROR (CTkButton): Cant change text because checkbox has no text.")
 
     def on_enter(self, event=0):
         if self.hover is True and self.state == tkinter.NORMAL:
@@ -347,10 +344,7 @@ class CTkCheckBox(CTkBaseClass):
             self.variable_callback_blocked = False
 
         if self.function is not None:
-            try:
-                self.function()
-            except:
-                pass
+            self.function()
 
     def get(self):
         return self.onvalue if self.check_state is True else self.offvalue

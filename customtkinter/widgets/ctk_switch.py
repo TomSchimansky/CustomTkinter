@@ -62,11 +62,8 @@ class CTkSwitch(CTkBaseClass):
         self.onvalue = onvalue
         self.offvalue = offvalue
 
-        # if self.corner_radius < self.button_corner_radius:
-        #     self.corner_radius = self.button_corner_radius
-
         # callback and control variables
-        self.callback_function = command
+        self.function = command
         self.variable: tkinter.Variable = variable
         self.variable_callback_blocked = False
         self.variable_callback_name = None
@@ -93,6 +90,19 @@ class CTkSwitch(CTkBaseClass):
         self.canvas.bind("<Enter>", self.on_enter)
         self.canvas.bind("<Leave>", self.on_leave)
         self.canvas.bind("<Button-1>", self.toggle)
+
+        self.text_label = tkinter.Label(master=self,
+                                        bd=0,
+                                        text=self.text,
+                                        justify=tkinter.LEFT,
+                                        font=self.apply_font_scaling(self.text_font),
+                                        textvariable=self.textvariable)
+        self.text_label.grid(row=0, column=2, padx=0, pady=0, sticky="w")
+        self.text_label["anchor"] = "w"
+
+        self.text_label.bind("<Enter>", self.on_enter)
+        self.text_label.bind("<Leave>", self.on_leave)
+        self.text_label.bind("<Button-1>", self.toggle)
 
         self.draw()  # initial draw
         self.set_cursor()
@@ -186,35 +196,12 @@ class CTkSwitch(CTkBaseClass):
             self.canvas.itemconfig("slider_parts", fill=ThemeManager.single_color(self.button_color, self._appearance_mode),
                                    outline=ThemeManager.single_color(self.button_color, self._appearance_mode))
 
-        if self.text_label is None:
-            self.text_label = tkinter.Label(master=self,
-                                            bd=0,
-                                            text=self.text,
-                                            justify=tkinter.LEFT,
-                                            font=self.apply_font_scaling(self.text_font))
-            self.text_label.grid(row=0, column=2, padx=0, pady=0, sticky="w")
-            self.text_label["anchor"] = "w"
-
-            self.text_label.bind("<Enter>", self.on_enter)
-            self.text_label.bind("<Leave>", self.on_leave)
-            self.text_label.bind("<Button-1>", self.toggle)
-
-            if self.textvariable is not None:
-                self.text_label.configure(textvariable=self.textvariable)
-
         if self.state == tkinter.DISABLED:
             self.text_label.configure(fg=(ThemeManager.single_color(self.text_color_disabled, self._appearance_mode)))
         else:
             self.text_label.configure(fg=ThemeManager.single_color(self.text_color, self._appearance_mode))
 
         self.text_label.configure(bg=ThemeManager.single_color(self.bg_color, self._appearance_mode))
-
-        self.set_text(self.text)
-
-    def set_text(self, text):
-        self.text = text
-        if self.text_label is not None:
-            self.text_label.configure(text=self.text)
 
     def toggle(self, event=None):
         if self.state is not tkinter.DISABLED:
@@ -225,8 +212,8 @@ class CTkSwitch(CTkBaseClass):
 
             self.draw(no_color_updates=True)
 
-            if self.callback_function is not None:
-                self.callback_function()
+            if self.function is not None:
+                self.function()
 
             if self.variable is not None:
                 self.variable_callback_blocked = True
@@ -244,8 +231,8 @@ class CTkSwitch(CTkBaseClass):
                 self.variable.set(self.onvalue)
                 self.variable_callback_blocked = False
 
-            if self.callback_function is not None:
-                self.callback_function()
+            if self.function is not None:
+                self.function()
 
     def deselect(self, from_variable_callback=False):
         if self.state is not tkinter.DISABLED or from_variable_callback:
@@ -258,8 +245,8 @@ class CTkSwitch(CTkBaseClass):
                 self.variable.set(self.offvalue)
                 self.variable_callback_blocked = False
 
-            if self.callback_function is not None:
-                self.callback_function()
+            if self.function is not None:
+                self.function()
 
     def get(self):
         return self.onvalue if self.check_state is True else self.offvalue
@@ -286,66 +273,63 @@ class CTkSwitch(CTkBaseClass):
     def configure(self, *args, **kwargs):
         require_redraw = False  # some attribute changes require a call of self.draw() at the end
 
+        if "text" in kwargs:
+            self.text = kwargs.pop("text")
+            self.text_label.configure(text=self.text)
+
         if "state" in kwargs:
-            self.state = kwargs["state"]
+            self.state = kwargs.pop("state")
             self.set_cursor()
             require_redraw = True
-            del kwargs["state"]
 
         if "fg_color" in kwargs:
-            self.fg_color = kwargs["fg_color"]
+            self.fg_color = kwargs.pop("fg_color")
             require_redraw = True
-            del kwargs["fg_color"]
 
         if "bg_color" in kwargs:
-            if kwargs["bg_color"] is None:
+            new_bg_color = kwargs.pop("bg_color")
+            if new_bg_color is None:
                 self.bg_color = self.detect_color_of_master()
             else:
-                self.bg_color = kwargs["bg_color"]
+                self.bg_color = new_bg_color
             require_redraw = True
-            del kwargs["bg_color"]
 
         if "progress_color" in kwargs:
-            if kwargs["progress_color"] is None:
+            new_progress_color = kwargs.pop("progress_color")
+            if new_progress_color is None:
                 self.progress_color = self.fg_color
             else:
-                self.progress_color = kwargs["progress_color"]
+                self.progress_color = new_progress_color
             require_redraw = True
-            del kwargs["progress_color"]
 
         if "button_color" in kwargs:
-            self.button_color = kwargs["button_color"]
+            self.button_color = kwargs.pop("button_color")
             require_redraw = True
-            del kwargs["button_color"]
 
         if "button_hover_color" in kwargs:
-            self.button_hover_color = kwargs["button_hover_color"]
+            self.button_hover_color = kwargs.pop("button_hover_color")
             require_redraw = True
-            del kwargs["button_hover_color"]
 
         if "border_color" in kwargs:
-            self.border_color = kwargs["border_color"]
+            self.border_color = kwargs.pop("border_color")
             require_redraw = True
-            del kwargs["border_color"]
 
         if "border_width" in kwargs:
-            self.border_width = kwargs["border_width"]
+            self.border_width = kwargs.pop("border_width")
             require_redraw = True
-            del kwargs["border_width"]
 
         if "command" in kwargs:
-            self.callback_function = kwargs["command"]
-            del kwargs["command"]
+            self.function = kwargs.pop("command")
 
         if "textvariable" in kwargs:
-            self.text_label.configure(textvariable=kwargs["textvariable"])
-            del kwargs["textvariable"]
+            self.textvariable = kwargs.pop("textvariable")
+            self.text_label.configure(textvariable=self.textvariable)
 
         if "variable" in kwargs:
             if self.variable is not None:
                 self.variable.trace_remove("write", self.variable_callback_name)
 
-            self.variable = kwargs["variable"]
+            self.variable = kwargs.pop("variable")
 
             if self.variable is not None and self.variable != "":
                 self.variable_callback_name = self.variable.trace_add("write", self.variable_callback)
@@ -355,8 +339,6 @@ class CTkSwitch(CTkBaseClass):
                     self.deselect(from_variable_callback=True)
             else:
                 self.variable = None
-
-            del kwargs["variable"]
 
         super().configure(*args, **kwargs)
 

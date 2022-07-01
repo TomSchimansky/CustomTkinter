@@ -249,9 +249,6 @@ class CTkSlider(CTkBaseClass):
 
         self.draw(no_color_updates=False)
 
-        # if self.callback_function is not None and not from_variable_callback:
-        #     self.callback_function(self.output_value)
-
         if self.variable is not None and not from_variable_callback:
             self.variable_callback_blocked = True
             self.variable.set(round(self.output_value) if isinstance(self.variable, tkinter.IntVar) else self.output_value)
