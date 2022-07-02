@@ -102,8 +102,12 @@ class CTkInputDialog:
         self.running = True
 
         while self.running:
-            self.top.update()
-            time.sleep(0.01)
+            try:
+                self.top.update()
+            except Exception:
+                return self.user_input
+            finally:
+                time.sleep(0.01)
 
         time.sleep(0.05)
         self.top.destroy()

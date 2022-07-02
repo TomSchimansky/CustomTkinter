@@ -1,4 +1,4 @@
-__version__ = "4.3.0"
+__version__ = "4.5.3"
 
 import os
 import sys
@@ -14,7 +14,15 @@ from .font_manager import FontManager
 from .draw_engine import DrawEngine
 
 AppearanceModeTracker.init_appearance_mode()
-ThemeManager.load_theme("blue")  # load default theme
+
+# load default blue theme
+try:
+    ThemeManager.load_theme("blue")
+except FileNotFoundError as err:
+    raise FileNotFoundError(f"{err}\n\nThe .json theme file for CustomTkinter could not be found.\n" +
+                            f"If packaging with pyinstaller was used, have a look at the wiki:\n" +
+                            f"https://github.com/TomSchimansky/CustomTkinter/wiki/Packaging#windows-pyinstaller-auto-py-to-exe")
+
 FontManager.init_font_manager()
 
 # determine draw method based on current platform
@@ -41,6 +49,7 @@ if FontManager.load_font(os.path.join(script_directory, "assets", "fonts", "Cust
         DrawEngine.preferred_drawing_method = "circle_shapes"
 
 # import widgets
+from .widgets.widget_base_class import CTkBaseClass
 from .widgets.ctk_button import CTkButton
 from .widgets.ctk_checkbox import CTkCheckBox
 from .widgets.ctk_entry import CTkEntry
@@ -53,6 +62,8 @@ from .widgets.ctk_canvas import CTkCanvas
 from .widgets.ctk_switch import CTkSwitch
 from .widgets.ctk_optionmenu import CTkOptionMenu
 from .widgets.ctk_combobox import CTkComboBox
+from .widgets.ctk_scrollbar import CTkScrollbar
+from .widgets.ctk_textbox import CTkTextbox
 
 # import windows
 from .windows.ctk_tk import CTk

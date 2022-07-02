@@ -46,30 +46,27 @@ class App(customtkinter.CTk):
         self.label_1.grid(row=1, column=0, pady=10, padx=10)
 
         self.button_1 = customtkinter.CTkButton(master=self.frame_left,
-                                                text="CTkButton 1",
-                                                fg_color=("gray75", "gray30"),  # <- custom tuple-color
+                                                text="CTkButton",
                                                 command=self.button_event)
         self.button_1.grid(row=2, column=0, pady=10, padx=20)
 
         self.button_2 = customtkinter.CTkButton(master=self.frame_left,
-                                                text="CTkButton 2",
-                                                fg_color=("gray75", "gray30"),  # <- custom tuple-color
+                                                text="CTkButton",
                                                 command=self.button_event)
         self.button_2.grid(row=3, column=0, pady=10, padx=20)
 
         self.button_3 = customtkinter.CTkButton(master=self.frame_left,
-                                                text="CTkButton 3",
-                                                fg_color=("gray75", "gray30"),  # <- custom tuple-color
+                                                text="CTkButton",
                                                 command=self.button_event)
         self.button_3.grid(row=4, column=0, pady=10, padx=20)
 
-        self.switch_1 = customtkinter.CTkSwitch(master=self.frame_left)
-        self.switch_1.grid(row=9, column=0, pady=10, padx=20, sticky="w")
+        self.label_mode = customtkinter.CTkLabel(master=self.frame_left, text="Appearance Mode:")
+        self.label_mode.grid(row=9, column=0, pady=0, padx=20, sticky="w")
 
-        self.switch_2 = customtkinter.CTkSwitch(master=self.frame_left,
-                                                text="Dark Mode",
-                                                command=self.change_mode)
-        self.switch_2.grid(row=10, column=0, pady=10, padx=20, sticky="w")
+        self.optionmenu_1 = customtkinter.CTkOptionMenu(master=self.frame_left,
+                                                        values=["Light", "Dark", "System"],
+                                                        command=self.change_appearance_mode)
+        self.optionmenu_1.grid(row=10, column=0, pady=10, padx=20, sticky="w")
 
         # ============ frame_right ============
 
@@ -134,25 +131,17 @@ class App(customtkinter.CTk):
                                                 command=self.progressbar.set)
         self.slider_2.grid(row=5, column=0, columnspan=2, pady=10, padx=20, sticky="we")
 
-        self.slider_button_1 = customtkinter.CTkButton(master=self.frame_right,
-                                                       height=25,
-                                                       text="CTkButton",
-                                                       command=self.button_event)
-        self.slider_button_1.grid(row=4, column=2, columnspan=1, pady=10, padx=20, sticky="we")
+        self.switch_1 = customtkinter.CTkSwitch(master=self.frame_right,
+                                                text="CTkSwitch")
+        self.switch_1.grid(row=4, column=2, columnspan=1, pady=10, padx=20, sticky="we")
 
-        self.slider_button_2 = customtkinter.CTkButton(master=self.frame_right,
-                                                       height=25,
-                                                       text="CTkButton",
-                                                       command=self.button_event)
-        self.slider_button_2.grid(row=5, column=2, columnspan=1, pady=10, padx=20, sticky="we")
+        self.switch_2 = customtkinter.CTkSwitch(master=self.frame_right,
+                                                text="CTkSwitch")
+        self.switch_2.grid(row=5, column=2, columnspan=1, pady=10, padx=20, sticky="we")
 
-        self.checkbox_button_1 = customtkinter.CTkButton(master=self.frame_right,
-                                                         height=25,
-                                                         text="CTkButton",
-                                                         border_width=3,   # <- custom border_width
-                                                         fg_color=None,   # <- no fg_color
-                                                         command=self.button_event)
-        self.checkbox_button_1.grid(row=6, column=2, columnspan=1, pady=10, padx=20, sticky="we")
+        self.combobox_1 = customtkinter.CTkComboBox(master=self.frame_right,
+                                                    values=["Value 1", "Value 2"])
+        self.combobox_1.grid(row=6, column=2, columnspan=1, pady=10, padx=20, sticky="we")
 
         self.check_box_1 = customtkinter.CTkCheckBox(master=self.frame_right,
                                                      text="CTkCheckBox")
@@ -169,16 +158,20 @@ class App(customtkinter.CTk):
 
         self.button_5 = customtkinter.CTkButton(master=self.frame_right,
                                                 text="CTkButton",
+                                                border_width=2,  # <- custom border_width
+                                                fg_color=None,  # <- no fg_color
                                                 command=self.button_event)
         self.button_5.grid(row=8, column=2, columnspan=1, pady=20, padx=20, sticky="we")
 
         # set default values
+        self.optionmenu_1.set("Dark")
+        self.button_3.configure(state="disabled", text="Disabled CTkButton")
+        self.combobox_1.set("CTkCombobox")
         self.radio_button_1.select()
-        self.switch_2.select()
         self.slider_1.set(0.2)
         self.slider_2.set(0.7)
         self.progressbar.set(0.5)
-        self.slider_button_1.configure(state=tkinter.DISABLED, text="Disabled Button")
+        self.switch_2.select()
         self.radio_button_3.configure(state=tkinter.DISABLED)
         self.check_box_1.configure(state=tkinter.DISABLED, text="CheckBox disabled")
         self.check_box_2.select()
@@ -186,11 +179,8 @@ class App(customtkinter.CTk):
     def button_event(self):
         print("Button pressed")
 
-    def change_mode(self):
-        if self.switch_2.get() == 1:
-            customtkinter.set_appearance_mode("dark")
-        else:
-            customtkinter.set_appearance_mode("light")
+    def change_appearance_mode(self, new_appearance_mode):
+        customtkinter.set_appearance_mode(new_appearance_mode)
 
     def on_closing(self, event=0):
         self.destroy()

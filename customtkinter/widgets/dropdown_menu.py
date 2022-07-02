@@ -34,6 +34,14 @@ class DropdownMenu(tkinter.Menu):
         self.text_color = ThemeManager.theme["color"]["text"] if text_color == "default_theme" else text_color
         self.text_font = (ThemeManager.theme["text"]["font"], ThemeManager.theme["text"]["size"]) if text_font == "default_theme" else text_font
 
+        self.configure_menu_for_platforms()
+
+        self.values = values
+        self.command = command
+
+        self.add_menu_commands()
+
+    def configure_menu_for_platforms(self):
         if sys.platform == "darwin":
             self.configure(tearoff=False,
                            font=self.apply_font_scaling(self.text_font))
@@ -61,16 +69,17 @@ class DropdownMenu(tkinter.Menu):
                            activeforeground=ThemeManager.single_color(self.text_color, self._appearance_mode),
                            font=self.apply_font_scaling(self.text_font))
 
-        self.values = values
-        self.command = command
-
-        self.add_menu_commands()
-
     def add_menu_commands(self):
-        for value in self.values:
-            self.add_command(label=value.ljust(self.min_character_width),
-                             command=lambda v=value: self.button_callback(v),
-                             compound="left")
+        if sys.platform.startswith("linux"):
+            for value in self.values:
+                self.add_command(label="  " + value.ljust(self.min_character_width) + "  ",
+                                 command=lambda v=value: self.button_callback(v),
+                                 compound="left")
+        else:
+            for value in self.values:
+                self.add_command(label=value.ljust(self.min_character_width),
+                                 command=lambda v=value: self.button_callback(v),
+                                 compound="left")
 
     def open(self, x: Union[int, float], y: Union[int, float]):
         if sys.platform == "darwin":
@@ -78,7 +87,10 @@ class DropdownMenu(tkinter.Menu):
         else:
             y += self.apply_widget_scaling(3)
 
-        self.post(int(x), int(y))
+        if sys.platform == "darwin" or sys.platform.startswith("win"):
+            self.post(int(x), int(y))
+        else:  # Linux
+            self.tk_popup(int(x), int(y))
 
     def button_callback(self, value):
         if self.command is not None:
@@ -157,3 +169,5 @@ class DropdownMenu(tkinter.Menu):
             self._appearance_mode = 1
         elif mode_string.lower() == "light":
             self._appearance_mode = 0
+
+        self.configure_menu_for_platforms()
