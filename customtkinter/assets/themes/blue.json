@@ -62,7 +62,7 @@
     "entry_border_width": 2,
     "frame_corner_radius": 6,
     "frame_border_width": 0,
-    "label_corner_radius": 8,
+    "label_corner_radius": 0,
     "progressbar_border_width": 0,
     "progressbar_corner_radius": 1000,
     "slider_border_width": 6,
