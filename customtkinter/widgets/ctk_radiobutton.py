@@ -1,6 +1,6 @@
 import tkinter
 import sys
-from typing import Callable, Union
+from typing import Union
 
 from .ctk_canvas import CTkCanvas
 from ..theme_manager import ThemeManager
@@ -86,6 +86,19 @@ class CTkRadioButton(CTkBaseClass):
         self.canvas.bind("<Leave>", self.on_leave)
         self.canvas.bind("<Button-1>", self.invoke)
 
+        self.text_label = tkinter.Label(master=self,
+                                        bd=0,
+                                        text=self.text,
+                                        justify=tkinter.LEFT,
+                                        font=self.apply_font_scaling(self.text_font),
+                                        textvariable=self.textvariable)
+        self.text_label.grid(row=0, column=2, padx=0, pady=0, sticky="w")
+        self.text_label["anchor"] = "w"
+
+        self.text_label.bind("<Enter>", self.on_enter)
+        self.text_label.bind("<Leave>", self.on_leave)
+        self.text_label.bind("<Button-1>", self.invoke)
+
         self.draw()  # initial draw
         self.set_cursor()
 
@@ -134,19 +147,6 @@ class CTkRadioButton(CTkBaseClass):
                                outline=ThemeManager.single_color(self.bg_color, self._appearance_mode),
                                fill=ThemeManager.single_color(self.bg_color, self._appearance_mode))
 
-        if self.text_label is None:
-            self.text_label = tkinter.Label(master=self,
-                                            bd=0,
-                                            text=self.text,
-                                            justify=tkinter.LEFT,
-                                            font=self.apply_font_scaling(self.text_font))
-            self.text_label.grid(row=0, column=2, padx=0, pady=0, sticky="w")
-            self.text_label["anchor"] = "w"
-
-            self.text_label.bind("<Enter>", self.on_enter)
-            self.text_label.bind("<Leave>", self.on_leave)
-            self.text_label.bind("<Button-1>", self.invoke)
-
         if self.state == tkinter.DISABLED:
             self.text_label.configure(fg=ThemeManager.single_color(self.text_color_disabled, self._appearance_mode))
         else:
@@ -154,63 +154,58 @@ class CTkRadioButton(CTkBaseClass):
 
         self.text_label.configure(bg=ThemeManager.single_color(self.bg_color, self._appearance_mode))
 
-        self.set_text(self.text)
-
     def configure(self, *args, **kwargs):
         require_redraw = False  # some attribute changes require a call of self.draw()
 
         if "text" in kwargs:
-            self.set_text(kwargs["text"])
-            del kwargs["text"]
+            self.text = kwargs.pop("text")
+            self.text_label.configure(text=self.text)
 
         if "state" in kwargs:
-            self.state = kwargs["state"]
+            self.state = kwargs.pop("state")
             self.set_cursor()
             require_redraw = True
-            del kwargs["state"]
 
         if "fg_color" in kwargs:
-            self.fg_color = kwargs["fg_color"]
+            self.fg_color = kwargs.pop("fg_color")
             require_redraw = True
-            del kwargs["fg_color"]
 
         if "bg_color" in kwargs:
-            if kwargs["bg_color"] is None:
+            new_bg_color = kwargs.pop("bg_color")
+            if new_bg_color is None:
                 self.bg_color = self.detect_color_of_master()
             else:
-                self.bg_color = kwargs["bg_color"]
+                self.bg_color = new_bg_color
             require_redraw = True
-            del kwargs["bg_color"]
 
         if "hover_color" in kwargs:
-            self.hover_color = kwargs["hover_color"]
+            self.hover_color = kwargs.pop("hover_color")
             require_redraw = True
-            del kwargs["hover_color"]
 
         if "text_color" in kwargs:
-            self.text_color = kwargs["text_color"]
+            self.text_color = kwargs.pop("text_color")
             require_redraw = True
-            del kwargs["text_color"]
 
         if "border_color" in kwargs:
-            self.border_color = kwargs["border_color"]
+            self.border_color = kwargs.pop("border_color")
             require_redraw = True
-            del kwargs["border_color"]
 
         if "border_width" in kwargs:
-            self.border_width = kwargs["border_width"]
+            self.border_width = kwargs.pop("border_width")
             require_redraw = True
-            del kwargs["border_width"]
 
         if "command" in kwargs:
-            self.function = kwargs["command"]
-            del kwargs["command"]
+            self.function = kwargs.pop("command")
+
+        if "textvariable" in kwargs:
+            self.textvariable = kwargs.pop("textvariable")
+            self.text_label.configure(textvariable=self.textvariable)
 
         if "variable" in kwargs:
             if self.variable is not None:
                 self.variable.trace_remove("write", self.variable_callback_name)
 
-            self.variable = kwargs["variable"]
+            self.variable = kwargs.pop("variable")
 
             if self.variable is not None and self.variable != "":
                 self.variable_callback_name = self.variable.trace_add("write", self.variable_callback)
@@ -220,8 +215,6 @@ class CTkRadioButton(CTkBaseClass):
                     self.deselect(from_variable_callback=True)
             else:
                 self.variable = None
-
-            del kwargs["variable"]
 
         super().configure(*args, **kwargs)
 
@@ -249,13 +242,6 @@ class CTkRadioButton(CTkBaseClass):
                     self.canvas.configure(cursor="hand2")
                     if self.text_label is not None:
                         self.text_label.configure(cursor="hand2")
-
-    def set_text(self, text):
-        self.text = text
-        if self.text_label is not None:
-            self.text_label.configure(text=self.text)
-        else:
-            sys.stderr.write("ERROR (CTkButton): Cant change text because radiobutton has no text.")
 
     def on_enter(self, event=0):
         if self.hover is True and self.state == tkinter.NORMAL:
@@ -287,11 +273,8 @@ class CTkRadioButton(CTkBaseClass):
                 self.check_state = True
                 self.select()
 
-            if self.function is not None:
-                try:
-                    self.function()
-                except:
-                    pass
+        if self.function is not None:
+            self.function()
 
     def select(self, from_variable_callback=False):
         self.check_state = True

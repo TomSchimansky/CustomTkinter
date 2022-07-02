@@ -50,7 +50,10 @@ class AppearanceModeTracker:
 
     @classmethod
     def remove(cls, callback: Callable):
-        cls.callback_list.remove(callback)
+        try:
+            cls.callback_list.remove(callback)
+        except ValueError:
+            return
 
     @staticmethod
     def detect_appearance_mode() -> int:

@@ -12,7 +12,6 @@ from .widget_base_class import CTkBaseClass
 
 
 class CTkComboBox(CTkBaseClass):
-
     def __init__(self, *args,
                  bg_color=None,
                  fg_color="default_theme",
@@ -30,6 +29,7 @@ class CTkComboBox(CTkBaseClass):
                  corner_radius="default_theme",
                  border_width="default_theme",
                  text_font="default_theme",
+                 dropdown_text_font="default_theme",
                  text_color="default_theme",
                  text_color_disabled="default_theme",
                  hover=True,
@@ -44,16 +44,12 @@ class CTkComboBox(CTkBaseClass):
         self.border_color = ThemeManager.theme["color"]["combobox_border"] if border_color == "default_theme" else border_color
         self.button_color = ThemeManager.theme["color"]["combobox_border"] if button_color == "default_theme" else button_color
         self.button_hover_color = ThemeManager.theme["color"]["combobox_button_hover"] if button_hover_color == "default_theme" else button_hover_color
-        self.dropdown_color = ThemeManager.theme["color"]["dropdown_color"] if dropdown_color == "default_theme" else dropdown_color
-        self.dropdown_hover_color = ThemeManager.theme["color"]["dropdown_hover"] if dropdown_hover_color == "default_theme" else dropdown_hover_color
-        self.dropdown_text_color = ThemeManager.theme["color"]["dropdown_text"] if dropdown_text_color == "default_theme" else dropdown_text_color
 
         # shape
         self.corner_radius = ThemeManager.theme["shape"]["button_corner_radius"] if corner_radius == "default_theme" else corner_radius
         self.border_width = ThemeManager.theme["shape"]["entry_border_width"] if border_width == "default_theme" else border_width
 
         # text and font
-        self.text_label = None
         self.text_color = ThemeManager.theme["color"]["text"] if text_color == "default_theme" else text_color
         self.text_color_disabled = ThemeManager.theme["color"]["text_button_disabled"] if text_color_disabled == "default_theme" else text_color_disabled
         self.text_font = (ThemeManager.theme["text"]["font"], ThemeManager.theme["text"]["size"]) if text_font == "default_theme" else text_font
@@ -63,7 +59,6 @@ class CTkComboBox(CTkBaseClass):
         self.variable = variable
         self.state = state
         self.hover = hover
-        self.click_animation_running = False
 
         if values is None:
             self.values = ["CTkComboBox"]
@@ -75,7 +70,13 @@ class CTkComboBox(CTkBaseClass):
         else:
             self.current_value = "CTkComboBox"
 
-        self.dropdown_menu: Union[DropdownMenu, None] = None
+        self.dropdown_menu = DropdownMenu(master=self,
+                                          values=self.values,
+                                          command=self.set,
+                                          fg_color=dropdown_color,
+                                          hover_color=dropdown_hover_color,
+                                          text_color=dropdown_text_color,
+                                          text_font=dropdown_text_font)
 
         # configure grid system (1x1)
         self.grid_rowconfigure(0, weight=1)
@@ -96,8 +97,11 @@ class CTkComboBox(CTkBaseClass):
                                    font=self.apply_font_scaling(self.text_font))
         left_section_width = self._current_width - self._current_height
         self.entry.grid(row=0, column=0, rowspan=1, columnspan=1, sticky="ew",
-                        padx=(self.apply_widget_scaling(max(self.corner_radius, 3)),
-                              self.apply_widget_scaling(max(self._current_width - left_section_width + 3, 3))))
+                        padx=(max(self.apply_widget_scaling(self.corner_radius), self.apply_widget_scaling(3)),
+                              max(self.apply_widget_scaling(self._current_width - left_section_width + 3), self.apply_widget_scaling(3))))
+
+        self.entry.delete(0, tkinter.END)
+        self.entry.insert(0, self.current_value)
 
         self.draw()  # initial draw
 
@@ -115,6 +119,13 @@ class CTkComboBox(CTkBaseClass):
 
     def set_scaling(self, *args, **kwargs):
         super().set_scaling(*args, **kwargs)
+
+        # change entry font size and grid padding
+        left_section_width = self._current_width - self._current_height
+        self.entry.configure(font=self.apply_font_scaling(self.text_font))
+        self.entry.grid(row=0, column=0, rowspan=1, columnspan=1, sticky="ew",
+                        padx=(max(self.apply_widget_scaling(self.corner_radius), self.apply_widget_scaling(3)),
+                              max(self.apply_widget_scaling(self._current_width - left_section_width + 3), self.apply_widget_scaling(3))))
 
         self.canvas.configure(width=self.apply_widget_scaling(self._desired_width),
                               height=self.apply_widget_scaling(self._desired_height))
@@ -139,10 +150,6 @@ class CTkComboBox(CTkBaseClass):
                                                                      self.apply_widget_scaling(self._current_height / 2),
                                                                      self.apply_widget_scaling(self._current_height / 3))
 
-        if self.current_value is not None:
-            self.entry.delete(0, tkinter.END)
-            self.entry.insert(0, self.current_value)
-
         if no_color_updates is False or requires_recoloring or requires_recoloring_2:
 
             self.canvas.configure(bg=ThemeManager.single_color(self.bg_color, self._appearance_mode))
@@ -160,28 +167,21 @@ class CTkComboBox(CTkBaseClass):
                                    outline=ThemeManager.single_color(self.border_color, self._appearance_mode),
                                    fill=ThemeManager.single_color(self.border_color, self._appearance_mode))
 
-            self.entry.configure(fg=ThemeManager.single_color(self.text_color, self._appearance_mode))
-            self.entry.configure(bg=ThemeManager.single_color(self.fg_color, self._appearance_mode))
+            self.entry.configure(bg=ThemeManager.single_color(self.fg_color, self._appearance_mode),
+                                 fg=ThemeManager.single_color(self.text_color, self._appearance_mode),
+                                 disabledforeground=ThemeManager.single_color(self.text_color_disabled, self._appearance_mode),
+                                 disabledbackground=ThemeManager.single_color(self.fg_color, self._appearance_mode))
 
             if self.state == tkinter.DISABLED:
-                self.entry.configure(fg=(ThemeManager.single_color(self.text_color_disabled, self._appearance_mode)))
                 self.canvas.itemconfig("dropdown_arrow",
                                        fill=ThemeManager.single_color(self.text_color_disabled, self._appearance_mode))
             else:
-                self.entry.configure(fg=ThemeManager.single_color(self.text_color, self._appearance_mode))
                 self.canvas.itemconfig("dropdown_arrow",
                                        fill=ThemeManager.single_color(self.text_color, self._appearance_mode))
 
     def open_dropdown_menu(self):
-        self.dropdown_menu = DropdownMenu(x_position=self.winfo_rootx(),
-                                          y_position=self.winfo_rooty() + self.apply_widget_scaling(self._current_height + 4),
-                                          width=self._current_width,
-                                          values=self.values,
-                                          command=self.set,
-                                          fg_color=self.dropdown_color,
-                                          button_hover_color=self.dropdown_hover_color,
-                                          button_color=self.dropdown_color,
-                                          text_color=self.dropdown_text_color)
+        self.dropdown_menu.open(self.winfo_rootx(),
+                                self.winfo_rooty() + self.apply_widget_scaling(self._current_height + 0))
 
     def configure(self, *args, **kwargs):
         require_redraw = False  # some attribute changes require a call of self.draw() at the end
@@ -240,6 +240,23 @@ class CTkComboBox(CTkBaseClass):
         if "values" in kwargs:
             self.values = kwargs["values"]
             del kwargs["values"]
+            self.dropdown_menu.configure(values=self.values)
+
+        if "dropdown_color" in kwargs:
+            self.dropdown_menu.configure(fg_color=kwargs["dropdown_color"])
+            del kwargs["dropdown_color"]
+
+        if "dropdown_hover_color" in kwargs:
+            self.dropdown_menu.configure(hover_color=kwargs["dropdown_hover_color"])
+            del kwargs["dropdown_hover_color"]
+
+        if "dropdown_text_color" in kwargs:
+            self.dropdown_menu.configure(text_color=kwargs["dropdown_text_color"])
+            del kwargs["dropdown_text_color"]
+
+        if "dropdown_text_font" in kwargs:
+            self.dropdown_menu.configure(text_font=kwargs["dropdown_text_font"])
+            del kwargs["dropdown_text_font"]
 
         super().configure(*args, **kwargs)
 
@@ -262,8 +279,6 @@ class CTkComboBox(CTkBaseClass):
                                    fill=ThemeManager.single_color(self.button_hover_color, self._appearance_mode))
 
     def on_leave(self, event=0):
-        self.click_animation_running = False
-
         if self.hover is True:
             if sys.platform == "darwin" and len(self.values) > 0 and Settings.cursor_manipulation_enabled:
                 self.canvas.configure(cursor="arrow")
@@ -277,10 +292,6 @@ class CTkComboBox(CTkBaseClass):
             self.canvas.itemconfig("border_parts_right",
                                    outline=ThemeManager.single_color(self.button_color, self._appearance_mode),
                                    fill=ThemeManager.single_color(self.button_color, self._appearance_mode))
-
-    def click_animation(self):
-        if self.click_animation_running:
-            self.on_enter()
 
     def set(self, value: str, from_variable_callback: bool = False):
         self.current_value = value
@@ -298,8 +309,3 @@ class CTkComboBox(CTkBaseClass):
     def clicked(self, event=0):
         if self.state is not tkinter.DISABLED and len(self.values) > 0:
             self.open_dropdown_menu()
-
-            # click animation: change color with .on_leave() and back to normal after 100ms with click_animation()
-            self.on_leave()
-            self.click_animation_running = True
-            self.after(100, self.click_animation)
