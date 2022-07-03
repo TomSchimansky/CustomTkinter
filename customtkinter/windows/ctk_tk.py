@@ -259,3 +259,6 @@ class CTk(tkinter.Tk):
                 self.windows_set_titlebar_color("light")
 
         super().configure(bg=ThemeManager.single_color(self.fg_color, self.appearance_mode))
+
+    def set_menu_bar(self, menu_bar):
+        self.configure(menu=menu_bar)

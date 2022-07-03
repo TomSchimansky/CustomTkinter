@@ -91,11 +91,18 @@ class CTkComboBox(CTkBaseClass):
         self.draw_engine = DrawEngine(self.canvas)
 
         self.entry = tkinter.Entry(master=self,
-                                   state=self.state,
+                                   state=tkinter.NORMAL,
                                    width=1,
                                    bd=0,
                                    highlightthickness=0,
                                    font=self.apply_font_scaling(self.text_font))
+        
+        self.entry.delete(0,tkinter.END)
+        self.entry.insert(0,self.current_value)
+
+        if self.state != tkinter.NORMAL:
+            self.entry.configure(state=tkinter.DISABLED)
+
         left_section_width = self._current_width - self._current_height
         self.entry.grid(row=0, column=0, rowspan=1, columnspan=1, sticky="ew",
                         padx=(max(self.apply_widget_scaling(self.corner_radius), self.apply_widget_scaling(3)),
@@ -259,19 +266,20 @@ class CTkComboBox(CTkBaseClass):
             self.draw()
 
     def on_enter(self, event=0):
-        if self.hover is True and self.state == tkinter.NORMAL and len(self.values) > 0:
-            if sys.platform == "darwin" and len(self.values) > 0 and Settings.cursor_manipulation_enabled:
-                self.canvas.configure(cursor="pointinghand")
-            elif sys.platform.startswith("win") and len(self.values) > 0 and Settings.cursor_manipulation_enabled:
-                self.canvas.configure(cursor="hand2")
+        if self.state is not tkinter.DISABLED:
+            if self.hover is True and self.state == tkinter.NORMAL and len(self.values) > 0:
+                if sys.platform == "darwin" and len(self.values) > 0 and Settings.cursor_manipulation_enabled:
+                    self.canvas.configure(cursor="pointinghand")
+                elif sys.platform.startswith("win") and len(self.values) > 0 and Settings.cursor_manipulation_enabled:
+                    self.canvas.configure(cursor="hand2")
 
-            # set color of inner button parts to hover color
-            self.canvas.itemconfig("inner_parts_right",
-                                   outline=ThemeManager.single_color(self.button_hover_color, self._appearance_mode),
-                                   fill=ThemeManager.single_color(self.button_hover_color, self._appearance_mode))
-            self.canvas.itemconfig("border_parts_right",
-                                   outline=ThemeManager.single_color(self.button_hover_color, self._appearance_mode),
-                                   fill=ThemeManager.single_color(self.button_hover_color, self._appearance_mode))
+                # set color of inner button parts to hover color
+                self.canvas.itemconfig("inner_parts_right",
+                                       outline=ThemeManager.single_color(self.button_hover_color, self._appearance_mode),
+                                       fill=ThemeManager.single_color(self.button_hover_color, self._appearance_mode))
+                self.canvas.itemconfig("border_parts_right",
+                                       outline=ThemeManager.single_color(self.button_hover_color, self._appearance_mode),
+                                       fill=ThemeManager.single_color(self.button_hover_color, self._appearance_mode))
 
     def on_leave(self, event=0):
         if self.hover is True:
