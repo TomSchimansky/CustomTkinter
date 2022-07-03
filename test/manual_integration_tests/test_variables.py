@@ -5,7 +5,7 @@ TEST_CONFIGURE = True
 TEST_REMOVING = False
 
 app = customtkinter.CTk()  # create CTk window like you do with the Tk window (you can also use normal tkinter.Tk window)
-app.geometry("400x800")
+app.geometry("400x900")
 app.title("Tkinter Variable Test")
 
 txt_var = tkinter.StringVar(value="")
@@ -46,7 +46,7 @@ if TEST_CONFIGURE: progress_1.configure(variable=int_var)
 if TEST_REMOVING: progress_1.configure(variable="")
 
 check_var = tkinter.StringVar(value="on")
-check_1 = customtkinter.CTkCheckBox(app, text="check 1", variable=check_var, onvalue="on", offvalue="off")
+check_1 = customtkinter.CTkCheckBox(app, text="check 1", variable=check_var, onvalue="on", offvalue="off", textvariable=txt_var)
 check_1.pack(pady=15)
 if TEST_CONFIGURE: check_1.configure(variable=check_var)
 if TEST_REMOVING: check_1.configure(variable="")
@@ -67,8 +67,8 @@ def switch_event():
 s_var = tkinter.StringVar(value="on")
 switch_1 = customtkinter.CTkSwitch(master=app, variable=s_var, textvariable=s_var, onvalue="on", offvalue="off", command=switch_event)
 switch_1.pack(pady=20, padx=10)
-switch_1 = customtkinter.CTkSwitch(master=app, variable=s_var, textvariable=s_var, onvalue="on", offvalue="off")
-switch_1.pack(pady=20, padx=10)
+switch_2 = customtkinter.CTkSwitch(master=app, variable=s_var, textvariable=s_var, onvalue="on", offvalue="off")
+switch_2.pack(pady=20, padx=10)
 
 optionmenu_var = tkinter.StringVar(value="test")
 optionmenu_1 = customtkinter.CTkOptionMenu(master=app, variable=optionmenu_var, values=["Option 1", "Option 2", "Option 3"])
@@ -76,5 +76,8 @@ optionmenu_1.pack(pady=20, padx=10)
 combobox_1 = customtkinter.CTkComboBox(master=app, values=["Option 1", "Option 2", "Option 3"])
 combobox_1.pack(pady=20, padx=10)
 combobox_1.configure(variable=optionmenu_var)
+
+radio_1 = customtkinter.CTkRadioButton(app, textvariable=txt_var)
+radio_1.pack(pady=20, padx=10)
 
 app.mainloop()

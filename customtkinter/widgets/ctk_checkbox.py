@@ -49,7 +49,11 @@ class CTkCheckBox(CTkBaseClass):
         self.border_width = ThemeManager.theme["shape"]["checkbox_border_width"] if border_width == "default_theme" else border_width
 
         # text
-        self.text = text
+        if textvariable is None:
+            self.text = text
+        else:
+            self.text = textvariable.get()
+
         self.text_label: Union[tkinter.Label, None] = None
         self.text_color = ThemeManager.theme["color"]["text"] if text_color == "default_theme" else text_color
         self.text_color_disabled = ThemeManager.theme["color"]["text_disabled"] if text_color_disabled == "default_theme" else text_color_disabled
@@ -59,12 +63,15 @@ class CTkCheckBox(CTkBaseClass):
         self.function = command
         self.state = state
         self.hover = hover
-        self.check_state = False
+        if variable == None:
+            self.check_state = False
+        else:
+            self.check_state = (variable.get() == onvalue)
         self.onvalue = onvalue
         self.offvalue = offvalue
         self.variable: tkinter.Variable = variable
         self.variable_callback_blocked = False
-        self.textvariable = textvariable
+        self.textvariable: tkinter.Variable = textvariable
         self.variable_callback_name = None
 
         # configure grid system (1x3)
@@ -90,14 +97,26 @@ class CTkCheckBox(CTkBaseClass):
         self.canvas.bind("<Leave>", self.on_leave)
         self.canvas.bind("<Button-1>", self.toggle)
 
+        self.text_label = tkinter.Label(master=self,
+                                        bd=0,
+                                        text=self.text,
+                                        justify=tkinter.LEFT,
+                                        font=self.apply_font_scaling(self.text_font),
+                                        textvariable=self.textvariable)
+        self.text_label.grid(row=0, column=2, padx=0, pady=0, sticky="w")
+        self.text_label["anchor"] = "w"
+
+        self.text_label.bind("<Enter>", self.on_enter)
+        self.text_label.bind("<Leave>", self.on_leave)
+        self.text_label.bind("<Button-1>", self.toggle)
+
         # set select state according to variable
         if self.variable is not None:
             self.variable_callback_name = self.variable.trace_add("write", self.variable_callback)
-            if self.variable.get() == self.onvalue:
-                self.select(from_variable_callback=True)
-            elif self.variable.get() == self.offvalue:
-                self.deselect(from_variable_callback=True)
-
+        
+        if self.textvariable is not None:
+            self.textvariable_callback_name = self.textvariable.trace_add("write", self.textvariable_callback)
+       
         self.draw()  # initial draw
         self.set_cursor()
 
@@ -153,32 +172,18 @@ class CTkCheckBox(CTkBaseClass):
                                    outline=ThemeManager.single_color(self.border_color, self._appearance_mode),
                                    fill=ThemeManager.single_color(self.border_color, self._appearance_mode))
 
-        if self.text_label is None:
-            self.text_label = tkinter.Label(master=self,
-                                            bd=0,
-                                            text=self.text,
-                                            justify=tkinter.LEFT,
-                                            font=self.apply_font_scaling(self.text_font))
-            self.text_label.grid(row=0, column=2, padx=0, pady=0, sticky="w")
-            self.text_label["anchor"] = "w"
-
-            self.text_label.bind("<Enter>", self.on_enter)
-            self.text_label.bind("<Leave>", self.on_leave)
-            self.text_label.bind("<Button-1>", self.toggle)
-
         if self.state == tkinter.DISABLED:
             self.text_label.configure(fg=(ThemeManager.single_color(self.text_color_disabled, self._appearance_mode)))
         else:
             self.text_label.configure(fg=ThemeManager.single_color(self.text_color, self._appearance_mode))
         self.text_label.configure(bg=ThemeManager.single_color(self.bg_color, self._appearance_mode))
 
-        self.set_text(self.text)
-
     def configure(self, *args, **kwargs):
         require_redraw = False  # some attribute changes require a call of self.draw()
 
         if "text" in kwargs:
-            self.set_text(kwargs["text"])
+            self.text = kwargs["text"]
+            self.text_label.configure(text=self.text)
             del kwargs["text"]
 
         if "state" in kwargs:
@@ -219,6 +224,11 @@ class CTkCheckBox(CTkBaseClass):
             self.function = kwargs["command"]
             del kwargs["command"]
 
+        if "textvariable" in kwargs:
+            self.textvariable = kwargs["textvariable"]
+            self.text_label.configure(textvariable=self.textvariable)
+            del kwargs["textvariable"]
+
         if "variable" in kwargs:
             if self.variable is not None:
                 self.variable.trace_remove("write", self.variable_callback_name)
@@ -235,6 +245,20 @@ class CTkCheckBox(CTkBaseClass):
                 self.variable = None
 
             del kwargs["variable"]
+        
+        if "textvariable" in kwargs:
+            if self.textvariable is not None:
+                self.textvariable.trace_remove("write", self.textvariable_callback_name)
+
+            self.textvariable = kwargs["textvariable"]
+
+            if self.textvariable is not None and self.textvariable != "":
+                self.textvariable_callback_name = self.textvariable.trace_add("write", self.textvariable_callback)
+                self.set_text(self.textvariable.get())
+            else:
+                self.textvariable = None
+
+            del kwargs["textvariable"]
 
         super().configure(*args, **kwargs)
 
@@ -262,13 +286,6 @@ class CTkCheckBox(CTkBaseClass):
                     self.canvas.configure(cursor="hand2")
                     if self.text_label is not None:
                         self.text_label.configure(cursor="hand2")
-
-    def set_text(self, text):
-        self.text = text
-        if self.text_label is not None:
-            self.text_label.configure(text=self.text)
-        else:
-            sys.stderr.write("ERROR (CTkButton): Cant change text because checkbox has no text.")
 
     def on_enter(self, event=0):
         if self.hover is True and self.state == tkinter.NORMAL:
@@ -308,6 +325,9 @@ class CTkCheckBox(CTkBaseClass):
             elif self.variable.get() == self.offvalue:
                 self.deselect(from_variable_callback=True)
 
+    def textvariable_callback(self, var_name, index, mode):
+        self.set_text(self.textvariable.get())
+    
     def toggle(self, event=0):
         if self.state == tkinter.NORMAL:
             if self.check_state is True:
@@ -317,13 +337,13 @@ class CTkCheckBox(CTkBaseClass):
                 self.check_state = True
                 self.draw()
 
-            if self.function is not None:
-                self.function()
-
             if self.variable is not None:
                 self.variable_callback_blocked = True
                 self.variable.set(self.onvalue if self.check_state is True else self.offvalue)
                 self.variable_callback_blocked = False
+
+            if self.function is not None:
+                self.function()
 
     def select(self, from_variable_callback=False):
         self.check_state = True
@@ -347,10 +367,7 @@ class CTkCheckBox(CTkBaseClass):
             self.variable_callback_blocked = False
 
         if self.function is not None:
-            try:
-                self.function()
-            except:
-                pass
+            self.function()
 
     def get(self):
         return self.onvalue if self.check_state is True else self.offvalue

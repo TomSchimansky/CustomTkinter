@@ -2,7 +2,6 @@ import tkinter
 import sys
 from typing import Union
 
-from .dropdown_menu_old import DropdownMenu
 from .dropdown_menu import DropdownMenu
 
 from .ctk_canvas import CTkCanvas
@@ -108,6 +107,9 @@ class CTkComboBox(CTkBaseClass):
                         padx=(max(self.apply_widget_scaling(self.corner_radius), self.apply_widget_scaling(3)),
                               max(self.apply_widget_scaling(self._current_width - left_section_width + 3), self.apply_widget_scaling(3))))
 
+        self.entry.delete(0, tkinter.END)
+        self.entry.insert(0, self.current_value)
+
         self.draw()  # initial draw
 
         # event bindings
@@ -124,6 +126,13 @@ class CTkComboBox(CTkBaseClass):
 
     def set_scaling(self, *args, **kwargs):
         super().set_scaling(*args, **kwargs)
+
+        # change entry font size and grid padding
+        left_section_width = self._current_width - self._current_height
+        self.entry.configure(font=self.apply_font_scaling(self.text_font))
+        self.entry.grid(row=0, column=0, rowspan=1, columnspan=1, sticky="ew",
+                        padx=(max(self.apply_widget_scaling(self.corner_radius), self.apply_widget_scaling(3)),
+                              max(self.apply_widget_scaling(self._current_width - left_section_width + 3), self.apply_widget_scaling(3))))
 
         self.canvas.configure(width=self.apply_widget_scaling(self._desired_width),
                               height=self.apply_widget_scaling(self._desired_height))
@@ -148,10 +157,6 @@ class CTkComboBox(CTkBaseClass):
                                                                      self.apply_widget_scaling(self._current_height / 2),
                                                                      self.apply_widget_scaling(self._current_height / 3))
 
-        if self.current_value is not None:
-            self.entry.delete(0, tkinter.END)
-            self.entry.insert(0, self.current_value)
-
         if no_color_updates is False or requires_recoloring or requires_recoloring_2:
 
             self.canvas.configure(bg=ThemeManager.single_color(self.bg_color, self._appearance_mode))
@@ -169,15 +174,15 @@ class CTkComboBox(CTkBaseClass):
                                    outline=ThemeManager.single_color(self.border_color, self._appearance_mode),
                                    fill=ThemeManager.single_color(self.border_color, self._appearance_mode))
 
-            self.entry.configure(fg=ThemeManager.single_color(self.text_color, self._appearance_mode))
-            self.entry.configure(bg=ThemeManager.single_color(self.fg_color, self._appearance_mode))
+            self.entry.configure(bg=ThemeManager.single_color(self.fg_color, self._appearance_mode),
+                                 fg=ThemeManager.single_color(self.text_color, self._appearance_mode),
+                                 disabledforeground=ThemeManager.single_color(self.text_color_disabled, self._appearance_mode),
+                                 disabledbackground=ThemeManager.single_color(self.fg_color, self._appearance_mode))
 
             if self.state == tkinter.DISABLED:
-                self.entry.configure(fg=(ThemeManager.single_color(self.text_color_disabled, self._appearance_mode)))
                 self.canvas.itemconfig("dropdown_arrow",
                                        fill=ThemeManager.single_color(self.text_color_disabled, self._appearance_mode))
             else:
-                self.entry.configure(fg=ThemeManager.single_color(self.text_color, self._appearance_mode))
                 self.canvas.itemconfig("dropdown_arrow",
                                        fill=ThemeManager.single_color(self.text_color, self._appearance_mode))
 

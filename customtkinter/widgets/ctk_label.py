@@ -16,6 +16,7 @@ class CTkLabel(CTkBaseClass):
                  height=28,
                  text="CTkLabel",
                  text_font="default_theme",
+                 anchor="center",  # label anchor: center, n, e, s, w
                  **kwargs):
 
         # transfer basic functionality (bg_color, size, _appearance_mode, scaling) to CTkBaseClass
@@ -35,6 +36,7 @@ class CTkLabel(CTkBaseClass):
         self.corner_radius = ThemeManager.theme["shape"]["label_corner_radius"] if corner_radius == "default_theme" else corner_radius
 
         # text
+        self.anchor = anchor
         self.text = text
         self.text_font = (ThemeManager.theme["text"]["font"], ThemeManager.theme["text"]["size"]) if text_font == "default_theme" else text_font
 
@@ -52,10 +54,13 @@ class CTkLabel(CTkBaseClass):
         self.text_label = tkinter.Label(master=self,
                                         highlightthickness=0,
                                         bd=0,
+                                        anchor=self.anchor,
                                         text=self.text,
                                         font=self.apply_font_scaling(self.text_font),
                                         **kwargs)
-        self.text_label.grid(row=0, column=0, padx=self.apply_widget_scaling(self.corner_radius))
+        text_label_grid_sticky = self.anchor if self.anchor != "center" else ""
+        self.text_label.grid(row=0, column=0, padx=self.apply_widget_scaling(self.corner_radius),
+                             sticky=text_label_grid_sticky)
 
         self.bind('<Configure>', self.update_dimensions_event)
         self.draw()
@@ -65,7 +70,9 @@ class CTkLabel(CTkBaseClass):
 
         self.canvas.configure(width=self.apply_widget_scaling(self._desired_width), height=self.apply_widget_scaling(self._desired_height))
         self.text_label.configure(font=self.apply_font_scaling(self.text_font))
-        self.text_label.grid(row=0, column=0, padx=self.apply_widget_scaling(self.corner_radius))
+        text_label_grid_sticky = self.anchor if self.anchor != "center" else ""
+        self.text_label.grid(row=0, column=0, padx=self.apply_widget_scaling(self.corner_radius),
+                             sticky=text_label_grid_sticky)
 
         self.draw()
 
@@ -102,6 +109,12 @@ class CTkLabel(CTkBaseClass):
 
     def configure(self, *args, **kwargs):
         require_redraw = False  # some attribute changes require a call of self.draw() at the end
+
+        if "anchor" in kwargs:
+            self.anchor = kwargs.pop("anchor")
+            text_label_grid_sticky = self.anchor if self.anchor != "center" else ""
+            self.text_label.grid(row=0, column=0, padx=self.apply_widget_scaling(self.corner_radius),
+                                 sticky=text_label_grid_sticky)
 
         if "text" in kwargs:
             self.set_text(kwargs["text"])

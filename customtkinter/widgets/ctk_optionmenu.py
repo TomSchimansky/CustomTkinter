@@ -1,8 +1,6 @@
 import tkinter
 import sys
-from typing import Union
 
-from .dropdown_menu_old import DropdownMenu
 from .dropdown_menu import DropdownMenu
 
 from .ctk_canvas import CTkCanvas
@@ -33,6 +31,7 @@ class CTkOptionMenu(CTkBaseClass):
                  dropdown_text_font="default_theme",
                  hover=True,
                  state=tkinter.NORMAL,
+                 dynamic_resizing=True,
                  **kwargs):
 
         # transfer basic functionality (bg_color, size, _appearance_mode, scaling) to CTkBaseClass
@@ -59,6 +58,7 @@ class CTkOptionMenu(CTkBaseClass):
         self.variable_callback_name = None
         self.state = state
         self.hover = hover
+        self.dynamic_resizing = dynamic_resizing
 
         if values is None:
             self.values = ["CTkOptionMenu"]
@@ -90,10 +90,16 @@ class CTkOptionMenu(CTkBaseClass):
         self.draw_engine = DrawEngine(self.canvas)
 
         left_section_width = self._current_width - self._current_height
-        self.text_label = tkinter.Label(master=self, font=self.apply_font_scaling(self.text_font))
+        self.text_label = tkinter.Label(master=self,
+                                        font=self.apply_font_scaling(self.text_font),
+                                        anchor="w",
+                                        text=self.current_value)
         self.text_label.grid(row=0, column=0, sticky="w",
                              padx=(max(self.apply_widget_scaling(self.corner_radius), self.apply_widget_scaling(3)),
                                    max(self.apply_widget_scaling(self._current_width - left_section_width + 3), self.apply_widget_scaling(3))))
+
+        if not self.dynamic_resizing:
+            self.grid_propagate(0)
 
         if Settings.cursor_manipulation_enabled:
             if sys.platform == "darwin":
@@ -123,9 +129,12 @@ class CTkOptionMenu(CTkBaseClass):
     def set_scaling(self, *args, **kwargs):
         super().set_scaling(*args, **kwargs)
 
-        if self.text_label is not None:
-            self.text_label.destroy()
-            self.text_label = None
+        # change label text size and grid padding
+        left_section_width = self._current_width - self._current_height
+        self.text_label.configure(font=self.apply_font_scaling(self.text_font))
+        self.text_label.grid(row=0, column=0, sticky="w",
+                             padx=(max(self.apply_widget_scaling(self.corner_radius), self.apply_widget_scaling(3)),
+                                   max(self.apply_widget_scaling(self._current_width - left_section_width + 3), self.apply_widget_scaling(3))))
 
         self.canvas.configure(width=self.apply_widget_scaling(self._desired_width),
                               height=self.apply_widget_scaling(self._desired_height))
@@ -149,9 +158,6 @@ class CTkOptionMenu(CTkBaseClass):
         requires_recoloring_2 = self.draw_engine.draw_dropdown_arrow(self.apply_widget_scaling(self._current_width - (self._current_height / 2)),
                                                                      self.apply_widget_scaling(self._current_height / 2),
                                                                      self.apply_widget_scaling(self._current_height / 3))
-
-        if self.current_value is not None:
-            self.text_label.configure(text=self.current_value)
 
         if no_color_updates is False or requires_recoloring or requires_recoloring_2:
 
@@ -177,6 +183,8 @@ class CTkOptionMenu(CTkBaseClass):
 
             self.text_label.configure(bg=ThemeManager.single_color(self.fg_color, self._appearance_mode))
 
+        self.canvas.update_idletasks()
+
     def open_dropdown_menu(self):
         self.dropdown_menu.open(self.winfo_rootx(),
                                 self.winfo_rooty() + self.apply_widget_scaling(self._current_height + 0))
@@ -185,47 +193,41 @@ class CTkOptionMenu(CTkBaseClass):
         require_redraw = False  # some attribute changes require a call of self.draw() at the end
 
         if "state" in kwargs:
-            self.state = kwargs["state"]
+            self.state = kwargs.pop("state")
             require_redraw = True
-            del kwargs["state"]
 
         if "fg_color" in kwargs:
-            self.fg_color = kwargs["fg_color"]
+            self.fg_color = kwargs.pop("fg_color")
             require_redraw = True
-            del kwargs["fg_color"]
 
         if "bg_color" in kwargs:
-            if kwargs["bg_color"] is None:
+            new_bg_color = kwargs.pop("bg_color")
+            if new_bg_color is None:
                 self.bg_color = self.detect_color_of_master()
             else:
-                self.bg_color = kwargs["bg_color"]
+                self.bg_color = new_bg_color
             require_redraw = True
-            del kwargs["bg_color"]
 
         if "button_color" in kwargs:
-            self.button_color = kwargs["button_color"]
+            self.button_color = kwargs.pop("button_color")
             require_redraw = True
-            del kwargs["button_color"]
 
         if "button_hover_color" in kwargs:
-            self.button_hover_color = kwargs["button_hover_color"]
+            self.button_hover_color = kwargs.pop("button_hover_color")
             require_redraw = True
-            del kwargs["button_hover_color"]
 
         if "text_color" in kwargs:
-            self.text_color = kwargs["text_color"]
+            self.text_color = kwargs.pop("text_color")
             require_redraw = True
-            del kwargs["text_color"]
 
         if "command" in kwargs:
-            self.function = kwargs["command"]
-            del kwargs["command"]
+            self.function = kwargs.pop("command")
 
         if "variable" in kwargs:
             if self.variable is not None:  # remove old callback
                 self.variable.trace_remove("write", self.variable_callback_name)
 
-            self.variable = kwargs["variable"]
+            self.variable = kwargs.pop("variable")
 
             if self.variable is not None and self.variable != "":
                 self.variable_callback_name = self.variable.trace_add("write", self.variable_callback)
@@ -233,36 +235,34 @@ class CTkOptionMenu(CTkBaseClass):
             else:
                 self.variable = None
 
-            del kwargs["variable"]
-
         if "width" in kwargs:
-            self.set_dimensions(width=kwargs["width"])
-            del kwargs["width"]
+            self.set_dimensions(width=kwargs.pop("width"))
 
         if "height" in kwargs:
-            self.set_dimensions(height=kwargs["height"])
-            del kwargs["height"]
+            self.set_dimensions(height=kwargs.pop("height"))
 
         if "values" in kwargs:
-            self.values = kwargs["values"]
-            del kwargs["values"]
+            self.values = kwargs.pop("values")
             self.dropdown_menu.configure(values=self.values)
 
         if "dropdown_color" in kwargs:
-            self.dropdown_menu.configure(fg_color=kwargs["dropdown_color"])
-            del kwargs["dropdown_color"]
+            self.dropdown_menu.configure(fg_color=kwargs.pop("dropdown_color"))
 
         if "dropdown_hover_color" in kwargs:
-            self.dropdown_menu.configure(hover_color=kwargs["dropdown_hover_color"])
-            del kwargs["dropdown_hover_color"]
+            self.dropdown_menu.configure(hover_color=kwargs.pop("dropdown_hover_color"))
 
         if "dropdown_text_color" in kwargs:
-            self.dropdown_menu.configure(text_color=kwargs["dropdown_text_color"])
-            del kwargs["dropdown_text_color"]
+            self.dropdown_menu.configure(text_color=kwargs.pop("dropdown_text_color"))
 
         if "dropdown_text_font" in kwargs:
-            self.dropdown_menu.configure(text_font=kwargs["dropdown_text_font"])
-            del kwargs["dropdown_text_font"]
+            self.dropdown_menu.configure(text_font=kwargs.pop("dropdown_text_font"))
+
+        if "dynamic_resizing" in kwargs:
+            self.dynamic_resizing = kwargs.pop("dynamic_resizing")
+            if not self.dynamic_resizing:
+                self.grid_propagate(0)
+            else:
+                self.grid_propagate(1)
 
         super().configure(*args, **kwargs)
 
@@ -290,10 +290,7 @@ class CTkOptionMenu(CTkBaseClass):
     def set(self, value: str, from_variable_callback: bool = False):
         self.current_value = value
 
-        if self.text_label is not None:
-            self.text_label.configure(text=self.current_value)
-        else:
-            self.draw()
+        self.text_label.configure(text=self.current_value)
 
         if self.variable is not None and not from_variable_callback:
             self.variable_callback_blocked = True
