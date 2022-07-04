@@ -138,7 +138,7 @@ class CTkBaseClass(tkinter.Frame):
             self.draw()
 
     def update_dimensions_event(self, event):
-        # only redraw if dimensions changed (for performance)
+        # only redraw if dimensions changed (for performance), independent of scaling
         if round(self._current_width) != round(event.width / self._widget_scaling) or round(self._current_height) != round(event.height / self._widget_scaling):
             self._current_width = (event.width / self._widget_scaling)  # adjust current size according to new size given by event
             self._current_height = (event.height / self._widget_scaling)  # _current_width and _current_height are independent of the scale
@@ -151,7 +151,7 @@ class CTkBaseClass(tkinter.Frame):
         if master_widget is None:
             master_widget = self.master
 
-        if isinstance(master_widget, CTkBaseClass) and hasattr(master_widget, "fg_color"):  # master is CTkFrame
+        if isinstance(master_widget, (CTkBaseClass, CTk, CTkToplevel)) and hasattr(master_widget, "fg_color"):
             if master_widget.fg_color is not None:
                 return master_widget.fg_color
 
@@ -159,7 +159,7 @@ class CTkBaseClass(tkinter.Frame):
             elif hasattr(master_widget.master, "master"):
                 return self.detect_color_of_master(self.master.master)
 
-        elif isinstance(master_widget, (ttk.Frame, ttk.LabelFrame, ttk.Notebook)):  # master is ttk widget
+        elif isinstance(master_widget, (ttk.Frame, ttk.LabelFrame, ttk.Notebook, ttk.Label)):  # master is ttk widget
             try:
                 ttk_style = ttk.Style()
                 return ttk_style.lookup(master_widget.winfo_class(), 'background')
@@ -177,11 +177,6 @@ class CTkBaseClass(tkinter.Frame):
             self._appearance_mode = 1
         elif mode_string.lower() == "light":
             self._appearance_mode = 0
-
-        if isinstance(self.master, (CTkBaseClass, CTk)) and hasattr(self.master, "fg_color"):
-            self.bg_color = self.master.fg_color
-        else:
-            self.bg_color = self.master.cget("bg")
 
         self.draw()
 

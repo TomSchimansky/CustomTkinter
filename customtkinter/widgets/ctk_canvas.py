@@ -29,12 +29,19 @@ class CTkCanvas(tkinter.Canvas):
                                           9: 'E', 8: 'F', 7: 'C', 6: 'I', 5: 'E', 4: 'G', 3: 'P', 2: 'R', 1: 'R',
                                           0: 'A'}
 
+        radius_to_char_fine_linux = {19: 'A', 18: 'A', 17: 'B', 16: 'B', 15: 'B', 14: 'B', 13: 'F', 12: 'C',
+                                          11: 'F', 10: 'C',
+                                          9: 'D', 8: 'G', 7: 'D', 6: 'F', 5: 'D', 4: 'G', 3: 'M', 2: 'H', 1: 'H',
+                                          0: 'A'}
+
         if sys.platform.startswith("win"):
             if sys.getwindowsversion().build > 20000:  # Windows 11
                 cls.radius_to_char_fine = radius_to_char_fine_windows_11
             else:  # < Windows 11
                 cls.radius_to_char_fine = radius_to_char_fine_windows_10
-        else:  # macOS and Linux
+        elif sys.platform.startswith("linux"):  # Optimized on Kali Linux
+            cls.radius_to_char_fine = radius_to_char_fine_linux
+        else:
             cls.radius_to_char_fine = radius_to_char_fine_windows_10
 
     def get_char_from_radius(self, radius: int) -> str:

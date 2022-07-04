@@ -51,7 +51,7 @@ class CTkEntry(CTkBaseClass):
                                 highlightthickness=0,
                                 width=self.apply_widget_scaling(self._current_width),
                                 height=self.apply_widget_scaling(self._current_height))
-        self.canvas.grid(column=0, row=0, sticky="we")
+        self.canvas.grid(column=0, row=0, sticky="nswe")
         self.draw_engine = DrawEngine(self.canvas)
 
         self.entry = tkinter.Entry(master=self,
@@ -61,15 +61,19 @@ class CTkEntry(CTkBaseClass):
                                    font=self.apply_font_scaling(self.text_font),
                                    state=self.state,
                                    **kwargs)
-        self.entry.grid(column=0, row=0, sticky="we",
-                        padx=self.apply_widget_scaling(self.corner_radius) if self.corner_radius >= 6 else self.apply_widget_scaling(6))
+        self.entry.grid(column=0, row=0, sticky="nswe",
+                        padx=self.apply_widget_scaling(self.corner_radius) if self.corner_radius >= 6 else self.apply_widget_scaling(6),
+                        pady=(self.apply_widget_scaling(self.border_width), self.apply_widget_scaling(self.border_width + 1)))
 
         super().bind('<Configure>', self.update_dimensions_event)
-        self.entry.bind('<FocusOut>', self.set_placeholder)
-        self.entry.bind('<FocusIn>', self.clear_placeholder)
+        self.entry.bind('<FocusOut>', self.entry_focus_out)
+        self.entry.bind('<FocusIn>', self.entry_focus_in)
 
         self.draw()
-        self.set_placeholder()
+
+        if self.placeholder_text is not None:
+            self.placeholder_text_active = True
+            self.set_placeholder()
 
     def set_scaling(self, *args, **kwargs):
         super().set_scaling( *args, **kwargs)
@@ -87,23 +91,6 @@ class CTkEntry(CTkBaseClass):
         self.canvas.configure(width=self.apply_widget_scaling(self._desired_width),
                               height=self.apply_widget_scaling(self._desired_height))
         self.draw()
-
-    def set_placeholder(self, event=None):
-        if self.placeholder_text is not None:
-            if not self.placeholder_text_active and self.entry.get() == "":
-                self.placeholder_text_active = True
-                self.pre_placeholder_arguments = {"show": self.entry.cget("show")}
-                self.entry.config(fg=ThemeManager.single_color(self.placeholder_text_color, self._appearance_mode), show="")
-                self.entry.delete(0, tkinter.END)
-                self.entry.insert(0, self.placeholder_text)
-
-    def clear_placeholder(self, event=None):
-        if self.placeholder_text_active:
-            self.placeholder_text_active = False
-            self.entry.config(fg=ThemeManager.single_color(self.text_color, self._appearance_mode))
-            self.entry.delete(0, tkinter.END)
-            for argument, value in self.pre_placeholder_arguments.items():
-                self.entry[argument] = value
 
     def draw(self, no_color_updates=False):
         self.canvas.configure(bg=ThemeManager.single_color(self.bg_color, self._appearance_mode))
@@ -149,35 +136,31 @@ class CTkEntry(CTkBaseClass):
         require_redraw = False  # some attribute changes require a call of self.draw() at the end
 
         if "state" in kwargs:
-            self.state = kwargs["state"]
+            self.state = kwargs.pop("state")
             self.entry.configure(state=self.state)
-            del kwargs["state"]
 
         if "bg_color" in kwargs:
-            if kwargs["bg_color"] is None:
+            new_bg_color = kwargs.pop("bg_color")
+            if new_bg_color is None:
                 self.bg_color = self.detect_color_of_master()
             else:
-                self.bg_color = kwargs["bg_color"]
+                self.bg_color = new_bg_color
             require_redraw = True
-            del kwargs["bg_color"]
 
         if "fg_color" in kwargs:
-            self.fg_color = kwargs["fg_color"]
-            del kwargs["fg_color"]
+            self.fg_color = kwargs.pop("fg_color")
             require_redraw = True
 
         if "text_color" in kwargs:
-            self.text_color = kwargs["text_color"]
-            del kwargs["text_color"]
+            self.text_color = kwargs.pop("text_color")
             require_redraw = True
 
         if "border_color" in kwargs:
-            self.border_color = kwargs["border_color"]
-            del kwargs["border_color"]
+            self.border_color = kwargs.pop("border_color")
             require_redraw = True
 
         if "corner_radius" in kwargs:
-            self.corner_radius = kwargs["corner_radius"]
+            self.corner_radius = kwargs.pop("corner_radius")
 
             if self.corner_radius * 2 > self._current_height:
                 self.corner_radius = self._current_height / 2
@@ -185,31 +168,69 @@ class CTkEntry(CTkBaseClass):
                 self.corner_radius = self._current_width / 2
 
             self.entry.grid(column=0, row=0, sticky="we", padx=self.apply_widget_scaling(self.corner_radius) if self.corner_radius >= 6 else self.apply_widget_scaling(6))
-            del kwargs["corner_radius"]
             require_redraw = True
 
         if "width" in kwargs:
-            self.set_dimensions(width=kwargs["width"])
-            del kwargs["width"]
+            self.set_dimensions(width=kwargs.pop("width"))
 
         if "height" in kwargs:
-            self.set_dimensions(height=kwargs["height"])
-            del kwargs["height"]
+            self.set_dimensions(height=kwargs.pop("height"))
 
         if "placeholder_text" in kwargs:
-            pass
+            self.placeholder_text = kwargs.pop("placeholder_text")
+            if self.placeholder_text_active:
+                self.entry.delete(0, tkinter.END)
+                self.entry.insert(0, self.placeholder_text)
+
+        if "placeholder_text_color" in kwargs:
+            self.placeholder_text_color = kwargs.pop("placeholder_text_color")
+            require_redraw = True
+
+        if "show" in kwargs:
+            if self.placeholder_text_active:
+                self.pre_placeholder_arguments["show"] = kwargs.pop("show")
+            else:
+                self.entry.configure(show=kwargs.pop("show"))
 
         self.entry.configure(*args, **kwargs)
 
         if require_redraw is True:
             self.draw()
 
+    def set_placeholder(self):
+        self.pre_placeholder_arguments = {"show": self.entry.cget("show")}
+        self.entry.config(fg=ThemeManager.single_color(self.placeholder_text_color, self._appearance_mode), show="")
+        self.entry.delete(0, tkinter.END)
+        self.entry.insert(0, self.placeholder_text)
+
+    def clear_placeholder(self):
+        self.entry.config(fg=ThemeManager.single_color(self.text_color, self._appearance_mode))
+        self.entry.delete(0, tkinter.END)
+        for argument, value in self.pre_placeholder_arguments.items():
+            self.entry[argument] = value
+
+    def entry_focus_out(self, event=None):
+        if self.entry.get() == "":
+            self.placeholder_text_active = True
+            self.set_placeholder()
+
+    def entry_focus_in(self, event=None):
+        if self.placeholder_text_active:
+            self.placeholder_text_active = False
+            self.clear_placeholder()
+
     def delete(self, *args, **kwargs):
         self.entry.delete(*args, **kwargs)
-        self.set_placeholder()
+
+        if self.entry.get() == "":
+            self.placeholder_text_active = True
+            self.set_placeholder()
 
     def insert(self, *args, **kwargs):
-        self.clear_placeholder()
+        if self.placeholder_text_active:
+            self.placeholder_text_active = False
+            self.clear_placeholder()
+
         return self.entry.insert(*args, **kwargs)
 
     def get(self):
@@ -217,3 +238,9 @@ class CTkEntry(CTkBaseClass):
             return ""
         else:
             return self.entry.get()
+
+    def focus(self):
+        self.entry.focus()
+
+    def focus_force(self):
+        self.entry.focus_force()
