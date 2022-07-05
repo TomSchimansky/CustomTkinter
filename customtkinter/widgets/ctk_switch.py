@@ -63,7 +63,7 @@ class CTkSwitch(CTkBaseClass):
         self.offvalue = offvalue
 
         # callback and control variables
-        self.function = command
+        self.command = command
         self.variable: tkinter.Variable = variable
         self.variable_callback_blocked = False
         self.variable_callback_name = None
@@ -107,12 +107,9 @@ class CTkSwitch(CTkBaseClass):
         self.draw()  # initial draw
         self.set_cursor()
 
-        if self.variable is not None:
+        if self.variable is not None and self.variable != "":
             self.variable_callback_name = self.variable.trace_add("write", self.variable_callback)
-            if self.variable.get() == self.onvalue:
-                self.select(from_variable_callback=True)
-            elif self.variable.get() == self.offvalue:
-                self.deselect(from_variable_callback=True)
+            self.check_state = True if self.variable.get() == self.onvalue else False
 
     def set_scaling(self, *args, **kwargs):
         super().set_scaling(*args, **kwargs)
@@ -212,8 +209,8 @@ class CTkSwitch(CTkBaseClass):
 
             self.draw(no_color_updates=True)
 
-            if self.function is not None:
-                self.function()
+            if self.command is not None:
+                self.command()
 
             if self.variable is not None:
                 self.variable_callback_blocked = True
@@ -231,8 +228,8 @@ class CTkSwitch(CTkBaseClass):
                 self.variable.set(self.onvalue)
                 self.variable_callback_blocked = False
 
-            if self.function is not None:
-                self.function()
+            if self.command is not None:
+                self.command()
 
     def deselect(self, from_variable_callback=False):
         if self.state is not tkinter.DISABLED or from_variable_callback:
@@ -245,8 +242,8 @@ class CTkSwitch(CTkBaseClass):
                 self.variable.set(self.offvalue)
                 self.variable_callback_blocked = False
 
-            if self.function is not None:
-                self.function()
+            if self.command is not None:
+                self.command()
 
     def get(self):
         return self.onvalue if self.check_state is True else self.offvalue
@@ -319,24 +316,22 @@ class CTkSwitch(CTkBaseClass):
             require_redraw = True
 
         if "command" in kwargs:
-            self.function = kwargs.pop("command")
+            self.command = kwargs.pop("command")
 
         if "textvariable" in kwargs:
             self.textvariable = kwargs.pop("textvariable")
             self.text_label.configure(textvariable=self.textvariable)
 
         if "variable" in kwargs:
-            if self.variable is not None:
+            if self.variable is not None and self.variable != "":
                 self.variable.trace_remove("write", self.variable_callback_name)
 
             self.variable = kwargs.pop("variable")
 
             if self.variable is not None and self.variable != "":
                 self.variable_callback_name = self.variable.trace_add("write", self.variable_callback)
-                if self.variable.get() == self.onvalue:
-                    self.select(from_variable_callback=True)
-                elif self.variable.get() == self.offvalue:
-                    self.deselect(from_variable_callback=True)
+                self.check_state = True if self.variable.get() == self.onvalue else False
+                require_redraw = True
             else:
                 self.variable = None
 

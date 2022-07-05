@@ -72,7 +72,7 @@ class CTkSlider(CTkBaseClass):
             self.corner_radius = self.button_corner_radius
 
         # callback and control variables
-        self.callback_function = command
+        self.command = command
         self.variable: tkinter.Variable = variable
         self.variable_callback_blocked = False
         self.variable_callback_name = None
@@ -205,8 +205,8 @@ class CTkSlider(CTkBaseClass):
                 self.variable.set(round(self.output_value) if isinstance(self.variable, tkinter.IntVar) else self.output_value)
                 self.variable_callback_blocked = False
 
-            if self.callback_function is not None:
-                self.callback_function(self.output_value)
+            if self.command is not None:
+                self.command(self.output_value)
 
     def on_enter(self, event=0):
         if self.state == "normal":
@@ -321,7 +321,7 @@ class CTkSlider(CTkBaseClass):
             del kwargs["number_of_steps"]
 
         if "command" in kwargs:
-            self.callback_function = kwargs["command"]
+            self.command = kwargs["command"]
             del kwargs["command"]
 
         if "variable" in kwargs:

@@ -57,7 +57,7 @@ class CTkButton(CTkBaseClass):
         self.text_font = (ThemeManager.theme["text"]["font"], ThemeManager.theme["text"]["size"]) if text_font == "default_theme" else text_font
 
         # callback and hover functionality
-        self.function = command
+        self.command = command
         self.textvariable = textvariable
         self.state = state
         self.hover = hover
@@ -241,69 +241,59 @@ class CTkButton(CTkBaseClass):
         require_redraw = False  # some attribute changes require a call of self.draw() at the end
 
         if "text" in kwargs:
-            self.set_text(kwargs["text"])
-            del kwargs["text"]
+            self.text = kwargs.pop("text")
+            require_redraw = True  # new text will be set in .draw()
 
         if "state" in kwargs:
-            self.state = kwargs["state"]
+            self.state = kwargs.pop("state")
             self.set_cursor()
             require_redraw = True
-            del kwargs["state"]
 
         if "image" in kwargs:
-            self.set_image(kwargs["image"])
-            del kwargs["image"]
+            self.image = kwargs.pop("image")
+            self.set_image(self.image)
 
         if "compound" in kwargs:
-            self.compound = kwargs["compound"]
+            self.compound = kwargs.pop("compound")
             require_redraw = True
-            del kwargs["compound"]
 
         if "fg_color" in kwargs:
-            self.fg_color = kwargs["fg_color"]
+            self.fg_color = kwargs.pop("fg_color")
             require_redraw = True
-            del kwargs["fg_color"]
 
         if "border_color" in kwargs:
-            self.border_color = kwargs["border_color"]
+            self.border_color = kwargs.pop("border_color")
             require_redraw = True
-            del kwargs["border_color"]
 
         if "bg_color" in kwargs:
-            if kwargs["bg_color"] is None:
+            new_bg_color = kwargs.pop("bg_color")
+            if new_bg_color is None:
                 self.bg_color = self.detect_color_of_master()
             else:
-                self.bg_color = kwargs["bg_color"]
+                self.bg_color = new_bg_color
             require_redraw = True
-            del kwargs["bg_color"]
 
         if "hover_color" in kwargs:
-            self.hover_color = kwargs["hover_color"]
+            self.hover_color = kwargs.pop("hover_color")
             require_redraw = True
-            del kwargs["hover_color"]
 
         if "text_color" in kwargs:
-            self.text_color = kwargs["text_color"]
+            self.text_color = kwargs.pop("text_color")
             require_redraw = True
-            del kwargs["text_color"]
 
         if "command" in kwargs:
-            self.function = kwargs["command"]
-            del kwargs["command"]
+            self.command = kwargs.pop("command")
 
         if "textvariable" in kwargs:
-            self.textvariable = kwargs["textvariable"]
+            self.textvariable = kwargs.pop("textvariable")
             if self.text_label is not None:
                 self.text_label.configure(textvariable=self.textvariable)
-            del kwargs["textvariable"]
 
         if "width" in kwargs:
-            self.set_dimensions(width=kwargs["width"])
-            del kwargs["width"]
+            self.set_dimensions(width=kwargs.pop("width"))
 
         if "height" in kwargs:
-            self.set_dimensions(height=kwargs["height"])
-            del kwargs["height"]
+            self.set_dimensions(height=kwargs.pop("height"))
 
         super().configure(*args, **kwargs)
 
@@ -313,24 +303,24 @@ class CTkButton(CTkBaseClass):
     def set_cursor(self):
         if Settings.cursor_manipulation_enabled:
             if self.state == tkinter.DISABLED:
-                if sys.platform == "darwin" and self.function is not None and Settings.cursor_manipulation_enabled:
+                if sys.platform == "darwin" and self.command is not None and Settings.cursor_manipulation_enabled:
                     self.configure(cursor="arrow")
-                elif sys.platform.startswith("win") and self.function is not None and Settings.cursor_manipulation_enabled:
+                elif sys.platform.startswith("win") and self.command is not None and Settings.cursor_manipulation_enabled:
                     self.configure(cursor="arrow")
 
             elif self.state == tkinter.NORMAL:
-                if sys.platform == "darwin" and self.function is not None and Settings.cursor_manipulation_enabled:
+                if sys.platform == "darwin" and self.command is not None and Settings.cursor_manipulation_enabled:
                     self.configure(cursor="pointinghand")
-                elif sys.platform.startswith("win") and self.function is not None and Settings.cursor_manipulation_enabled:
+                elif sys.platform.startswith("win") and self.command is not None and Settings.cursor_manipulation_enabled:
                     self.configure(cursor="hand2")
 
-    def set_text(self, text):
-        self.text = text
-        self.draw()
-
     def set_image(self, image):
-        self.image = image
-        self.draw()
+        """ will be removed in next major """
+        self.configure(image=image)
+
+    def set_text(self, text):
+        """ will be removed in next major """
+        self.configure(text=text)
 
     def on_enter(self, event=0):
         if self.hover is True and self.state == tkinter.NORMAL:
@@ -379,7 +369,7 @@ class CTkButton(CTkBaseClass):
             self.on_enter()
 
     def clicked(self, event=0):
-        if self.function is not None:
+        if self.command is not None:
             if self.state is not tkinter.DISABLED:
 
                 # click animation: change color with .on_leave() and back to normal after 100ms with click_animation()
@@ -387,4 +377,4 @@ class CTkButton(CTkBaseClass):
                 self.click_animation_running = True
                 self.after(100, self.click_animation)
 
-                self.function()
+                self.command()

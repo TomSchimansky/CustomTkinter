@@ -49,24 +49,18 @@ class CTkCheckBox(CTkBaseClass):
         self.border_width = ThemeManager.theme["shape"]["checkbox_border_width"] if border_width == "default_theme" else border_width
 
         # text
-        if textvariable is None:
-            self.text = text
-        else:
-            self.text = textvariable.get()
-
+        self.text = text
         self.text_label: Union[tkinter.Label, None] = None
         self.text_color = ThemeManager.theme["color"]["text"] if text_color == "default_theme" else text_color
         self.text_color_disabled = ThemeManager.theme["color"]["text_disabled"] if text_color_disabled == "default_theme" else text_color_disabled
         self.text_font = (ThemeManager.theme["text"]["font"], ThemeManager.theme["text"]["size"]) if text_font == "default_theme" else text_font
 
         # callback and hover functionality
-        self.function = command
+        self.command = command
         self.state = state
         self.hover = hover
-        if variable == None:
-            self.check_state = False
-        else:
-            self.check_state = (variable.get() == onvalue)
+        self.check_state = False
+
         self.onvalue = onvalue
         self.offvalue = offvalue
         self.variable: tkinter.Variable = variable
@@ -110,13 +104,11 @@ class CTkCheckBox(CTkBaseClass):
         self.text_label.bind("<Leave>", self.on_leave)
         self.text_label.bind("<Button-1>", self.toggle)
 
-        # set select state according to variable
-        if self.variable is not None:
+        # register variable callback and set state according to variable
+        if self.variable is not None and self.variable != "":
             self.variable_callback_name = self.variable.trace_add("write", self.variable_callback)
-        
-        if self.textvariable is not None:
-            self.textvariable_callback_name = self.textvariable.trace_add("write", self.textvariable_callback)
-       
+            self.check_state = True if variable.get() == self.onvalue else False
+
         self.draw()  # initial draw
         self.set_cursor()
 
@@ -176,89 +168,61 @@ class CTkCheckBox(CTkBaseClass):
             self.text_label.configure(fg=(ThemeManager.single_color(self.text_color_disabled, self._appearance_mode)))
         else:
             self.text_label.configure(fg=ThemeManager.single_color(self.text_color, self._appearance_mode))
+
         self.text_label.configure(bg=ThemeManager.single_color(self.bg_color, self._appearance_mode))
 
     def configure(self, *args, **kwargs):
         require_redraw = False  # some attribute changes require a call of self.draw()
 
         if "text" in kwargs:
-            self.text = kwargs["text"]
+            self.text = kwargs.pop("text")
             self.text_label.configure(text=self.text)
-            del kwargs["text"]
 
         if "state" in kwargs:
-            self.state = kwargs["state"]
+            self.state = kwargs.pop("state")
             self.set_cursor()
             require_redraw = True
-            del kwargs["state"]
 
         if "fg_color" in kwargs:
-            self.fg_color = kwargs["fg_color"]
+            self.fg_color = kwargs.pop("fg_color")
             require_redraw = True
-            del kwargs["fg_color"]
 
         if "bg_color" in kwargs:
-            if kwargs["bg_color"] is None:
+            new_bg_color = kwargs.pop("bg_color")
+            if new_bg_color is None:
                 self.bg_color = self.detect_color_of_master()
             else:
-                self.bg_color = kwargs["bg_color"]
-            require_redraw = True
-            del kwargs["bg_color"]
+                self.bg_color = new_bg_color
 
         if "hover_color" in kwargs:
-            self.hover_color = kwargs["hover_color"]
+            self.hover_color = kwargs.pop("hover_color")
             require_redraw = True
-            del kwargs["hover_color"]
 
         if "text_color" in kwargs:
-            self.text_color = kwargs["text_color"]
+            self.text_color = kwargs.pop("text_color")
             require_redraw = True
-            del kwargs["text_color"]
 
         if "border_color" in kwargs:
-            self.border_color = kwargs["border_color"]
+            self.border_color = kwargs.pop("border_color")
             require_redraw = True
-            del kwargs["border_color"]
 
         if "command" in kwargs:
-            self.function = kwargs["command"]
-            del kwargs["command"]
+            self.command = kwargs.pop("command")
 
         if "textvariable" in kwargs:
-            self.textvariable = kwargs["textvariable"]
+            self.textvariable = kwargs.pop("textvariable")
             self.text_label.configure(textvariable=self.textvariable)
-            del kwargs["textvariable"]
 
         if "variable" in kwargs:
-            if self.variable is not None:
-                self.variable.trace_remove("write", self.variable_callback_name)
+            if self.variable is not None and self.variable != "":
+                self.variable.trace_remove("write", self.variable_callback_name)  # remove old variable callback
 
-            self.variable = kwargs["variable"]
+            self.variable = kwargs.pop("variable")
 
             if self.variable is not None and self.variable != "":
                 self.variable_callback_name = self.variable.trace_add("write", self.variable_callback)
-                if self.variable.get() == self.onvalue:
-                    self.select(from_variable_callback=True)
-                elif self.variable.get() == self.offvalue:
-                    self.deselect(from_variable_callback=True)
-            else:
-                self.variable = None
-
-            del kwargs["variable"]
-        
-        if "textvariable" in kwargs:
-            if self.textvariable is not None:
-                self.textvariable.trace_remove("write", self.textvariable_callback_name)
-
-            self.textvariable = kwargs["textvariable"]
-
-            if self.textvariable is not None and self.textvariable != "":
-                self.textvariable_callback_name = self.textvariable.trace_add("write", self.textvariable_callback)
-                self.set_text(self.textvariable.get())
-            else:
-                self.textvariable = None
-
-            del kwargs["textvariable"]
+                self.check_state = True if self.variable.get() == self.onvalue else False
+                require_redraw = True
 
         super().configure(*args, **kwargs)
 
@@ -325,9 +289,6 @@ class CTkCheckBox(CTkBaseClass):
             elif self.variable.get() == self.offvalue:
                 self.deselect(from_variable_callback=True)
 
-    def textvariable_callback(self, var_name, index, mode):
-        self.set_text(self.textvariable.get())
-    
     def toggle(self, event=0):
         if self.state == tkinter.NORMAL:
             if self.check_state is True:
@@ -342,8 +303,8 @@ class CTkCheckBox(CTkBaseClass):
                 self.variable.set(self.onvalue if self.check_state is True else self.offvalue)
                 self.variable_callback_blocked = False
 
-            if self.function is not None:
-                self.function()
+            if self.command is not None:
+                self.command()
 
     def select(self, from_variable_callback=False):
         self.check_state = True
@@ -354,8 +315,8 @@ class CTkCheckBox(CTkBaseClass):
             self.variable.set(self.onvalue)
             self.variable_callback_blocked = False
 
-        if self.function is not None:
-            self.function()
+        if self.command is not None:
+            self.command()
 
     def deselect(self, from_variable_callback=False):
         self.check_state = False
@@ -366,8 +327,8 @@ class CTkCheckBox(CTkBaseClass):
             self.variable.set(self.offvalue)
             self.variable_callback_blocked = False
 
-        if self.function is not None:
-            self.function()
+        if self.command is not None:
+            self.command()
 
     def get(self):
         return self.onvalue if self.check_state is True else self.offvalue

@@ -52,7 +52,7 @@ class CTkOptionMenu(CTkBaseClass):
         self.dropdown_text_font = dropdown_text_font
 
         # callback and hover functionality
-        self.function = command
+        self.command = command
         self.variable = variable
         self.variable_callback_blocked = False
         self.variable_callback_name = None
@@ -221,7 +221,7 @@ class CTkOptionMenu(CTkBaseClass):
             require_redraw = True
 
         if "command" in kwargs:
-            self.function = kwargs.pop("command")
+            self.command = kwargs.pop("command")
 
         if "variable" in kwargs:
             if self.variable is not None:  # remove old callback
@@ -298,8 +298,8 @@ class CTkOptionMenu(CTkBaseClass):
             self.variable_callback_blocked = False
 
         if not from_variable_callback:
-            if self.function is not None:
-                self.function(self.current_value)
+            if self.command is not None:
+                self.command(self.current_value)
 
     def get(self) -> str:
         return self.current_value

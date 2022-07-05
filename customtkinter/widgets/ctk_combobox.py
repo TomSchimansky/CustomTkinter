@@ -55,7 +55,7 @@ class CTkComboBox(CTkBaseClass):
         self.text_font = (ThemeManager.theme["text"]["font"], ThemeManager.theme["text"]["size"]) if text_font == "default_theme" else text_font
 
         # callback and hover functionality
-        self.function = command
+        self.command = command
         self.variable = variable
         self.state = state
         self.hover = hover
@@ -187,76 +187,62 @@ class CTkComboBox(CTkBaseClass):
         require_redraw = False  # some attribute changes require a call of self.draw() at the end
 
         if "state" in kwargs:
-            self.state = kwargs["state"]
+            self.state = kwargs.pop("state")
             self.entry.configure(state=self.state)
             require_redraw = True
-            del kwargs["state"]
 
         if "fg_color" in kwargs:
-            self.fg_color = kwargs["fg_color"]
+            self.fg_color = kwargs.pop("fg_color")
             require_redraw = True
-            del kwargs["fg_color"]
 
         if "bg_color" in kwargs:
-            if kwargs["bg_color"] is None:
+            new_bg_color = kwargs.pop("bg_color")
+            if new_bg_color is None:
                 self.bg_color = self.detect_color_of_master()
             else:
-                self.bg_color = kwargs["bg_color"]
+                self.bg_color = new_bg_color
             require_redraw = True
-            del kwargs["bg_color"]
 
         if "button_color" in kwargs:
-            self.button_color = kwargs["button_color"]
+            self.button_color = kwargs.pop("button_color")
             require_redraw = True
-            del kwargs["button_color"]
 
         if "button_hover_color" in kwargs:
-            self.button_hover_color = kwargs["button_hover_color"]
+            self.button_hover_color = kwargs.pop("button_hover_color")
             require_redraw = True
-            del kwargs["button_hover_color"]
 
         if "text_color" in kwargs:
-            self.text_color = kwargs["text_color"]
+            self.text_color = kwargs.pop("text_color")
             require_redraw = True
-            del kwargs["text_color"]
 
         if "command" in kwargs:
-            self.function = kwargs["command"]
-            del kwargs["command"]
+            self.command = kwargs.pop("command")
 
         if "variable" in kwargs:
-            self.variable = kwargs["variable"]
+            self.variable = kwargs.pop("variable")
             self.entry.configure(textvariable=self.variable)
-            del kwargs["variable"]
 
         if "width" in kwargs:
-            self.set_dimensions(width=kwargs["width"])
-            del kwargs["width"]
+            self.set_dimensions(width=kwargs.pop("width"))
 
         if "height" in kwargs:
-            self.set_dimensions(height=kwargs["height"])
-            del kwargs["height"]
+            self.set_dimensions(height=kwargs.pop("height"))
 
         if "values" in kwargs:
-            self.values = kwargs["values"]
-            del kwargs["values"]
+            self.values = kwargs.pop("values")
             self.dropdown_menu.configure(values=self.values)
 
         if "dropdown_color" in kwargs:
-            self.dropdown_menu.configure(fg_color=kwargs["dropdown_color"])
-            del kwargs["dropdown_color"]
+            self.dropdown_menu.configure(fg_color=kwargs.pop("dropdown_color"))
 
         if "dropdown_hover_color" in kwargs:
-            self.dropdown_menu.configure(hover_color=kwargs["dropdown_hover_color"])
-            del kwargs["dropdown_hover_color"]
+            self.dropdown_menu.configure(hover_color=kwargs.pop("dropdown_hover_color"))
 
         if "dropdown_text_color" in kwargs:
-            self.dropdown_menu.configure(text_color=kwargs["dropdown_text_color"])
-            del kwargs["dropdown_text_color"]
+            self.dropdown_menu.configure(text_color=kwargs.pop("dropdown_text_color"))
 
         if "dropdown_text_font" in kwargs:
-            self.dropdown_menu.configure(text_font=kwargs["dropdown_text_font"])
-            del kwargs["dropdown_text_font"]
+            self.dropdown_menu.configure(text_font=kwargs.pop("dropdown_text_font"))
 
         super().configure(*args, **kwargs)
 
@@ -300,8 +286,8 @@ class CTkComboBox(CTkBaseClass):
         self.entry.insert(0, self.current_value)
 
         if not from_variable_callback:
-            if self.function is not None:
-                self.function(self.current_value)
+            if self.command is not None:
+                self.command(self.current_value)
 
     def get(self) -> str:
         return self.entry.get()
