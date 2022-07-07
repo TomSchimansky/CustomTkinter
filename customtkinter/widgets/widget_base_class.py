@@ -26,6 +26,7 @@ class CTkBaseClass(tkinter.Frame):
                  width: int,
                  height: int,
                  **kwargs):
+
         super().__init__(*args, width=width, height=height, **kwargs)  # set desired size of underlying tkinter.Frame
 
         # dimensions

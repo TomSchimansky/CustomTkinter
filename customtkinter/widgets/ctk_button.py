@@ -1,6 +1,6 @@
 import tkinter
 import sys
-from typing import Union
+from typing import Union, Tuple, Callable
 
 from .ctk_canvas import CTkCanvas
 from ..theme_manager import ThemeManager
@@ -10,35 +10,33 @@ from .widget_base_class import CTkBaseClass
 
 
 class CTkButton(CTkBaseClass):
-    """ tkinter custom button with border, rounded corners and hover effect """
+    """ button with border, rounded corners, hover effect, image support """
 
     def __init__(self, *args,
-                 bg_color=None,
-                 fg_color="default_theme",
-                 hover_color="default_theme",
-                 border_color="default_theme",
-                 border_width="default_theme",
-                 command=None,
-                 textvariable=None,
-                 width=140,
-                 height=28,
-                 corner_radius="default_theme",
-                 text_font="default_theme",
-                 text_color="default_theme",
-                 text_color_disabled="default_theme",
-                 text="CTkButton",
-                 hover=True,
-                 image=None,
-                 compound="left",
-                 state="normal",
+                 bg_color: Union[str, Tuple[str, str]] = None,
+                 fg_color: Union[str, Tuple[str, str]] = "default_theme",
+                 hover_color: Union[str, Tuple[str, str]] = "default_theme",
+                 border_color: Union[str, Tuple[str, str]] = "default_theme",
+                 text_color: Union[str, Tuple[str, str]] = "default_theme",
+                 text_color_disabled: Union[str, Tuple[str, str]] = "default_theme",
+                 width: int = 140,
+                 height: int = 28,
+                 corner_radius: Union[int, str] = "default_theme",
+                 border_width: Union[int, str] = "default_theme",
+                 text: str = "CTkButton",
+                 textvariable: tkinter.Variable = None,
+                 text_font: any = "default_theme",
+                 image: tkinter.PhotoImage = None,
+                 hover: bool = True,
+                 compound: str = "left",
+                 state: str = "normal",
+                 command: Callable = None,
                  **kwargs):
 
         # transfer basic functionality (bg_color, size, _appearance_mode, scaling) to CTkBaseClass
         super().__init__(*args, bg_color=bg_color, width=width, height=height, **kwargs)
 
-        self.configure_basic_grid()
-
-        # color variables
+        # color
         self.fg_color = ThemeManager.theme["color"]["button"] if fg_color == "default_theme" else fg_color
         self.hover_color = ThemeManager.theme["color"]["button_hover"] if hover_color == "default_theme" else hover_color
         self.border_color = ThemeManager.theme["color"]["button_border"] if border_color == "default_theme" else border_color
@@ -64,6 +62,13 @@ class CTkButton(CTkBaseClass):
         self.compound = compound
         self.click_animation_running = False
 
+        # configure grid system (2x2)
+        self.grid_rowconfigure(0, weight=1)
+        self.grid_columnconfigure(0, weight=1)
+        self.grid_rowconfigure(1, weight=1)
+        self.grid_columnconfigure(1, weight=1)
+
+        # canvas
         self.canvas = CTkCanvas(master=self,
                                 highlightthickness=0,
                                 width=self.apply_widget_scaling(self._desired_width),
@@ -71,22 +76,16 @@ class CTkButton(CTkBaseClass):
         self.canvas.grid(row=0, column=0, rowspan=2, columnspan=2, sticky="nsew")
         self.draw_engine = DrawEngine(self.canvas)
 
-        # event bindings
+        # canvas event bindings
         self.canvas.bind("<Enter>", self.on_enter)
         self.canvas.bind("<Leave>", self.on_leave)
         self.canvas.bind("<Button-1>", self.clicked)
         self.canvas.bind("<Button-1>", self.clicked)
         self.bind('<Configure>', self.update_dimensions_event)
 
+        # configure cursor and initial draw
         self.set_cursor()
-        self.draw()  # initial draw
-
-    def configure_basic_grid(self):
-        # Configuration of a grid system (2x2) in which all parts of CTkButton are centered
-        self.grid_rowconfigure(0, weight=1)
-        self.grid_columnconfigure(0, weight=1)
-        self.grid_rowconfigure(1, weight=1)
-        self.grid_columnconfigure(1, weight=1)
+        self.draw()
 
     def set_scaling(self, *args, **kwargs):
         super().set_scaling(*args, **kwargs)
@@ -102,7 +101,7 @@ class CTkButton(CTkBaseClass):
                               height=self.apply_widget_scaling(self._desired_height))
         self.draw()
 
-    def set_dimensions(self, width=None, height=None):
+    def set_dimensions(self, width: int = None, height: int = None):
         super().set_dimensions(width, height)
 
         self.canvas.configure(width=self.apply_widget_scaling(self._desired_width),
@@ -140,6 +139,7 @@ class CTkButton(CTkBaseClass):
             if self.text_label is None:
                 self.text_label = tkinter.Label(master=self,
                                                 font=self.apply_font_scaling(self.text_font),
+                                                text=self.text,
                                                 textvariable=self.textvariable)
 
                 self.text_label.bind("<Enter>", self.on_enter)
@@ -160,8 +160,6 @@ class CTkButton(CTkBaseClass):
                     self.text_label.configure(bg=ThemeManager.single_color(self.bg_color, self._appearance_mode))
                 else:
                     self.text_label.configure(bg=ThemeManager.single_color(self.fg_color, self._appearance_mode))
-
-            self.text_label.configure(text=self.text)  # set text
 
         else:
             # delete text_label if no text given
@@ -240,7 +238,10 @@ class CTkButton(CTkBaseClass):
     def configure(self, require_redraw=False, **kwargs):
         if "text" in kwargs:
             self.text = kwargs.pop("text")
-            require_redraw = True  # new text will be set to label in .draw()
+            if self.text_label is None:
+                require_redraw = True  # text_label will be created in .draw()
+            else:
+                self.text_label.configure(text=self.text)
 
         if "state" in kwargs:
             self.state = kwargs.pop("state")
@@ -309,7 +310,7 @@ class CTkButton(CTkBaseClass):
         """ will be removed in next major """
         self.configure(text=text)
 
-    def on_enter(self, event=0):
+    def on_enter(self, event=None):
         if self.hover is True and self.state == tkinter.NORMAL:
             if self.hover_color is None:
                 inner_parts_color = self.fg_color
@@ -329,7 +330,7 @@ class CTkButton(CTkBaseClass):
             if self.image_label is not None:
                 self.image_label.configure(bg=ThemeManager.single_color(inner_parts_color, self._appearance_mode))
 
-    def on_leave(self, event=0):
+    def on_leave(self, event=None):
         self.click_animation_running = False
 
         if self.hover is True:
@@ -355,7 +356,7 @@ class CTkButton(CTkBaseClass):
         if self.click_animation_running:
             self.on_enter()
 
-    def clicked(self, event=0):
+    def clicked(self, event=None):
         if self.command is not None:
             if self.state is not tkinter.DISABLED:
 
