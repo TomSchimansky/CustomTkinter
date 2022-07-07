@@ -21,8 +21,7 @@ class CTkLabel(CTkBaseClass):
 
         # transfer basic functionality (bg_color, size, _appearance_mode, scaling) to CTkBaseClass
         if "master" in kwargs:
-            super().__init__(*args, bg_color=bg_color, width=width, height=height, master=kwargs["master"])
-            del kwargs["master"]
+            super().__init__(*args, bg_color=bg_color, width=width, height=height, master=kwargs.pop("master"))
         else:
             super().__init__(*args, bg_color=bg_color, width=width, height=height)
 
@@ -107,9 +106,7 @@ class CTkLabel(CTkBaseClass):
 
             self.canvas.configure(bg=ThemeManager.single_color(self.bg_color, self._appearance_mode))
 
-    def configure(self, *args, **kwargs):
-        require_redraw = False  # some attribute changes require a call of self.draw() at the end
-
+    def configure(self, require_redraw=False, **kwargs):
         if "anchor" in kwargs:
             self.anchor = kwargs.pop("anchor")
             text_label_grid_sticky = self.anchor if self.anchor != "center" else ""
@@ -125,14 +122,6 @@ class CTkLabel(CTkBaseClass):
             require_redraw = True
             del kwargs["fg_color"]
 
-        if "bg_color" in kwargs:
-            if kwargs["bg_color"] is None:
-                self.bg_color = self.detect_color_of_master()
-            else:
-                self.bg_color = kwargs["bg_color"]
-            require_redraw = True
-            del kwargs["bg_color"]
-
         if "text_color" in kwargs:
             self.text_color = kwargs["text_color"]
             require_redraw = True
@@ -146,10 +135,12 @@ class CTkLabel(CTkBaseClass):
             self.set_dimensions(height=kwargs["height"])
             del kwargs["height"]
 
-        self.text_label.configure(*args, **kwargs)
+        if "bg_color" in kwargs:
+            super().configure(bg_color=kwargs.pop("bg_color"), require_redraw=require_redraw)
+        else:
+            super().configure(require_redraw=require_redraw)
 
-        if require_redraw:
-            self.draw()
+        self.text_label.configure(**kwargs)  # pass remaining kwargs to label
 
     def set_text(self, text):
         self.text = text

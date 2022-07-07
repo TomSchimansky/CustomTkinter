@@ -151,9 +151,7 @@ class CTkRadioButton(CTkBaseClass):
 
         self.text_label.configure(bg=ThemeManager.single_color(self.bg_color, self._appearance_mode))
 
-    def configure(self, *args, **kwargs):
-        require_redraw = False  # some attribute changes require a call of self.draw()
-
+    def configure(self, require_redraw=False, **kwargs):
         if "text" in kwargs:
             self.text = kwargs.pop("text")
             self.text_label.configure(text=self.text)
@@ -165,14 +163,6 @@ class CTkRadioButton(CTkBaseClass):
 
         if "fg_color" in kwargs:
             self.fg_color = kwargs.pop("fg_color")
-            require_redraw = True
-
-        if "bg_color" in kwargs:
-            new_bg_color = kwargs.pop("bg_color")
-            if new_bg_color is None:
-                self.bg_color = self.detect_color_of_master()
-            else:
-                self.bg_color = new_bg_color
             require_redraw = True
 
         if "hover_color" in kwargs:
@@ -209,10 +199,7 @@ class CTkRadioButton(CTkBaseClass):
                 self.check_state = True if self.variable.get() == self.value else False
                 require_redraw = True
 
-        super().configure(*args, **kwargs)
-
-        if require_redraw:
-            self.draw()
+        super().configure(require_redraw=require_redraw, **kwargs)
 
     def set_cursor(self):
         if Settings.cursor_manipulation_enabled:

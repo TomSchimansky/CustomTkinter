@@ -101,9 +101,7 @@ class CTkFrame(CTkBaseClass):
         self.canvas.tag_lower("inner_parts")
         self.canvas.tag_lower("border_parts")
 
-    def configure(self, *args, **kwargs):
-        require_redraw = False  # some attribute changes require a call of self.draw() at the end
-
+    def configure(self, require_redraw=False, **kwargs):
         if "fg_color" in kwargs:
             self.fg_color = kwargs.pop("fg_color")
             require_redraw = True
@@ -112,14 +110,6 @@ class CTkFrame(CTkBaseClass):
             for child in self.winfo_children():
                 if isinstance(child, CTkBaseClass):
                     child.configure(bg_color=self.fg_color)
-
-        if "bg_color" in kwargs:
-            new_bg_color = kwargs.pop("bg_color")
-            if new_bg_color is None:
-                self.bg_color = self.detect_color_of_master()
-            else:
-                self.bg_color = new_bg_color
-            require_redraw = True
 
         if "border_color" in kwargs:
             self.border_color = kwargs.pop("border_color")
@@ -139,7 +129,4 @@ class CTkFrame(CTkBaseClass):
         if "height" in kwargs:
             self.set_dimensions(height=kwargs.pop("height"))
 
-        super().configure(*args, **kwargs)
-
-        if require_redraw:
-            self.draw()
+        super().configure(require_redraw=require_redraw, **kwargs)

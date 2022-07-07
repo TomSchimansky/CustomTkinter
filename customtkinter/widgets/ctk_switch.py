@@ -267,9 +267,7 @@ class CTkSwitch(CTkBaseClass):
             elif self.variable.get() == self.offvalue:
                 self.deselect(from_variable_callback=True)
 
-    def configure(self, *args, **kwargs):
-        require_redraw = False  # some attribute changes require a call of self.draw() at the end
-
+    def configure(self, require_redraw=False, **kwargs):
         if "text" in kwargs:
             self.text = kwargs.pop("text")
             self.text_label.configure(text=self.text)
@@ -281,14 +279,6 @@ class CTkSwitch(CTkBaseClass):
 
         if "fg_color" in kwargs:
             self.fg_color = kwargs.pop("fg_color")
-            require_redraw = True
-
-        if "bg_color" in kwargs:
-            new_bg_color = kwargs.pop("bg_color")
-            if new_bg_color is None:
-                self.bg_color = self.detect_color_of_master()
-            else:
-                self.bg_color = new_bg_color
             require_redraw = True
 
         if "progress_color" in kwargs:
@@ -335,7 +325,4 @@ class CTkSwitch(CTkBaseClass):
             else:
                 self.variable = None
 
-        super().configure(*args, **kwargs)
-
-        if require_redraw:
-            self.draw()
+        super().configure(require_redraw=require_redraw, **kwargs)

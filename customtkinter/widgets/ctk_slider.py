@@ -258,9 +258,7 @@ class CTkSlider(CTkBaseClass):
         if not self.variable_callback_blocked:
             self.set(self.variable.get(), from_variable_callback=True)
 
-    def configure(self, *args, **kwargs):
-        require_redraw = False  # some attribute changes require a call of self.draw() at the end
-
+    def configure(self, require_redraw=False, **kwargs):
         if "state" in kwargs:
             self.state = kwargs["state"]
             self.set_cursor()
@@ -271,14 +269,6 @@ class CTkSlider(CTkBaseClass):
             self.fg_color = kwargs["fg_color"]
             require_redraw = True
             del kwargs["fg_color"]
-
-        if "bg_color" in kwargs:
-            if kwargs["bg_color"] is None:
-                self.bg_color = self.detect_color_of_master()
-            else:
-                self.bg_color = kwargs["bg_color"]
-            require_redraw = True
-            del kwargs["bg_color"]
 
         if "progress_color" in kwargs:
             if kwargs["progress_color"] is None:
@@ -346,7 +336,4 @@ class CTkSlider(CTkBaseClass):
             self.set_dimensions(height=kwargs["height"])
             del kwargs["height"]
 
-        super().configure(*args, **kwargs)
-
-        if require_redraw:
-            self.draw()
+        super().configure(require_redraw=require_redraw, **kwargs)

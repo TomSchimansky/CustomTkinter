@@ -24,8 +24,7 @@ class CTkEntry(CTkBaseClass):
 
         # transfer basic functionality (bg_color, size, _appearance_mode, scaling) to CTkBaseClass
         if "master" in kwargs:
-            super().__init__(*args, bg_color=bg_color, width=width, height=height, master=kwargs["master"])
-            del kwargs["master"]
+            super().__init__(*args, bg_color=bg_color, width=width, height=height, master=kwargs.pop("master"))
         else:
             super().__init__(*args, bg_color=bg_color, width=width, height=height)
 
@@ -132,20 +131,10 @@ class CTkEntry(CTkBaseClass):
     def bind(self, *args, **kwargs):
         self.entry.bind(*args, **kwargs)
 
-    def configure(self, *args, **kwargs):
-        require_redraw = False  # some attribute changes require a call of self.draw() at the end
-
+    def configure(self, require_redraw=False, **kwargs):
         if "state" in kwargs:
             self.state = kwargs.pop("state")
             self.entry.configure(state=self.state)
-
-        if "bg_color" in kwargs:
-            new_bg_color = kwargs.pop("bg_color")
-            if new_bg_color is None:
-                self.bg_color = self.detect_color_of_master()
-            else:
-                self.bg_color = new_bg_color
-            require_redraw = True
 
         if "fg_color" in kwargs:
             self.fg_color = kwargs.pop("fg_color")
@@ -192,10 +181,12 @@ class CTkEntry(CTkBaseClass):
             else:
                 self.entry.configure(show=kwargs.pop("show"))
 
-        self.entry.configure(*args, **kwargs)
+        if "bg_color" in kwargs:
+            super().configure(bg_color=kwargs.pop("bg_color"), require_redraw=require_redraw)
+        else:
+            super().configure(require_redraw=require_redraw)
 
-        if require_redraw is True:
-            self.draw()
+        self.entry.configure(**kwargs)  # pass remaining kwargs to entry
 
     def set_placeholder(self):
         self.pre_placeholder_arguments = {"show": self.entry.cget("show")}

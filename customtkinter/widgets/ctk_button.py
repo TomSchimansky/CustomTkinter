@@ -1,6 +1,6 @@
 import tkinter
 import sys
-import math
+from typing import Union
 
 from .ctk_canvas import CTkCanvas
 from ..theme_manager import ThemeManager
@@ -29,8 +29,8 @@ class CTkButton(CTkBaseClass):
                  text="CTkButton",
                  hover=True,
                  image=None,
-                 compound=tkinter.LEFT,
-                 state=tkinter.NORMAL,
+                 compound="left",
+                 state="normal",
                  **kwargs):
 
         # transfer basic functionality (bg_color, size, _appearance_mode, scaling) to CTkBaseClass
@@ -42,18 +42,18 @@ class CTkButton(CTkBaseClass):
         self.fg_color = ThemeManager.theme["color"]["button"] if fg_color == "default_theme" else fg_color
         self.hover_color = ThemeManager.theme["color"]["button_hover"] if hover_color == "default_theme" else hover_color
         self.border_color = ThemeManager.theme["color"]["button_border"] if border_color == "default_theme" else border_color
+        self.text_color = ThemeManager.theme["color"]["text"] if text_color == "default_theme" else text_color
+        self.text_color_disabled = ThemeManager.theme["color"]["text_button_disabled"] if text_color_disabled == "default_theme" else text_color_disabled
 
         # shape
         self.corner_radius = ThemeManager.theme["shape"]["button_corner_radius"] if corner_radius == "default_theme" else corner_radius
         self.border_width = ThemeManager.theme["shape"]["button_border_width"] if border_width == "default_theme" else border_width
 
-        # text and font and image
+        # text, font, image
         self.image = image
         self.image_label = None
         self.text = text
         self.text_label = None
-        self.text_color = ThemeManager.theme["color"]["text"] if text_color == "default_theme" else text_color
-        self.text_color_disabled = ThemeManager.theme["color"]["text_button_disabled"] if text_color_disabled == "default_theme" else text_color_disabled
         self.text_font = (ThemeManager.theme["text"]["font"], ThemeManager.theme["text"]["size"]) if text_font == "default_theme" else text_font
 
         # callback and hover functionality
@@ -237,12 +237,10 @@ class CTkButton(CTkBaseClass):
                                      padx=max(self.apply_widget_scaling(self.corner_radius), self.apply_widget_scaling(self.border_width)),
                                      pady=(self.apply_widget_scaling(self.border_width), 2))
 
-    def configure(self, *args, **kwargs):
-        require_redraw = False  # some attribute changes require a call of self.draw() at the end
-
+    def configure(self, require_redraw=False, **kwargs):
         if "text" in kwargs:
             self.text = kwargs.pop("text")
-            require_redraw = True  # new text will be set in .draw()
+            require_redraw = True  # new text will be set to label in .draw()
 
         if "state" in kwargs:
             self.state = kwargs.pop("state")
@@ -263,14 +261,6 @@ class CTkButton(CTkBaseClass):
 
         if "border_color" in kwargs:
             self.border_color = kwargs.pop("border_color")
-            require_redraw = True
-
-        if "bg_color" in kwargs:
-            new_bg_color = kwargs.pop("bg_color")
-            if new_bg_color is None:
-                self.bg_color = self.detect_color_of_master()
-            else:
-                self.bg_color = new_bg_color
             require_redraw = True
 
         if "hover_color" in kwargs:
@@ -295,10 +285,7 @@ class CTkButton(CTkBaseClass):
         if "height" in kwargs:
             self.set_dimensions(height=kwargs.pop("height"))
 
-        super().configure(*args, **kwargs)
-
-        if require_redraw:
-            self.draw()
+        super().configure(require_redraw=require_redraw, **kwargs)
 
     def set_cursor(self):
         if Settings.cursor_manipulation_enabled:

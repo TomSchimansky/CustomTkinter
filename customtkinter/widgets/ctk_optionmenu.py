@@ -189,23 +189,13 @@ class CTkOptionMenu(CTkBaseClass):
         self.dropdown_menu.open(self.winfo_rootx(),
                                 self.winfo_rooty() + self.apply_widget_scaling(self._current_height + 0))
 
-    def configure(self, *args, **kwargs):
-        require_redraw = False  # some attribute changes require a call of self.draw() at the end
-
+    def configure(self, require_redraw=False, **kwargs):
         if "state" in kwargs:
             self.state = kwargs.pop("state")
             require_redraw = True
 
         if "fg_color" in kwargs:
             self.fg_color = kwargs.pop("fg_color")
-            require_redraw = True
-
-        if "bg_color" in kwargs:
-            new_bg_color = kwargs.pop("bg_color")
-            if new_bg_color is None:
-                self.bg_color = self.detect_color_of_master()
-            else:
-                self.bg_color = new_bg_color
             require_redraw = True
 
         if "button_color" in kwargs:
@@ -264,10 +254,7 @@ class CTkOptionMenu(CTkBaseClass):
             else:
                 self.grid_propagate(1)
 
-        super().configure(*args, **kwargs)
-
-        if require_redraw:
-            self.draw()
+        super().configure(require_redraw=require_redraw, **kwargs)
 
     def on_enter(self, event=0):
         if self.hover is True and self.state == tkinter.NORMAL and len(self.values) > 0:
