@@ -42,6 +42,8 @@ class DropdownMenu(tkinter.Menu):
         self.add_menu_commands()
 
     def configure_menu_for_platforms(self):
+        """ apply platform specific appearance attributes """
+
         if sys.platform == "darwin":
             self.configure(tearoff=False,
                            font=self.apply_font_scaling(self.text_font))
@@ -98,29 +100,24 @@ class DropdownMenu(tkinter.Menu):
 
     def configure(self, **kwargs):
         if "values" in kwargs:
-            self.values = kwargs["values"]
-            del kwargs["values"]
+            self.values = kwargs.pop("values")
             self.delete(0, "end")  # delete all old commands
             self.add_menu_commands()
 
         if "fg_color" in kwargs:
-            self.fg_color = kwargs["fg_color"]
-            del kwargs["fg_color"]
+            self.fg_color = kwargs.pop("fg_color")
             self.configure(bg=ThemeManager.single_color(self.fg_color, self._appearance_mode))
 
         if "hover_color" in kwargs:
-            self.hover_color = kwargs["hover_color"]
-            del kwargs["hover_color"]
+            self.hover_color = kwargs.pop("hover_color")
             self.configure(activebackground=ThemeManager.single_color(self.hover_color, self._appearance_mode))
 
         if "text_color" in kwargs:
-            self.text_color = kwargs["text_color"]
-            del kwargs["text_color"]
+            self.text_color = kwargs.pop("text_color")
             self.configure(fg=ThemeManager.single_color(self.text_color, self._appearance_mode))
 
         if "text_font" in kwargs:
-            self.text_font = kwargs["text_font"]
-            del kwargs["text_font"]
+            self.text_font = kwargs.pop("text_font")
             self.configure(font=self.apply_font_scaling(self.text_font))
 
         super().configure(**kwargs)

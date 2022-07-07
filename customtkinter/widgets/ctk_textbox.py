@@ -20,7 +20,10 @@ class CTkTextbox(CTkBaseClass):
                  **kwargs):
 
         # transfer basic functionality (bg_color, size, _appearance_mode, scaling) to CTkBaseClass
-        super().__init__(*args, bg_color=bg_color, width=width, height=height)
+        if "master" in kwargs:
+            super().__init__(*args, bg_color=bg_color, width=width, height=height, master=kwargs.pop("master"))
+        else:
+            super().__init__(*args, bg_color=bg_color, width=width, height=height)
 
         # color
         self.fg_color = ThemeManager.theme["color"]["entry"] if fg_color == "default_theme" else fg_color
@@ -45,7 +48,7 @@ class CTkTextbox(CTkBaseClass):
         self.canvas.configure(bg=ThemeManager.single_color(self.bg_color, self._appearance_mode))
         self.draw_engine = DrawEngine(self.canvas)
 
-        for arg in ["highlightthickness", "fg", "bg"]:
+        for arg in ["highlightthickness", "fg", "bg", "font", "width", "height"]:
             kwargs.pop(arg, None)
         self.textbox = tkinter.Text(self,
                                     fg=ThemeManager.single_color(self.text_color, self._appearance_mode),
@@ -119,9 +122,7 @@ class CTkTextbox(CTkBaseClass):
     def insert(self, args, kwargs):
         self.textbox.insert(args, kwargs)
 
-    def configure(self, *args, **kwargs):
-        require_redraw = False  # some attribute changes require a call of self.draw() at the end
-
+    def configure(self, require_redraw=False, **kwargs):
         if "fg_color" in kwargs:
             self.fg_color = kwargs.pop("fg_color")
             require_redraw = True
@@ -130,14 +131,6 @@ class CTkTextbox(CTkBaseClass):
             for child in self.winfo_children():
                 if isinstance(child, CTkBaseClass):
                     child.configure(bg_color=self.fg_color)
-
-        if "bg_color" in kwargs:
-            new_bg_color = kwargs.pop("bg_color")
-            if new_bg_color is None:
-                self.bg_color = self.detect_color_of_master()
-            else:
-                self.bg_color = new_bg_color
-            require_redraw = True
 
         if "border_color" in kwargs:
             self.border_color = kwargs.pop("border_color")
@@ -157,7 +150,9 @@ class CTkTextbox(CTkBaseClass):
         if "height" in kwargs:
             self.set_dimensions(height=kwargs.pop("height"))
 
-        self.textbox.configure(*args, **kwargs)
+        if "bg_color" in kwargs:
+            super().configure(bg_color=kwargs.pop("bg_color"), require_redraw=require_redraw)
+        else:
+            super().configure(require_redraw=require_redraw)
 
-        if require_redraw:
-            self.draw()
+        self.textbox.configure(**kwargs)
