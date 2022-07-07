@@ -322,7 +322,5 @@ class CTkSwitch(CTkBaseClass):
                 self.variable_callback_name = self.variable.trace_add("write", self.variable_callback)
                 self.check_state = True if self.variable.get() == self.onvalue else False
                 require_redraw = True
-            else:
-                self.variable = None
 
         super().configure(require_redraw=require_redraw, **kwargs)

@@ -1,6 +1,6 @@
 import tkinter
 import sys
-from typing import Union, Tuple, Callable
+from typing import Union, Tuple, Callable, Literal
 
 from .ctk_canvas import CTkCanvas
 from ..theme_manager import ThemeManager

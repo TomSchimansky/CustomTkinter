@@ -12,7 +12,7 @@ def checkbox_event():
     print("checkbox_event")
 
 txt_var = tkinter.StringVar(value="")
-entry_1 = customtkinter.CTkEntry(app, width=200, textvariable=txt_var)
+entry_1 = customtkinter.CTkEntry(app, width=200, textvariable=txt_var, placeholder_text="placeholder")
 entry_1.pack(pady=15)
 txt_var.set("new text test")
 if TEST_CONFIGURE: entry_1.configure(textvariable=txt_var)

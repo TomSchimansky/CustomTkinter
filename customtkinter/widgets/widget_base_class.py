@@ -17,7 +17,7 @@ from ..theme_manager import ThemeManager
 
 
 class CTkBaseClass(tkinter.Frame):
-    """ Base class of every Ctk widget, handles the dimensions, bg_color,
+    """ Base class of every CTk widget, handles the dimensions, bg_color,
         appearance_mode changes, scaling, bg changes of master if master is not a CTk widget """
 
     def __init__(self,
