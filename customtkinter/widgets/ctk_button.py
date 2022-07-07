@@ -13,8 +13,8 @@ class CTkButton(CTkBaseClass):
     """ button with border, rounded corners, hover effect, image support """
 
     def __init__(self, *args,
-                 bg_color: Union[str, Tuple[str, str]] = None,
-                 fg_color: Union[str, Tuple[str, str]] = "default_theme",
+                 bg_color: Union[str, Tuple[str, str], None] = None,
+                 fg_color: Union[str, Tuple[str, str], None] = "default_theme",
                  hover_color: Union[str, Tuple[str, str]] = "default_theme",
                  border_color: Union[str, Tuple[str, str]] = "default_theme",
                  text_color: Union[str, Tuple[str, str]] = "default_theme",
