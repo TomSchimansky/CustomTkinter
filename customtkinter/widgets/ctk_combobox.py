@@ -1,9 +1,7 @@
 import tkinter
 import sys
-from typing import Union
 
 from .dropdown_menu import DropdownMenu
-
 from .ctk_canvas import CTkCanvas
 from ..theme_manager import ThemeManager
 from ..settings import Settings
@@ -56,7 +54,7 @@ class CTkComboBox(CTkBaseClass):
 
         # callback and hover functionality
         self.command = command
-        self.variable = variable
+        self.textvariable = variable
         self.state = state
         self.hover = hover
 
@@ -114,8 +112,8 @@ class CTkComboBox(CTkBaseClass):
         self.canvas.tag_bind("dropdown_arrow", "<Button-1>", self.clicked)
         self.bind('<Configure>', self.update_dimensions_event)
 
-        if self.variable is not None:
-            self.entry.configure(textvariable=self.variable)
+        if self.textvariable is not None:
+            self.entry.configure(textvariable=self.textvariable)
 
     def set_scaling(self, *args, **kwargs):
         super().set_scaling(*args, **kwargs)
@@ -209,8 +207,8 @@ class CTkComboBox(CTkBaseClass):
             self.command = kwargs.pop("command")
 
         if "variable" in kwargs:
-            self.variable = kwargs.pop("variable")
-            self.entry.configure(textvariable=self.variable)
+            self.textvariable = kwargs.pop("variable")
+            self.entry.configure(textvariable=self.textvariable)
 
         if "width" in kwargs:
             self.set_dimensions(width=kwargs.pop("width"))
@@ -269,8 +267,14 @@ class CTkComboBox(CTkBaseClass):
     def set(self, value: str, from_variable_callback: bool = False):
         self.current_value = value
 
-        self.entry.delete(0, tkinter.END)
-        self.entry.insert(0, self.current_value)
+        if self.state == "readonly":
+            self.entry.configure(state="normal")
+            self.entry.delete(0, tkinter.END)
+            self.entry.insert(0, self.current_value)
+            self.entry.configure(state="readonly")
+        else:
+            self.entry.delete(0, tkinter.END)
+            self.entry.insert(0, self.current_value)
 
         if not from_variable_callback:
             if self.command is not None:

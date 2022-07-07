@@ -226,7 +226,6 @@ class CTkEntry(CTkBaseClass):
         self.entry.delete(*args, **kwargs)
 
         if self.entry.get() == "":
-            self.placeholder_text_active = True
             self.set_placeholder()
 
     def insert(self, *args, **kwargs):
