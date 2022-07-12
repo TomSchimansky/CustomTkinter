@@ -28,12 +28,13 @@ class CTkTextbox(CTkBaseClass):
         # color
         self.fg_color = ThemeManager.theme["color"]["entry"] if fg_color == "default_theme" else fg_color
         self.border_color = ThemeManager.theme["color"]["frame_border"] if border_color == "default_theme" else border_color
+        self.text_color = ThemeManager.theme["color"]["text"] if text_color == "default_theme" else text_color
 
         # shape
         self.corner_radius = ThemeManager.theme["shape"]["frame_corner_radius"] if corner_radius == "default_theme" else corner_radius
         self.border_width = ThemeManager.theme["shape"]["frame_border_width"] if border_width == "default_theme" else border_width
 
-        self.text_color = ThemeManager.theme["color"]["text"] if text_color == "default_theme" else text_color
+        # text
         self.text_font = (ThemeManager.theme["text"]["font"], ThemeManager.theme["text"]["size"]) if text_font == "default_theme" else text_font
 
         # configure 1x1 grid
@@ -56,28 +57,18 @@ class CTkTextbox(CTkBaseClass):
                                     height=0,
                                     font=self.text_font,
                                     highlightthickness=0,
+                                    insertbackground=ThemeManager.single_color(("black", "white"), self._appearance_mode),
                                     bg=ThemeManager.single_color(self.fg_color, self._appearance_mode),
                                     **kwargs)
         self.textbox.grid(row=0, column=0, padx=self.corner_radius, pady=self.corner_radius, rowspan=1, columnspan=1, sticky="nsew")
 
         self.bind('<Configure>', self.update_dimensions_event)
-
         self.draw()
-
-    def winfo_children(self):
-        """ winfo_children of CTkFrame without self.canvas widget,
-        because it's not a child but part of the CTkFrame itself """
-
-        child_widgets = super().winfo_children()
-        try:
-            child_widgets.remove(self.canvas)
-            return child_widgets
-        except ValueError:
-            return child_widgets
 
     def set_scaling(self, *args, **kwargs):
         super().set_scaling(*args, **kwargs)
 
+        self.textbox.configure(font=self.apply_font_scaling(self.text_font))
         self.canvas.configure(width=self.apply_widget_scaling(self._desired_width), height=self.apply_widget_scaling(self._desired_height))
         self.draw()
 
@@ -110,17 +101,36 @@ class CTkTextbox(CTkBaseClass):
                                    outline=ThemeManager.single_color(self.border_color, self._appearance_mode))
             self.canvas.configure(bg=ThemeManager.single_color(self.bg_color, self._appearance_mode))
 
+            self.textbox.configure(fg=ThemeManager.single_color(self.text_color, self._appearance_mode),
+                                   bg=ThemeManager.single_color(self.fg_color, self._appearance_mode),
+                                   insertbackground=ThemeManager.single_color(("black", "white"), self._appearance_mode))
+
         self.canvas.tag_lower("inner_parts")
         self.canvas.tag_lower("border_parts")
 
-    def yview(self, args, kwargs):
-        self.textbox.yview(args, kwargs)
+    def yview(self, *args):
+        return self.textbox.yview(*args)
 
-    def xview(self, args, kwargs):
-        self.textbox.xview(args, kwargs)
+    def xview(self, *args):
+        return self.textbox.xview(*args)
 
-    def insert(self, args, kwargs):
-        self.textbox.insert(args, kwargs)
+    def insert(self, *args, **kwargs):
+        return self.textbox.insert(*args, **kwargs)
+
+    def focus(self):
+        return self.textbox.focus()
+
+    def tag_add(self, *args, **kwargs):
+        return self.textbox.tag_add(*args, **kwargs)
+
+    def tag_config(self, *args, **kwargs):
+        return self.textbox.tag_config(*args, **kwargs)
+
+    def tag_configure(self, *args, **kwargs):
+        return self.textbox.tag_configure(*args, **kwargs)
+
+    def tag_remove(self, *args, **kwargs):
+        return self.textbox.tag_remove(*args, **kwargs)
 
     def configure(self, require_redraw=False, **kwargs):
         if "fg_color" in kwargs:

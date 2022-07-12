@@ -39,7 +39,7 @@ class App(customtkinter.CTk):
         self.appearance_mode_optionemenu.grid(row=6, column=0, padx=20, pady=(10, 10))
         self.scaling_label = customtkinter.CTkLabel(self.sidebar_frame, text="Widget Scaling:", anchor="w")
         self.scaling_label.grid(row=7, column=0, padx=20, pady=(10, 0))
-        self.scaling_optionemenu = customtkinter.CTkOptionMenu(self.sidebar_frame, values=["75%", "100%", "150%"],
+        self.scaling_optionemenu = customtkinter.CTkOptionMenu(self.sidebar_frame, values=["90%", "100%", "110%"],
                                                                command=self.change_scaling)
         self.scaling_optionemenu.grid(row=8, column=0, padx=20, pady=(10, 20))
 
@@ -50,8 +50,8 @@ class App(customtkinter.CTk):
         self.main_button_1 = customtkinter.CTkButton(self, fg_color=None, border_width=2)
         self.main_button_1.grid(row=3, column=3, padx=(10, 20), pady=(10, 20), sticky="nsew")
 
-        self.text_frame = customtkinter.CTkFrame(self)
-        self.text_frame.grid(row=0, column=1, padx=(20, 10), pady=(20, 10), sticky="nsew")
+        self.textbox = customtkinter.CTkTextbox(self)
+        self.textbox.grid(row=0, column=1, padx=(20, 10), pady=(20, 10), sticky="nsew")
 
         # create radiobutton frame
         self.radiobutton_frame = customtkinter.CTkFrame(self)
@@ -119,6 +119,10 @@ class App(customtkinter.CTk):
         self.scaling_optionemenu.set("100%")
         self.optionmenu_1.set("CTkOptionmenu")
         self.combobox_1.set("CTkComboBox")
+        self.textbox.insert("1.0",
+                               "CTkTextbox\n\nLorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.", )
+        #self.textbox.tag_add("headline", "1.0", "1.end")
+        #self.textbox.tag_config("headline", foreground="red")
 
     def open_input_dialog(self):
         dialog = customtkinter.CTkInputDialog(master=None, text="Type in a number:", title="CTkInputDialog")

@@ -1,3 +1,4 @@
+import sys
 import tkinter
 
 from .ctk_canvas import CTkCanvas
@@ -105,6 +106,10 @@ class CTkLabel(CTkBaseClass):
                                           bg=ThemeManager.single_color(self.bg_color, self._appearance_mode))
 
             self.canvas.configure(bg=ThemeManager.single_color(self.bg_color, self._appearance_mode))
+
+    def config(self, **kwargs):
+        sys.stderr.write("Warning: Use .configure() instead of .config()")
+        self.configure(**kwargs)
 
     def configure(self, require_redraw=False, **kwargs):
         if "anchor" in kwargs:
