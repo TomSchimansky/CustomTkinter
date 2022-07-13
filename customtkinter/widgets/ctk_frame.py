@@ -101,52 +101,32 @@ class CTkFrame(CTkBaseClass):
         self.canvas.tag_lower("inner_parts")
         self.canvas.tag_lower("border_parts")
 
-    def configure(self, *args, **kwargs):
-        require_redraw = False  # some attribute changes require a call of self.draw() at the end
-
+    def configure(self, require_redraw=False, **kwargs):
         if "fg_color" in kwargs:
-            self.fg_color = kwargs["fg_color"]
+            self.fg_color = kwargs.pop("fg_color")
             require_redraw = True
-            del kwargs["fg_color"]
 
             # check if CTk widgets are children of the frame and change their bg_color to new frame fg_color
             for child in self.winfo_children():
                 if isinstance(child, CTkBaseClass):
                     child.configure(bg_color=self.fg_color)
 
-        if "bg_color" in kwargs:
-            if kwargs["bg_color"] is None:
-                self.bg_color = self.detect_color_of_master()
-            else:
-                self.bg_color = kwargs["bg_color"]
-            require_redraw = True
-
-            del kwargs["bg_color"]
-
         if "border_color" in kwargs:
-            self.border_color = kwargs["border_color"]
+            self.border_color = kwargs.pop("border_color")
             require_redraw = True
-            del kwargs["border_color"]
 
         if "corner_radius" in kwargs:
-            self.corner_radius = kwargs["corner_radius"]
+            self.corner_radius = kwargs.pop("corner_radius")
             require_redraw = True
-            del kwargs["corner_radius"]
 
         if "border_width" in kwargs:
-            self.border_width = kwargs["border_width"]
+            self.border_width = kwargs.pop("border_width")
             require_redraw = True
-            del kwargs["border_width"]
 
         if "width" in kwargs:
-            self.set_dimensions(width=kwargs["width"])
-            del kwargs["width"]
+            self.set_dimensions(width=kwargs.pop("width"))
 
         if "height" in kwargs:
-            self.set_dimensions(height=kwargs["height"])
-            del kwargs["height"]
+            self.set_dimensions(height=kwargs.pop("height"))
 
-        super().configure(*args, **kwargs)
-
-        if require_redraw:
-            self.draw()
+        super().configure(require_redraw=require_redraw, **kwargs)

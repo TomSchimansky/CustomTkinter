@@ -8,12 +8,17 @@ app = customtkinter.CTk()  # create CTk window like you do with the Tk window (y
 app.geometry("400x900")
 app.title("Tkinter Variable Test")
 
+def checkbox_event():
+    print("checkbox_event")
+
 txt_var = tkinter.StringVar(value="")
-entry_1 = customtkinter.CTkEntry(app, width=200, textvariable=txt_var)
+entry_1 = customtkinter.CTkEntry(app, width=200, textvariable=txt_var, placeholder_text="placeholder")
 entry_1.pack(pady=15)
 txt_var.set("new text test")
 if TEST_CONFIGURE: entry_1.configure(textvariable=txt_var)
 if TEST_REMOVING: entry_1.configure(textvariable="")
+#entry_1.delete(0, "end")
+#entry_1.insert(0, "sadsad")
 
 label_1 = customtkinter.CTkLabel(app, width=200, textvariable=txt_var)
 label_1.pack(pady=15)
@@ -46,11 +51,13 @@ if TEST_CONFIGURE: progress_1.configure(variable=int_var)
 if TEST_REMOVING: progress_1.configure(variable="")
 
 check_var = tkinter.StringVar(value="on")
-check_1 = customtkinter.CTkCheckBox(app, text="check 1", variable=check_var, onvalue="on", offvalue="off", textvariable=txt_var)
+check_1 = customtkinter.CTkCheckBox(app, text="check 1", variable=check_var, onvalue="on", offvalue="off", textvariable=txt_var,
+                                    command=checkbox_event)
 check_1.pack(pady=15)
 if TEST_CONFIGURE: check_1.configure(variable=check_var)
 if TEST_REMOVING: check_1.configure(variable="")
-print("check_1", check_1.get())
+
+print("check 1 created")
 
 check_2 = customtkinter.CTkCheckBox(app, text="check 2", variable=check_var, onvalue="on", offvalue="off")
 check_2.pack(pady=15)

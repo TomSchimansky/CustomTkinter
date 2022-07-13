@@ -17,7 +17,7 @@ from ..theme_manager import ThemeManager
 
 
 class CTkBaseClass(tkinter.Frame):
-    """ Base class of every Ctk widget, handles the dimensions, bg_color,
+    """ Base class of every CTk widget, handles the dimensions, bg_color,
         appearance_mode changes, scaling, bg changes of master if master is not a CTk widget """
 
     def __init__(self,
@@ -26,6 +26,7 @@ class CTkBaseClass(tkinter.Frame):
                  width: int,
                  height: int,
                  **kwargs):
+
         super().__init__(*args, width=width, height=height, **kwargs)  # set desired size of underlying tkinter.Frame
 
         # dimensions
@@ -116,23 +117,18 @@ class CTkBaseClass(tkinter.Frame):
 
         return scaled_kwargs
 
-    def config(self, *args, **kwargs):
-        self.configure(*args, **kwargs)
-
-    def configure(self, *args, **kwargs):
+    def configure(self, require_redraw=False, **kwargs):
         """ basic configure with bg_color support, to be overridden """
 
-        require_redraw = False
-
         if "bg_color" in kwargs:
-            if kwargs["bg_color"] is None:
+            new_bg_color = kwargs.pop("bg_color")
+            if new_bg_color is None:
                 self.bg_color = self.detect_color_of_master()
             else:
-                self.bg_color = kwargs["bg_color"]
+                self.bg_color = new_bg_color
             require_redraw = True
-            del kwargs["bg_color"]
 
-        super().configure(*args, **kwargs)
+        super().configure(**kwargs)
 
         if require_redraw:
             self.draw()

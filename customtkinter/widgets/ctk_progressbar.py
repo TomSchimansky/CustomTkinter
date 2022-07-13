@@ -120,17 +120,7 @@ class CTkProgressBar(CTkBaseClass):
                                    fill=ThemeManager.single_color(self.progress_color, self._appearance_mode),
                                    outline=ThemeManager.single_color(self.progress_color, self._appearance_mode))
 
-    def configure(self, *args, **kwargs):
-        require_redraw = False  # some attribute changes require a call of self.draw() at the end
-
-        if "bg_color" in kwargs:
-            if kwargs["bg_color"] is None:
-                self.bg_color = self.detect_color_of_master()
-            else:
-                self.bg_color = kwargs["bg_color"]
-            require_redraw = True
-            del kwargs["bg_color"]
-
+    def configure(self, require_redraw=False, **kwargs):
         if "fg_color" in kwargs:
             self.fg_color = kwargs["fg_color"]
             del kwargs["fg_color"]
@@ -173,10 +163,7 @@ class CTkProgressBar(CTkBaseClass):
             self.set_dimensions(height=kwargs["height"])
             del kwargs["height"]
 
-        super().configure(*args, **kwargs)
-
-        if require_redraw is True:
-            self.draw()
+        super().configure(require_redraw=require_redraw, **kwargs)
 
     def variable_callback(self, var_name, index, mode):
         if not self.variable_callback_blocked:

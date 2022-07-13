@@ -148,17 +148,7 @@ class CTkScrollbar(CTkBaseClass):
     def get(self):
         return self.start_value, self.end_value
 
-    def configure(self, *args, **kwargs):
-        require_redraw = False  # some attribute changes require a call of self.draw() at the end
-
-        if "bg_color" in kwargs:
-            if kwargs["bg_color"] is None:
-                self.bg_color = self.detect_color_of_master()
-            else:
-                self.bg_color = kwargs["bg_color"]
-            require_redraw = True
-            del kwargs["bg_color"]
-
+    def configure(self, require_redraw=False, **kwargs):
         if "fg_color" in kwargs:
             self.fg_color = kwargs["fg_color"]
             require_redraw = True
@@ -196,10 +186,7 @@ class CTkScrollbar(CTkBaseClass):
             self.set_dimensions(height=kwargs["height"])
             del kwargs["height"]
 
-        super().configure(*args, **kwargs)
-
-        if require_redraw:
-            self.draw()
+        super().configure(require_redraw=require_redraw, **kwargs)
 
     def on_enter(self, event=0):
         if self.hover is True:

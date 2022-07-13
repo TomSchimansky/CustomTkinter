@@ -54,7 +54,7 @@ class CTkRadioButton(CTkBaseClass):
         self.text_font = (ThemeManager.theme["text"]["font"], ThemeManager.theme["text"]["size"]) if text_font == "default_theme" else text_font
 
         # callback and control variables
-        self.function = command
+        self.command = command
         self.state = state
         self.hover = hover
         self.check_state = False
@@ -99,15 +99,12 @@ class CTkRadioButton(CTkBaseClass):
         self.text_label.bind("<Leave>", self.on_leave)
         self.text_label.bind("<Button-1>", self.invoke)
 
-        self.draw()  # initial draw
-        self.set_cursor()
-
         if self.variable is not None:
             self.variable_callback_name = self.variable.trace_add("write", self.variable_callback)
-            if self.variable.get() == self.value:
-                self.select(from_variable_callback=True)
-            else:
-                self.deselect(from_variable_callback=True)
+            self.check_state = True if self.variable.get() == self.value else False
+
+        self.draw()  # initial draw
+        self.set_cursor()
 
     def set_scaling(self, *args, **kwargs):
         super().set_scaling(*args, **kwargs)
@@ -154,9 +151,7 @@ class CTkRadioButton(CTkBaseClass):
 
         self.text_label.configure(bg=ThemeManager.single_color(self.bg_color, self._appearance_mode))
 
-    def configure(self, *args, **kwargs):
-        require_redraw = False  # some attribute changes require a call of self.draw()
-
+    def configure(self, require_redraw=False, **kwargs):
         if "text" in kwargs:
             self.text = kwargs.pop("text")
             self.text_label.configure(text=self.text)
@@ -168,14 +163,6 @@ class CTkRadioButton(CTkBaseClass):
 
         if "fg_color" in kwargs:
             self.fg_color = kwargs.pop("fg_color")
-            require_redraw = True
-
-        if "bg_color" in kwargs:
-            new_bg_color = kwargs.pop("bg_color")
-            if new_bg_color is None:
-                self.bg_color = self.detect_color_of_master()
-            else:
-                self.bg_color = new_bg_color
             require_redraw = True
 
         if "hover_color" in kwargs:
@@ -195,7 +182,7 @@ class CTkRadioButton(CTkBaseClass):
             require_redraw = True
 
         if "command" in kwargs:
-            self.function = kwargs.pop("command")
+            self.command = kwargs.pop("command")
 
         if "textvariable" in kwargs:
             self.textvariable = kwargs.pop("textvariable")
@@ -209,17 +196,10 @@ class CTkRadioButton(CTkBaseClass):
 
             if self.variable is not None and self.variable != "":
                 self.variable_callback_name = self.variable.trace_add("write", self.variable_callback)
-                if self.variable.get() == self.value:
-                    self.select(from_variable_callback=True)
-                else:
-                    self.deselect(from_variable_callback=True)
-            else:
-                self.variable = None
+                self.check_state = True if self.variable.get() == self.value else False
+                require_redraw = True
 
-        super().configure(*args, **kwargs)
-
-        if require_redraw:
-            self.draw()
+        super().configure(require_redraw=require_redraw, **kwargs)
 
     def set_cursor(self):
         if Settings.cursor_manipulation_enabled:
@@ -273,8 +253,8 @@ class CTkRadioButton(CTkBaseClass):
                 self.check_state = True
                 self.select()
 
-        if self.function is not None:
-            self.function()
+        if self.command is not None:
+            self.command()
 
     def select(self, from_variable_callback=False):
         self.check_state = True

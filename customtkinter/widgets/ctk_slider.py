@@ -72,7 +72,7 @@ class CTkSlider(CTkBaseClass):
             self.corner_radius = self.button_corner_radius
 
         # callback and control variables
-        self.callback_function = command
+        self.command = command
         self.variable: tkinter.Variable = variable
         self.variable_callback_blocked = False
         self.variable_callback_name = None
@@ -205,8 +205,8 @@ class CTkSlider(CTkBaseClass):
                 self.variable.set(round(self.output_value) if isinstance(self.variable, tkinter.IntVar) else self.output_value)
                 self.variable_callback_blocked = False
 
-            if self.callback_function is not None:
-                self.callback_function(self.output_value)
+            if self.command is not None:
+                self.command(self.output_value)
 
     def on_enter(self, event=0):
         if self.state == "normal":
@@ -258,9 +258,7 @@ class CTkSlider(CTkBaseClass):
         if not self.variable_callback_blocked:
             self.set(self.variable.get(), from_variable_callback=True)
 
-    def configure(self, *args, **kwargs):
-        require_redraw = False  # some attribute changes require a call of self.draw() at the end
-
+    def configure(self, require_redraw=False, **kwargs):
         if "state" in kwargs:
             self.state = kwargs["state"]
             self.set_cursor()
@@ -271,14 +269,6 @@ class CTkSlider(CTkBaseClass):
             self.fg_color = kwargs["fg_color"]
             require_redraw = True
             del kwargs["fg_color"]
-
-        if "bg_color" in kwargs:
-            if kwargs["bg_color"] is None:
-                self.bg_color = self.detect_color_of_master()
-            else:
-                self.bg_color = kwargs["bg_color"]
-            require_redraw = True
-            del kwargs["bg_color"]
 
         if "progress_color" in kwargs:
             if kwargs["progress_color"] is None:
@@ -321,7 +311,7 @@ class CTkSlider(CTkBaseClass):
             del kwargs["number_of_steps"]
 
         if "command" in kwargs:
-            self.callback_function = kwargs["command"]
+            self.command = kwargs["command"]
             del kwargs["command"]
 
         if "variable" in kwargs:
@@ -346,7 +336,4 @@ class CTkSlider(CTkBaseClass):
             self.set_dimensions(height=kwargs["height"])
             del kwargs["height"]
 
-        super().configure(*args, **kwargs)
-
-        if require_redraw:
-            self.draw()
+        super().configure(require_redraw=require_redraw, **kwargs)

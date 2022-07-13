@@ -8,7 +8,6 @@ class CTkCanvas(tkinter.Canvas):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-
         self.aa_circle_canvas_ids = set()
 
     @classmethod

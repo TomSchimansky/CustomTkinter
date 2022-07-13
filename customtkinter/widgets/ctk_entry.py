@@ -20,32 +20,39 @@ class CTkEntry(CTkBaseClass):
                  width=140,
                  height=28,
                  state=tkinter.NORMAL,
+                 textvariable: tkinter.Variable = None,
                  **kwargs):
 
         # transfer basic functionality (bg_color, size, _appearance_mode, scaling) to CTkBaseClass
         if "master" in kwargs:
-            super().__init__(*args, bg_color=bg_color, width=width, height=height, master=kwargs["master"])
-            del kwargs["master"]
+            super().__init__(*args, bg_color=bg_color, width=width, height=height, master=kwargs.pop("master"))
         else:
             super().__init__(*args, bg_color=bg_color, width=width, height=height)
 
+        # configure grid system (1x1)
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
 
+        # color
         self.fg_color = ThemeManager.theme["color"]["entry"] if fg_color == "default_theme" else fg_color
         self.text_color = ThemeManager.theme["color"]["text"] if text_color == "default_theme" else text_color
         self.placeholder_text_color = ThemeManager.theme["color"]["entry_placeholder_text"] if placeholder_text_color == "default_theme" else placeholder_text_color
         self.text_font = (ThemeManager.theme["text"]["font"], ThemeManager.theme["text"]["size"]) if text_font == "default_theme" else text_font
         self.border_color = ThemeManager.theme["color"]["entry_border"] if border_color == "default_theme" else border_color
 
+        # shape
+        self.corner_radius = ThemeManager.theme["shape"]["button_corner_radius"] if corner_radius == "default_theme" else corner_radius
+        self.border_width = ThemeManager.theme["shape"]["entry_border_width"] if border_width == "default_theme" else border_width
+
+        # placeholder text
         self.placeholder_text = placeholder_text
         self.placeholder_text_active = False
         self.pre_placeholder_arguments = {}  # some set arguments of the entry will be changed for placeholder and then set back
 
-        self.state = state
+        # textvariable
+        self.textvariable = textvariable
 
-        self.corner_radius = ThemeManager.theme["shape"]["button_corner_radius"] if corner_radius == "default_theme" else corner_radius
-        self.border_width = ThemeManager.theme["shape"]["entry_border_width"] if border_width == "default_theme" else border_width
+        self.state = state
 
         self.canvas = CTkCanvas(master=self,
                                 highlightthickness=0,
@@ -60,6 +67,7 @@ class CTkEntry(CTkBaseClass):
                                    highlightthickness=0,
                                    font=self.apply_font_scaling(self.text_font),
                                    state=self.state,
+                                   textvariable=self.textvariable,
                                    **kwargs)
         self.entry.grid(column=0, row=0, sticky="nswe",
                         padx=self.apply_widget_scaling(self.corner_radius) if self.corner_radius >= 6 else self.apply_widget_scaling(6),
@@ -69,11 +77,8 @@ class CTkEntry(CTkBaseClass):
         self.entry.bind('<FocusOut>', self.entry_focus_out)
         self.entry.bind('<FocusIn>', self.entry_focus_in)
 
+        self.set_placeholder()
         self.draw()
-
-        if self.placeholder_text is not None:
-            self.placeholder_text_active = True
-            self.set_placeholder()
 
     def set_scaling(self, *args, **kwargs):
         super().set_scaling( *args, **kwargs)
@@ -132,20 +137,10 @@ class CTkEntry(CTkBaseClass):
     def bind(self, *args, **kwargs):
         self.entry.bind(*args, **kwargs)
 
-    def configure(self, *args, **kwargs):
-        require_redraw = False  # some attribute changes require a call of self.draw() at the end
-
+    def configure(self, require_redraw=False, **kwargs):
         if "state" in kwargs:
             self.state = kwargs.pop("state")
             self.entry.configure(state=self.state)
-
-        if "bg_color" in kwargs:
-            new_bg_color = kwargs.pop("bg_color")
-            if new_bg_color is None:
-                self.bg_color = self.detect_color_of_master()
-            else:
-                self.bg_color = new_bg_color
-            require_redraw = True
 
         if "fg_color" in kwargs:
             self.fg_color = kwargs.pop("fg_color")
@@ -186,50 +181,55 @@ class CTkEntry(CTkBaseClass):
             self.placeholder_text_color = kwargs.pop("placeholder_text_color")
             require_redraw = True
 
+        if "textvariable" in kwargs:
+            self.textvariable = kwargs.pop("textvariable")
+            self.entry.configure(textvariable=self.textvariable)
+
         if "show" in kwargs:
             if self.placeholder_text_active:
                 self.pre_placeholder_arguments["show"] = kwargs.pop("show")
             else:
                 self.entry.configure(show=kwargs.pop("show"))
 
-        self.entry.configure(*args, **kwargs)
+        if "bg_color" in kwargs:
+            super().configure(bg_color=kwargs.pop("bg_color"), require_redraw=require_redraw)
+        else:
+            super().configure(require_redraw=require_redraw)
 
-        if require_redraw is True:
-            self.draw()
+        self.entry.configure(**kwargs)  # pass remaining kwargs to entry
 
     def set_placeholder(self):
-        self.pre_placeholder_arguments = {"show": self.entry.cget("show")}
-        self.entry.config(fg=ThemeManager.single_color(self.placeholder_text_color, self._appearance_mode), show="")
-        self.entry.delete(0, tkinter.END)
-        self.entry.insert(0, self.placeholder_text)
+        if self.entry.get() == "" and self.placeholder_text is not None and (self.textvariable is None or self.textvariable == ""):
+            self.placeholder_text_active = True
+
+            self.pre_placeholder_arguments = {"show": self.entry.cget("show")}
+            self.entry.config(fg=ThemeManager.single_color(self.placeholder_text_color, self._appearance_mode), show="")
+            self.entry.delete(0, tkinter.END)
+            self.entry.insert(0, self.placeholder_text)
 
     def clear_placeholder(self):
-        self.entry.config(fg=ThemeManager.single_color(self.text_color, self._appearance_mode))
-        self.entry.delete(0, tkinter.END)
-        for argument, value in self.pre_placeholder_arguments.items():
-            self.entry[argument] = value
-
-    def entry_focus_out(self, event=None):
-        if self.entry.get() == "":
-            self.placeholder_text_active = True
-            self.set_placeholder()
-
-    def entry_focus_in(self, event=None):
         if self.placeholder_text_active:
             self.placeholder_text_active = False
-            self.clear_placeholder()
+
+            self.entry.config(fg=ThemeManager.single_color(self.text_color, self._appearance_mode))
+            self.entry.delete(0, tkinter.END)
+            for argument, value in self.pre_placeholder_arguments.items():
+                self.entry[argument] = value
+
+    def entry_focus_out(self, event=None):
+        self.set_placeholder()
+
+    def entry_focus_in(self, event=None):
+        self.clear_placeholder()
 
     def delete(self, *args, **kwargs):
         self.entry.delete(*args, **kwargs)
 
         if self.entry.get() == "":
-            self.placeholder_text_active = True
             self.set_placeholder()
 
     def insert(self, *args, **kwargs):
-        if self.placeholder_text_active:
-            self.placeholder_text_active = False
-            self.clear_placeholder()
+        self.clear_placeholder()
 
         return self.entry.insert(*args, **kwargs)
 
