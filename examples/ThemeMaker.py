@@ -3,58 +3,57 @@ import customtkinter
 from tkinter.colorchooser import askcolor
 from tkinter import filedialog, messagebox
 import json
-
-#Main Window
+    
 WIDTH = 390
 HEIGHT = 350
+
+#Main Window
 customtkinter.set_appearance_mode("Dark")
 customtkinter.set_default_color_theme("blue")
-self=customtkinter.CTk()
-self.title("CustomTkinter ThemeMaker")
-self.geometry(f"{WIDTH}x{HEIGHT}")
-self.resizable(width=False, height=False)
-
-null=None #Default is null
+root_tk=customtkinter.CTk()
+root_tk.title("CustomTkinter ThemeMaker")
+root_tk.geometry(f"{WIDTH}x{HEIGHT}")
+root_tk.resizable(width=False, height=False)
 
 #Main Body of the json file
 json_data={
     "color": {
-        'window_bg_color': [null, null],
-        'frame_border': [null, null],
-        'frame_low': [null, null],
-        'frame_high': [null, null],
-        'button': [null, null],
-        'button_hover': [null, null],
-        'button_border': [null, null],
-        'checkbox_border': [null, null],
-        'checkmark': [null, null],
-        'entry': [null, null],
-        'entry_border': [null, null],
-        'entry_placeholder_text': [null, null],
-        'label': [null, null],
-        'text': [null, null],
-        'text_disabled': [null, null],
-        'text_button_disabled': [null, null],
-        'progressbar': [null, null],
-        'progressbar_progress': [null, null],
-        'progressbar_border': [null, null],
-        'slider': [null, null],
-        'slider_progress': [null, null],
-        'slider_button': [null, null],
-        'slider_button_hover': [null, null],
-        'switch': [null, null],
-        'switch_progress': [null, null],
-        'switch_button': [null, null],
-        'switch_button_hover': [null, null],
-        'optionmenu_button': [null, null],
-        'optionmenu_button_hover': [null, null],
-        'combobox_border': [null, null],
-        'combobox_button_hover': [null, null],
-        'dropdown_color': [null, null],
-        'dropdown_text': [null, null],
-        'dropdown_hover': [null, null],
-        'scrollbar_button': [null, null],
-        'scrollbar_button_hover': [null, null]
+        'window_bg_color': [None, None],
+        'frame_border': [None, None],
+        'frame_low': [None, None],
+        'frame_high': [None, None],
+        'button': [None, None],
+        'button_hover': [None, None],
+        'button_border': [None, None],
+        'checkbox_border': [None, None],
+        'checkmark': [None, None],
+        'entry': [None, None],
+        'entry_border': [None, None],
+        'entry_placeholder_text': [None, None],
+        'label': [None, None],
+        'text': [None, None],
+        'text_disabled': [None, None],
+        'text_button_disabled': [None, None],
+        'progressbar': [None, None],
+        'progressbar_progress': [None, None],
+        'progressbar_border': [None, None],
+        'slider': [None, None],
+        'slider_progress': [None, None],
+        'slider_button': [None, None],
+        'slider_button_hover': [None, None],
+        'switch': [None, None],
+        'switch_progress': [None, None],
+        'switch_button': [None, None],
+        'switch_button_hover': [None, None],
+        'optionmenu_button': [None, None],
+        'optionmenu_button_hover': [None, None],
+        'combobox_border': [None, None],
+        'combobox_button_hover': [None, None],
+        'dropdown_color': [None, None],
+        'dropdown_text': [None, None],
+        'dropdown_hover': [None, None],
+        'scrollbar_button': [None, None],
+        'scrollbar_button_hover': [None, None]
     },
     "text": {
     "macOS": {
@@ -98,93 +97,55 @@ json_data={
 }
 
 
-#list of widgets
-Widgets=['Window', 'Frame', 'Button', 'CheckBox', 'Entry', 'Label', 'Text', 'ProgressBar', 'Slider',
-         'Switch', 'Menu + Dropdown', 'Scrollbar']
+#widgets
+Widgets={'Window':['window_bg_color'],
+         'Frame':['frame_border', 'frame_low', 'frame_high'],
+         'Button':['button','button_hover','button_border'],
+         'CheckBox':['checkbox_border','checkmark'],
+         'Entry':['entry','entry_border','entry_placeholder_text'],
+         'Label':['label'], 'Text':['text','text_disabled','text_button_disabled'],
+         'ProgressBar':['progressbar','progressbar_progress','progressbar_border'],
+         'Slider':['slider','slider_progress','slider_button','slider_button_hover'],
+         'Switch':['switch','switch_progress','switch_button','switch_button_hover'],
+         'Menu + Dropdown':['optionmenu_button','optionmenu_button_hover','combobox_border','combobox_button_hover','dropdown_color','dropdown_hover','dropdown_text'],
+         'Scrollbar':['scrollbar_button','scrollbar_button_hover']}
 
-#List containing menu content
-list0=['window_bg_color']
-list1=['frame_border', 'frame_low', 'frame_high']
-list2=['button','button_hover','button_border']
-list3=['checkbox_border','checkmark']
-list4=['entry','entry_border','entry_placeholder_text']
-list5=['label']
-list6=['text','text_disabled','text_button_disabled']
-list7=['progressbar','progressbar_progress','progressbar_border']
-list8=['slider','slider_progress','slider_button','slider_button_hover']
-list9=['switch','switch_progress','switch_button','switch_button_hover']
-list10=['optionmenu_button','optionmenu_button_hover','combobox_border','combobox_button_hover',
-        'dropdown_color','dropdown_hover','dropdown_text']
-list11=['scrollbar_button','scrollbar_button_hover']
+widgetlist=[key for key in Widgets]
 
 #Function for changing the values of menu
 def changemenu():
-    if current=='Window':
-        menu.configure(values=list0)
-        menu.set(list0[0])
-    elif current=='Frame':
-        menu.configure(values=list1)
-        menu.set(list1[0])
-    elif current=='Button':
-        menu.configure(values=list2)
-        menu.set(list2[0])
-    elif current=='CheckBox':
-        menu.configure(values=list3)
-        menu.set(list3[0])
-    elif current=='Entry':
-        menu.configure(values=list4)
-        menu.set(list4[0])
-    elif current=='Label':
-        menu.configure(values=list5)
-        menu.set(list5[0])
-    elif current=='Text':
-        menu.configure(values=list6)
-        menu.set(list6[0])
-    elif current=='ProgressBar':
-        menu.configure(values=list7)
-        menu.set(list7[0])
-    elif current=='Slider':
-        menu.configure(values=list8)
-        menu.set(list8[0])
-    elif current=='Switch':
-        menu.configure(values=list9)
-        menu.set(list9[0])
-    elif current=='Menu + Dropdown':
-        menu.configure(values=list10)
-        menu.set(list10[0])
-    elif current=='Scrollbar':
-        menu.configure(values=list11)
-        menu.set(list11[0])
-        
+    global current
+    menu.configure(values=Widgets[current])
+    menu.set(Widgets[current][0])
 def ChangeModeRight():
     global current
-    Widgets.append(Widgets.pop(0))
-    current=Widgets[0]
+    widgetlist.append(widgetlist.pop(0))
+    current=widgetlist[0]
     widget_type.configure(text=current)
     changemenu()
 def ChangeModeLeft():
     global current
-    Widgets.insert(0, Widgets.pop())
-    current=Widgets[0]
+    widgetlist.insert(0, widgetlist.pop())
+    current=widgetlist[0]
     widget_type.configure(text=current)
     changemenu()
-    
-current=Widgets[0]
+
+current=widgetlist[0]
 
 def update(value):
     for i in json_data["color"]:
         if i==menu.get():
-            if (json_data["color"][i])[0]!=null:
+            if (json_data["color"][i])[0]!=None:
                 button_light.configure(fg_color=(json_data["color"][i])[0])
             else:
                 button_light.configure(fg_color=None)
-            if (json_data["color"][i])[1]!=null:    
+            if (json_data["color"][i])[1]!=None:    
                 button_dark.configure(fg_color=(json_data["color"][i])[1])
             else:
                 button_dark.configure(fg_color=None)
                 
-#Porgram widgets
-frame_info = customtkinter.CTkFrame(master=self, width=350, height=60)
+#Program widgets
+frame_info = customtkinter.CTkFrame(master=root_tk, width=350, height=60)
 frame_info.place(x=20,y=20)
 
 widget_type = customtkinter.CTkLabel(master=frame_info,text=current, corner_radius=10, width=200, height=23,
@@ -199,9 +160,9 @@ right_button = customtkinter.CTkButton(master=frame_info, text="-->", width=20, 
                                        fg_color=("white", "gray38"), command=ChangeModeRight)
 right_button.place(x=290,y=20)
 
-menu=customtkinter.CTkOptionMenu(master=self,width=350,fg_color=("white", "gray38"), button_color=("white", "gray38"),
+menu=customtkinter.CTkOptionMenu(master=root_tk,width=350,fg_color=("white", "gray38"), button_color=("white", "gray38"),
                                  button_hover_color=None,
-                                 height=30, values=list0, command=update)
+                                 height=30, values=list(Widgets.items())[0][1],command=update)
 menu.place(x=20,y=100)
 
 #Color chooser
@@ -220,17 +181,17 @@ def changecolor2():
             if i==menu.get():
                 (json_data["color"][i])[1]=color2
                 
-button_light = customtkinter.CTkButton(master=self, height=100, width=170, corner_radius=10, border_color="white",
+button_light = customtkinter.CTkButton(master=root_tk, height=100, width=170, corner_radius=10, border_color="white",
                                        fg_color=None, border_width=2, text="Light", hover_color=None, command=changecolor)
 button_light.place(x=20,y=150)
 
-button_dark = customtkinter.CTkButton(master=self, height=100, width=170, corner_radius=10, border_color="white",
+button_dark = customtkinter.CTkButton(master=root_tk, height=100, width=170, corner_radius=10, border_color="white",
                                        fg_color=None, border_width=2, text="Dark", hover_color=None, command=changecolor2)
 button_dark.place(x=200,y=150)
 
-#Export the json file
-def savethis():
-    dialog=customtkinter.CTkInputDialog(master=self, text="Enter your theme name:", title="Save Theme")
+#Export json file
+def save():
+    dialog=customtkinter.CTkInputDialog(master=root_tk, text="Enter your theme name:", title="Save Theme")
     try:
         themename=dialog.get_input()+".json"
         outfile=open(themename,"w")
@@ -241,7 +202,7 @@ def savethis():
         pass
 
 #Load external json file  
-def loadthis():
+def load():
     global json_data
     openjson=tkinter.filedialog.askopenfilename(filetypes =[('json', ['*.json']),('All Files', '*.*')])
     if openjson:
@@ -250,22 +211,22 @@ def loadthis():
         f.close()
     update(menu.get())
 
-#Reset current colors to null
-def resetthis():
+#Reset current colors to None
+def reset():
     for i in json_data["color"]:
         if i==menu.get():
-            json_data["color"][i][0]=null
+            json_data["color"][i][0]=None
             button_light.configure(fg_color=None)
-            json_data["color"][i][1]=null
+            json_data["color"][i][1]=None
             button_dark.configure(fg_color=None)
             
-button_load= customtkinter.CTkButton(master=self, height=40, width=110, text="Load Theme",  command=loadthis)
+button_load= customtkinter.CTkButton(master=root_tk, height=40, width=110, text="Load Theme",  command=load)
 button_load.place(x=20,y=280)
 
-button_export = customtkinter.CTkButton(master=self, height=40, width=110, text="Export Theme",  command=savethis)
+button_export = customtkinter.CTkButton(master=root_tk, height=40, width=110, text="Export Theme",  command=save)
 button_export.place(x=140,y=280)
 
-button_reset=customtkinter.CTkButton(master=self, height=40, width=110, text="Reset",  command=resetthis)
+button_reset=customtkinter.CTkButton(master=root_tk, height=40, width=110, text="Reset",  command=reset)
 button_reset.place(x=260,y=280)
 
-self.mainloop()
+root_tk.mainloop()
