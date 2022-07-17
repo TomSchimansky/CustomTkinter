@@ -143,6 +143,7 @@ class CTk(tkinter.Tk):
     def apply_geometry_scaling(self, geometry_string):
         value_list = re.split(r"[x+-]", geometry_string)
         separator_list = re.split(r"\d+", geometry_string)
+        print(separator_list)
 
         if len(value_list) == 2:
             scaled_width = str(round(int(value_list[0]) * self.window_scaling))
@@ -151,7 +152,7 @@ class CTk(tkinter.Tk):
         elif len(value_list) == 4:
             scaled_width = str(round(int(value_list[0]) * self.window_scaling))
             scaled_height = str(round(int(value_list[1]) * self.window_scaling))
-            return f"{scaled_width}x{scaled_height}{separator_list[1]}{value_list[2]}{separator_list[2]}{value_list[3]}"
+            return f"{scaled_width}x{scaled_height}{separator_list[2]}{value_list[2]}{separator_list[3]}{value_list[3]}"
 
     def reverse_geometry_scaling(self, scaled_geometry_string):
         value_list = re.split(r"[x+-]", scaled_geometry_string)
@@ -164,7 +165,7 @@ class CTk(tkinter.Tk):
         elif len(value_list) == 4:
             width = str(round(int(value_list[0]) / self.window_scaling))
             height = str(round(int(value_list[1]) / self.window_scaling))
-            return f"{width}x{height}{separator_list[1]}{value_list[2]}{separator_list[2]}{value_list[3]}"
+            return f"{width}x{height}{separator_list[2]}{value_list[2]}{separator_list[3]}{value_list[3]}"
 
     def apply_window_scaling(self, value):
         if isinstance(value, (int, float)):
