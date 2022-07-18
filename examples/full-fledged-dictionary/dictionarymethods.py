@@ -1,4 +1,3 @@
-from typing import Type
 import requests
 import json
 from googletrans import Translator, LANGUAGES
