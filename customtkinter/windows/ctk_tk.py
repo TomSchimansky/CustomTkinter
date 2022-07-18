@@ -143,7 +143,6 @@ class CTk(tkinter.Tk):
     def apply_geometry_scaling(self, geometry_string):
         value_list = re.split(r"[x+-]", geometry_string)
         separator_list = re.split(r"\d+", geometry_string)
-        print(separator_list)
 
         if len(value_list) == 2:
             scaled_width = str(round(int(value_list[0]) * self.window_scaling))
