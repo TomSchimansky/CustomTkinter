@@ -199,17 +199,21 @@ def save():
         outfile.close()
         tkinter.messagebox.showinfo("Exported!","Theme exported successfully!")
     except:
-        pass
-
-#Load external json file  
+        if dialog.get_input()!=None:
+            tkinter.messagebox.showerror("Error!","Something went wrong!")
+            
+#Load external json file
 def load():
     global json_data
     openjson=tkinter.filedialog.askopenfilename(filetypes =[('json', ['*.json']),('All Files', '*.*')])
-    if openjson:
-        f=open(openjson)
-        json_data=json.load(f)
-        f.close()
-    update(menu.get())
+    try:
+        if openjson:
+            f=open(openjson)
+            json_data=json.load(f)
+            f.close()
+        update(menu.get())
+    except:
+        tkinter.messagebox.showerror("Error!","Unable to import theme!")
 
 #Reset current colors to None
 def reset():
