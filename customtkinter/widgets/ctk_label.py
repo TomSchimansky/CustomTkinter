@@ -119,7 +119,8 @@ class CTkLabel(CTkBaseClass):
                                  sticky=text_label_grid_sticky)
 
         if "text" in kwargs:
-            self.set_text(kwargs["text"])
+            self.text = kwargs["text"]
+            self.text_label.configure(text=self.text)
             del kwargs["text"]
 
         if "fg_color" in kwargs:
@@ -148,5 +149,7 @@ class CTkLabel(CTkBaseClass):
         self.text_label.configure(**kwargs)  # pass remaining kwargs to label
 
     def set_text(self, text):
+        """ Will be removed in the next major release """
+
         self.text = text
-        self.text_label.configure(text=self.text, width=len(self.text))
+        self.text_label.configure(text=self.text)
