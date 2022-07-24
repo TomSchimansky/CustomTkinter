@@ -231,20 +231,20 @@ class App(customtkinter.CTk):
 
     #Function for exporting the theme file         
     def save(self):
-        dialog=customtkinter.CTkInputDialog(title="Save Theme", text="Enter your theme name:")
+        save_file=tkinter.filedialog.asksaveasfilename(initialfile="Untitled.json", filetypes=[('json', ['*.json']),('All Files', '*.*')])
         try:
-            theme_name=dialog.get_input()+".json"
-            outfile=open(theme_name,"w")
-            json.dump(self.json_data, outfile, indent=2)
-            outfile.close()
-            tkinter.messagebox.showinfo("Exported!","Theme saved successfully!")
+            if save_file:
+                outfile=open(save_file,"w")
+                json.dump(self.json_data, outfile, indent=2)
+                outfile.close()
+                tkinter.messagebox.showinfo("Exported!","Theme saved successfully!")
         except:
             tkinter.messagebox.showerror("Error!","Something went wrong!")
             
     #Function for loading the theme file            
     def load(self):
         global json_data
-        open_json=tkinter.filedialog.askopenfilename(filetypes =[('json', ['*.json']),('All Files', '*.*')])
+        open_json=tkinter.filedialog.askopenfilename(filetypes=[('json', ['*.json']),('All Files', '*.*')])
         try:
             if open_json:
                 f=open(open_json)
