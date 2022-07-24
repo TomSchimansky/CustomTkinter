@@ -231,7 +231,7 @@ class App(customtkinter.CTk):
 
     #Function for exporting the theme file         
     def save(self):
-        save_file=tkinter.filedialog.asksaveasfilename(initialfile="Untitled.json", filetypes=[('json', ['*.json']),('All Files', '*.*')])
+        save_file=tkinter.filedialog.asksaveasfilename(initialfile="Untitled.json", filetypes=[('json', ['*.json']),('All Files', '*.*')], defaultextension=".json")
         try:
             if save_file:
                 outfile=open(save_file,"w")
