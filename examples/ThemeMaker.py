@@ -186,7 +186,7 @@ class App(customtkinter.CTk):
     #Function for changing current widget type wih right button
     def change_mode_right(self):
         self.widgetlist.append(self.widgetlist.pop(0))
-        self.current = App.widgetlist[0]
+        self.current = self.widgetlist[0]
         self.widget_type.configure(text=self.current)
         self.menu.configure(values=self.widgets[self.current])
         self.menu.set(self.widgets[self.current][0])
