@@ -252,6 +252,10 @@ class CTkButton(CTkBaseClass):
             self.image = kwargs.pop("image")
             require_redraw = True
 
+        if "corner_radius" in kwargs:
+            self.corner_radius = kwargs.pop("corner_radius")
+            require_redraw = True
+
         if "compound" in kwargs:
             self.compound = kwargs.pop("compound")
             require_redraw = True

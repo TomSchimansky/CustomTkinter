@@ -118,6 +118,7 @@ class CTkCheckBox(CTkBaseClass):
         self.grid_columnconfigure(1, weight=0, minsize=self.apply_widget_scaling(6))
         self.text_label.configure(font=self.apply_font_scaling(self.text_font))
 
+        self.canvas.delete("checkmark")
         self.bg_canvas.configure(width=self.apply_widget_scaling(self._desired_width), height=self.apply_widget_scaling(self._desired_height))
         self.canvas.configure(width=self.apply_widget_scaling(self._desired_width), height=self.apply_widget_scaling(self._desired_height))
         self.draw()

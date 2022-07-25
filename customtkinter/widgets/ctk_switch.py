@@ -104,12 +104,12 @@ class CTkSwitch(CTkBaseClass):
         self.text_label.bind("<Leave>", self.on_leave)
         self.text_label.bind("<Button-1>", self.toggle)
 
-        self.draw()  # initial draw
-        self.set_cursor()
-
         if self.variable is not None and self.variable != "":
             self.variable_callback_name = self.variable.trace_add("write", self.variable_callback)
             self.check_state = True if self.variable.get() == self.onvalue else False
+
+        self.draw()  # initial draw
+        self.set_cursor()
 
     def set_scaling(self, *args, **kwargs):
         super().set_scaling(*args, **kwargs)
@@ -209,13 +209,13 @@ class CTkSwitch(CTkBaseClass):
 
             self.draw(no_color_updates=True)
 
-            if self.command is not None:
-                self.command()
-
             if self.variable is not None:
                 self.variable_callback_blocked = True
                 self.variable.set(self.onvalue if self.check_state is True else self.offvalue)
                 self.variable_callback_blocked = False
+
+            if self.command is not None:
+                self.command()
 
     def select(self, from_variable_callback=False):
         if self.state is not tkinter.DISABLED or from_variable_callback:

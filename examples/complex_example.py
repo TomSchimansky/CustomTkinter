@@ -90,6 +90,7 @@ class App(customtkinter.CTk):
                                                         "amet consetetur sadipscing elitr,\n" +
                                                         "sed diam nonumy eirmod tempor" ,
                                                    height=100,
+                                                   corner_radius=6,  # <- custom corner radius
                                                    fg_color=("white", "gray38"),  # <- custom tuple-color
                                                    justify=tkinter.LEFT)
         self.label_info_1.grid(column=0, row=0, sticky="nwe", padx=15, pady=15)
