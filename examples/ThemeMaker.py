@@ -19,6 +19,7 @@ A customtkinter theme has one dark and one light color attribute for each widget
 Currently it is not possible to switch between themes, so only appearance_mode can be changed.
 
 Default color is null/None which has no color, leaving a widget with null value will give you a blank widget.
+But it's also recommened to leave the label color as None.
 
 Note that some parameters are interlinked like the main entry color and combobox's entry color (which is not directly available in the contents).
 
@@ -29,7 +30,7 @@ class App(customtkinter.CTk):
     
     #--------------------Main Structure of the Theme File--------------------#
     
-    json_data={
+    json_data = {
         "color": {
             'window_bg_color': [None, None],
             'frame_border': [None, None],
@@ -111,7 +112,7 @@ class App(customtkinter.CTk):
 
     #--------------------Widget Type and Content--------------------#
     
-    widgets={'Window':['window_bg_color'],
+    widgets = {'Window':['window_bg_color'],
              'Frame':['frame_border', 'frame_low', 'frame_high'],
              'Button':['button','button_hover','button_border'],
              'CheckBox':['checkbox_border','checkmark'],
@@ -124,8 +125,8 @@ class App(customtkinter.CTk):
                                 'combobox_button_hover','dropdown_color','dropdown_hover','dropdown_text'],
              'Scrollbar':['scrollbar_button','scrollbar_button_hover']}
 
-    widgetlist=[key for key in widgets] #This is a dynamic list of all the widget type
-    current=widgetlist[0] #This is the current widget type selected
+    widgetlist = [key for key in widgets] #This is a dynamic list of all the widget type
+    current = widgetlist[0] #This is the current widget type selected
 
 
     def __init__(self):
@@ -163,17 +164,17 @@ class App(customtkinter.CTk):
         self.button_light = customtkinter.CTkButton(master=self.main, height=100, width=200, corner_radius=10, border_color="white",
                                         fg_color=None, border_width=2, text="Light", hover_color=None, command=self.change_color_light)
         self.button_light.grid(row=2, column=0, sticky="nswe", columnspan=3, padx=(20,5), pady=20)
-
+    
         self.button_dark = customtkinter.CTkButton(master=self.main, height=100, width=200, corner_radius=10, border_color="white",
                                         fg_color=None, border_width=2, text="Dark", hover_color=None, command=self.change_color_dark)
         self.button_dark.grid(row=2, column=3, sticky="nswe", columnspan=3, padx=(5,20), pady=20)
-        
+
         self.button_load = customtkinter.CTkButton(master=self.main, height=40, width=110, text="Load Theme", command=self.load)
         self.button_load.grid(row=3, column=0,  columnspan=2, sticky="nswe", padx=(20,5), pady=(0,20))
 
         self.button_export = customtkinter.CTkButton(master=self.main, height=40, width=110, text="Save Theme", command=self.save)
         self.button_export.grid(row=3, column=2,  columnspan=2, sticky="nswe", padx=(5,5), pady=(0,20))
-
+    
         self.button_reset = customtkinter.CTkButton(master=self.main, height=40, width=110, text="Reset", command=self.reset)
         self.button_reset.grid(row=3, column=4,  columnspan=2, sticky="nswe", padx=(5,20), pady=(0,20))
         
@@ -185,7 +186,7 @@ class App(customtkinter.CTk):
     #Function for changing current widget type wih right button
     def change_mode_right(self):
         self.widgetlist.append(self.widgetlist.pop(0))
-        self.current=App.widgetlist[0]
+        self.current = App.widgetlist[0]
         self.widget_type.configure(text=self.current)
         self.menu.configure(values=self.widgets[self.current])
         self.menu.set(self.widgets[self.current][0])
@@ -193,7 +194,7 @@ class App(customtkinter.CTk):
     #Function for changing current widget type with left button  
     def change_mode_left(self):
         self.widgetlist.insert(0, self.widgetlist.pop())
-        self.current=self.widgetlist[0]
+        self.current = self.widgetlist[0]
         self.widget_type.configure(text=self.current)
         self.menu.configure(values=self.widgets[self.current])
         self.menu.set(self.widgets[self.current][0])
@@ -202,41 +203,41 @@ class App(customtkinter.CTk):
     def update(self, value):
         for i in self.json_data["color"]:
             if i==self.menu.get():
-                if (self.json_data["color"][i])[0]!=None:
+                if (self.json_data["color"][i])[0] is not None:
                     self.button_light.configure(fg_color=(self.json_data["color"][i])[0])
                 else:
                     self.button_light.configure(fg_color=None)
-                if (self.json_data["color"][i])[1]!=None:    
+                if (self.json_data["color"][i])[1] is not None:    
                     self.button_dark.configure(fg_color=(self.json_data["color"][i])[1])
                 else:
                     self.button_dark.configure(fg_color=None)
                     
     #Function for choosing the color for Light mode of the theme
     def change_color_light(self):
-        color1=askcolor(title="Choose color for "+self.menu.get()+" (Light)")[1]
-        if color1!=None:
+        color1 = askcolor(title="Choose color for "+self.menu.get()+" (Light)", initialcolor=self.button_light.fg_color)[1]
+        if color1 is not None:
             self.button_light.configure(fg_color=color1)
             for i in self.json_data["color"]:
                 if i==self.menu.get():
-                    (self.json_data["color"][i])[0]=color1
+                    (self.json_data["color"][i])[0] = color1
                     
     #Function for choosing the color for Dark mode of the theme                
     def change_color_dark(self):
-        color2=askcolor(title="Choose color for "+self.menu.get()+" (Dark)")[1]
-        if color2!=None:
+        color2 = askcolor(title="Choose color for "+self.menu.get()+" (Dark)", initialcolor=self.button_dark.fg_color)[1]
+        if color2 is not None:
             self.button_dark.configure(fg_color=color2)
             for i in self.json_data["color"]:
                 if i==self.menu.get():
-                    (self.json_data["color"][i])[1]=color2
+                    (self.json_data["color"][i])[1] = color2
 
     #Function for exporting the theme file         
     def save(self):
-        save_file=tkinter.filedialog.asksaveasfilename(initialfile="Untitled.json", filetypes=[('json', ['*.json']),('All Files', '*.*')], defaultextension=".json")
+        save_file = tkinter.filedialog.asksaveasfilename(initialfile="Untitled.json", filetypes=[('json', ['*.json']),('All Files', '*.*')], defaultextension=".json")
         try:
             if save_file:
-                outfile=open(save_file,"w")
-                json.dump(self.json_data, outfile, indent=2)
-                outfile.close()
+                with open(save_file, "w") as f:
+                    json.dump(self.json_data, f, indent=2)
+                    f.close()
                 tkinter.messagebox.showinfo("Exported!","Theme saved successfully!")
         except:
             tkinter.messagebox.showerror("Error!","Something went wrong!")
@@ -244,12 +245,12 @@ class App(customtkinter.CTk):
     #Function for loading the theme file            
     def load(self):
         global json_data
-        open_json=tkinter.filedialog.askopenfilename(filetypes=[('json', ['*.json']),('All Files', '*.*')])
+        open_json = tkinter.filedialog.askopenfilename(filetypes=[('json', ['*.json']),('All Files', '*.*')])
         try:
             if open_json:
-                f=open(open_json)
-                self.json_data=json.load(f)
-                f.close()
+                with open(open_json) as f:
+                    self.json_data = json.load(f)
+                    f.close()
             self.update(self.menu.get())
         except:
             tkinter.messagebox.showerror("Error!","Unable to load the theme file!")
@@ -258,9 +259,9 @@ class App(customtkinter.CTk):
     def reset(self):
         for i in self.json_data["color"]:
             if i==self.menu.get():
-                self.json_data["color"][i][0]=None
+                self.json_data["color"][i][0] = None
                 self.button_light.configure(fg_color=None)
-                self.json_data["color"][i][1]=None
+                self.json_data["color"][i][1] = None
                 self.button_dark.configure(fg_color=None)
             
 
