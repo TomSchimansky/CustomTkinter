@@ -49,7 +49,7 @@ class CTkCanvas(tkinter.Canvas):
         else:
             return self.radius_to_char_fine[radius]
 
-    def create_aa_circle(self, x_pos: int, y_pos: int, radius: int, angle: int = 0, fill: str = "white",
+    def create_aa_circle(self, x_pos: int, y_pos: int, radius: int, angle: int = 0, fill: str = "",
                          tags: Union[str, Tuple[str, ...]] = "", anchor: str = tkinter.CENTER) -> int:
         # create a circle with a font element
         circle_1 = self.create_text(x_pos, y_pos, text=self.get_char_from_radius(radius), anchor=anchor, fill=fill,
