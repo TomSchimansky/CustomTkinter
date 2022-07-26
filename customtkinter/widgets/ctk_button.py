@@ -1,6 +1,6 @@
 import tkinter
 import sys
-from typing import Union, Tuple, Callable, Literal
+from typing import Union, Tuple, Callable
 
 from .ctk_canvas import CTkCanvas
 from ..theme_manager import ThemeManager
@@ -250,7 +250,11 @@ class CTkButton(CTkBaseClass):
 
         if "image" in kwargs:
             self.image = kwargs.pop("image")
-            self.set_image(self.image)
+            require_redraw = True
+
+        if "corner_radius" in kwargs:
+            self.corner_radius = kwargs.pop("corner_radius")
+            require_redraw = True
 
         if "compound" in kwargs:
             self.compound = kwargs.pop("compound")
