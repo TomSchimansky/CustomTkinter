@@ -153,6 +153,9 @@ class CTkTextbox(CTkBaseClass):
         if "border_width" in kwargs:
             self.border_width = kwargs.pop("border_width")
             require_redraw = True
+            
+        if 'state' in kwargs:
+            self.textbox.config(state=kwargs.pop('state'))
 
         if "width" in kwargs:
             self.set_dimensions(width=kwargs.pop("width"))
