@@ -3,7 +3,6 @@
     "window_bg_color": ["#ebf0f5", "#181b28"],
     "button": ["#e46bff", "#212435"],
     "button_hover": ["#8593d6", "#171926"],
-    "button_active": ["#9b45ff", "#9b45ff"],
     "button_border": ["#525983", "#080b12"],
     "checkbox_border": ["#01e9c4", "#01e9c4"],
     "checkmark": ["#01e9c4", "#01e9c4"],
@@ -73,6 +72,8 @@
     "switch_border_width": 3,
     "switch_corner_radius": 1000,
     "switch_button_corner_radius": 1000,
-    "switch_button_length": 2
+    "switch_button_length": 2,
+    "scrollbar_corner_radius": 1000,
+    "scrollbar_border_spacing": 4
   }
 }
