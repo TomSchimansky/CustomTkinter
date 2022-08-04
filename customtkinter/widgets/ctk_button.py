@@ -14,6 +14,7 @@ class CTkButton(CTkBaseClass):
 
     def __init__(self, *args,
                  bg_color: Union[str, Tuple[str, str], None] = None,
+                 bg_active: Union[str, Tuple[str, str], None] = None,
                  fg_color: Union[str, Tuple[str, str], None] = "default_theme",
                  hover_color: Union[str, Tuple[str, str]] = "default_theme",
                  border_color: Union[str, Tuple[str, str]] = "default_theme",
@@ -40,6 +41,7 @@ class CTkButton(CTkBaseClass):
         self.fg_color = ThemeManager.theme["color"]["button"] if fg_color == "default_theme" else fg_color
         self.hover_color = ThemeManager.theme["color"]["button_hover"] if hover_color == "default_theme" else hover_color
         self.border_color = ThemeManager.theme["color"]["button_border"] if border_color == "default_theme" else border_color
+        self.active_color = ThemeManager.theme["color"]["button_active"] if bg_active == "default_theme" else bg_active
         self.text_color = ThemeManager.theme["color"]["text"] if text_color == "default_theme" else text_color
         self.text_color_disabled = ThemeManager.theme["color"]["text_button_disabled"] if text_color_disabled == "default_theme" else text_color_disabled
 
@@ -90,10 +92,10 @@ class CTkButton(CTkBaseClass):
     def set_scaling(self, *args, **kwargs):
         super().set_scaling(*args, **kwargs)
 
-        if self.text_label is not None:
+        if self.text_label != None:
             self.text_label.destroy()
             self.text_label = None
-        if self.image_label is not None:
+        if self.image_label != None:
             self.image_label.destroy()
             self.image_label = None
 
@@ -134,7 +136,7 @@ class CTkButton(CTkBaseClass):
                                        fill=ThemeManager.single_color(self.fg_color, self._appearance_mode))
 
         # create text label if text given
-        if self.text is not None and self.text != "":
+        if self.text != None and self.text != "":
 
             if self.text_label is None:
                 self.text_label = tkinter.Label(master=self,
@@ -163,12 +165,12 @@ class CTkButton(CTkBaseClass):
 
         else:
             # delete text_label if no text given
-            if self.text_label is not None:
+            if self.text_label != None:
                 self.text_label.destroy()
                 self.text_label = None
 
         # create image label if image given
-        if self.image is not None:
+        if self.image != None:
 
             if self.image_label is None:
                 self.image_label = tkinter.Label(master=self)
@@ -189,23 +191,23 @@ class CTkButton(CTkBaseClass):
 
         else:
             # delete text_label if no text given
-            if self.image_label is not None:
+            if self.image_label != None:
                 self.image_label.destroy()
                 self.image_label = None
 
         # create grid layout with just an image given
-        if self.image_label is not None and self.text_label is None:
+        if self.image_label != None and self.text_label is None:
             self.image_label.grid(row=0, column=0, rowspan=2, columnspan=2, sticky="",
                                   pady=(self.apply_widget_scaling(self.border_width), self.apply_widget_scaling(self.border_width) + 1))  # bottom pady with +1 for rounding to even
 
         # create grid layout with just text given
-        if self.image_label is None and self.text_label is not None:
+        if self.image_label is None and self.text_label != None:
             self.text_label.grid(row=0, column=0, rowspan=2, columnspan=2, sticky="",
                                  padx=self.apply_widget_scaling(self.corner_radius),
                                  pady=(self.apply_widget_scaling(self.border_width), self.apply_widget_scaling(self.border_width) + 1))  # bottom pady with +1 for rounding to even
 
         # create grid layout of image and text label in 2x2 grid system with given compound
-        if self.image_label is not None and self.text_label is not None:
+        if self.image_label != None and self.text_label != None:
             if self.compound == tkinter.LEFT or self.compound == "left":
                 self.image_label.grid(row=0, column=0, sticky="e", rowspan=2, columnspan=1,
                                       padx=(max(self.apply_widget_scaling(self.corner_radius), self.apply_widget_scaling(self.border_width)), 2),
@@ -248,6 +250,14 @@ class CTkButton(CTkBaseClass):
             self.set_cursor()
             require_redraw = True
 
+        if "is_active" in kwargs:
+            if kwargs["is_active"] == True:
+                self.fg_color = self.active_color
+            else:
+                self.fg_color = ThemeManager.theme["color"]["button"]
+            del kwargs["is_active"]
+            require_redraw = True
+
         if "image" in kwargs:
             self.image = kwargs.pop("image")
             require_redraw = True
@@ -281,7 +291,7 @@ class CTkButton(CTkBaseClass):
 
         if "textvariable" in kwargs:
             self.textvariable = kwargs.pop("textvariable")
-            if self.text_label is not None:
+            if self.text_label != None:
                 self.text_label.configure(textvariable=self.textvariable)
 
         if "width" in kwargs:
@@ -295,15 +305,15 @@ class CTkButton(CTkBaseClass):
     def set_cursor(self):
         if Settings.cursor_manipulation_enabled:
             if self.state == tkinter.DISABLED:
-                if sys.platform == "darwin" and self.command is not None and Settings.cursor_manipulation_enabled:
+                if sys.platform == "darwin" and self.command != None and Settings.cursor_manipulation_enabled:
                     self.configure(cursor="arrow")
-                elif sys.platform.startswith("win") and self.command is not None and Settings.cursor_manipulation_enabled:
+                elif sys.platform.startswith("win") and self.command != None and Settings.cursor_manipulation_enabled:
                     self.configure(cursor="arrow")
 
             elif self.state == tkinter.NORMAL:
-                if sys.platform == "darwin" and self.command is not None and Settings.cursor_manipulation_enabled:
+                if sys.platform == "darwin" and self.command != None and Settings.cursor_manipulation_enabled:
                     self.configure(cursor="pointinghand")
-                elif sys.platform.startswith("win") and self.command is not None and Settings.cursor_manipulation_enabled:
+                elif sys.platform.startswith("win") and self.command != None and Settings.cursor_manipulation_enabled:
                     self.configure(cursor="hand2")
 
     def set_image(self, image):
@@ -327,11 +337,11 @@ class CTkButton(CTkBaseClass):
                                    fill=ThemeManager.single_color(inner_parts_color, self._appearance_mode))
 
             # set text_label bg color to button hover color
-            if self.text_label is not None:
+            if self.text_label != None:
                 self.text_label.configure(bg=ThemeManager.single_color(inner_parts_color, self._appearance_mode))
 
             # set image_label bg color to button hover color
-            if self.image_label is not None:
+            if self.image_label != None:
                 self.image_label.configure(bg=ThemeManager.single_color(inner_parts_color, self._appearance_mode))
 
     def on_leave(self, event=None):
@@ -349,11 +359,11 @@ class CTkButton(CTkBaseClass):
                                    fill=ThemeManager.single_color(inner_parts_color, self._appearance_mode))
 
             # set text_label bg color (label color)
-            if self.text_label is not None:
+            if self.text_label != None:
                 self.text_label.configure(bg=ThemeManager.single_color(inner_parts_color, self._appearance_mode))
 
             # set image_label bg color (image bg color)
-            if self.image_label is not None:
+            if self.image_label != None:
                 self.image_label.configure(bg=ThemeManager.single_color(inner_parts_color, self._appearance_mode))
 
     def click_animation(self):
@@ -361,8 +371,8 @@ class CTkButton(CTkBaseClass):
             self.on_enter()
 
     def clicked(self, event=None):
-        if self.command is not None:
-            if self.state is not tkinter.DISABLED:
+        if self.command != None:
+            if self.state != tkinter.DISABLED:
 
                 # click animation: change color with .on_leave() and back to normal after 100ms with click_animation()
                 self.on_leave()
