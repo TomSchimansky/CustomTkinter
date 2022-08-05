@@ -62,16 +62,22 @@ class CTk(tkinter.Tk):
 
         self.bind('<Configure>', self.update_dimensions_event)
 
-    def update_dimensions_event(self, event=None):
-        detected_width = self.winfo_width()  # detect current window size
-        detected_height = self.winfo_height()
+        self.block_update_dimensions_event = False
 
-        if self.current_width != round(detected_width / self.window_scaling) or self.current_height != round(detected_height / self.window_scaling):
-            self.current_width = round(detected_width / self.window_scaling)  # adjust current size according to new size given by event
-            self.current_height = round(detected_height / self.window_scaling)  # _current_width and _current_height are independent of the scale
+    def update_dimensions_event(self, event=None):
+        if not self.block_update_dimensions_event:
+            detected_width = self.winfo_width()  # detect current window size
+            detected_height = self.winfo_height()
+
+            if self.current_width != round(detected_width / self.window_scaling) or self.current_height != round(detected_height / self.window_scaling):
+                self.current_width = round(detected_width / self.window_scaling)  # adjust current size according to new size given by event
+                self.current_height = round(detected_height / self.window_scaling)  # _current_width and _current_height are independent of the scale
 
     def set_scaling(self, new_widget_scaling, new_spacing_scaling, new_window_scaling):
         self.window_scaling = new_window_scaling
+
+        # block update_dimensions_event to prevent current_width and current_height to get updated
+        self.block_update_dimensions_event = True
 
         # force new dimensions on window by using min, max, and geometry
         super().minsize(self.apply_window_scaling(self.current_width), self.apply_window_scaling(self.current_height))
@@ -80,6 +86,11 @@ class CTk(tkinter.Tk):
 
         # set new scaled min and max with 400ms delay (otherwise it won't work for some reason)
         self.after(400, self.set_scaled_min_max)
+
+        # release the blocking of update_dimensions_event after a small amount of time (slight delay is necessary)
+        def set_block_update_dimensions_event_false():
+            self.block_update_dimensions_event = False
+        self.after(100, lambda: set_block_update_dimensions_event_false())
 
     def set_scaled_min_max(self):
         if self.min_width is not None or self.min_height is not None:
@@ -131,6 +142,7 @@ class CTk(tkinter.Tk):
 
     def geometry(self, geometry_string: str = None):
         if geometry_string is not None:
+            print(self.apply_geometry_scaling(geometry_string), geometry_string)
             super().geometry(self.apply_geometry_scaling(geometry_string))
 
             # update width and height attributes
