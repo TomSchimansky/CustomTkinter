@@ -142,7 +142,6 @@ class CTk(tkinter.Tk):
 
     def geometry(self, geometry_string: str = None):
         if geometry_string is not None:
-            print(self.apply_geometry_scaling(geometry_string), geometry_string)
             super().geometry(self.apply_geometry_scaling(geometry_string))
 
             # update width and height attributes
