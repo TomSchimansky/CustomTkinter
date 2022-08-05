@@ -142,41 +142,52 @@ class CTk(tkinter.Tk):
 
     def geometry(self, geometry_string: str = None):
         if geometry_string is not None:
-            print(self.apply_geometry_scaling(geometry_string), geometry_string)
             super().geometry(self.apply_geometry_scaling(geometry_string))
 
             # update width and height attributes
-            numbers = list(map(int, re.split(r"[x+-]", geometry_string)))  # split geometry string into list of numbers
-            self.current_width = max(self.min_width, min(numbers[0], self.max_width))  # bound value between min and max
-            self.current_height = max(self.min_height, min(numbers[1], self.max_height))
+            width, height, x, y = self.parse_geometry_string(geometry_string)
+            if width is not None and height is not None:
+                self.current_width = max(self.min_width, min(width, self.max_width))  # bound value between min and max
+                self.current_height = max(self.min_height, min(height, self.max_height))
         else:
             return self.reverse_geometry_scaling(super().geometry())
 
-    def apply_geometry_scaling(self, geometry_string):
-        value_list = re.split(r"[x+-]", geometry_string)
-        separator_list = re.split(r"\d+", geometry_string)
+    @staticmethod
+    def parse_geometry_string(geometry_string: str) -> tuple:
+        #                 index:   1                   2           3          4             5       6
+        # regex group structure: ('<width>x<height>', '<width>', '<height>', '+-<x>+-<y>', '-<x>', '-<y>')
+        result = re.search(r"((\d+)x(\d+)){0,1}(\+{0,1}([+-]{0,1}\d+)\+{0,1}([+-]{0,1}\d+)){0,1}", geometry_string)
 
-        if len(value_list) == 2:
-            scaled_width = str(round(int(value_list[0]) * self.window_scaling))
-            scaled_height = str(round(int(value_list[1]) * self.window_scaling))
-            return f"{scaled_width}x{scaled_height}"
-        elif len(value_list) == 4:
-            scaled_width = str(round(int(value_list[0]) * self.window_scaling))
-            scaled_height = str(round(int(value_list[1]) * self.window_scaling))
-            return f"{scaled_width}x{scaled_height}{separator_list[2]}{value_list[2]}{separator_list[3]}{value_list[3]}"
+        width = int(result.group(2)) if result.group(2) is not None else None
+        height = int(result.group(3)) if result.group(3) is not None else None
+        x = int(result.group(5)) if result.group(5) is not None else None
+        y = int(result.group(6)) if result.group(6) is not None else None
 
-    def reverse_geometry_scaling(self, scaled_geometry_string):
-        value_list = re.split(r"[x+-]", scaled_geometry_string)
-        separator_list = re.split(r"\d+", scaled_geometry_string)
+        return width, height, x, y
 
-        if len(value_list) == 2:
-            width = str(round(int(value_list[0]) / self.window_scaling))
-            height = str(round(int(value_list[1]) / self.window_scaling))
-            return f"{width}x{height}"
-        elif len(value_list) == 4:
-            width = str(round(int(value_list[0]) / self.window_scaling))
-            height = str(round(int(value_list[1]) / self.window_scaling))
-            return f"{width}x{height}{separator_list[2]}{value_list[2]}{separator_list[3]}{value_list[3]}"
+    def apply_geometry_scaling(self, geometry_string: str) -> str:
+        width, height, x, y = self.parse_geometry_string(geometry_string)
+
+        if x is None and y is None:  # no <x> and <y> in geometry_string
+            return f"{round(width * self.window_scaling)}x{round(height * self.window_scaling)}"
+
+        elif width is None and height is None:  # no <width> and <height> in geometry_string
+            return f"+{x}+{y}"
+
+        else:
+            return f"{round(width * self.window_scaling)}x{round(height * self.window_scaling)}+{x}+{y}"
+
+    def reverse_geometry_scaling(self, scaled_geometry_string: str) -> str:
+        width, height, x, y = self.parse_geometry_string(scaled_geometry_string)
+
+        if x is None and y is None:  # no <x> and <y> in geometry_string
+            return f"{round(width / self.window_scaling)}x{round(height / self.window_scaling)}"
+
+        elif width is None and height is None:  # no <width> and <height> in geometry_string
+            return f"+{x}+{y}"
+
+        else:
+            return f"{round(width / self.window_scaling)}x{round(height / self.window_scaling)}+{x}+{y}"
 
     def apply_window_scaling(self, value):
         if isinstance(value, (int, float)):
