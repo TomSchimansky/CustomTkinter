@@ -371,7 +371,7 @@ class CTkButton(CTkBaseClass):
             self.on_enter()
 
     def clicked(self, event=None):
-        if self.command != None:
+        if self.command is not None:
             if self.state != tkinter.DISABLED:
 
                 # click animation: change color with .on_leave() and back to normal after 100ms with click_animation()
