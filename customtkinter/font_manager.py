@@ -3,6 +3,7 @@ import os
 import shutil
 from typing import Union
 
+linux_font_path = "~/.local/share/fonts/"
 
 class FontManager:
 
@@ -11,8 +12,8 @@ class FontManager:
         # Linux
         if sys.platform.startswith("linux"):
             try:
-                if not os.path.isdir(os.path.expanduser('~/.fonts/')):
-                    os.mkdir(os.path.expanduser('~/.fonts/'))
+                if not os.path.isdir(os.path.expanduser(linux_font_path)):
+                    os.mkdir(os.path.expanduser(linux_font_path))
                 return True
             except Exception as err:
                 sys.stderr.write("FontManager error: " + str(err) + "\n")
@@ -53,7 +54,7 @@ class FontManager:
         # Linux
         elif sys.platform.startswith("linux"):
             try:
-                shutil.copy(font_path, os.path.expanduser("~/.fonts/"))
+                shutil.copy(font_path, os.path.expanduser(linux_font_path))
                 return True
             except Exception as err:
                 sys.stderr.write("FontManager error: " + str(err) + "\n")
