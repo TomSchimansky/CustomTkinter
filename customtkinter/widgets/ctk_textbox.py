@@ -57,6 +57,7 @@ class CTkTextbox(CTkBaseClass):
                                     height=0,
                                     font=self.text_font,
                                     highlightthickness=0,
+                                    relief="flat",
                                     insertbackground=ThemeManager.single_color(("black", "white"), self._appearance_mode),
                                     bg=ThemeManager.single_color(self.fg_color, self._appearance_mode),
                                     **kwargs)

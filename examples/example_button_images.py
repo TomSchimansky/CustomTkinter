@@ -1,6 +1,5 @@
-import tkinter
 import customtkinter
-from PIL import Image, ImageTk  # <- import PIL for the images
+from PIL import Image, ImageTk
 import os
 
 PATH = os.path.dirname(os.path.realpath(__file__))
@@ -8,57 +7,61 @@ PATH = os.path.dirname(os.path.realpath(__file__))
 customtkinter.set_appearance_mode("System")  # Modes: "System" (standard), "Dark", "Light"
 customtkinter.set_default_color_theme("blue")  # Themes: "blue" (standard), "green", "dark-blue"
 
-app = customtkinter.CTk()  # create CTk window like you do with the Tk window (you can also use normal tkinter.Tk window)
-app.geometry("450x260")
-app.title("CustomTkinter example_button_images.py")
+
+class App(customtkinter.CTk):
+    def __init__(self):
+        super().__init__()
+        self.geometry("450x260")
+        self.title("CustomTkinter example_button_images.py")
+
+        self.grid_rowconfigure(0, weight=1)
+        self.grid_columnconfigure(0, weight=1, minsize=200)
+
+        self.frame_1 = customtkinter.CTkFrame(master=self, width=250, height=240, corner_radius=15)
+        self.frame_1.grid(row=0, column=0, padx=20, pady=20, sticky="nsew")
+        self.frame_1.grid_columnconfigure(0, weight=1)
+        self.frame_1.grid_columnconfigure(1, weight=1)
+
+        self.settings_image = self.load_image("/test_images/settings.png", 20)
+        self.bell_image = self.load_image("/test_images/bell.png", 20)
+        self.add_folder_image = self.load_image("/test_images/add-folder.png", 20)
+        self.add_list_image = self.load_image("/test_images/add-folder.png", 20)
+        self.add_user_image = self.load_image("/test_images/add-user.png", 20)
+        self.chat_image = self.load_image("/test_images/chat.png", 20)
+        self.home_image = self.load_image("/test_images/home.png", 20)
+
+        self.button_1 = customtkinter.CTkButton(master=self.frame_1, image=self.add_folder_image, text="Add Folder", height=32,
+                                                compound="right", command=self.button_function)
+        self.button_1.grid(row=1, column=0, columnspan=2, padx=20, pady=(20, 10), sticky="ew")
+
+        self.button_2 = customtkinter.CTkButton(master=self.frame_1, image=self.add_list_image, text="Add Item", height=32,
+                                                compound="right", fg_color="#D35B58", hover_color="#C77C78",
+                                                command=self.button_function)
+        self.button_2.grid(row=2, column=0, columnspan=2, padx=20, pady=10, sticky="ew")
+
+        self.button_3 = customtkinter.CTkButton(master=self.frame_1, image=self.chat_image, text="", width=40, height=40,
+                                                corner_radius=10, fg_color="gray40", hover_color="gray25",
+                                                command=self.button_function)
+        self.button_3.grid(row=3, column=0, columnspan=1, padx=20, pady=10, sticky="w")
+
+        self.button_4 = customtkinter.CTkButton(master=self.frame_1, image=self.home_image, text="", width=40, height=40,
+                                                corner_radius=10, fg_color="gray40", hover_color="gray25",
+                                                command=self.button_function)
+        self.button_4.grid(row=3, column=1, columnspan=1, padx=20, pady=10, sticky="e")
+
+        self.button_5 = customtkinter.CTkButton(master=self, image=self.add_user_image, text="Add User", width=130, height=60, border_width=2,
+                                                corner_radius=10, compound="bottom", border_color="#D35B58", fg_color=("gray84", "gray25"),
+                                                hover_color="#C77C78", command=self.button_function)
+        self.button_5.grid(row=0, column=1, padx=20, pady=20)
+
+    def load_image(self, path, image_size):
+        """ load rectangular image with path relative to PATH """
+        return ImageTk.PhotoImage(Image.open(PATH + path).resize((image_size, image_size)))
+
+    def button_function(self):
+        print("button pressed")
 
 
-def button_function():
-    print("button pressed")
-
-
-# load images as PhotoImage
-image_size = 20
-
-settings_image = ImageTk.PhotoImage(Image.open(PATH + "/test_images/settings.png").resize((image_size, image_size)))
-bell_image = ImageTk.PhotoImage(Image.open(PATH + "/test_images/bell.png").resize((image_size, image_size)))
-
-add_folder_image = ImageTk.PhotoImage(Image.open(PATH + "/test_images/add-folder.png").resize((image_size, image_size), Image.ANTIALIAS))
-add_list_image = ImageTk.PhotoImage(Image.open(PATH + "/test_images/add-list.png").resize((image_size, image_size), Image.ANTIALIAS))
-add_user_image = ImageTk.PhotoImage(Image.open(PATH + "/test_images/add-user.png").resize((image_size, image_size), Image.ANTIALIAS))
-chat_image = ImageTk.PhotoImage(Image.open(PATH + "/test_images/chat.png").resize((image_size, image_size), Image.ANTIALIAS))
-home_image = ImageTk.PhotoImage(Image.open(PATH + "/test_images/home.png").resize((image_size, image_size), Image.ANTIALIAS))
-
-app.grid_rowconfigure(0, weight=1)
-app.grid_columnconfigure(0, weight=1, minsize=200)
-
-frame_1 = customtkinter.CTkFrame(master=app, width=250, height=240, corner_radius=15)
-frame_1.grid(row=0, column=0, padx=20, pady=20, sticky="nsew")
-
-frame_1.grid_columnconfigure(0, weight=1)
-frame_1.grid_columnconfigure(1, weight=1)
-frame_1.grid_rowconfigure(0, minsize=10)  # add empty row for spacing
-
-button_1 = customtkinter.CTkButton(master=frame_1, image=add_folder_image, text="Add Folder", width=190, height=40,
-                                   compound="right", command=button_function)
-button_1.grid(row=1, column=0, columnspan=2, padx=20, pady=10, sticky="ew")
-
-button_2 = customtkinter.CTkButton(master=frame_1, image=add_list_image, text="Add Item", width=190, height=40,
-                                   compound="right", fg_color="#D35B58", hover_color="#C77C78",
-                                   command=button_function)
-button_2.grid(row=2, column=0, columnspan=2, padx=20, pady=10, sticky="ew")
-
-button_3 = customtkinter.CTkButton(master=frame_1, image=chat_image, text="", width=50, height=50,
-                                   corner_radius=10, fg_color="gray40", hover_color="gray25", command=button_function)
-button_3.grid(row=3, column=0, columnspan=1, padx=20, pady=10, sticky="w")
-
-button_4 = customtkinter.CTkButton(master=frame_1, image=home_image, text="", width=50, height=50,
-                                   corner_radius=10, fg_color="gray40", hover_color="gray25", command=button_function)
-button_4.grid(row=3, column=1, columnspan=1, padx=20, pady=10, sticky="e")
-
-button_5 = customtkinter.CTkButton(master=app, image=add_user_image, text="Add User", width=130, height=70, border_width=3,
-                                   corner_radius=10, compound="bottom", border_color="#D35B58", fg_color=("gray84", "gray25"), hover_color="#C77C78",
-                                   command=button_function)
-button_5.grid(row=0, column=1, padx=20, pady=20)
-
-app.mainloop()
+if __name__ == "__main__":
+    app = App()
+    app.mainloop()

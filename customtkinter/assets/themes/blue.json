@@ -20,7 +20,7 @@
     "progressbar_progress": ["#3B8ED0", "#1F6AA5"],
     "progressbar_border": ["gray", "gray"],
     "slider": ["#939BA2", "#4A4D50"],
-    "slider_progress": ["white", "#AAB0B5"],
+    "slider_progress": ["gray40", "#AAB0B5"],
     "slider_button": ["#3B8ED0", "#1F6AA5"],
     "slider_button_hover": ["#36719F", "#144870"],
     "switch": ["#939BA2", "#4A4D50"],
