@@ -20,7 +20,7 @@ class CTkCanvas(tkinter.Canvas):
 
         radius_to_char_fine_windows_10 = {19: 'A', 18: 'A', 17: 'B', 16: 'B', 15: 'B', 14: 'B', 13: 'C', 12: 'C',
                                           11: 'C', 10: 'C',
-                                          9: 'D', 8: 'D', 7: 'D', 6: 'F', 5: 'D', 4: 'G', 3: 'G', 2: 'H', 1: 'H',
+                                          9: 'D', 8: 'D', 7: 'D', 6: 'C', 5: 'D', 4: 'G', 3: 'G', 2: 'H', 1: 'H',
                                           0: 'A'}
 
         radius_to_char_fine_windows_11 = {19: 'A', 18: 'A', 17: 'B', 16: 'B', 15: 'B', 14: 'B', 13: 'C', 12: 'C',
