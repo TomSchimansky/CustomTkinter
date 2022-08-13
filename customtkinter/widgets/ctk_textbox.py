@@ -118,6 +118,12 @@ class CTkTextbox(CTkBaseClass):
     def insert(self, *args, **kwargs):
         return self.textbox.insert(*args, **kwargs)
 
+    def delete(self, *args, **kwargs):
+        return self.textbox.delete(*args, **kwargs)
+
+    def get(self, *args, **kwargs):
+        return self.textbox.get(*args, **kwargs)
+
     def focus(self):
         return self.textbox.focus()
 
