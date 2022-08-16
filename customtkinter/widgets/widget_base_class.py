@@ -153,7 +153,7 @@ class CTkBaseClass(tkinter.Frame):
 
             # if fg_color of master is None, try to retrieve fg_color from master of master
             elif hasattr(master_widget.master, "master"):
-                return self.detect_color_of_master(self.master.master)
+                return self.detect_color_of_master(master_widget.master)
 
         elif isinstance(master_widget, (ttk.Frame, ttk.LabelFrame, ttk.Notebook, ttk.Label)):  # master is ttk widget
             try:

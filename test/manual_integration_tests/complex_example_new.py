@@ -12,7 +12,7 @@ class App(customtkinter.CTk):
         super().__init__()
 
         self.title("CustomTkinter complex_example.py")
-        self.geometry(f"{920}x{500}")
+        self.geometry(f"{920}x{500}-100-100")
         self.protocol("WM_DELETE_WINDOW", self.on_closing)  # call .on_closing() when app gets closed
 
         # configure grid layout (4x4)
