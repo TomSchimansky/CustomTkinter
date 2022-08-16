@@ -161,6 +161,13 @@ class CTkTextbox(CTkBaseClass):
         if "height" in kwargs:
             self.set_dimensions(height=kwargs.pop("height"))
 
+        if "text_font" in kwargs:
+            self.text_font = kwargs.pop("text_font")
+            self.textbox.configure(font=self.apply_font_scaling(self.text_font))
+
+        if "font" in kwargs:
+            raise ValueError("No attribute named font. Use text_font instead of font for CTk widgets")
+
         if "bg_color" in kwargs:
             super().configure(bg_color=kwargs.pop("bg_color"), require_redraw=require_redraw)
         else:

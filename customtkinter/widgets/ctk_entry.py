@@ -185,6 +185,10 @@ class CTkEntry(CTkBaseClass):
             self.textvariable = kwargs.pop("textvariable")
             self.entry.configure(textvariable=self.textvariable)
 
+        if "text_font" in kwargs:
+            self.text_font = kwargs.pop("text_font")
+            self.entry.configure(font=self.apply_font_scaling(self.text_font))
+
         if "show" in kwargs:
             if self.placeholder_text_active:
                 self.pre_placeholder_arguments["show"] = kwargs.pop("show")

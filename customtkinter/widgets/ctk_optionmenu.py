@@ -210,6 +210,10 @@ class CTkOptionMenu(CTkBaseClass):
             self.text_color = kwargs.pop("text_color")
             require_redraw = True
 
+        if "text_font" in kwargs:
+            self.text_font = kwargs.pop("text_font")
+            self.text_label.configure(font=self.apply_font_scaling(self.text_font))
+
         if "command" in kwargs:
             self.command = kwargs.pop("command")
 
@@ -245,7 +249,8 @@ class CTkOptionMenu(CTkBaseClass):
             self.dropdown_menu.configure(text_color=kwargs.pop("dropdown_text_color"))
 
         if "dropdown_text_font" in kwargs:
-            self.dropdown_menu.configure(text_font=kwargs.pop("dropdown_text_font"))
+            self.dropdown_text_font = kwargs.pop("dropdown_text_font")
+            self.dropdown_menu.configure(text_font=self.dropdown_text_font)
 
         if "dynamic_resizing" in kwargs:
             self.dynamic_resizing = kwargs.pop("dynamic_resizing")

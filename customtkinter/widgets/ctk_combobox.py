@@ -203,6 +203,10 @@ class CTkComboBox(CTkBaseClass):
             self.text_color = kwargs.pop("text_color")
             require_redraw = True
 
+        if "text_font" in kwargs:
+            self.text_font = kwargs.pop("text_font")
+            self.entry.configure(font=self.apply_font_scaling(self.text_font))
+
         if "command" in kwargs:
             self.command = kwargs.pop("command")
 
