@@ -47,7 +47,6 @@ class CTkToplevel(tkinter.Toplevel):
         AppearanceModeTracker.add(self.set_appearance_mode, self)
         super().configure(bg=ThemeManager.single_color(self.fg_color, self.appearance_mode))
         super().title("CTkToplevel")
-        # self.geometry(f"{self._current_width}x{self._current_height}")
 
         if sys.platform.startswith("win"):
             if self.appearance_mode == 1:

@@ -52,7 +52,9 @@ class CTk(tkinter.Tk):
         super().title("CTk")
         self.geometry(f"{self.current_width}x{self.current_height}")
 
-        self.window_exists = False  # indicates if the window is already shown through .update or .mainloop
+        self.window_exists = False  # indicates if the window is already shown through update() or mainloop()
+        self.withdraw_called_before_window_exists = False  # indicates if withdraw() was called before window is first shown through update() or mainloop()
+        self.iconify_called_before_window_exists = False  # indicates if iconify() was called before window is first shown through update() or mainloop()
 
         if sys.platform.startswith("win"):
             if self.appearance_mode == 1:
@@ -104,16 +106,30 @@ class CTk(tkinter.Tk):
         self.disable_macos_dark_title_bar()
         super().destroy()
 
+    def withdraw(self):
+        if self.window_exists is False:
+            self.withdraw_called_before_window_exists = True
+        super().withdraw()
+
+    def iconify(self):
+        if self.window_exists is False:
+            self.iconify_called_before_window_exists = True
+        super().iconify()
+
     def update(self):
         if self.window_exists is False:
-            self.deiconify()
             self.window_exists = True
+
+            if not self.withdraw_called_before_window_exists and not self.iconify_called_before_window_exists:
+                self.deiconify()
         super().update()
 
     def mainloop(self, *args, **kwargs):
         if not self.window_exists:
-            self.deiconify()
             self.window_exists = True
+
+            if not self.withdraw_called_before_window_exists and not self.iconify_called_before_window_exists:
+                self.deiconify()
         super().mainloop(*args, **kwargs)
 
     def resizable(self, *args, **kwargs):
