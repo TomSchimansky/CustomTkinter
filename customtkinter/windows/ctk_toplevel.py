@@ -48,6 +48,11 @@ class CTkToplevel(tkinter.Toplevel):
         super().configure(bg=ThemeManager.single_color(self.fg_color, self.appearance_mode))
         super().title("CTkToplevel")
 
+        self.state_before_windows_set_titlebar_color = None
+        self.windows_set_titlebar_color_called = False  # indicates if windows_set_titlebar_color was called, stays True until revert_withdraw_after_windows_set_titlebar_color is called
+        self.withdraw_called_after_windows_set_titlebar_color = False  # indicates if withdraw() was called after windows_set_titlebar_color
+        self.iconify_called_after_windows_set_titlebar_color = False  # indicates if iconify() was called after windows_set_titlebar_color
+
         if sys.platform.startswith("win"):
             if self.appearance_mode == 1:
                 self.windows_set_titlebar_color("dark")
@@ -143,6 +148,16 @@ class CTkToplevel(tkinter.Toplevel):
         self.disable_macos_dark_title_bar()
         super().destroy()
 
+    def withdraw(self):
+        if self.windows_set_titlebar_color_called:
+            self.withdraw_called_after_windows_set_titlebar_color = True
+        super().withdraw()
+
+    def iconify(self):
+        if self.windows_set_titlebar_color_called:
+            self.iconify_called_after_windows_set_titlebar_color = True
+        super().iconify()
+
     def resizable(self, *args, **kwargs):
         super().resizable(*args, **kwargs)
         self.last_resizable_args = (args, kwargs)
@@ -234,6 +249,7 @@ class CTkToplevel(tkinter.Toplevel):
 
         if sys.platform.startswith("win") and not Settings.deactivate_windows_window_header_manipulation:
 
+            self.state_before_windows_set_titlebar_color = self.state()
             super().withdraw()  # hide window so that it can be redrawn after the titlebar change so that the color change is visible
             super().update()
 
@@ -261,7 +277,30 @@ class CTkToplevel(tkinter.Toplevel):
             except Exception as err:
                 print(err)
 
-            self.deiconify()
+            self.windows_set_titlebar_color_called = True
+            self.after(5, self.revert_withdraw_after_windows_set_titlebar_color)
+
+    def revert_withdraw_after_windows_set_titlebar_color(self):
+        """ if in a short time (5ms) after """
+        if self.windows_set_titlebar_color_called:
+
+            if self.withdraw_called_after_windows_set_titlebar_color:
+                pass  # leave it withdrawed
+            elif self.iconify_called_after_windows_set_titlebar_color:
+                super().iconify()
+            else:
+                if self.state_before_windows_set_titlebar_color == "normal":
+                    self.deiconify()
+                elif self.state_before_windows_set_titlebar_color == "iconic":
+                    self.iconify()
+                elif self.state_before_windows_set_titlebar_color == "zoomed":
+                    self.state("zoomed")
+                else:
+                    self.state(self.state_before_windows_set_titlebar_color)  # other states
+
+            self.windows_set_titlebar_color_called = False
+            self.withdraw_called_after_windows_set_titlebar_color = False
+            self.iconify_called_after_windows_set_titlebar_color = False
 
     def set_appearance_mode(self, mode_string):
         if mode_string.lower() == "dark":
