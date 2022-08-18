@@ -121,9 +121,10 @@ class CTk(tkinter.Tk):
         if self.window_exists is False:
             self.window_exists = True
 
-            if not self.withdraw_called_before_window_exists and not self.iconify_called_before_window_exists:
-                # print("window dont exists -> deiconify in update")
-                self.deiconify()
+            if sys.platform.startswith("win"):
+                if not self.withdraw_called_before_window_exists and not self.iconify_called_before_window_exists:
+                    # print("window dont exists -> deiconify in update")
+                    self.deiconify()
 
         super().update()
 
@@ -131,9 +132,10 @@ class CTk(tkinter.Tk):
         if not self.window_exists:
             self.window_exists = True
 
-            if not self.withdraw_called_before_window_exists and not self.iconify_called_before_window_exists:
-                # print("window dont exists -> deiconify in mainloop")
-                self.deiconify()
+            if sys.platform.startswith("win"):
+                if not self.withdraw_called_before_window_exists and not self.iconify_called_before_window_exists:
+                    # print("window dont exists -> deiconify in mainloop")
+                    self.deiconify()
 
         super().mainloop(*args, **kwargs)
 

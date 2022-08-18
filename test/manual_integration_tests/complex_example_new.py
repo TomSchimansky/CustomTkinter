@@ -73,7 +73,6 @@ class App(customtkinter.CTk):
                                                         dynamic_resizing=False,
                                                         values=["Value 1", "Value 2", "Value Long Long Long"])
         self.optionmenu_1.grid(row=0, column=0, padx=20, pady=(20, 10), sticky="ew")
-        self.optionmenu_1.configure(dropdown_text_font=("Times New Roman", 20))
         self.combobox_1 = customtkinter.CTkComboBox(self.optionemnu_combobox_frame,
                                                     values=["Value 1", "Value 2", "Value Long....."])
         self.combobox_1.grid(row=1, column=0, padx=20, pady=(10, 10), sticky="ew")
