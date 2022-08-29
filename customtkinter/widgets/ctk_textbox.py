@@ -20,10 +20,12 @@ class CTkTextbox(CTkBaseClass):
                  **kwargs):
 
         # transfer basic functionality (bg_color, size, _appearance_mode, scaling) to CTkBaseClass
-        if "master" in kwargs:
-            super().__init__(*args, bg_color=bg_color, width=width, height=height, master=kwargs.pop("master"))
-        else:
-            super().__init__(*args, bg_color=bg_color, width=width, height=height)
+        super_kwargs = {}
+        if "master" in kwargs:      
+            super_kwargs['master'] = kwargs.pop("master")
+        if "name" in kwargs:
+            super_kwargs['name'] = kwargs.pop("name")
+        super().__init__(*args, bg_color=bg_color, width=width, height=height,**super_kwargs)
 
         # color
         self.fg_color = ThemeManager.theme["color"]["entry"] if fg_color == "default_theme" else fg_color
