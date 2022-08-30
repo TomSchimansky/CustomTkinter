@@ -4,6 +4,7 @@
 ![Total lines](https://img.shields.io/tokei/lines/github.com/tomschimansky/customtkinter?color=green&label=total%20lines)
 
 # CustomTkinter UI-Library
+![](https://i.imgur.com/waxVImv.png)
 
 ![](documentation_images/Windows_dark.png)
 | _`complex_example.py` on Windows 11 with dark mode and 'dark-blue' theme_
@@ -20,7 +21,7 @@ and the window colors either adapt to the system appearance or the manually set 
 (Windows, macOS). With CustomTkinter you'll get a consistent and modern look across all
 desktop platforms (Windows, macOS, Linux).
 
-
+![](https://i.imgur.com/waxVImv.png)
 ## Installation
 Install the module with pip:
 ```
@@ -63,7 +64,7 @@ can find more example programs and in the [Documentation](https://github.com/Tom
 you can find further information on the appearance mode, the themes and all widgets.
 
 ## More Examples and Showcase
-
+![](https://i.imgur.com/waxVImv.png)
 ### Appearance mode change
 
 On Windows 10/11 you get a dark window header, which changes with set
