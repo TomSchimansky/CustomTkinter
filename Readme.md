@@ -21,8 +21,9 @@ and the window colors either adapt to the system appearance or the manually set 
 (Windows, macOS). With CustomTkinter you'll get a consistent and modern look across all
 desktop platforms (Windows, macOS, Linux).
 
-![](https://i.imgur.com/waxVImv.png)
+
 ## Installation
+![](https://i.imgur.com/waxVImv.png)
 Install the module with pip:
 ```
 pip3 install customtkinter
@@ -31,7 +32,7 @@ pip3 install customtkinter
 (update as often as possible because this library is under active development)
 
 ## Documentation
-
+![](https://i.imgur.com/waxVImv.png)
 A detailed documentation can be found in the Wiki Tab here: **[Documentation](https://github.com/TomSchimansky/CustomTkinter/wiki)**.
 
 ## Example Program
