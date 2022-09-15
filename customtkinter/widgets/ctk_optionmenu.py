@@ -279,7 +279,7 @@ class CTkOptionMenu(CTkBaseClass):
         if not self.variable_callback_blocked:
             self.set(self.variable.get(), from_variable_callback=True)
 
-    def set(self, value: str, from_variable_callback: bool = False):
+    def set(self, value: str, from_variable_callback: bool = False, from_dropdown_menu_callback: bool = False):
         self.current_value = value
 
         self.text_label.configure(text=self.current_value)
@@ -289,7 +289,7 @@ class CTkOptionMenu(CTkBaseClass):
             self.variable.set(self.current_value)
             self.variable_callback_blocked = False
 
-        if not from_variable_callback:
+        if from_dropdown_menu_callback:
             if self.command is not None:
                 self.command(self.current_value)
 

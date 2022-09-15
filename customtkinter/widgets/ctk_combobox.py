@@ -268,7 +268,7 @@ class CTkComboBox(CTkBaseClass):
                                    outline=ThemeManager.single_color(self.button_color, self._appearance_mode),
                                    fill=ThemeManager.single_color(self.button_color, self._appearance_mode))
 
-    def set(self, value: str, from_variable_callback: bool = False):
+    def set(self, value: str, from_variable_callback: bool = False, from_dropdown_menu_callback: bool = False):
         self.current_value = value
 
         if self.state == "readonly":
@@ -280,7 +280,7 @@ class CTkComboBox(CTkBaseClass):
             self.entry.delete(0, tkinter.END)
             self.entry.insert(0, self.current_value)
 
-        if not from_variable_callback:
+        if from_dropdown_menu_callback:
             if self.command is not None:
                 self.command(self.current_value)
 
