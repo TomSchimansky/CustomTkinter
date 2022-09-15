@@ -33,8 +33,8 @@ pip3 install customtkinter
 
 The **official** documentation can be found in the Wiki Tab here:
 
-**--> [Documentation](https://github.com/TomSchimansky/CustomTkinter/wiki)**.
-##
+###**--> [Documentation](https://github.com/TomSchimansky/CustomTkinter/wiki)**.
+
 
 ## Example Program
 To test customtkinter you can try this simple example with only a single button:
