@@ -7,9 +7,6 @@ customtkinter.set_appearance_mode("dark")
 app = customtkinter.CTk()
 app.geometry("400x240")
 
-app.withdraw()
-app.after(2000, app.deiconify)
-
 
 def change_appearance_mode():
     # test appearance mode change while withdrawn
