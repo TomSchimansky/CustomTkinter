@@ -87,7 +87,7 @@ class App(customtkinter.CTk):
         self.checkbox_1.grid(row=1, column=0, pady=(20, 10), padx=20, sticky="n")
         self.checkbox_2 = customtkinter.CTkCheckBox(master=self.checkbox_slider_frame)
         self.checkbox_2.grid(row=2, column=0, pady=10, padx=20, sticky="n")
-        self.switch_1 = customtkinter.CTkSwitch(master=self.checkbox_slider_frame)
+        self.switch_1 = customtkinter.CTkSwitch(master=self.checkbox_slider_frame, command=lambda: print("switch 1 toggle"))
         self.switch_1.grid(row=3, column=0, pady=10, padx=20, sticky="n")
         self.switch_2 = customtkinter.CTkSwitch(master=self.checkbox_slider_frame)
         self.switch_2.grid(row=4, column=0, pady=(10, 20), padx=20, sticky="n")

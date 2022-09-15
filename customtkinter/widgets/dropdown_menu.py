@@ -96,7 +96,7 @@ class DropdownMenu(tkinter.Menu):
 
     def button_callback(self, value):
         if self.command is not None:
-            self.command(value, from_dropdown_menu_callback=True)
+            self.command(value)
 
     def configure(self, **kwargs):
         if "values" in kwargs:
