@@ -6,7 +6,7 @@ from typing import Union
 
 class FontManager:
 
-    linux_font_path = "~/.local/share/fonts/"
+    linux_font_path = "~/.fonts/"
 
     @classmethod
     def init_font_manager(cls):
