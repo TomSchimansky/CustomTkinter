@@ -22,6 +22,8 @@ class CTkProgressBar(CTkBaseClass):
                  border_width="default_theme",
                  orient="horizontal",
                  mode="determinate",
+                 determinate_speed=1,
+                 indeterminate_speed=1,
                  **kwargs):
 
         # set default dimensions according to orientation
@@ -53,10 +55,10 @@ class CTkProgressBar(CTkBaseClass):
         self.corner_radius = ThemeManager.theme["shape"]["progressbar_corner_radius"] if corner_radius == "default_theme" else corner_radius
         self.border_width = ThemeManager.theme["shape"]["progressbar_border_width"] if border_width == "default_theme" else border_width
         self.determinate_value = 0.5  # range 0-1
-        self.determinate_speed = 1  # range 0-1
-        self.indeterminate_value = 2  # range 0-1
+        self.determinate_speed = determinate_speed  # range 0-1
+        self.indeterminate_value = 0  # range 0-inf
         self.indeterminate_width = 0.4  # range 0-1
-        self.indeterminate_speed = 1  # range 0-1 to travel in 50ms
+        self.indeterminate_speed = indeterminate_speed  # range 0-1 to travel in 50ms
         self.loop_running = False
         self.orient = orient
         self.mode = mode  # "determinate" or "indeterminate"
@@ -180,6 +182,12 @@ class CTkProgressBar(CTkBaseClass):
         if "mode" in kwargs:
             self.mode = kwargs.pop("mode")
             require_redraw = True
+
+        if "determinate_speed" in kwargs:
+            self.determinate_speed = kwargs.pop("determinate_speed")
+
+        if "indeterminate_speed" in kwargs:
+            self.indeterminate_speed = kwargs.pop("indeterminate_speed")
 
         if "width" in kwargs:
             self.set_dimensions(width=kwargs["width"])
