@@ -751,7 +751,7 @@ class DrawEngine:
         # horizontal orientation from the bottom
         if orientation == "w":
             requires_recoloring_2 = self.__draw_rounded_rect_with_border_font_shapes(width, height, corner_radius, border_width, inner_corner_radius,
-                                                                                     ("inner_oval_1", "inner_oval_4"))
+                                                                                     ())
 
             # set positions of progress corner parts
             self._canvas.coords("progress_oval_1_a", border_width + inner_corner_radius + (width - 2 * border_width - 2 * inner_corner_radius) * progress_value_1,
@@ -786,7 +786,7 @@ class DrawEngine:
         # vertical orientation from the bottom
         if orientation == "s":
             requires_recoloring_2 = self.__draw_rounded_rect_with_border_font_shapes(width, height, corner_radius, border_width, inner_corner_radius,
-                                                                                     ("inner_oval_3", "inner_oval_4"))
+                                                                                     ())
 
             # set positions of progress corner parts
             self._canvas.coords("progress_oval_1_a", border_width + inner_corner_radius,
