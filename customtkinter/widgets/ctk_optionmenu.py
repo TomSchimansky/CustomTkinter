@@ -226,7 +226,8 @@ class CTkOptionMenu(CTkBaseClass):
 
             if self.variable is not None and self.variable != "":
                 self.variable_callback_name = self.variable.trace_add("write", self.variable_callback)
-                self.set(self.variable.get(), block_set_variable=True)
+                self.current_value = self.variable.get()
+                self.text_label.configure(text=self.current_value)
             else:
                 self.variable = None
 

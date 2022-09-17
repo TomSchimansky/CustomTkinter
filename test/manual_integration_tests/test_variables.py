@@ -78,8 +78,9 @@ switch_2 = customtkinter.CTkSwitch(master=app, variable=s_var, textvariable=s_va
 switch_2.pack(pady=20, padx=10)
 
 optionmenu_var = tkinter.StringVar(value="test")
-optionmenu_1 = customtkinter.CTkOptionMenu(master=app, variable=optionmenu_var, values=["Option 1", "Option 2", "Option 3"])
+optionmenu_1 = customtkinter.CTkOptionMenu(master=app, variable=None, values=["Option 1", "Option 2", "Option 3"])
 optionmenu_1.pack(pady=20, padx=10)
+optionmenu_1.configure(variable=optionmenu_var)
 combobox_1 = customtkinter.CTkComboBox(master=app, values=["Option 1", "Option 2", "Option 3"])
 combobox_1.pack(pady=20, padx=10)
 combobox_1.configure(variable=optionmenu_var)
