@@ -164,9 +164,9 @@ class CTkToplevel(tkinter.Toplevel):
 
         if sys.platform.startswith("win"):
             if self.appearance_mode == 1:
-                self.windows_set_titlebar_color("dark")
+                self.after(10, lambda: self.windows_set_titlebar_color("dark"))
             else:
-                self.windows_set_titlebar_color("light")
+                self.after(10, lambda: self.windows_set_titlebar_color("light"))
 
     def minsize(self, width=None, height=None):
         self.min_width = width
@@ -289,6 +289,7 @@ class CTkToplevel(tkinter.Toplevel):
             elif self.iconify_called_after_windows_set_titlebar_color:
                 super().iconify()
             else:
+                print("toplevel revert withdraw", self.state_before_windows_set_titlebar_color)
                 if self.state_before_windows_set_titlebar_color == "normal":
                     self.deiconify()
                 elif self.state_before_windows_set_titlebar_color == "iconic":
