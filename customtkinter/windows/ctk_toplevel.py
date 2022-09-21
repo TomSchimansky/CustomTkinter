@@ -289,7 +289,6 @@ class CTkToplevel(tkinter.Toplevel):
             elif self.iconify_called_after_windows_set_titlebar_color:
                 super().iconify()
             else:
-                print("toplevel revert withdraw", self.state_before_windows_set_titlebar_color)
                 if self.state_before_windows_set_titlebar_color == "normal":
                     self.deiconify()
                 elif self.state_before_windows_set_titlebar_color == "iconic":
