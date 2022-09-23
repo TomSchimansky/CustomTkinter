@@ -52,7 +52,10 @@ class CTk(tkinter.Tk):
         super().title("CTk")
         self.geometry(f"{self.current_width}x{self.current_height}")
 
-        self.window_exists = False  # indicates if the window is already shown through .update or .mainloop
+        self.state_before_windows_set_titlebar_color = None
+        self.window_exists = False  # indicates if the window is already shown through update() or mainloop() after init
+        self.withdraw_called_before_window_exists = False  # indicates if withdraw() was called before window is first shown through update() or mainloop()
+        self.iconify_called_before_window_exists = False  # indicates if iconify() was called before window is first shown through update() or mainloop()
 
         if sys.platform.startswith("win"):
             if self.appearance_mode == 1:
@@ -104,16 +107,36 @@ class CTk(tkinter.Tk):
         self.disable_macos_dark_title_bar()
         super().destroy()
 
+    def withdraw(self):
+        if self.window_exists is False:
+            self.withdraw_called_before_window_exists = True
+        super().withdraw()
+
+    def iconify(self):
+        if self.window_exists is False:
+            self.iconify_called_before_window_exists = True
+        super().iconify()
+
     def update(self):
         if self.window_exists is False:
-            self.deiconify()
             self.window_exists = True
+
+            if sys.platform.startswith("win"):
+                if not self.withdraw_called_before_window_exists and not self.iconify_called_before_window_exists:
+                    # print("window dont exists -> deiconify in update")
+                    self.deiconify()
+
         super().update()
 
     def mainloop(self, *args, **kwargs):
         if not self.window_exists:
-            self.deiconify()
             self.window_exists = True
+
+            if sys.platform.startswith("win"):
+                if not self.withdraw_called_before_window_exists and not self.iconify_called_before_window_exists:
+                    # print("window dont exists -> deiconify in mainloop")
+                    self.deiconify()
+
         super().mainloop(*args, **kwargs)
 
     def resizable(self, *args, **kwargs):
@@ -263,8 +286,15 @@ class CTk(tkinter.Tk):
 
         if sys.platform.startswith("win") and not Settings.deactivate_windows_window_header_manipulation:
 
-            super().withdraw()  # hide window so that it can be redrawn after the titlebar change so that the color change is visible
-            if not self.window_exists:
+            if self.window_exists:
+                self.state_before_windows_set_titlebar_color = self.state()
+                # print("window_exists -> state_before_windows_set_titlebar_color: ", self.state_before_windows_set_titlebar_color)
+
+                if self.state_before_windows_set_titlebar_color != "iconic" or self.state_before_windows_set_titlebar_color != "withdrawn":
+                    super().withdraw()  # hide window so that it can be redrawn after the titlebar change so that the color change is visible
+            else:
+                # print("window dont exists -> withdraw and update")
+                super().withdraw()
                 super().update()
 
             if color_mode.lower() == "dark":
@@ -293,7 +323,17 @@ class CTk(tkinter.Tk):
                 print(err)
 
             if self.window_exists:
-                self.deiconify()
+                # print("window_exists -> return to original state: ", self.state_before_windows_set_titlebar_color)
+                if self.state_before_windows_set_titlebar_color == "normal":
+                    self.deiconify()
+                elif self.state_before_windows_set_titlebar_color == "iconic":
+                    self.iconify()
+                elif self.state_before_windows_set_titlebar_color == "zoomed":
+                    self.state("zoomed")
+                else:
+                    self.state(self.state_before_windows_set_titlebar_color)  # other states
+            else:
+                pass  # wait for update or mainloop to be called
 
     def set_appearance_mode(self, mode_string):
         if mode_string.lower() == "dark":

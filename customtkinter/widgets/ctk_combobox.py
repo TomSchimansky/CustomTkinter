@@ -63,14 +63,9 @@ class CTkComboBox(CTkBaseClass):
         else:
             self.values = values
 
-        if len(self.values) > 0:
-            self.current_value = self.values[0]
-        else:
-            self.current_value = "CTkComboBox"
-
         self.dropdown_menu = DropdownMenu(master=self,
                                           values=self.values,
-                                          command=self.set,
+                                          command=self.dropdown_callback,
                                           fg_color=dropdown_color,
                                           hover_color=dropdown_hover_color,
                                           text_color=dropdown_text_color,
@@ -98,8 +93,11 @@ class CTkComboBox(CTkBaseClass):
                         padx=(max(self.apply_widget_scaling(self.corner_radius), self.apply_widget_scaling(3)),
                               max(self.apply_widget_scaling(self._current_width - left_section_width + 3), self.apply_widget_scaling(3))))
 
-        self.entry.delete(0, tkinter.END)
-        self.entry.insert(0, self.current_value)
+        # insert default value
+        if len(self.values) > 0:
+            self.entry.insert(0, self.values[0])
+        else:
+            self.entry.insert(0, "CTkComboBox")
 
         self.draw()  # initial draw
 
@@ -203,6 +201,10 @@ class CTkComboBox(CTkBaseClass):
             self.text_color = kwargs.pop("text_color")
             require_redraw = True
 
+        if "text_font" in kwargs:
+            self.text_font = kwargs.pop("text_font")
+            self.entry.configure(font=self.apply_font_scaling(self.text_font))
+
         if "command" in kwargs:
             self.command = kwargs.pop("command")
 
@@ -264,21 +266,28 @@ class CTkComboBox(CTkBaseClass):
                                    outline=ThemeManager.single_color(self.button_color, self._appearance_mode),
                                    fill=ThemeManager.single_color(self.button_color, self._appearance_mode))
 
-    def set(self, value: str, from_variable_callback: bool = False):
-        self.current_value = value
-
+    def dropdown_callback(self, value: str):
         if self.state == "readonly":
             self.entry.configure(state="normal")
             self.entry.delete(0, tkinter.END)
-            self.entry.insert(0, self.current_value)
+            self.entry.insert(0, value)
             self.entry.configure(state="readonly")
         else:
             self.entry.delete(0, tkinter.END)
-            self.entry.insert(0, self.current_value)
+            self.entry.insert(0, value)
 
-        if not from_variable_callback:
-            if self.command is not None:
-                self.command(self.current_value)
+        if self.command is not None:
+            self.command(value)
+
+    def set(self, value: str):
+        if self.state == "readonly":
+            self.entry.configure(state="normal")
+            self.entry.delete(0, tkinter.END)
+            self.entry.insert(0, value)
+            self.entry.configure(state="readonly")
+        else:
+            self.entry.delete(0, tkinter.END)
+            self.entry.insert(0, value)
 
     def get(self) -> str:
         return self.entry.get()

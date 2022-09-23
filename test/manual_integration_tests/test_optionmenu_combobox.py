@@ -27,10 +27,10 @@ optionmenu_2 = customtkinter.CTkOptionMenu(app, variable=variable, values=countr
                                            dynamic_resizing=False)
 optionmenu_2.pack(pady=20, padx=10)
 
-combobox_tk = ttk.Combobox(app, values=countries)
+combobox_tk = ttk.Combobox(app, values=countries, textvariable=variable)
 combobox_tk.pack(pady=10, padx=10)
 
-combobox_1 = customtkinter.CTkComboBox(app, variable=None, values=countries, command=select_callback, width=300)
+combobox_1 = customtkinter.CTkComboBox(app, variable=variable, values=countries, command=select_callback, width=300)
 combobox_1.pack(pady=20, padx=10)
 
 def set_new_scaling(scaling):

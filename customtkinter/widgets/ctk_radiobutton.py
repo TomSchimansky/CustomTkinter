@@ -156,6 +156,10 @@ class CTkRadioButton(CTkBaseClass):
             self.text = kwargs.pop("text")
             self.text_label.configure(text=self.text)
 
+        if "text_font" in kwargs:
+            self.text_font = kwargs.pop("text_font")
+            self.text_label.configure(font=self.apply_font_scaling(self.text_font))
+
         if "state" in kwargs:
             self.state = kwargs.pop("state")
             self.set_cursor()

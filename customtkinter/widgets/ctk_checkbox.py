@@ -177,6 +177,11 @@ class CTkCheckBox(CTkBaseClass):
             self.text = kwargs.pop("text")
             self.text_label.configure(text=self.text)
 
+        if "text_font" in kwargs:
+            self.text_font = kwargs.pop("text_font")
+            if self.text_label is not None:
+                self.text_label.configure(font=self.apply_font_scaling(self.text_font))
+
         if "state" in kwargs:
             self.state = kwargs.pop("state")
             self.set_cursor()
@@ -304,9 +309,6 @@ class CTkCheckBox(CTkBaseClass):
             self.variable.set(self.onvalue)
             self.variable_callback_blocked = False
 
-        if self.command is not None:
-            self.command()
-
     def deselect(self, from_variable_callback=False):
         self.check_state = False
         self.draw()
@@ -315,9 +317,6 @@ class CTkCheckBox(CTkBaseClass):
             self.variable_callback_blocked = True
             self.variable.set(self.offvalue)
             self.variable_callback_blocked = False
-
-        if self.command is not None:
-            self.command()
 
     def get(self):
         return self.onvalue if self.check_state is True else self.offvalue

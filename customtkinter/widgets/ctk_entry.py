@@ -77,7 +77,7 @@ class CTkEntry(CTkBaseClass):
         self.entry.bind('<FocusOut>', self.entry_focus_out)
         self.entry.bind('<FocusIn>', self.entry_focus_in)
 
-        self.set_placeholder()
+        self.activate_placeholder()
         self.draw()
 
     def set_scaling(self, *args, **kwargs):
@@ -176,6 +176,8 @@ class CTkEntry(CTkBaseClass):
             if self.placeholder_text_active:
                 self.entry.delete(0, tkinter.END)
                 self.entry.insert(0, self.placeholder_text)
+            else:
+                self.activate_placeholder()
 
         if "placeholder_text_color" in kwargs:
             self.placeholder_text_color = kwargs.pop("placeholder_text_color")
@@ -184,6 +186,10 @@ class CTkEntry(CTkBaseClass):
         if "textvariable" in kwargs:
             self.textvariable = kwargs.pop("textvariable")
             self.entry.configure(textvariable=self.textvariable)
+
+        if "text_font" in kwargs:
+            self.text_font = kwargs.pop("text_font")
+            self.entry.configure(font=self.apply_font_scaling(self.text_font))
 
         if "show" in kwargs:
             if self.placeholder_text_active:
@@ -198,7 +204,7 @@ class CTkEntry(CTkBaseClass):
 
         self.entry.configure(**kwargs)  # pass remaining kwargs to entry
 
-    def set_placeholder(self):
+    def activate_placeholder(self):
         if self.entry.get() == "" and self.placeholder_text is not None and (self.textvariable is None or self.textvariable == ""):
             self.placeholder_text_active = True
 
@@ -207,7 +213,7 @@ class CTkEntry(CTkBaseClass):
             self.entry.delete(0, tkinter.END)
             self.entry.insert(0, self.placeholder_text)
 
-    def clear_placeholder(self):
+    def deactivate_placeholder(self):
         if self.placeholder_text_active:
             self.placeholder_text_active = False
 
@@ -217,19 +223,19 @@ class CTkEntry(CTkBaseClass):
                 self.entry[argument] = value
 
     def entry_focus_out(self, event=None):
-        self.set_placeholder()
+        self.activate_placeholder()
 
     def entry_focus_in(self, event=None):
-        self.clear_placeholder()
+        self.deactivate_placeholder()
 
     def delete(self, *args, **kwargs):
         self.entry.delete(*args, **kwargs)
 
         if self.entry.get() == "":
-            self.set_placeholder()
+            self.activate_placeholder()
 
     def insert(self, *args, **kwargs):
-        self.clear_placeholder()
+        self.deactivate_placeholder()
 
         return self.entry.insert(*args, **kwargs)
 

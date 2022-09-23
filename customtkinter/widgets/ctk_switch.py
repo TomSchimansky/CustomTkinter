@@ -228,9 +228,6 @@ class CTkSwitch(CTkBaseClass):
                 self.variable.set(self.onvalue)
                 self.variable_callback_blocked = False
 
-            if self.command is not None:
-                self.command()
-
     def deselect(self, from_variable_callback=False):
         if self.state is not tkinter.DISABLED or from_variable_callback:
             self.check_state = False
@@ -241,9 +238,6 @@ class CTkSwitch(CTkBaseClass):
                 self.variable_callback_blocked = True
                 self.variable.set(self.offvalue)
                 self.variable_callback_blocked = False
-
-            if self.command is not None:
-                self.command()
 
     def get(self):
         return self.onvalue if self.check_state is True else self.offvalue
@@ -271,6 +265,10 @@ class CTkSwitch(CTkBaseClass):
         if "text" in kwargs:
             self.text = kwargs.pop("text")
             self.text_label.configure(text=self.text)
+
+        if "text_font" in kwargs:
+            self.text_font = kwargs.pop("text_font")
+            self.text_label.configure(font=self.apply_font_scaling(self.text_font))
 
         if "state" in kwargs:
             self.state = kwargs.pop("state")

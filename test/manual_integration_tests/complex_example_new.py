@@ -12,7 +12,7 @@ class App(customtkinter.CTk):
         super().__init__()
 
         self.title("CustomTkinter complex_example.py")
-        self.geometry(f"{920}x{500}-100-100")
+        self.geometry(f"{920}x{500}")
         self.protocol("WM_DELETE_WINDOW", self.on_closing)  # call .on_closing() when app gets closed
 
         # configure grid layout (4x4)
@@ -87,7 +87,7 @@ class App(customtkinter.CTk):
         self.checkbox_1.grid(row=1, column=0, pady=(20, 10), padx=20, sticky="n")
         self.checkbox_2 = customtkinter.CTkCheckBox(master=self.checkbox_slider_frame)
         self.checkbox_2.grid(row=2, column=0, pady=10, padx=20, sticky="n")
-        self.switch_1 = customtkinter.CTkSwitch(master=self.checkbox_slider_frame)
+        self.switch_1 = customtkinter.CTkSwitch(master=self.checkbox_slider_frame, command=lambda: print("switch 1 toggle"))
         self.switch_1.grid(row=3, column=0, pady=10, padx=20, sticky="n")
         self.switch_2 = customtkinter.CTkSwitch(master=self.checkbox_slider_frame)
         self.switch_2.grid(row=4, column=0, pady=(10, 20), padx=20, sticky="n")
@@ -99,14 +99,14 @@ class App(customtkinter.CTk):
         self.slider_progressbar_frame.grid_rowconfigure(3, weight=1)
         self.progressbar_1 = customtkinter.CTkProgressBar(self.slider_progressbar_frame)
         self.progressbar_1.grid(row=0, column=0, padx=(20, 10), pady=(10, 10), sticky="ew")
-        self.slider_1 = customtkinter.CTkSlider(self.slider_progressbar_frame)
-        self.slider_1.grid(row=1, column=0, padx=(20, 10), pady=(10, 10), sticky="ew")
-        self.slider_2 = customtkinter.CTkSlider(self.slider_progressbar_frame, from_=0, to=4, number_of_steps=4)
-        self.slider_2.grid(row=2, column=0, padx=(20, 10), pady=(10, 10), sticky="ew")
-        self.slider_3 = customtkinter.CTkSlider(self.slider_progressbar_frame, orient="vertical")
-        self.slider_3.grid(row=0, column=1, rowspan=4, padx=(10, 10), pady=(10, 10), sticky="ns")
-        self.progressbar_2 = customtkinter.CTkProgressBar(self.slider_progressbar_frame, orient="vertical")
-        self.progressbar_2.grid(row=0, column=2, rowspan=4, padx=(10, 20), pady=(10, 10), sticky="ns")
+        self.progressbar_2 = customtkinter.CTkProgressBar(self.slider_progressbar_frame)
+        self.progressbar_2.grid(row=1, column=0, padx=(20, 10), pady=(10, 10), sticky="ew")
+        self.slider_1 = customtkinter.CTkSlider(self.slider_progressbar_frame, from_=0, to=1, number_of_steps=4)
+        self.slider_1.grid(row=2, column=0, padx=(20, 10), pady=(10, 10), sticky="ew")
+        self.slider_2 = customtkinter.CTkSlider(self.slider_progressbar_frame, orient="vertical")
+        self.slider_2.grid(row=0, column=1, rowspan=4, padx=(10, 10), pady=(10, 10), sticky="ns")
+        self.progressbar_3 = customtkinter.CTkProgressBar(self.slider_progressbar_frame, orient="vertical")
+        self.progressbar_3.grid(row=0, column=2, rowspan=4, padx=(10, 20), pady=(10, 10), sticky="ns")
 
         # set default values
         self.sidebar_button_3.configure(state="disabled", text="Disabled CTkButton")
@@ -119,10 +119,11 @@ class App(customtkinter.CTk):
         self.scaling_optionemenu.set("100%")
         self.optionmenu_1.set("CTkOptionmenu")
         self.combobox_1.set("CTkComboBox")
-        self.textbox.insert("1.0",
-                            "CTkTextbox\n\nLorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.", )
-        #self.textbox.tag_add("headline", "1.0", "1.end")
-        #self.textbox.tag_config("headline", foreground="red")
+        self.textbox.insert("1.0", "CTkTextbox\n\nLorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.")
+        self.slider_1.configure(command=self.progressbar_2.set)
+        self.slider_2.configure(command=self.progressbar_3.set)
+        self.progressbar_1.configure(mode="indeterminnate")
+        self.progressbar_1.start()
 
     def open_input_dialog(self):
         dialog = customtkinter.CTkInputDialog(master=None, text="Type in a number:", title="CTkInputDialog")

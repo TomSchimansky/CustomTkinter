@@ -1,5 +1,7 @@
 import customtkinter
 
+customtkinter.set_appearance_mode("dark")
+
 
 class ToplevelWindow(customtkinter.CTkToplevel):
     def __init__(self, *args, closing_event=None, **kwargs):
@@ -10,6 +12,9 @@ class ToplevelWindow(customtkinter.CTkToplevel):
 
         self.label = customtkinter.CTkLabel(self, text="ToplevelWindow")
         self.label.pack(padx=20, pady=20)
+
+        self.button_1 = customtkinter.CTkButton(self, text="set dark", command=lambda: customtkinter.set_appearance_mode("dark"))
+        self.button_1.pack(side="top", padx=40, pady=40)
 
     def closing(self):
         self.destroy()
@@ -24,6 +29,10 @@ class App(customtkinter.CTk):
 
         self.button_1 = customtkinter.CTkButton(self, text="Open CTkToplevel", command=self.open_toplevel)
         self.button_1.pack(side="top", padx=40, pady=40)
+        self.button_2 = customtkinter.CTkButton(self, text="iconify toplevel", command=lambda: self.toplevel_window.iconify())
+        self.button_2.pack(side="top", padx=40, pady=40)
+        self.button_3 = customtkinter.CTkButton(self, text="set light", command=lambda: customtkinter.set_appearance_mode("light"))
+        self.button_3.pack(side="top", padx=40, pady=40)
 
         self.toplevel_window = None
 

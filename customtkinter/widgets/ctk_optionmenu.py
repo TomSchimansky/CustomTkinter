@@ -72,7 +72,7 @@ class CTkOptionMenu(CTkBaseClass):
 
         self.dropdown_menu = DropdownMenu(master=self,
                                           values=self.values,
-                                          command=self.set,
+                                          command=self.dropdown_callback,
                                           fg_color=dropdown_color,
                                           hover_color=dropdown_hover_color,
                                           text_color=dropdown_text_color,
@@ -124,7 +124,8 @@ class CTkOptionMenu(CTkBaseClass):
 
         if self.variable is not None:
             self.variable_callback_name = self.variable.trace_add("write", self.variable_callback)
-            self.set(self.variable.get(), from_variable_callback=True)
+            self.current_value = self.variable.get()
+            self.text_label.configure(text=self.current_value)
 
     def set_scaling(self, *args, **kwargs):
         super().set_scaling(*args, **kwargs)
@@ -210,6 +211,10 @@ class CTkOptionMenu(CTkBaseClass):
             self.text_color = kwargs.pop("text_color")
             require_redraw = True
 
+        if "text_font" in kwargs:
+            self.text_font = kwargs.pop("text_font")
+            self.text_label.configure(font=self.apply_font_scaling(self.text_font))
+
         if "command" in kwargs:
             self.command = kwargs.pop("command")
 
@@ -221,7 +226,8 @@ class CTkOptionMenu(CTkBaseClass):
 
             if self.variable is not None and self.variable != "":
                 self.variable_callback_name = self.variable.trace_add("write", self.variable_callback)
-                self.set(self.variable.get(), from_variable_callback=True)
+                self.current_value = self.variable.get()
+                self.text_label.configure(text=self.current_value)
             else:
                 self.variable = None
 
@@ -245,7 +251,8 @@ class CTkOptionMenu(CTkBaseClass):
             self.dropdown_menu.configure(text_color=kwargs.pop("dropdown_text_color"))
 
         if "dropdown_text_font" in kwargs:
-            self.dropdown_menu.configure(text_font=kwargs.pop("dropdown_text_font"))
+            self.dropdown_text_font = kwargs.pop("dropdown_text_font")
+            self.dropdown_menu.configure(text_font=self.dropdown_text_font)
 
         if "dynamic_resizing" in kwargs:
             self.dynamic_resizing = kwargs.pop("dynamic_resizing")
@@ -272,21 +279,29 @@ class CTkOptionMenu(CTkBaseClass):
 
     def variable_callback(self, var_name, index, mode):
         if not self.variable_callback_blocked:
-            self.set(self.variable.get(), from_variable_callback=True)
+            self.current_value = self.variable.get()
+            self.text_label.configure(text=self.current_value)
 
-    def set(self, value: str, from_variable_callback: bool = False):
+    def dropdown_callback(self, value: str):
         self.current_value = value
-
         self.text_label.configure(text=self.current_value)
 
-        if self.variable is not None and not from_variable_callback:
+        if self.variable is not None:
             self.variable_callback_blocked = True
             self.variable.set(self.current_value)
             self.variable_callback_blocked = False
 
-        if not from_variable_callback:
-            if self.command is not None:
-                self.command(self.current_value)
+        if self.command is not None:
+            self.command(self.current_value)
+
+    def set(self, value: str):
+        self.current_value = value
+        self.text_label.configure(text=self.current_value)
+
+        if self.variable is not None:
+            self.variable_callback_blocked = True
+            self.variable.set(self.current_value)
+            self.variable_callback_blocked = False
 
     def get(self) -> str:
         return self.current_value

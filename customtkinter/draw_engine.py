@@ -645,8 +645,8 @@ class DrawEngine:
         return requires_recoloring
 
     def draw_rounded_progress_bar_with_border(self, width: Union[float, int], height: Union[float, int], corner_radius: Union[float, int],
-                                              border_width: Union[float, int], progress_value: float, orientation: str) -> bool:
-        """ Draws a rounded bar on the canvas, which is split in half according to the argument 'progress_value' (0 - 1).
+                                              border_width: Union[float, int], progress_value_1: float, progress_value_2: float, orientation: str) -> bool:
+        """ Draws a rounded bar on the canvas, and onntop sits a progress bar from value 1 to value 2 (range 0-1, left to right, bottom to top).
             The border elements get the 'border_parts' tag", the main elements get the 'inner_parts' tag and
             the progress elements get the 'progress_parts' tag. The 'orientation' argument defines from which direction the progress starts (n, w, s, e).
 
@@ -668,13 +668,13 @@ class DrawEngine:
 
         if self.preferred_drawing_method == "polygon_shapes" or self.preferred_drawing_method == "circle_shapes":
             return self.__draw_rounded_progress_bar_with_border_polygon_shapes(width, height, corner_radius, border_width, inner_corner_radius,
-                                                                               progress_value, orientation)
+                                                                               progress_value_1, progress_value_2, orientation)
         elif self.preferred_drawing_method == "font_shapes":
             return self.__draw_rounded_progress_bar_with_border_font_shapes(width, height, corner_radius, border_width, inner_corner_radius,
-                                                                            progress_value, orientation)
+                                                                            progress_value_1, progress_value_2, orientation)
 
     def __draw_rounded_progress_bar_with_border_polygon_shapes(self, width: int, height: int, corner_radius: int, border_width: int, inner_corner_radius: int,
-                                                               progress_value: float, orientation: str) -> bool:
+                                                               progress_value_1: float, progress_value_2: float, orientation: str) -> bool:
 
         requires_recoloring = self.__draw_rounded_rect_with_border_polygon_shapes(width, height, corner_radius, border_width, inner_corner_radius)
 
@@ -691,32 +691,32 @@ class DrawEngine:
 
         if orientation == "w":
             self._canvas.coords("progress_line_1",
+                                border_width + inner_corner_radius + (width - 2 * border_width - 2 * inner_corner_radius) * progress_value_1,
                                 border_width + inner_corner_radius,
+                                border_width + inner_corner_radius + (width - 2 * border_width - 2 * inner_corner_radius) * progress_value_2,
                                 border_width + inner_corner_radius,
-                                border_width + inner_corner_radius + (width - 2 * border_width - 2 * inner_corner_radius) * progress_value,
-                                border_width + inner_corner_radius,
-                                border_width + inner_corner_radius + (width - 2 * border_width - 2 * inner_corner_radius) * progress_value,
+                                border_width + inner_corner_radius + (width - 2 * border_width - 2 * inner_corner_radius) * progress_value_2,
                                 height - (border_width + inner_corner_radius) + bottom_right_shift,
-                                border_width + inner_corner_radius,
+                                border_width + inner_corner_radius + (width - 2 * border_width - 2 * inner_corner_radius) * progress_value_1,
                                 height - (border_width + inner_corner_radius) + bottom_right_shift)
 
         elif orientation == "s":
             self._canvas.coords("progress_line_1",
                                 border_width + inner_corner_radius,
-                                border_width + inner_corner_radius + (height - 2 * border_width - 2 * inner_corner_radius) * (1 - progress_value),
+                                border_width + inner_corner_radius + (height - 2 * border_width - 2 * inner_corner_radius) * (1 - progress_value_2),
                                 width - (border_width + inner_corner_radius),
-                                border_width + inner_corner_radius + (height - 2 * border_width - 2 * inner_corner_radius) * (1 - progress_value),
+                                border_width + inner_corner_radius + (height - 2 * border_width - 2 * inner_corner_radius) * (1 - progress_value_2),
                                 width - (border_width + inner_corner_radius),
-                                height - (border_width + inner_corner_radius) + bottom_right_shift,
+                                border_width + inner_corner_radius + (height - 2 * border_width - 2 * inner_corner_radius) * (1 - progress_value_1),
                                 border_width + inner_corner_radius,
-                                height - (border_width + inner_corner_radius) + bottom_right_shift)
+                                border_width + inner_corner_radius + (height - 2 * border_width - 2 * inner_corner_radius) * (1 - progress_value_1))
 
         self._canvas.itemconfig("progress_line_1", width=inner_corner_radius * 2)
 
         return requires_recoloring
 
     def __draw_rounded_progress_bar_with_border_font_shapes(self, width: int, height: int, corner_radius: int, border_width: int, inner_corner_radius: int,
-                                                            progress_value: float, orientation: str) -> bool:
+                                                            progress_value_1: float, progress_value_2: float, orientation: str) -> bool:
 
         requires_recoloring, requires_recoloring_2 = False, False
 
@@ -751,64 +751,72 @@ class DrawEngine:
         # horizontal orientation from the bottom
         if orientation == "w":
             requires_recoloring_2 = self.__draw_rounded_rect_with_border_font_shapes(width, height, corner_radius, border_width, inner_corner_radius,
-                                                                                     ("inner_oval_1", "inner_oval_4"))
+                                                                                     ())
 
             # set positions of progress corner parts
-            self._canvas.coords("progress_oval_1_a", border_width + inner_corner_radius, border_width + inner_corner_radius, inner_corner_radius)
-            self._canvas.coords("progress_oval_1_b", border_width + inner_corner_radius, border_width + inner_corner_radius, inner_corner_radius)
-            self._canvas.coords("progress_oval_2_a", border_width + inner_corner_radius + (width - 2 * border_width - 2 * inner_corner_radius) * progress_value,
+            self._canvas.coords("progress_oval_1_a", border_width + inner_corner_radius + (width - 2 * border_width - 2 * inner_corner_radius) * progress_value_1,
                                 border_width + inner_corner_radius, inner_corner_radius)
-            self._canvas.coords("progress_oval_2_b", border_width + inner_corner_radius + (width - 2 * border_width - 2 * inner_corner_radius) * progress_value,
+            self._canvas.coords("progress_oval_1_b", border_width + inner_corner_radius + (width - 2 * border_width - 2 * inner_corner_radius) * progress_value_1,
                                 border_width + inner_corner_radius, inner_corner_radius)
-            self._canvas.coords("progress_oval_3_a", border_width + inner_corner_radius + (width - 2 * border_width - 2 * inner_corner_radius) * progress_value,
+            self._canvas.coords("progress_oval_2_a", border_width + inner_corner_radius + (width - 2 * border_width - 2 * inner_corner_radius) * progress_value_2,
+                                border_width + inner_corner_radius, inner_corner_radius)
+            self._canvas.coords("progress_oval_2_b", border_width + inner_corner_radius + (width - 2 * border_width - 2 * inner_corner_radius) * progress_value_2,
+                                border_width + inner_corner_radius, inner_corner_radius)
+            self._canvas.coords("progress_oval_3_a", border_width + inner_corner_radius + (width - 2 * border_width - 2 * inner_corner_radius) * progress_value_2,
                                 height - border_width - inner_corner_radius, inner_corner_radius)
-            self._canvas.coords("progress_oval_3_b", border_width + inner_corner_radius + (width - 2 * border_width - 2 * inner_corner_radius) * progress_value,
+            self._canvas.coords("progress_oval_3_b", border_width + inner_corner_radius + (width - 2 * border_width - 2 * inner_corner_radius) * progress_value_2,
                                 height - border_width - inner_corner_radius, inner_corner_radius)
-            self._canvas.coords("progress_oval_4_a", border_width + inner_corner_radius, height - border_width - inner_corner_radius, inner_corner_radius)
-            self._canvas.coords("progress_oval_4_b", border_width + inner_corner_radius, height - border_width - inner_corner_radius, inner_corner_radius)
+            self._canvas.coords("progress_oval_4_a", border_width + inner_corner_radius + (width - 2 * border_width - 2 * inner_corner_radius) * progress_value_1,
+                                height - border_width - inner_corner_radius, inner_corner_radius)
+            self._canvas.coords("progress_oval_4_b", border_width + inner_corner_radius + (width - 2 * border_width - 2 * inner_corner_radius) * progress_value_1,
+                                height - border_width - inner_corner_radius, inner_corner_radius)
 
             # set positions of progress rect parts
             self._canvas.coords("progress_rectangle_1",
-                                border_width + inner_corner_radius,
+                                border_width + inner_corner_radius + (width - 2 * border_width - 2 * inner_corner_radius) * progress_value_1,
                                 border_width,
-                                border_width + inner_corner_radius + (width - 2 * border_width - 2 * inner_corner_radius) * progress_value,
+                                border_width + inner_corner_radius + (width - 2 * border_width - 2 * inner_corner_radius) * progress_value_2,
                                 height - border_width)
             self._canvas.coords("progress_rectangle_2",
-                                border_width,
+                                border_width + 2 * inner_corner_radius + (width - 2 * inner_corner_radius - 2 * border_width) * progress_value_1,
                                 border_width + inner_corner_radius,
-                                border_width + 2 * inner_corner_radius + (width - 2 * inner_corner_radius - 2 * border_width) * progress_value,
+                                border_width + 2 * inner_corner_radius + (width - 2 * inner_corner_radius - 2 * border_width) * progress_value_2,
                                 height - inner_corner_radius - border_width)
 
         # vertical orientation from the bottom
         if orientation == "s":
             requires_recoloring_2 = self.__draw_rounded_rect_with_border_font_shapes(width, height, corner_radius, border_width, inner_corner_radius,
-                                                                                     ("inner_oval_3", "inner_oval_4"))
+                                                                                     ())
 
             # set positions of progress corner parts
             self._canvas.coords("progress_oval_1_a", border_width + inner_corner_radius,
-                                border_width + inner_corner_radius + (height - 2 * border_width - 2 * inner_corner_radius) * (1 - progress_value), inner_corner_radius)
+                                border_width + inner_corner_radius + (height - 2 * border_width - 2 * inner_corner_radius) * (1 - progress_value_2), inner_corner_radius)
             self._canvas.coords("progress_oval_1_b", border_width + inner_corner_radius,
-                                border_width + inner_corner_radius + (height - 2 * border_width - 2 * inner_corner_radius) * (1 - progress_value), inner_corner_radius)
+                                border_width + inner_corner_radius + (height - 2 * border_width - 2 * inner_corner_radius) * (1 - progress_value_2), inner_corner_radius)
             self._canvas.coords("progress_oval_2_a", width - border_width - inner_corner_radius,
-                                border_width + inner_corner_radius + (height - 2 * border_width - 2 * inner_corner_radius) * (1 - progress_value), inner_corner_radius)
+                                border_width + inner_corner_radius + (height - 2 * border_width - 2 * inner_corner_radius) * (1 - progress_value_2), inner_corner_radius)
             self._canvas.coords("progress_oval_2_b", width - border_width - inner_corner_radius,
-                                border_width + inner_corner_radius + (height - 2 * border_width - 2 * inner_corner_radius) * (1 - progress_value), inner_corner_radius)
-            self._canvas.coords("progress_oval_3_a", width - border_width - inner_corner_radius, height - border_width - inner_corner_radius, inner_corner_radius)
-            self._canvas.coords("progress_oval_3_b", width - border_width - inner_corner_radius, height - border_width - inner_corner_radius, inner_corner_radius)
-            self._canvas.coords("progress_oval_4_a", border_width + inner_corner_radius, height - border_width - inner_corner_radius, inner_corner_radius)
-            self._canvas.coords("progress_oval_4_b", border_width + inner_corner_radius, height - border_width - inner_corner_radius, inner_corner_radius)
+                                border_width + inner_corner_radius + (height - 2 * border_width - 2 * inner_corner_radius) * (1 - progress_value_2), inner_corner_radius)
+            self._canvas.coords("progress_oval_3_a", width - border_width - inner_corner_radius,
+                                border_width + inner_corner_radius + (height - 2 * border_width - 2 * inner_corner_radius) * (1 - progress_value_1), inner_corner_radius)
+            self._canvas.coords("progress_oval_3_b", width - border_width - inner_corner_radius,
+                                border_width + inner_corner_radius + (height - 2 * border_width - 2 * inner_corner_radius) * (1 - progress_value_1), inner_corner_radius)
+            self._canvas.coords("progress_oval_4_a", border_width + inner_corner_radius,
+                                border_width + inner_corner_radius + (height - 2 * border_width - 2 * inner_corner_radius) * (1 - progress_value_1), inner_corner_radius)
+            self._canvas.coords("progress_oval_4_b", border_width + inner_corner_radius,
+                                border_width + inner_corner_radius + (height - 2 * border_width - 2 * inner_corner_radius) * (1 - progress_value_1), inner_corner_radius)
 
             # set positions of progress rect parts
             self._canvas.coords("progress_rectangle_1",
                                 border_width + inner_corner_radius,
-                                border_width + (height - 2 * border_width - 2 * inner_corner_radius) * (1 - progress_value),
+                                border_width + (height - 2 * border_width - 2 * inner_corner_radius) * (1 - progress_value_2),
                                 width - border_width - inner_corner_radius,
-                                height - border_width)
+                                border_width + (height - 2 * border_width - 2 * inner_corner_radius) * (1 - progress_value_1))
             self._canvas.coords("progress_rectangle_2",
                                 border_width,
-                                border_width + inner_corner_radius + (height - 2 * border_width - 2 * inner_corner_radius) * (1 - progress_value),
+                                border_width + inner_corner_radius + (height - 2 * border_width - 2 * inner_corner_radius) * (1 - progress_value_2),
                                 width - border_width,
-                                height - inner_corner_radius - border_width)
+                                border_width + inner_corner_radius + (height - 2 * border_width - 2 * inner_corner_radius) * (1 - progress_value_1))
 
         return requires_recoloring or requires_recoloring_2
 
@@ -847,7 +855,7 @@ class DrawEngine:
 
         # draw normal progressbar
         requires_recoloring = self.__draw_rounded_progress_bar_with_border_polygon_shapes(width, height, corner_radius, border_width, inner_corner_radius,
-                                                                                          slider_value, orientation)
+                                                                                          0, slider_value, orientation)
 
         # create slider button part
         if not self._canvas.find_withtag("slider_parts"):
@@ -886,7 +894,7 @@ class DrawEngine:
 
         # draw normal progressbar
         requires_recoloring = self.__draw_rounded_progress_bar_with_border_font_shapes(width, height, corner_radius, border_width, inner_corner_radius,
-                                                                                       slider_value, orientation)
+                                                                                       0, slider_value, orientation)
 
         # create 4 circles (if not needed, then less)
         if not self._canvas.find_withtag("slider_oval_1_a"):

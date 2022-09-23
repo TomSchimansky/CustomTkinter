@@ -123,6 +123,10 @@ class CTkLabel(CTkBaseClass):
             self.text_label.configure(text=self.text)
             del kwargs["text"]
 
+        if "text_font" in kwargs:
+            self.text_font = kwargs.pop("text_font")
+            self.text_label.configure(font=self.apply_font_scaling(self.text_font))
+
         if "fg_color" in kwargs:
             self.fg_color = kwargs["fg_color"]
             require_redraw = True
