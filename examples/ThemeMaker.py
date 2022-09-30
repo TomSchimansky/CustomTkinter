@@ -190,7 +190,8 @@ class App(customtkinter.CTk):
         self.widget_type.configure(text=self.current)
         self.menu.configure(values=self.widgets[self.current])
         self.menu.set(self.widgets[self.current][0])
-
+        self.update(self.menu.get())
+        
     #Function for changing current widget type with left button  
     def change_mode_left(self):
         self.widgetlist.insert(0, self.widgetlist.pop())
@@ -198,6 +199,7 @@ class App(customtkinter.CTk):
         self.widget_type.configure(text=self.current)
         self.menu.configure(values=self.widgets[self.current])
         self.menu.set(self.widgets[self.current][0])
+        self.update(self.menu.get())
         
     #Function for updating the contents and their colors
     def update(self, value):
