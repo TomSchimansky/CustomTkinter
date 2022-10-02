@@ -300,6 +300,38 @@ class CTkButton(CTkBaseClass):
 
         super().configure(require_redraw=require_redraw, **kwargs)
 
+    def cget(self, key: str) -> any:
+        if key == "fg_color":
+            return self._fg_color
+        elif key == "hover_color":
+            return self._hover_color
+        elif key == "border_color":
+            return self._border_color
+        elif key == "text_color":
+            return self._text_color
+        elif key == "text_color_disabled":
+            return self._text_color_disabled
+        elif key == "text":
+            return self._text
+        elif key == "textvariable":
+            return self._textvariable
+        elif key == "text_font":
+            return self._text_font
+        elif key == "command":
+            return self._command
+        elif key == "hover":
+            return self._hover
+        elif key == "border_width":
+            return self._border_width
+        elif key == "image":
+            return self._image
+        elif key == "compound":
+            return self._compound
+        elif key == "state":
+            return self._state
+        else:
+            return super().cget(key)
+
     def _set_cursor(self):
         if Settings.cursor_manipulation_enabled:
             if self._state == tkinter.DISABLED:

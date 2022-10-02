@@ -133,6 +133,16 @@ class CTkBaseClass(tkinter.Frame):
         if require_redraw:
             self._draw()
 
+    def cget(self, key: str):
+        if key == "bg_color":
+            return self._bg_color
+        elif key == "width":
+            return self._desired_width
+        elif key == "height":
+            return self._desired_height
+        else:
+            return super().cget(key)
+
     def _update_dimensions_event(self, event):
         # only redraw if dimensions changed (for performance), independent of scaling
         if round(self._current_width) != round(event.width / self._widget_scaling) or round(self._current_height) != round(event.height / self._widget_scaling):
