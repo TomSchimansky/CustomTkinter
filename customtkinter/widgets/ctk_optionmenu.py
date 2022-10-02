@@ -1,104 +1,109 @@
 import tkinter
 import sys
-
-from .dropdown_menu import DropdownMenu
+from typing import Union, Tuple, Callable
 
 from .ctk_canvas import CTkCanvas
 from ..theme_manager import ThemeManager
 from ..settings import Settings
 from ..draw_engine import DrawEngine
 from .widget_base_class import CTkBaseClass
+from .dropdown_menu import DropdownMenu
 
 
 class CTkOptionMenu(CTkBaseClass):
+    """
+    Optionemnu with rounded corners, dropdown menu, variable support, command.
+    For detailed information check out the documentation.
+    """
+
     def __init__(self, *args,
-                 bg_color=None,
-                 fg_color="default_theme",
-                 button_color="default_theme",
-                 button_hover_color="default_theme",
-                 text_color="default_theme",
-                 text_color_disabled="default_theme",
-                 dropdown_color="default_theme",
-                 dropdown_hover_color="default_theme",
-                 dropdown_text_color="default_theme",
-                 variable=None,
-                 values=None,
-                 command=None,
-                 width=140,
-                 height=28,
-                 corner_radius="default_theme",
-                 text_font="default_theme",
-                 dropdown_text_font="default_theme",
-                 hover=True,
-                 state=tkinter.NORMAL,
-                 dynamic_resizing=True,
+                 bg_color: Union[str, Tuple[str, str], None] = None,
+                 fg_color: Union[str, Tuple[str, str]] = "default_theme",
+                 button_color: Union[str, Tuple[str, str]] = "default_theme",
+                 button_hover_color: Union[str, Tuple[str, str]] = "default_theme",
+                 text_color: Union[str, Tuple[str, str]] = "default_theme",
+                 text_color_disabled: Union[str, Tuple[str, str]] = "default_theme",
+                 dropdown_color: Union[str, Tuple[str, str]] = "default_theme",
+                 dropdown_hover_color: Union[str, Tuple[str, str]] = "default_theme",
+                 dropdown_text_color: Union[str, Tuple[str, str]] = "default_theme",
+                 variable: tkinter.Variable = None,
+                 values: list = None,
+                 command: Callable = None,
+                 width: int = 140,
+                 height: int = 28,
+                 corner_radius: Union[int, str] = "default_theme",
+                 text_font: any = "default_theme",
+                 dropdown_text_font: any = "default_theme",
+                 hover: bool = True,
+                 state: str = tkinter.NORMAL,
+                 dynamic_resizing: bool = True,
                  **kwargs):
 
-        # transfer basic functionality (bg_color, size, _appearance_mode, scaling) to CTkBaseClass
+        # transfer basic functionality (_bg_color, size, _appearance_mode, scaling) to CTkBaseClass
         super().__init__(*args, bg_color=bg_color, width=width, height=height, **kwargs)
 
         # color variables
-        self.fg_color = ThemeManager.theme["color"]["button"] if fg_color == "default_theme" else fg_color
-        self.button_color = ThemeManager.theme["color"]["optionmenu_button"] if button_color == "default_theme" else button_color
-        self.button_hover_color = ThemeManager.theme["color"]["optionmenu_button_hover"] if button_hover_color == "default_theme" else button_hover_color
+        self._fg_color = ThemeManager.theme["color"]["button"] if fg_color == "default_theme" else fg_color
+        self._button_color = ThemeManager.theme["color"]["optionmenu_button"] if button_color == "default_theme" else button_color
+        self._button_hover_color = ThemeManager.theme["color"]["optionmenu_button_hover"] if button_hover_color == "default_theme" else button_hover_color
 
         # shape
-        self.corner_radius = ThemeManager.theme["shape"]["button_corner_radius"] if corner_radius == "default_theme" else corner_radius
+        self._corner_radius = ThemeManager.theme["shape"]["button_corner_radius"] if corner_radius == "default_theme" else corner_radius
 
         # text and font
-        self.text_color = ThemeManager.theme["color"]["text"] if text_color == "default_theme" else text_color
-        self.text_color_disabled = ThemeManager.theme["color"]["text_button_disabled"] if text_color_disabled == "default_theme" else text_color_disabled
-        self.text_font = (ThemeManager.theme["text"]["font"], ThemeManager.theme["text"]["size"]) if text_font == "default_theme" else text_font
-        self.dropdown_text_font = dropdown_text_font
+        self._text_color = ThemeManager.theme["color"]["text"] if text_color == "default_theme" else text_color
+        self._text_color_disabled = ThemeManager.theme["color"]["text_button_disabled"] if text_color_disabled == "default_theme" else text_color_disabled
+        self._text_font = (ThemeManager.theme["text"]["font"], ThemeManager.theme["text"]["size"]) if text_font == "default_theme" else text_font
+        self._dropdown_text_font = dropdown_text_font
 
         # callback and hover functionality
-        self.command = command
-        self.variable = variable
-        self.variable_callback_blocked = False
-        self.variable_callback_name = None
-        self.state = state
-        self.hover = hover
-        self.dynamic_resizing = dynamic_resizing
+        self._command = command
+        self._variable = variable
+        self._variable_callback_blocked: bool = False
+        self._variable_callback_name: Union[str, None] = None
+        self._state = state
+        self._hover = hover
+        self._dynamic_resizing = dynamic_resizing
 
         if values is None:
-            self.values = ["CTkOptionMenu"]
+            self._values = ["CTkOptionMenu"]
         else:
-            self.values = values
+            self._values = values
 
-        if len(self.values) > 0:
-            self.current_value = self.values[0]
+        if len(self._values) > 0:
+            self._current_value = self._values[0]
         else:
-            self.current_value = "CTkOptionMenu"
+            self._current_value = "CTkOptionMenu"
 
-        self.dropdown_menu = DropdownMenu(master=self,
-                                          values=self.values,
-                                          command=self.dropdown_callback,
-                                          fg_color=dropdown_color,
-                                          hover_color=dropdown_hover_color,
-                                          text_color=dropdown_text_color,
-                                          text_font=dropdown_text_font)
+        self._dropdown_menu = DropdownMenu(master=self,
+                                           values=self._values,
+                                           command=self._dropdown_callback,
+                                           fg_color=dropdown_color,
+                                           hover_color=dropdown_hover_color,
+                                           text_color=dropdown_text_color,
+                                           text_font=dropdown_text_font)
 
         # configure grid system (1x1)
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
 
-        self.canvas = CTkCanvas(master=self,
-                                highlightthickness=0,
-                                width=self.apply_widget_scaling(self._desired_width),
-                                height=self.apply_widget_scaling(self._desired_height))
-        self.canvas.grid(row=0, column=0, rowspan=1, columnspan=1, sticky="nsew")
-        self.draw_engine = DrawEngine(self.canvas)
+        self._canvas = CTkCanvas(master=self,
+                                 highlightthickness=0,
+                                 width=self._apply_widget_scaling(self._desired_width),
+                                 height=self._apply_widget_scaling(self._desired_height))
+        self._canvas.grid(row=0, column=0, rowspan=1, columnspan=1, sticky="nsew")
+        self._draw_engine = DrawEngine(self._canvas)
 
         left_section_width = self._current_width - self._current_height
-        self.text_label = tkinter.Label(master=self,
-                                        font=self.apply_font_scaling(self.text_font),
-                                        anchor="w",
-                                        text=self.current_value)
-        self.text_label.grid(row=0, column=0, sticky="w",
-                             padx=(max(self.apply_widget_scaling(self.corner_radius), self.apply_widget_scaling(3)),
-                                   max(self.apply_widget_scaling(self._current_width - left_section_width + 3), self.apply_widget_scaling(3))))
+        self._text_label = tkinter.Label(master=self,
+                                         font=self._apply_font_scaling(self._text_font),
+                                         anchor="w",
+                                         text=self._current_value)
+        self._text_label.grid(row=0, column=0, sticky="w",
+                              padx=(max(self._apply_widget_scaling(self._corner_radius), self._apply_widget_scaling(3)),
+                                    max(self._apply_widget_scaling(self._current_width - left_section_width + 3), self._apply_widget_scaling(3))))
 
-        if not self.dynamic_resizing:
+        if not self._dynamic_resizing:
             self.grid_propagate(0)
 
         if Settings.cursor_manipulation_enabled:
@@ -108,204 +113,204 @@ class CTkOptionMenu(CTkBaseClass):
                 self.configure(cursor="hand2")
 
         # event bindings
-        self.canvas.bind("<Enter>", self.on_enter)
-        self.canvas.bind("<Leave>", self.on_leave)
-        self.canvas.bind("<Button-1>", self.clicked)
-        self.canvas.bind("<Button-1>", self.clicked)
+        self._canvas.bind("<Enter>", self._on_enter)
+        self._canvas.bind("<Leave>", self._on_leave)
+        self._canvas.bind("<Button-1>", self._clicked)
+        self._canvas.bind("<Button-1>", self._clicked)
 
-        self.text_label.bind("<Enter>", self.on_enter)
-        self.text_label.bind("<Leave>", self.on_leave)
-        self.text_label.bind("<Button-1>", self.clicked)
-        self.text_label.bind("<Button-1>", self.clicked)
+        self._text_label.bind("<Enter>", self._on_enter)
+        self._text_label.bind("<Leave>", self._on_leave)
+        self._text_label.bind("<Button-1>", self._clicked)
+        self._text_label.bind("<Button-1>", self._clicked)
 
-        self.bind('<Configure>', self.update_dimensions_event)
+        self.bind('<Configure>', self._update_dimensions_event)
 
-        self.draw()  # initial draw
+        self._draw()  # initial draw
 
-        if self.variable is not None:
-            self.variable_callback_name = self.variable.trace_add("write", self.variable_callback)
-            self.current_value = self.variable.get()
-            self.text_label.configure(text=self.current_value)
+        if self._variable is not None:
+            self._variable_callback_name = self._variable.trace_add("write", self._variable_callback)
+            self._current_value = self._variable.get()
+            self._text_label.configure(text=self._current_value)
 
-    def set_scaling(self, *args, **kwargs):
-        super().set_scaling(*args, **kwargs)
+    def _set_scaling(self, *args, **kwargs):
+        super()._set_scaling(*args, **kwargs)
 
         # change label text size and grid padding
         left_section_width = self._current_width - self._current_height
-        self.text_label.configure(font=self.apply_font_scaling(self.text_font))
-        self.text_label.grid(row=0, column=0, sticky="w",
-                             padx=(max(self.apply_widget_scaling(self.corner_radius), self.apply_widget_scaling(3)),
-                                   max(self.apply_widget_scaling(self._current_width - left_section_width + 3), self.apply_widget_scaling(3))))
+        self._text_label.configure(font=self._apply_font_scaling(self._text_font))
+        self._text_label.grid(row=0, column=0, sticky="w",
+                              padx=(max(self._apply_widget_scaling(self._corner_radius), self._apply_widget_scaling(3)),
+                                    max(self._apply_widget_scaling(self._current_width - left_section_width + 3), self._apply_widget_scaling(3))))
 
-        self.canvas.configure(width=self.apply_widget_scaling(self._desired_width),
-                              height=self.apply_widget_scaling(self._desired_height))
-        self.draw()
+        self._canvas.configure(width=self._apply_widget_scaling(self._desired_width),
+                               height=self._apply_widget_scaling(self._desired_height))
+        self._draw()
 
-    def set_dimensions(self, width: int = None, height: int = None):
-        super().set_dimensions(width, height)
+    def _set_dimensions(self, width: int = None, height: int = None):
+        super()._set_dimensions(width, height)
 
-        self.canvas.configure(width=self.apply_widget_scaling(self._desired_width),
-                              height=self.apply_widget_scaling(self._desired_height))
-        self.draw()
+        self._canvas.configure(width=self._apply_widget_scaling(self._desired_width),
+                               height=self._apply_widget_scaling(self._desired_height))
+        self._draw()
 
-    def draw(self, no_color_updates=False):
+    def _draw(self, no_color_updates=False):
         left_section_width = self._current_width - self._current_height
-        requires_recoloring = self.draw_engine.draw_rounded_rect_with_border_vertical_split(self.apply_widget_scaling(self._current_width),
-                                                                                            self.apply_widget_scaling(self._current_height),
-                                                                                            self.apply_widget_scaling(self.corner_radius),
-                                                                                            0,
-                                                                                            self.apply_widget_scaling(left_section_width))
+        requires_recoloring = self._draw_engine.draw_rounded_rect_with_border_vertical_split(self._apply_widget_scaling(self._current_width),
+                                                                                             self._apply_widget_scaling(self._current_height),
+                                                                                             self._apply_widget_scaling(self._corner_radius),
+                                                                                             0,
+                                                                                             self._apply_widget_scaling(left_section_width))
 
-        requires_recoloring_2 = self.draw_engine.draw_dropdown_arrow(self.apply_widget_scaling(self._current_width - (self._current_height / 2)),
-                                                                     self.apply_widget_scaling(self._current_height / 2),
-                                                                     self.apply_widget_scaling(self._current_height / 3))
+        requires_recoloring_2 = self._draw_engine.draw_dropdown_arrow(self._apply_widget_scaling(self._current_width - (self._current_height / 2)),
+                                                                      self._apply_widget_scaling(self._current_height / 2),
+                                                                      self._apply_widget_scaling(self._current_height / 3))
 
         if no_color_updates is False or requires_recoloring or requires_recoloring_2:
 
-            self.canvas.configure(bg=ThemeManager.single_color(self.bg_color, self._appearance_mode))
+            self._canvas.configure(bg=ThemeManager.single_color(self._bg_color, self._appearance_mode))
 
-            self.canvas.itemconfig("inner_parts_left",
-                                   outline=ThemeManager.single_color(self.fg_color, self._appearance_mode),
-                                   fill=ThemeManager.single_color(self.fg_color, self._appearance_mode))
-            self.canvas.itemconfig("inner_parts_right",
-                                   outline=ThemeManager.single_color(self.button_color, self._appearance_mode),
-                                   fill=ThemeManager.single_color(self.button_color, self._appearance_mode))
+            self._canvas.itemconfig("inner_parts_left",
+                                    outline=ThemeManager.single_color(self._fg_color, self._appearance_mode),
+                                    fill=ThemeManager.single_color(self._fg_color, self._appearance_mode))
+            self._canvas.itemconfig("inner_parts_right",
+                                    outline=ThemeManager.single_color(self._button_color, self._appearance_mode),
+                                    fill=ThemeManager.single_color(self._button_color, self._appearance_mode))
 
-            self.text_label.configure(fg=ThemeManager.single_color(self.text_color, self._appearance_mode))
+            self._text_label.configure(fg=ThemeManager.single_color(self._text_color, self._appearance_mode))
 
-            if self.state == tkinter.DISABLED:
-                self.text_label.configure(fg=(ThemeManager.single_color(self.text_color_disabled, self._appearance_mode)))
-                self.canvas.itemconfig("dropdown_arrow",
-                                       fill=ThemeManager.single_color(self.text_color_disabled, self._appearance_mode))
+            if self._state == tkinter.DISABLED:
+                self._text_label.configure(fg=(ThemeManager.single_color(self._text_color_disabled, self._appearance_mode)))
+                self._canvas.itemconfig("dropdown_arrow",
+                                        fill=ThemeManager.single_color(self._text_color_disabled, self._appearance_mode))
             else:
-                self.text_label.configure(fg=ThemeManager.single_color(self.text_color, self._appearance_mode))
-                self.canvas.itemconfig("dropdown_arrow",
-                                       fill=ThemeManager.single_color(self.text_color, self._appearance_mode))
+                self._text_label.configure(fg=ThemeManager.single_color(self._text_color, self._appearance_mode))
+                self._canvas.itemconfig("dropdown_arrow",
+                                        fill=ThemeManager.single_color(self._text_color, self._appearance_mode))
 
-            self.text_label.configure(bg=ThemeManager.single_color(self.fg_color, self._appearance_mode))
+            self._text_label.configure(bg=ThemeManager.single_color(self._fg_color, self._appearance_mode))
 
-        self.canvas.update_idletasks()
+        self._canvas.update_idletasks()
 
-    def open_dropdown_menu(self):
-        self.dropdown_menu.open(self.winfo_rootx(),
-                                self.winfo_rooty() + self.apply_widget_scaling(self._current_height + 0))
+    def _open_dropdown_menu(self):
+        self._dropdown_menu.open(self.winfo_rootx(),
+                                 self.winfo_rooty() + self._apply_widget_scaling(self._current_height + 0))
 
     def configure(self, require_redraw=False, **kwargs):
         if "state" in kwargs:
-            self.state = kwargs.pop("state")
+            self._state = kwargs.pop("state")
             require_redraw = True
 
         if "fg_color" in kwargs:
-            self.fg_color = kwargs.pop("fg_color")
+            self._fg_color = kwargs.pop("fg_color")
             require_redraw = True
 
         if "button_color" in kwargs:
-            self.button_color = kwargs.pop("button_color")
+            self._button_color = kwargs.pop("button_color")
             require_redraw = True
 
         if "button_hover_color" in kwargs:
-            self.button_hover_color = kwargs.pop("button_hover_color")
+            self._button_hover_color = kwargs.pop("button_hover_color")
             require_redraw = True
 
         if "text_color" in kwargs:
-            self.text_color = kwargs.pop("text_color")
+            self._text_color = kwargs.pop("text_color")
             require_redraw = True
 
         if "text_font" in kwargs:
-            self.text_font = kwargs.pop("text_font")
-            self.text_label.configure(font=self.apply_font_scaling(self.text_font))
+            self._text_font = kwargs.pop("text_font")
+            self._text_label.configure(font=self._apply_font_scaling(self._text_font))
 
         if "command" in kwargs:
-            self.command = kwargs.pop("command")
+            self._command = kwargs.pop("command")
 
         if "variable" in kwargs:
-            if self.variable is not None:  # remove old callback
-                self.variable.trace_remove("write", self.variable_callback_name)
+            if self._variable is not None:  # remove old callback
+                self._variable.trace_remove("write", self._variable_callback_name)
 
-            self.variable = kwargs.pop("variable")
+            self._variable = kwargs.pop("variable")
 
-            if self.variable is not None and self.variable != "":
-                self.variable_callback_name = self.variable.trace_add("write", self.variable_callback)
-                self.current_value = self.variable.get()
-                self.text_label.configure(text=self.current_value)
+            if self._variable is not None and self._variable != "":
+                self._variable_callback_name = self._variable.trace_add("write", self._variable_callback)
+                self._current_value = self._variable.get()
+                self._text_label.configure(text=self._current_value)
             else:
-                self.variable = None
+                self._variable = None
 
         if "width" in kwargs:
-            self.set_dimensions(width=kwargs.pop("width"))
+            self._set_dimensions(width=kwargs.pop("width"))
 
         if "height" in kwargs:
-            self.set_dimensions(height=kwargs.pop("height"))
+            self._set_dimensions(height=kwargs.pop("height"))
 
         if "values" in kwargs:
-            self.values = kwargs.pop("values")
-            self.dropdown_menu.configure(values=self.values)
+            self._values = kwargs.pop("values")
+            self._dropdown_menu.configure(values=self._values)
 
         if "dropdown_color" in kwargs:
-            self.dropdown_menu.configure(fg_color=kwargs.pop("dropdown_color"))
+            self._dropdown_menu.configure(fg_color=kwargs.pop("dropdown_color"))
 
         if "dropdown_hover_color" in kwargs:
-            self.dropdown_menu.configure(hover_color=kwargs.pop("dropdown_hover_color"))
+            self._dropdown_menu.configure(hover_color=kwargs.pop("dropdown_hover_color"))
 
         if "dropdown_text_color" in kwargs:
-            self.dropdown_menu.configure(text_color=kwargs.pop("dropdown_text_color"))
+            self._dropdown_menu.configure(text_color=kwargs.pop("dropdown_text_color"))
 
         if "dropdown_text_font" in kwargs:
-            self.dropdown_text_font = kwargs.pop("dropdown_text_font")
-            self.dropdown_menu.configure(text_font=self.dropdown_text_font)
+            self._dropdown_text_font = kwargs.pop("dropdown_text_font")
+            self._dropdown_menu.configure(text_font=self._dropdown_text_font)
 
         if "dynamic_resizing" in kwargs:
-            self.dynamic_resizing = kwargs.pop("dynamic_resizing")
-            if not self.dynamic_resizing:
+            self._dynamic_resizing = kwargs.pop("dynamic_resizing")
+            if not self._dynamic_resizing:
                 self.grid_propagate(0)
             else:
                 self.grid_propagate(1)
 
         super().configure(require_redraw=require_redraw, **kwargs)
 
-    def on_enter(self, event=0):
-        if self.hover is True and self.state == tkinter.NORMAL and len(self.values) > 0:
+    def _on_enter(self, event=0):
+        if self._hover is True and self._state == tkinter.NORMAL and len(self._values) > 0:
             # set color of inner button parts to hover color
-            self.canvas.itemconfig("inner_parts_right",
-                                   outline=ThemeManager.single_color(self.button_hover_color, self._appearance_mode),
-                                   fill=ThemeManager.single_color(self.button_hover_color, self._appearance_mode))
+            self._canvas.itemconfig("inner_parts_right",
+                                    outline=ThemeManager.single_color(self._button_hover_color, self._appearance_mode),
+                                    fill=ThemeManager.single_color(self._button_hover_color, self._appearance_mode))
 
-    def on_leave(self, event=0):
-        if self.hover is True:
+    def _on_leave(self, event=0):
+        if self._hover is True:
             # set color of inner button parts
-            self.canvas.itemconfig("inner_parts_right",
-                                   outline=ThemeManager.single_color(self.button_color, self._appearance_mode),
-                                   fill=ThemeManager.single_color(self.button_color, self._appearance_mode))
+            self._canvas.itemconfig("inner_parts_right",
+                                    outline=ThemeManager.single_color(self._button_color, self._appearance_mode),
+                                    fill=ThemeManager.single_color(self._button_color, self._appearance_mode))
 
-    def variable_callback(self, var_name, index, mode):
-        if not self.variable_callback_blocked:
-            self.current_value = self.variable.get()
-            self.text_label.configure(text=self.current_value)
+    def _variable_callback(self, var_name, index, mode):
+        if not self._variable_callback_blocked:
+            self._current_value = self._variable.get()
+            self._text_label.configure(text=self._current_value)
 
-    def dropdown_callback(self, value: str):
-        self.current_value = value
-        self.text_label.configure(text=self.current_value)
+    def _dropdown_callback(self, value: str):
+        self._current_value = value
+        self._text_label.configure(text=self._current_value)
 
-        if self.variable is not None:
-            self.variable_callback_blocked = True
-            self.variable.set(self.current_value)
-            self.variable_callback_blocked = False
+        if self._variable is not None:
+            self._variable_callback_blocked = True
+            self._variable.set(self._current_value)
+            self._variable_callback_blocked = False
 
-        if self.command is not None:
-            self.command(self.current_value)
+        if self._command is not None:
+            self._command(self._current_value)
 
     def set(self, value: str):
-        self.current_value = value
-        self.text_label.configure(text=self.current_value)
+        self._current_value = value
+        self._text_label.configure(text=self._current_value)
 
-        if self.variable is not None:
-            self.variable_callback_blocked = True
-            self.variable.set(self.current_value)
-            self.variable_callback_blocked = False
+        if self._variable is not None:
+            self._variable_callback_blocked = True
+            self._variable.set(self._current_value)
+            self._variable_callback_blocked = False
 
     def get(self) -> str:
-        return self.current_value
+        return self._current_value
 
-    def clicked(self, event=0):
-        if self.state is not tkinter.DISABLED and len(self.values) > 0:
-            self.open_dropdown_menu()
+    def _clicked(self, event=0):
+        if self._state is not tkinter.DISABLED and len(self._values) > 0:
+            self._open_dropdown_menu()

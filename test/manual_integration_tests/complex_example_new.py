@@ -140,6 +140,9 @@ class App(customtkinter.CTk):
     def sidebar_button_callback(self):
         print("sidebar_button click")
 
+        self.entry.delete(0, tkinter.END)
+
+
     def on_closing(self, event=0):
         self.destroy()
 

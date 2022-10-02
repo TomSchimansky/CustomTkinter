@@ -1,4 +1,5 @@
 import sys
+from typing import Union, Tuple, Callable
 
 from .ctk_canvas import CTkCanvas
 from ..theme_manager import ThemeManager
@@ -7,219 +8,217 @@ from .widget_base_class import CTkBaseClass
 
 
 class CTkScrollbar(CTkBaseClass):
+    """
+    Scrollbar with rounded corners, configurable spacing.
+    Connect to scrollable widget by passing .set() method and set command attribute.
+    For detailed information check out the documentation.
+    """
+
     def __init__(self, *args,
-                 bg_color=None,
-                 fg_color="default_theme",
-                 scrollbar_color="default_theme",
-                 scrollbar_hover_color="default_theme",
-                 border_spacing="default_theme",
-                 corner_radius="default_theme",
-                 width=None,
-                 height=None,
-                 minimum_pixel_length=20,
-                 orientation="vertical",
-                 command=None,
-                 hover=True,
+                 bg_color: Union[str, Tuple[str, str], None] = None,
+                 fg_color: Union[str, Tuple[str, str], None] = "default_theme",
+                 scrollbar_color: Union[str, Tuple[str, str]] = "default_theme",
+                 scrollbar_hover_color: Union[str, Tuple[str, str]] = "default_theme",
+                 border_spacing: Union[int, str] = "default_theme",
+                 corner_radius: Union[int, str] = "default_theme",
+                 width: Union[int, str] = "default_init",
+                 height: Union[int, str] = "default_init",
+                 minimum_pixel_length: int = 20,
+                 orientation: str = "vertical",
+                 command: Callable = None,
+                 hover: bool = True,
                  **kwargs):
 
         # set default dimensions according to orientation
-        if width is None:
+        if width == "default_init":
             if orientation.lower() == "vertical":
                 width = 16
             else:
                 width = 200
-        if height is None:
+        if height == "default_init":
             if orientation.lower() == "horizontal":
                 height = 16
             else:
                 height = 200
 
-        # transfer basic functionality (bg_color, size, _appearance_mode, scaling) to CTkBaseClass
+        # transfer basic functionality (_bg_color, size, _appearance_mode, scaling) to CTkBaseClass
         super().__init__(*args, bg_color=bg_color, width=width, height=height, **kwargs)
 
         # color
-        self.fg_color = ThemeManager.theme["color"]["frame_high"] if fg_color == "default_theme" else fg_color
-        self.scrollbar_color = ThemeManager.theme["color"]["scrollbar_button"] if scrollbar_color == "default_theme" else scrollbar_color
-        self.scrollbar_hover_color = ThemeManager.theme["color"]["scrollbar_button_hover"] if scrollbar_hover_color == "default_theme" else scrollbar_hover_color
+        self._fg_color = ThemeManager.theme["color"]["frame_high"] if fg_color == "default_theme" else fg_color
+        self._scrollbar_color = ThemeManager.theme["color"]["scrollbar_button"] if scrollbar_color == "default_theme" else scrollbar_color
+        self._scrollbar_hover_color = ThemeManager.theme["color"]["scrollbar_button_hover"] if scrollbar_hover_color == "default_theme" else scrollbar_hover_color
 
         # shape
-        self.corner_radius = ThemeManager.theme["shape"]["scrollbar_corner_radius"] if corner_radius == "default_theme" else corner_radius
-        self.border_spacing = ThemeManager.theme["shape"]["scrollbar_border_spacing"] if border_spacing == "default_theme" else border_spacing
+        self._corner_radius = ThemeManager.theme["shape"]["scrollbar_corner_radius"] if corner_radius == "default_theme" else corner_radius
+        self._border_spacing = ThemeManager.theme["shape"]["scrollbar_border_spacing"] if border_spacing == "default_theme" else border_spacing
 
-        self.hover = hover
-        self.hover_state = False
-        self.command = command
-        self.orientation = orientation
-        self.start_value: float = 0  # 0 to 1
-        self.end_value: float = 1  # 0 to 1
-        self.minimum_pixel_length = minimum_pixel_length
+        self._hover = hover
+        self._hover_state: bool = False
+        self._command = command
+        self._orientation = orientation
+        self._start_value: float = 0  # 0 to 1
+        self._end_value: float = 1  # 0 to 1
+        self._minimum_pixel_length = minimum_pixel_length
 
-        self.canvas = CTkCanvas(master=self,
-                                highlightthickness=0,
-                                width=self.apply_widget_scaling(self._current_width),
-                                height=self.apply_widget_scaling(self._current_height))
-        self.canvas.place(x=0, y=0, relwidth=1, relheight=1)
-        self.draw_engine = DrawEngine(self.canvas)
+        self._canvas = CTkCanvas(master=self,
+                                 highlightthickness=0,
+                                 width=self._apply_widget_scaling(self._current_width),
+                                 height=self._apply_widget_scaling(self._current_height))
+        self._canvas.place(x=0, y=0, relwidth=1, relheight=1)
+        self._draw_engine = DrawEngine(self._canvas)
 
-        self.canvas.bind("<Enter>", self.on_enter)
-        self.canvas.bind("<Leave>", self.on_leave)
-        self.canvas.tag_bind("border_parts", "<Button-1>", self.clicked)
-        self.canvas.bind("<B1-Motion>", self.clicked)
-        self.canvas.bind("<MouseWheel>", self.mouse_scroll_event)
-        self.bind('<Configure>', self.update_dimensions_event)
+        self._canvas.bind("<Enter>", self._on_enter)
+        self._canvas.bind("<Leave>", self._on_leave)
+        self._canvas.tag_bind("border_parts", "<Button-1>", self._clicked)
+        self._canvas.bind("<B1-Motion>", self._clicked)
+        self._canvas.bind("<MouseWheel>", self._mouse_scroll_event)
+        self.bind('<Configure>', self._update_dimensions_event)
 
-        self.draw()
+        self._draw()
 
-    def set_scaling(self, *args, **kwargs):
-        super().set_scaling(*args, **kwargs)
+    def _set_scaling(self, *args, **kwargs):
+        super()._set_scaling(*args, **kwargs)
 
-        self.canvas.configure(width=self.apply_widget_scaling(self._desired_width), height=self.apply_widget_scaling(self._desired_height))
-        self.draw(no_color_updates=True)
+        self._canvas.configure(width=self._apply_widget_scaling(self._desired_width),
+                               height=self._apply_widget_scaling(self._desired_height))
+        self._draw(no_color_updates=True)
 
-    def set_dimensions(self, width=None, height=None):
-        super().set_dimensions(width, height)
+    def _set_dimensions(self, width=None, height=None):
+        super()._set_dimensions(width, height)
 
-        self.canvas.configure(width=self.apply_widget_scaling(self._desired_width),
-                              height=self.apply_widget_scaling(self._desired_height))
-        self.draw(no_color_updates=True)
+        self._canvas.configure(width=self._apply_widget_scaling(self._desired_width),
+                               height=self._apply_widget_scaling(self._desired_height))
+        self._draw(no_color_updates=True)
 
-    def get_scrollbar_values_for_minimum_pixel_size(self):
+    def _get_scrollbar_values_for_minimum_pixel_size(self):
         # correct scrollbar float values if scrollbar is too small
-        if self.orientation == "vertical":
-            scrollbar_pixel_length = (self.end_value - self.start_value) * self._current_height
-            if scrollbar_pixel_length < self.minimum_pixel_length and -scrollbar_pixel_length + self._current_height != 0:
+        if self._orientation == "vertical":
+            scrollbar_pixel_length = (self._end_value - self._start_value) * self._current_height
+            if scrollbar_pixel_length < self._minimum_pixel_length and -scrollbar_pixel_length + self._current_height != 0:
                 # calculate how much to increase the float interval values so that the scrollbar width is self.minimum_pixel_length
-                interval_extend_factor = (-scrollbar_pixel_length + self.minimum_pixel_length) / (-scrollbar_pixel_length + self._current_height)
-                corrected_end_value = self.end_value + (1 - self.end_value) * interval_extend_factor
-                corrected_start_value = self.start_value - self.start_value * interval_extend_factor
+                interval_extend_factor = (-scrollbar_pixel_length + self._minimum_pixel_length) / (-scrollbar_pixel_length + self._current_height)
+                corrected_end_value = self._end_value + (1 - self._end_value) * interval_extend_factor
+                corrected_start_value = self._start_value - self._start_value * interval_extend_factor
                 return corrected_start_value, corrected_end_value
             else:
-                return self.start_value, self.end_value
+                return self._start_value, self._end_value
 
         else:
-            scrollbar_pixel_length = (self.end_value - self.start_value) * self._current_width
-            if scrollbar_pixel_length < self.minimum_pixel_length and -scrollbar_pixel_length + self._current_width != 0:
+            scrollbar_pixel_length = (self._end_value - self._start_value) * self._current_width
+            if scrollbar_pixel_length < self._minimum_pixel_length and -scrollbar_pixel_length + self._current_width != 0:
                 # calculate how much to increase the float interval values so that the scrollbar width is self.minimum_pixel_length
-                interval_extend_factor = (-scrollbar_pixel_length + self.minimum_pixel_length) / (-scrollbar_pixel_length + self._current_width)
-                corrected_end_value = self.end_value + (1 - self.end_value) * interval_extend_factor
-                corrected_start_value = self.start_value - self.start_value * interval_extend_factor
+                interval_extend_factor = (-scrollbar_pixel_length + self._minimum_pixel_length) / (-scrollbar_pixel_length + self._current_width)
+                corrected_end_value = self._end_value + (1 - self._end_value) * interval_extend_factor
+                corrected_start_value = self._start_value - self._start_value * interval_extend_factor
                 return corrected_start_value, corrected_end_value
             else:
-                return self.start_value, self.end_value
+                return self._start_value, self._end_value
 
-    def draw(self, no_color_updates=False):
-        corrected_start_value, corrected_end_value = self.get_scrollbar_values_for_minimum_pixel_size()
-        requires_recoloring = self.draw_engine.draw_rounded_scrollbar(self.apply_widget_scaling(self._current_width),
-                                                                      self.apply_widget_scaling(self._current_height),
-                                                                      self.apply_widget_scaling(self.corner_radius),
-                                                                      self.apply_widget_scaling(self.border_spacing),
-                                                                      corrected_start_value,
-                                                                      corrected_end_value,
-                                                                      self.orientation)
+    def _draw(self, no_color_updates=False):
+        corrected_start_value, corrected_end_value = self._get_scrollbar_values_for_minimum_pixel_size()
+        requires_recoloring = self._draw_engine.draw_rounded_scrollbar(self._apply_widget_scaling(self._current_width),
+                                                                       self._apply_widget_scaling(self._current_height),
+                                                                       self._apply_widget_scaling(self._corner_radius),
+                                                                       self._apply_widget_scaling(self._border_spacing),
+                                                                       corrected_start_value,
+                                                                       corrected_end_value,
+                                                                       self._orientation)
 
         if no_color_updates is False or requires_recoloring:
-            if self.hover_state is True:
-                self.canvas.itemconfig("scrollbar_parts",
-                                       fill=ThemeManager.single_color(self.scrollbar_hover_color, self._appearance_mode),
-                                       outline=ThemeManager.single_color(self.scrollbar_hover_color, self._appearance_mode))
+            if self._hover_state is True:
+                self._canvas.itemconfig("scrollbar_parts",
+                                        fill=ThemeManager.single_color(self._scrollbar_hover_color, self._appearance_mode),
+                                        outline=ThemeManager.single_color(self._scrollbar_hover_color, self._appearance_mode))
             else:
-                self.canvas.itemconfig("scrollbar_parts",
-                                       fill=ThemeManager.single_color(self.scrollbar_color, self._appearance_mode),
-                                       outline=ThemeManager.single_color(self.scrollbar_color, self._appearance_mode))
+                self._canvas.itemconfig("scrollbar_parts",
+                                        fill=ThemeManager.single_color(self._scrollbar_color, self._appearance_mode),
+                                        outline=ThemeManager.single_color(self._scrollbar_color, self._appearance_mode))
 
-            if self.fg_color is None:
-                self.canvas.configure(bg=ThemeManager.single_color(self.bg_color, self._appearance_mode))
-                self.canvas.itemconfig("border_parts",
-                                       fill=ThemeManager.single_color(self.bg_color, self._appearance_mode),
-                                       outline=ThemeManager.single_color(self.bg_color, self._appearance_mode))
+            if self._fg_color is None:
+                self._canvas.configure(bg=ThemeManager.single_color(self._bg_color, self._appearance_mode))
+                self._canvas.itemconfig("border_parts",
+                                        fill=ThemeManager.single_color(self._bg_color, self._appearance_mode),
+                                        outline=ThemeManager.single_color(self._bg_color, self._appearance_mode))
             else:
-                self.canvas.configure(bg=ThemeManager.single_color(self.fg_color, self._appearance_mode))
-                self.canvas.itemconfig("border_parts",
-                                       fill=ThemeManager.single_color(self.fg_color, self._appearance_mode),
-                                       outline=ThemeManager.single_color(self.fg_color, self._appearance_mode))
+                self._canvas.configure(bg=ThemeManager.single_color(self._fg_color, self._appearance_mode))
+                self._canvas.itemconfig("border_parts",
+                                        fill=ThemeManager.single_color(self._fg_color, self._appearance_mode),
+                                        outline=ThemeManager.single_color(self._fg_color, self._appearance_mode))
 
-        self.canvas.update_idletasks()
+        self._canvas.update_idletasks()
 
     def set(self, start_value: float, end_value: float):
-        self.start_value = float(start_value)
-        self.end_value = float(end_value)
-        self.draw()
+        self._start_value = float(start_value)
+        self._end_value = float(end_value)
+        self._draw()
 
     def get(self):
-        return self.start_value, self.end_value
+        return self._start_value, self._end_value
 
     def configure(self, require_redraw=False, **kwargs):
         if "fg_color" in kwargs:
-            self.fg_color = kwargs["fg_color"]
+            self._fg_color = kwargs.pop("fg_color")
             require_redraw = True
-            del kwargs["fg_color"]
 
         if "scrollbar_color" in kwargs:
-            self.scrollbar_color = kwargs["scrollbar_color"]
+            self._scrollbar_color = kwargs.pop("scrollbar_color")
             require_redraw = True
-            del kwargs["scrollbar_color"]
 
         if "scrollbar_hover_color" in kwargs:
-            self.scrollbar_hover_color = kwargs["scrollbar_hover_color"]
+            self._scrollbar_hover_color = kwargs.pop("scrollbar_hover_color")
             require_redraw = True
-            del kwargs["scrollbar_hover_color"]
 
         if "command" in kwargs:
-            self.command = kwargs["command"]
-            del kwargs["command"]
+            self._command = kwargs.pop("command")
 
         if "corner_radius" in kwargs:
-            self.corner_radius = kwargs["corner_radius"]
+            self._corner_radius = kwargs.pop("corner_radius")
             require_redraw = True
-            del kwargs["corner_radius"]
 
         if "border_spacing" in kwargs:
-            self.border_spacing = kwargs["border_spacing"]
+            self._border_spacing = kwargs.pop("border_spacing")
             require_redraw = True
-            del kwargs["border_spacing"]
 
         if "width" in kwargs:
-            self.set_dimensions(width=kwargs["width"])
-            del kwargs["width"]
+            self._set_dimensions(width=kwargs.pop("width"))
 
         if "height" in kwargs:
-            self.set_dimensions(height=kwargs["height"])
-            del kwargs["height"]
+            self._set_dimensions(height=kwargs.pop("height"))
 
         super().configure(require_redraw=require_redraw, **kwargs)
 
-    def on_enter(self, event=0):
-        if self.hover is True:
-            self.hover_state = True
-            self.canvas.itemconfig("scrollbar_parts",
-                                   outline=ThemeManager.single_color(self.scrollbar_hover_color, self._appearance_mode),
-                                   fill=ThemeManager.single_color(self.scrollbar_hover_color, self._appearance_mode))
+    def _on_enter(self, event=0):
+        if self._hover is True:
+            self._hover_state = True
+            self._canvas.itemconfig("scrollbar_parts",
+                                    outline=ThemeManager.single_color(self._scrollbar_hover_color, self._appearance_mode),
+                                    fill=ThemeManager.single_color(self._scrollbar_hover_color, self._appearance_mode))
 
-    def on_leave(self, event=0):
-        self.hover_state = False
-        self.canvas.itemconfig("scrollbar_parts",
-                               outline=ThemeManager.single_color(self.scrollbar_color, self._appearance_mode),
-                               fill=ThemeManager.single_color(self.scrollbar_color, self._appearance_mode))
+    def _on_leave(self, event=0):
+        self._hover_state = False
+        self._canvas.itemconfig("scrollbar_parts",
+                                outline=ThemeManager.single_color(self._scrollbar_color, self._appearance_mode),
+                                fill=ThemeManager.single_color(self._scrollbar_color, self._appearance_mode))
 
-    def clicked(self, event):
-        if self.orientation == "vertical":
-            value = ((event.y - self.border_spacing) / (self._current_height - 2 * self.border_spacing)) / self._widget_scaling
+    def _clicked(self, event):
+        if self._orientation == "vertical":
+            value = ((event.y - self._border_spacing) / (self._current_height - 2 * self._border_spacing)) / self._widget_scaling
         else:
-            value = ((event.x - self.border_spacing) / (self._current_width - 2 * self.border_spacing)) / self._widget_scaling
+            value = ((event.x - self._border_spacing) / (self._current_width - 2 * self._border_spacing)) / self._widget_scaling
 
-        current_scrollbar_length = self.end_value - self.start_value
+        current_scrollbar_length = self._end_value - self._start_value
         value = max(current_scrollbar_length / 2, min(value, 1 - (current_scrollbar_length / 2)))
-        self.start_value = value - (current_scrollbar_length / 2)
-        self.end_value = value + (current_scrollbar_length / 2)
-        self.draw()
+        self._start_value = value - (current_scrollbar_length / 2)
+        self._end_value = value + (current_scrollbar_length / 2)
+        self._draw()
 
-        if self.command is not None:
-            self.command('moveto', self.start_value)
+        if self._command is not None:
+            self._command('moveto', self._start_value)
 
-    def mouse_scroll_event(self, event=None):
-        if self.command is not None:
+    def _mouse_scroll_event(self, event=None):
+        if self._command is not None:
             if sys.platform.startswith("win"):
-                self.command('scroll', -int(event.delta/40), 'units')
+                self._command('scroll', -int(event.delta/40), 'units')
             else:
-                self.command('scroll', -event.delta, 'units')
-
+                self._command('scroll', -event.delta, 'units')

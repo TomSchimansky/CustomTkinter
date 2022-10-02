@@ -1,5 +1,6 @@
 import tkinter
 import sys
+from typing import Union, Tuple, Callable
 
 from .ctk_canvas import CTkCanvas
 from ..theme_manager import ThemeManager
@@ -9,316 +10,322 @@ from .widget_base_class import CTkBaseClass
 
 
 class CTkSwitch(CTkBaseClass):
+    """
+    Switch with rounded corners, border, label, command, variable support.
+    For detailed information check out the documentation.
+    """
+
     def __init__(self, *args,
-                 text="CTkSwitch",
-                 text_font="default_theme",
-                 text_color="default_theme",
-                 text_color_disabled="default_theme",
-                 bg_color=None,
-                 border_color=None,
-                 fg_color="default_theme",
-                 progress_color="default_theme",
-                 button_color="default_theme",
-                 button_hover_color="default_theme",
-                 width=36,
-                 height=18,
-                 corner_radius="default_theme",
-                 # button_corner_radius="default_theme",
-                 border_width="default_theme",
-                 button_length="default_theme",
-                 command=None,
-                 onvalue=1,
-                 offvalue=0,
-                 variable=None,
-                 textvariable=None,
-                 state=tkinter.NORMAL,
+                 bg_color: Union[str, Tuple[str, str], None] = None,
+                 border_color: Union[str, Tuple[str, str], None] = None,
+                 fg_color: Union[str, Tuple[str, str]] = "default_theme",
+                 progress_color: Union[str, Tuple[str, str]] = "default_theme",
+                 button_color: Union[str, Tuple[str, str]] = "default_theme",
+                 button_hover_color: Union[str, Tuple[str, str]] = "default_theme",
+                 width: int = 36,
+                 height: int = 18,
+                 text: str = "CTkSwitch",
+                 text_font: any = "default_theme",
+                 text_color: Union[str, Tuple[str, str]] = "default_theme",
+                 text_color_disabled: Union[str, Tuple[str, str]] = "default_theme",
+                 corner_radius: Union[int, str] = "default_theme",
+                 border_width: Union[int, str] = "default_theme",
+                 button_length: Union[int, str] = "default_theme",
+                 command: Callable = None,
+                 onvalue: Union[int, str] = 1,
+                 offvalue: Union[int, str] = 0,
+                 variable: tkinter.Variable = None,
+                 textvariable: tkinter.Variable = None,
+                 state: str = tkinter.NORMAL,
                  **kwargs):
 
-        # transfer basic functionality (bg_color, size, _appearance_mode, scaling) to CTkBaseClass
+        # transfer basic functionality (_bg_color, size, _appearance_mode, scaling) to CTkBaseClass
         super().__init__(*args, bg_color=bg_color, width=width, height=height, **kwargs)
 
         # color
-        self.border_color = border_color
-        self.fg_color = ThemeManager.theme["color"]["switch"] if fg_color == "default_theme" else fg_color
-        self.progress_color = ThemeManager.theme["color"]["switch_progress"] if progress_color == "default_theme" else progress_color
-        self.button_color = ThemeManager.theme["color"]["switch_button"] if button_color == "default_theme" else button_color
-        self.button_hover_color = ThemeManager.theme["color"]["switch_button_hover"] if button_hover_color == "default_theme" else button_hover_color
-        self.text_color = ThemeManager.theme["color"]["text"] if text_color == "default_theme" else text_color
-        self.text_color_disabled = ThemeManager.theme["color"]["text_disabled"] if text_color_disabled == "default_theme" else text_color_disabled
+        self._border_color = border_color
+        self._fg_color = ThemeManager.theme["color"]["switch"] if fg_color == "default_theme" else fg_color
+        self._progress_color = ThemeManager.theme["color"]["switch_progress"] if progress_color == "default_theme" else progress_color
+        self._button_color = ThemeManager.theme["color"]["switch_button"] if button_color == "default_theme" else button_color
+        self._button_hover_color = ThemeManager.theme["color"]["switch_button_hover"] if button_hover_color == "default_theme" else button_hover_color
+        self._text_color = ThemeManager.theme["color"]["text"] if text_color == "default_theme" else text_color
+        self._text_color_disabled = ThemeManager.theme["color"]["text_disabled"] if text_color_disabled == "default_theme" else text_color_disabled
 
         # text
-        self.text = text
-        self.text_label = None
-        self.text_font = (ThemeManager.theme["text"]["font"], ThemeManager.theme["text"]["size"]) if text_font == "default_theme" else text_font
+        self._text = text
+        self._text_label = None
+        self._text_font = (ThemeManager.theme["text"]["font"], ThemeManager.theme["text"]["size"]) if text_font == "default_theme" else text_font
 
         # shape
-        self.corner_radius = ThemeManager.theme["shape"]["switch_corner_radius"] if corner_radius == "default_theme" else corner_radius
+        self._corner_radius = ThemeManager.theme["shape"]["switch_corner_radius"] if corner_radius == "default_theme" else corner_radius
         # self.button_corner_radius = ThemeManager.theme["shape"]["switch_button_corner_radius"] if button_corner_radius == "default_theme" else button_corner_radius
-        self.border_width = ThemeManager.theme["shape"]["switch_border_width"] if border_width == "default_theme" else border_width
-        self.button_length = ThemeManager.theme["shape"]["switch_button_length"] if button_length == "default_theme" else button_length
-        self.hover_state = False
-        self.check_state = False  # True if switch is activated
-        self.state = state
-        self.onvalue = onvalue
-        self.offvalue = offvalue
+        self._border_width = ThemeManager.theme["shape"]["switch_border_width"] if border_width == "default_theme" else border_width
+        self._button_length = ThemeManager.theme["shape"]["switch_button_length"] if button_length == "default_theme" else button_length
+        self._hover_state: bool = False
+        self._check_state: bool = False  # True if switch is activated
+        self._state = state
+        self._onvalue = onvalue
+        self._offvalue = offvalue
 
         # callback and control variables
-        self.command = command
-        self.variable: tkinter.Variable = variable
-        self.variable_callback_blocked = False
-        self.variable_callback_name = None
-        self.textvariable = textvariable
+        self._command = command
+        self._variable: tkinter.Variable = variable
+        self._variable_callback_blocked = False
+        self._variable_callback_name = None
+        self._textvariable = textvariable
 
         # configure grid system (3x1)
         self.grid_columnconfigure(0, weight=1)
-        self.grid_columnconfigure(1, weight=0, minsize=self.apply_widget_scaling(6))
+        self.grid_columnconfigure(1, weight=0, minsize=self._apply_widget_scaling(6))
         self.grid_columnconfigure(2, weight=0)
 
-        self.bg_canvas = CTkCanvas(master=self,
-                                   highlightthickness=0,
-                                   width=self.apply_widget_scaling(self._current_width),
-                                   height=self.apply_widget_scaling(self._current_height))
-        self.bg_canvas.grid(row=0, column=0, padx=0, pady=0, columnspan=3, rowspan=1, sticky="nswe")
+        self._bg_canvas = CTkCanvas(master=self,
+                                    highlightthickness=0,
+                                    width=self._apply_widget_scaling(self._current_width),
+                                    height=self._apply_widget_scaling(self._current_height))
+        self._bg_canvas.grid(row=0, column=0, padx=0, pady=0, columnspan=3, rowspan=1, sticky="nswe")
 
-        self.canvas = CTkCanvas(master=self,
-                                highlightthickness=0,
-                                width=self.apply_widget_scaling(self._current_width),
-                                height=self.apply_widget_scaling(self._current_height))
-        self.canvas.grid(row=0, column=0, padx=0, pady=0, columnspan=1, sticky="nswe")
-        self.draw_engine = DrawEngine(self.canvas)
+        self._canvas = CTkCanvas(master=self,
+                                 highlightthickness=0,
+                                 width=self._apply_widget_scaling(self._current_width),
+                                 height=self._apply_widget_scaling(self._current_height))
+        self._canvas.grid(row=0, column=0, padx=0, pady=0, columnspan=1, sticky="nswe")
+        self._draw_engine = DrawEngine(self._canvas)
 
-        self.canvas.bind("<Enter>", self.on_enter)
-        self.canvas.bind("<Leave>", self.on_leave)
-        self.canvas.bind("<Button-1>", self.toggle)
+        self._canvas.bind("<Enter>", self._on_enter)
+        self._canvas.bind("<Leave>", self._on_leave)
+        self._canvas.bind("<Button-1>", self.toggle)
 
-        self.text_label = tkinter.Label(master=self,
-                                        bd=0,
-                                        text=self.text,
-                                        justify=tkinter.LEFT,
-                                        font=self.apply_font_scaling(self.text_font),
-                                        textvariable=self.textvariable)
-        self.text_label.grid(row=0, column=2, padx=0, pady=0, sticky="w")
-        self.text_label["anchor"] = "w"
+        self._text_label = tkinter.Label(master=self,
+                                         bd=0,
+                                         text=self._text,
+                                         justify=tkinter.LEFT,
+                                         font=self._apply_font_scaling(self._text_font),
+                                         textvariable=self._textvariable)
+        self._text_label.grid(row=0, column=2, padx=0, pady=0, sticky="w")
+        self._text_label["anchor"] = "w"
 
-        self.text_label.bind("<Enter>", self.on_enter)
-        self.text_label.bind("<Leave>", self.on_leave)
-        self.text_label.bind("<Button-1>", self.toggle)
+        self._text_label.bind("<Enter>", self._on_enter)
+        self._text_label.bind("<Leave>", self._on_leave)
+        self._text_label.bind("<Button-1>", self.toggle)
 
-        if self.variable is not None and self.variable != "":
-            self.variable_callback_name = self.variable.trace_add("write", self.variable_callback)
-            self.check_state = True if self.variable.get() == self.onvalue else False
+        if self._variable is not None and self._variable != "":
+            self._variable_callback_name = self._variable.trace_add("write", self._variable_callback)
+            self.c_heck_state = True if self._variable.get() == self._onvalue else False
 
-        self.draw()  # initial draw
-        self.set_cursor()
+        self._draw()  # initial draw
+        self._set_cursor()
 
-    def set_scaling(self, *args, **kwargs):
-        super().set_scaling(*args, **kwargs)
+    def _set_scaling(self, *args, **kwargs):
+        super()._set_scaling(*args, **kwargs)
 
-        self.grid_columnconfigure(1, weight=0, minsize=self.apply_widget_scaling(6))
-        self.text_label.configure(font=self.apply_font_scaling(self.text_font))
+        self.grid_columnconfigure(1, weight=0, minsize=self._apply_widget_scaling(6))
+        self._text_label.configure(font=self._apply_font_scaling(self._text_font))
 
-        self.bg_canvas.configure(width=self.apply_widget_scaling(self._desired_width), height=self.apply_widget_scaling(self._desired_height))
-        self.canvas.configure(width=self.apply_widget_scaling(self._desired_width), height=self.apply_widget_scaling(self._desired_height))
-        self.draw()
+        self._bg_canvas.configure(width=self._apply_widget_scaling(self._desired_width), height=self._apply_widget_scaling(self._desired_height))
+        self._canvas.configure(width=self._apply_widget_scaling(self._desired_width), height=self._apply_widget_scaling(self._desired_height))
+        self._draw()
 
     def destroy(self):
         # remove variable_callback from variable callbacks if variable exists
-        if self.variable is not None:
-            self.variable.trace_remove("write", self.variable_callback_name)
+        if self._variable is not None:
+            self._variable.trace_remove("write", self._variable_callback_name)
 
         super().destroy()
 
-    def set_cursor(self):
+    def _set_cursor(self):
         if Settings.cursor_manipulation_enabled:
-            if self.state == tkinter.DISABLED:
+            if self._state == tkinter.DISABLED:
                 if sys.platform == "darwin" and Settings.cursor_manipulation_enabled:
-                    self.canvas.configure(cursor="arrow")
-                    if self.text_label is not None:
-                        self.text_label.configure(cursor="arrow")
+                    self._canvas.configure(cursor="arrow")
+                    if self._text_label is not None:
+                        self._text_label.configure(cursor="arrow")
                 elif sys.platform.startswith("win") and Settings.cursor_manipulation_enabled:
-                    self.canvas.configure(cursor="arrow")
-                    if self.text_label is not None:
-                        self.text_label.configure(cursor="arrow")
+                    self._canvas.configure(cursor="arrow")
+                    if self._text_label is not None:
+                        self._text_label.configure(cursor="arrow")
 
-            elif self.state == tkinter.NORMAL:
+            elif self._state == tkinter.NORMAL:
                 if sys.platform == "darwin" and Settings.cursor_manipulation_enabled:
-                    self.canvas.configure(cursor="pointinghand")
-                    if self.text_label is not None:
-                        self.text_label.configure(cursor="pointinghand")
+                    self._canvas.configure(cursor="pointinghand")
+                    if self._text_label is not None:
+                        self._text_label.configure(cursor="pointinghand")
                 elif sys.platform.startswith("win") and Settings.cursor_manipulation_enabled:
-                    self.canvas.configure(cursor="hand2")
-                    if self.text_label is not None:
-                        self.text_label.configure(cursor="hand2")
+                    self._canvas.configure(cursor="hand2")
+                    if self._text_label is not None:
+                        self._text_label.configure(cursor="hand2")
 
-    def draw(self, no_color_updates=False):
+    def _draw(self, no_color_updates=False):
 
-        if self.check_state is True:
-            requires_recoloring = self.draw_engine.draw_rounded_slider_with_border_and_button(self.apply_widget_scaling(self._current_width),
-                                                                                              self.apply_widget_scaling(self._current_height),
-                                                                                              self.apply_widget_scaling(self.corner_radius),
-                                                                                              self.apply_widget_scaling(self.border_width),
-                                                                                              self.apply_widget_scaling(self.button_length),
-                                                                                              self.apply_widget_scaling(self.corner_radius),
-                                                                                              1, "w")
+        if self._check_state is True:
+            requires_recoloring = self._draw_engine.draw_rounded_slider_with_border_and_button(self._apply_widget_scaling(self._current_width),
+                                                                                               self._apply_widget_scaling(self._current_height),
+                                                                                               self._apply_widget_scaling(self._corner_radius),
+                                                                                               self._apply_widget_scaling(self._border_width),
+                                                                                               self._apply_widget_scaling(self._button_length),
+                                                                                               self._apply_widget_scaling(self._corner_radius),
+                                                                                               1, "w")
         else:
-            requires_recoloring = self.draw_engine.draw_rounded_slider_with_border_and_button(self.apply_widget_scaling(self._current_width),
-                                                                                              self.apply_widget_scaling(self._current_height),
-                                                                                              self.apply_widget_scaling(self.corner_radius),
-                                                                                              self.apply_widget_scaling(self.border_width),
-                                                                                              self.apply_widget_scaling(self.button_length),
-                                                                                              self.apply_widget_scaling(self.corner_radius),
-                                                                                              0, "w")
+            requires_recoloring = self._draw_engine.draw_rounded_slider_with_border_and_button(self._apply_widget_scaling(self._current_width),
+                                                                                               self._apply_widget_scaling(self._current_height),
+                                                                                               self._apply_widget_scaling(self._corner_radius),
+                                                                                               self._apply_widget_scaling(self._border_width),
+                                                                                               self._apply_widget_scaling(self._button_length),
+                                                                                               self._apply_widget_scaling(self._corner_radius),
+                                                                                               0, "w")
 
         if no_color_updates is False or requires_recoloring:
-            self.bg_canvas.configure(bg=ThemeManager.single_color(self.bg_color, self._appearance_mode))
-            self.canvas.configure(bg=ThemeManager.single_color(self.bg_color, self._appearance_mode))
+            self._bg_canvas.configure(bg=ThemeManager.single_color(self._bg_color, self._appearance_mode))
+            self._canvas.configure(bg=ThemeManager.single_color(self._bg_color, self._appearance_mode))
 
-            if self.border_color is None:
-                self.canvas.itemconfig("border_parts", fill=ThemeManager.single_color(self.bg_color, self._appearance_mode),
-                                       outline=ThemeManager.single_color(self.bg_color, self._appearance_mode))
+            if self._border_color is None:
+                self._canvas.itemconfig("border_parts", fill=ThemeManager.single_color(self._bg_color, self._appearance_mode),
+                                        outline=ThemeManager.single_color(self._bg_color, self._appearance_mode))
             else:
-                self.canvas.itemconfig("border_parts", fill=ThemeManager.single_color(self.border_color, self._appearance_mode),
-                                       outline=ThemeManager.single_color(self.border_color, self._appearance_mode))
+                self._canvas.itemconfig("border_parts", fill=ThemeManager.single_color(self._border_color, self._appearance_mode),
+                                        outline=ThemeManager.single_color(self._border_color, self._appearance_mode))
 
-            self.canvas.itemconfig("inner_parts", fill=ThemeManager.single_color(self.fg_color, self._appearance_mode),
-                                   outline=ThemeManager.single_color(self.fg_color, self._appearance_mode))
+            self._canvas.itemconfig("inner_parts", fill=ThemeManager.single_color(self._fg_color, self._appearance_mode),
+                                    outline=ThemeManager.single_color(self._fg_color, self._appearance_mode))
 
-            if self.progress_color is None:
-                self.canvas.itemconfig("progress_parts", fill=ThemeManager.single_color(self.fg_color, self._appearance_mode),
-                                       outline=ThemeManager.single_color(self.fg_color, self._appearance_mode))
+            if self._progress_color is None:
+                self._canvas.itemconfig("progress_parts", fill=ThemeManager.single_color(self._fg_color, self._appearance_mode),
+                                        outline=ThemeManager.single_color(self._fg_color, self._appearance_mode))
             else:
-                self.canvas.itemconfig("progress_parts", fill=ThemeManager.single_color(self.progress_color, self._appearance_mode),
-                                       outline=ThemeManager.single_color(self.progress_color, self._appearance_mode))
+                self._canvas.itemconfig("progress_parts", fill=ThemeManager.single_color(self._progress_color, self._appearance_mode),
+                                        outline=ThemeManager.single_color(self._progress_color, self._appearance_mode))
 
-            self.canvas.itemconfig("slider_parts", fill=ThemeManager.single_color(self.button_color, self._appearance_mode),
-                                   outline=ThemeManager.single_color(self.button_color, self._appearance_mode))
+            self._canvas.itemconfig("slider_parts", fill=ThemeManager.single_color(self._button_color, self._appearance_mode),
+                                    outline=ThemeManager.single_color(self._button_color, self._appearance_mode))
 
-        if self.state == tkinter.DISABLED:
-            self.text_label.configure(fg=(ThemeManager.single_color(self.text_color_disabled, self._appearance_mode)))
+        if self._state == tkinter.DISABLED:
+            self._text_label.configure(fg=(ThemeManager.single_color(self._text_color_disabled, self._appearance_mode)))
         else:
-            self.text_label.configure(fg=ThemeManager.single_color(self.text_color, self._appearance_mode))
+            self._text_label.configure(fg=ThemeManager.single_color(self._text_color, self._appearance_mode))
 
-        self.text_label.configure(bg=ThemeManager.single_color(self.bg_color, self._appearance_mode))
+        self._text_label.configure(bg=ThemeManager.single_color(self._bg_color, self._appearance_mode))
 
     def toggle(self, event=None):
-        if self.state is not tkinter.DISABLED:
-            if self.check_state is True:
-                self.check_state = False
+        if self._state is not tkinter.DISABLED:
+            if self._check_state is True:
+                self._check_state = False
             else:
-                self.check_state = True
+                self._check_state = True
 
-            self.draw(no_color_updates=True)
+            self._draw(no_color_updates=True)
 
-            if self.variable is not None:
-                self.variable_callback_blocked = True
-                self.variable.set(self.onvalue if self.check_state is True else self.offvalue)
-                self.variable_callback_blocked = False
+            if self._variable is not None:
+                self._variable_callback_blocked = True
+                self._variable.set(self._onvalue if self._check_state is True else self._offvalue)
+                self._variable_callback_blocked = False
 
-            if self.command is not None:
-                self.command()
+            if self._command is not None:
+                self._command()
 
     def select(self, from_variable_callback=False):
-        if self.state is not tkinter.DISABLED or from_variable_callback:
-            self.check_state = True
+        if self._state is not tkinter.DISABLED or from_variable_callback:
+            self._check_state = True
 
-            self.draw(no_color_updates=True)
+            self._draw(no_color_updates=True)
 
-            if self.variable is not None and not from_variable_callback:
-                self.variable_callback_blocked = True
-                self.variable.set(self.onvalue)
-                self.variable_callback_blocked = False
+            if self._variable is not None and not from_variable_callback:
+                self._variable_callback_blocked = True
+                self._variable.set(self._onvalue)
+                self._variable_callback_blocked = False
 
     def deselect(self, from_variable_callback=False):
-        if self.state is not tkinter.DISABLED or from_variable_callback:
-            self.check_state = False
+        if self._state is not tkinter.DISABLED or from_variable_callback:
+            self._check_state = False
 
-            self.draw(no_color_updates=True)
+            self._draw(no_color_updates=True)
 
-            if self.variable is not None and not from_variable_callback:
-                self.variable_callback_blocked = True
-                self.variable.set(self.offvalue)
-                self.variable_callback_blocked = False
+            if self._variable is not None and not from_variable_callback:
+                self._variable_callback_blocked = True
+                self._variable.set(self._offvalue)
+                self._variable_callback_blocked = False
 
-    def get(self):
-        return self.onvalue if self.check_state is True else self.offvalue
+    def get(self) -> Union[int, str]:
+        return self._onvalue if self._check_state is True else self._offvalue
 
-    def on_enter(self, event=0):
-        self.hover_state = True
+    def _on_enter(self, event=0):
+        self._hover_state = True
 
-        if self.state is not tkinter.DISABLED:
-            self.canvas.itemconfig("slider_parts", fill=ThemeManager.single_color(self.button_hover_color, self._appearance_mode),
-                                   outline=ThemeManager.single_color(self.button_hover_color, self._appearance_mode))
+        if self._state is not tkinter.DISABLED:
+            self._canvas.itemconfig("slider_parts",
+                                    fill=ThemeManager.single_color(self._button_hover_color, self._appearance_mode),
+                                    outline=ThemeManager.single_color(self._button_hover_color, self._appearance_mode))
 
-    def on_leave(self, event=0):
-        self.hover_state = False
-        self.canvas.itemconfig("slider_parts", fill=ThemeManager.single_color(self.button_color, self._appearance_mode),
-                               outline=ThemeManager.single_color(self.button_color, self._appearance_mode))
+    def _on_leave(self, event=0):
+        self._hover_state = False
+        self._canvas.itemconfig("slider_parts",
+                                fill=ThemeManager.single_color(self._button_color, self._appearance_mode),
+                                outline=ThemeManager.single_color(self._button_color, self._appearance_mode))
 
-    def variable_callback(self, var_name, index, mode):
-        if not self.variable_callback_blocked:
-            if self.variable.get() == self.onvalue:
+    def _variable_callback(self, var_name, index, mode):
+        if not self._variable_callback_blocked:
+            if self._variable.get() == self._onvalue:
                 self.select(from_variable_callback=True)
-            elif self.variable.get() == self.offvalue:
+            elif self._variable.get() == self._offvalue:
                 self.deselect(from_variable_callback=True)
 
     def configure(self, require_redraw=False, **kwargs):
         if "text" in kwargs:
-            self.text = kwargs.pop("text")
-            self.text_label.configure(text=self.text)
+            self._text = kwargs.pop("text")
+            self._text_label.configure(text=self._text)
 
         if "text_font" in kwargs:
-            self.text_font = kwargs.pop("text_font")
-            self.text_label.configure(font=self.apply_font_scaling(self.text_font))
+            self._text_font = kwargs.pop("text_font")
+            self._text_label.configure(font=self._apply_font_scaling(self._text_font))
 
         if "state" in kwargs:
-            self.state = kwargs.pop("state")
-            self.set_cursor()
+            self._state = kwargs.pop("state")
+            self._set_cursor()
             require_redraw = True
 
         if "fg_color" in kwargs:
-            self.fg_color = kwargs.pop("fg_color")
+            self._fg_color = kwargs.pop("fg_color")
             require_redraw = True
 
         if "progress_color" in kwargs:
             new_progress_color = kwargs.pop("progress_color")
             if new_progress_color is None:
-                self.progress_color = self.fg_color
+                self._progress_color = self._fg_color
             else:
-                self.progress_color = new_progress_color
+                self._progress_color = new_progress_color
             require_redraw = True
 
         if "button_color" in kwargs:
-            self.button_color = kwargs.pop("button_color")
+            self._button_color = kwargs.pop("button_color")
             require_redraw = True
 
         if "button_hover_color" in kwargs:
-            self.button_hover_color = kwargs.pop("button_hover_color")
+            self._button_hover_color = kwargs.pop("button_hover_color")
             require_redraw = True
 
         if "border_color" in kwargs:
-            self.border_color = kwargs.pop("border_color")
+            self._border_color = kwargs.pop("border_color")
             require_redraw = True
 
         if "border_width" in kwargs:
-            self.border_width = kwargs.pop("border_width")
+            self._border_width = kwargs.pop("border_width")
             require_redraw = True
 
         if "command" in kwargs:
-            self.command = kwargs.pop("command")
+            self._command = kwargs.pop("command")
 
         if "textvariable" in kwargs:
-            self.textvariable = kwargs.pop("textvariable")
-            self.text_label.configure(textvariable=self.textvariable)
+            self._textvariable = kwargs.pop("textvariable")
+            self._text_label.configure(textvariable=self._textvariable)
 
         if "variable" in kwargs:
-            if self.variable is not None and self.variable != "":
-                self.variable.trace_remove("write", self.variable_callback_name)
+            if self._variable is not None and self._variable != "":
+                self._variable.trace_remove("write", self._variable_callback_name)
 
-            self.variable = kwargs.pop("variable")
+            self._variable = kwargs.pop("variable")
 
-            if self.variable is not None and self.variable != "":
-                self.variable_callback_name = self.variable.trace_add("write", self.variable_callback)
-                self.check_state = True if self.variable.get() == self.onvalue else False
+            if self._variable is not None and self._variable != "":
+                self._variable_callback_name = self._variable.trace_add("write", self._variable_callback)
+                self._check_state = True if self._variable.get() == self._onvalue else False
                 require_redraw = True
 
         super().configure(require_redraw=require_redraw, **kwargs)

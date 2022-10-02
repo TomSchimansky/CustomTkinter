@@ -1,4 +1,5 @@
 import tkinter
+from typing import Union, Tuple, Callable
 
 from .ctk_canvas import CTkCanvas
 from ..theme_manager import ThemeManager
@@ -7,163 +8,169 @@ from .widget_base_class import CTkBaseClass
 
 
 class CTkTextbox(CTkBaseClass):
+    """
+    Textbox with rounded corners, and all text features of tkinter Text widget.
+    For detailed information check out the documentation.
+    """
+
     def __init__(self, *args,
-                 bg_color=None,
-                 fg_color="default_theme",
-                 border_color="default_theme",
-                 border_width="default_theme",
-                 corner_radius="default_theme",
-                 text_font="default_theme",
-                 text_color="default_theme",
-                 width=200,
-                 height=200,
+                 bg_color: Union[str, Tuple[str, str], None] = None,
+                 fg_color: Union[str, Tuple[str, str], None] = "default_theme",
+                 border_color: Union[str, Tuple[str, str]] = "default_theme",
+                 border_width: Union[str, str] = "default_theme",
+                 corner_radius: Union[str, str] = "default_theme",
+                 text_font: any = "default_theme",
+                 text_color: Union[str, str] = "default_theme",
+                 width: int = 200,
+                 height: int = 200,
                  **kwargs):
 
-        # transfer basic functionality (bg_color, size, _appearance_mode, scaling) to CTkBaseClass
+        # transfer basic functionality (_bg_color, size, _appearance_mode, scaling) to CTkBaseClass
         if "master" in kwargs:
             super().__init__(*args, bg_color=bg_color, width=width, height=height, master=kwargs.pop("master"))
         else:
             super().__init__(*args, bg_color=bg_color, width=width, height=height)
 
         # color
-        self.fg_color = ThemeManager.theme["color"]["entry"] if fg_color == "default_theme" else fg_color
-        self.border_color = ThemeManager.theme["color"]["frame_border"] if border_color == "default_theme" else border_color
-        self.text_color = ThemeManager.theme["color"]["text"] if text_color == "default_theme" else text_color
+        self._fg_color = ThemeManager.theme["color"]["entry"] if fg_color == "default_theme" else fg_color
+        self._border_color = ThemeManager.theme["color"]["frame_border"] if border_color == "default_theme" else border_color
+        self._text_color = ThemeManager.theme["color"]["text"] if text_color == "default_theme" else text_color
 
         # shape
-        self.corner_radius = ThemeManager.theme["shape"]["frame_corner_radius"] if corner_radius == "default_theme" else corner_radius
-        self.border_width = ThemeManager.theme["shape"]["frame_border_width"] if border_width == "default_theme" else border_width
+        self._corner_radius = ThemeManager.theme["shape"]["frame_corner_radius"] if corner_radius == "default_theme" else corner_radius
+        self._border_width = ThemeManager.theme["shape"]["frame_border_width"] if border_width == "default_theme" else border_width
 
         # text
-        self.text_font = (ThemeManager.theme["text"]["font"], ThemeManager.theme["text"]["size"]) if text_font == "default_theme" else text_font
+        self._text_font = (ThemeManager.theme["text"]["font"], ThemeManager.theme["text"]["size"]) if text_font == "default_theme" else text_font
 
         # configure 1x1 grid
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
 
-        self.canvas = CTkCanvas(master=self,
-                                highlightthickness=0,
-                                width=self.apply_widget_scaling(self._current_width),
-                                height=self.apply_widget_scaling(self._current_height))
-        self.canvas.grid(row=0, column=0, padx=0, pady=0, rowspan=1, columnspan=1, sticky="nsew")
-        self.canvas.configure(bg=ThemeManager.single_color(self.bg_color, self._appearance_mode))
-        self.draw_engine = DrawEngine(self.canvas)
+        self._canvas = CTkCanvas(master=self,
+                                 highlightthickness=0,
+                                 width=self._apply_widget_scaling(self._current_width),
+                                 height=self._apply_widget_scaling(self._current_height))
+        self._canvas.grid(row=0, column=0, padx=0, pady=0, rowspan=1, columnspan=1, sticky="nsew")
+        self._canvas.configure(bg=ThemeManager.single_color(self._bg_color, self._appearance_mode))
+        self._draw_engine = DrawEngine(self._canvas)
 
         for arg in ["highlightthickness", "fg", "bg", "font", "width", "height"]:
             kwargs.pop(arg, None)
-        self.textbox = tkinter.Text(self,
-                                    fg=ThemeManager.single_color(self.text_color, self._appearance_mode),
-                                    width=0,
-                                    height=0,
-                                    font=self.text_font,
-                                    highlightthickness=0,
-                                    relief="flat",
-                                    insertbackground=ThemeManager.single_color(("black", "white"), self._appearance_mode),
-                                    bg=ThemeManager.single_color(self.fg_color, self._appearance_mode),
-                                    **kwargs)
-        self.textbox.grid(row=0, column=0, padx=self.corner_radius, pady=self.corner_radius, rowspan=1, columnspan=1, sticky="nsew")
+        self._textbox = tkinter.Text(self,
+                                     fg=ThemeManager.single_color(self._text_color, self._appearance_mode),
+                                     width=0,
+                                     height=0,
+                                     font=self._text_font,
+                                     highlightthickness=0,
+                                     relief="flat",
+                                     insertbackground=ThemeManager.single_color(("black", "white"), self._appearance_mode),
+                                     bg=ThemeManager.single_color(self._fg_color, self._appearance_mode),
+                                     **kwargs)
+        self._textbox.grid(row=0, column=0, padx=self._corner_radius, pady=self._corner_radius, rowspan=1, columnspan=1, sticky="nsew")
 
-        self.bind('<Configure>', self.update_dimensions_event)
-        self.draw()
+        self.bind('<Configure>', self._update_dimensions_event)
+        self._draw()
 
-    def set_scaling(self, *args, **kwargs):
-        super().set_scaling(*args, **kwargs)
+    def _set_scaling(self, *args, **kwargs):
+        super()._set_scaling(*args, **kwargs)
 
-        self.textbox.configure(font=self.apply_font_scaling(self.text_font))
-        self.canvas.configure(width=self.apply_widget_scaling(self._desired_width), height=self.apply_widget_scaling(self._desired_height))
-        self.draw()
+        self._textbox.configure(font=self._apply_font_scaling(self.text_font))
+        self._canvas.configure(width=self._apply_widget_scaling(self._desired_width),
+                               height=self._apply_widget_scaling(self._desired_height))
+        self._draw()
 
-    def set_dimensions(self, width=None, height=None):
-        super().set_dimensions(width, height)
+    def _set_dimensions(self, width=None, height=None):
+        super()._set_dimensions(width, height)
 
-        self.canvas.configure(width=self.apply_widget_scaling(self._desired_width),
-                              height=self.apply_widget_scaling(self._desired_height))
-        self.draw()
+        self._canvas.configure(width=self._apply_widget_scaling(self._desired_width),
+                               height=self._apply_widget_scaling(self._desired_height))
+        self._draw()
 
-    def draw(self, no_color_updates=False):
+    def _draw(self, no_color_updates=False):
 
-        requires_recoloring = self.draw_engine.draw_rounded_rect_with_border(self.apply_widget_scaling(self._current_width),
-                                                                             self.apply_widget_scaling(self._current_height),
-                                                                             self.apply_widget_scaling(self.corner_radius),
-                                                                             self.apply_widget_scaling(self.border_width))
+        requires_recoloring = self._draw_engine.draw_rounded_rect_with_border(self._apply_widget_scaling(self._current_width),
+                                                                              self._apply_widget_scaling(self._current_height),
+                                                                              self._apply_widget_scaling(self._corner_radius),
+                                                                              self._apply_widget_scaling(self._border_width))
 
         if no_color_updates is False or requires_recoloring:
-            if self.fg_color is None:
-                self.canvas.itemconfig("inner_parts",
-                                       fill=ThemeManager.single_color(self.bg_color, self._appearance_mode),
-                                       outline=ThemeManager.single_color(self.bg_color, self._appearance_mode))
+            if self._fg_color is None:
+                self._canvas.itemconfig("inner_parts",
+                                        fill=ThemeManager.single_color(self._bg_color, self._appearance_mode),
+                                        outline=ThemeManager.single_color(self._bg_color, self._appearance_mode))
             else:
-                self.canvas.itemconfig("inner_parts",
-                                       fill=ThemeManager.single_color(self.fg_color, self._appearance_mode),
-                                       outline=ThemeManager.single_color(self.fg_color, self._appearance_mode))
+                self._canvas.itemconfig("inner_parts",
+                                        fill=ThemeManager.single_color(self._fg_color, self._appearance_mode),
+                                        outline=ThemeManager.single_color(self._fg_color, self._appearance_mode))
 
-            self.canvas.itemconfig("border_parts",
-                                   fill=ThemeManager.single_color(self.border_color, self._appearance_mode),
-                                   outline=ThemeManager.single_color(self.border_color, self._appearance_mode))
-            self.canvas.configure(bg=ThemeManager.single_color(self.bg_color, self._appearance_mode))
+            self._canvas.itemconfig("border_parts",
+                                    fill=ThemeManager.single_color(self._border_color, self._appearance_mode),
+                                    outline=ThemeManager.single_color(self._border_color, self._appearance_mode))
+            self._canvas.configure(bg=ThemeManager.single_color(self._bg_color, self._appearance_mode))
 
-            self.textbox.configure(fg=ThemeManager.single_color(self.text_color, self._appearance_mode),
-                                   bg=ThemeManager.single_color(self.fg_color, self._appearance_mode),
-                                   insertbackground=ThemeManager.single_color(("black", "white"), self._appearance_mode))
+            self._textbox.configure(fg=ThemeManager.single_color(self._text_color, self._appearance_mode),
+                                    bg=ThemeManager.single_color(self._fg_color, self._appearance_mode),
+                                    insertbackground=ThemeManager.single_color(("black", "white"), self._appearance_mode))
 
-        self.canvas.tag_lower("inner_parts")
-        self.canvas.tag_lower("border_parts")
+        self._canvas.tag_lower("inner_parts")
+        self._canvas.tag_lower("border_parts")
 
     def yview(self, *args):
-        return self.textbox.yview(*args)
+        return self._textbox.yview(*args)
 
     def xview(self, *args):
-        return self.textbox.xview(*args)
+        return self._textbox.xview(*args)
 
     def insert(self, *args, **kwargs):
-        return self.textbox.insert(*args, **kwargs)
+        return self._textbox.insert(*args, **kwargs)
 
     def focus(self):
-        return self.textbox.focus()
+        return self._textbox.focus()
 
     def tag_add(self, *args, **kwargs):
-        return self.textbox.tag_add(*args, **kwargs)
+        return self._textbox.tag_add(*args, **kwargs)
 
     def tag_config(self, *args, **kwargs):
-        return self.textbox.tag_config(*args, **kwargs)
+        return self._textbox.tag_config(*args, **kwargs)
 
     def tag_configure(self, *args, **kwargs):
-        return self.textbox.tag_configure(*args, **kwargs)
+        return self._textbox.tag_configure(*args, **kwargs)
 
     def tag_remove(self, *args, **kwargs):
-        return self.textbox.tag_remove(*args, **kwargs)
+        return self._textbox.tag_remove(*args, **kwargs)
 
     def configure(self, require_redraw=False, **kwargs):
         if "fg_color" in kwargs:
-            self.fg_color = kwargs.pop("fg_color")
+            self._fg_color = kwargs.pop("fg_color")
             require_redraw = True
 
-            # check if CTk widgets are children of the frame and change their bg_color to new frame fg_color
+            # check if CTk widgets are children of the frame and change their _bg_color to new frame fg_color
             for child in self.winfo_children():
-                if isinstance(child, CTkBaseClass):
-                    child.configure(bg_color=self.fg_color)
+                if isinstance(child, CTkBaseClass) and hasattr(child, "_fg_color"):
+                    child.configure(bg_color=self._fg_color)
 
         if "border_color" in kwargs:
-            self.border_color = kwargs.pop("border_color")
+            self._border_color = kwargs.pop("border_color")
             require_redraw = True
 
         if "corner_radius" in kwargs:
-            self.corner_radius = kwargs.pop("corner_radius")
+            self._corner_radius = kwargs.pop("corner_radius")
             require_redraw = True
 
         if "border_width" in kwargs:
-            self.border_width = kwargs.pop("border_width")
+            self._border_width = kwargs.pop("border_width")
             require_redraw = True
 
         if "width" in kwargs:
-            self.set_dimensions(width=kwargs.pop("width"))
+            self._set_dimensions(width=kwargs.pop("width"))
 
         if "height" in kwargs:
-            self.set_dimensions(height=kwargs.pop("height"))
+            self._set_dimensions(height=kwargs.pop("height"))
 
         if "text_font" in kwargs:
-            self.text_font = kwargs.pop("text_font")
-            self.textbox.configure(font=self.apply_font_scaling(self.text_font))
+            self._text_font = kwargs.pop("text_font")
+            self._textbox.configure(font=self._apply_font_scaling(self._text_font))
 
         if "font" in kwargs:
             raise ValueError("No attribute named font. Use text_font instead of font for CTk widgets")
@@ -173,4 +180,4 @@ class CTkTextbox(CTkBaseClass):
         else:
             super().configure(require_redraw=require_redraw)
 
-        self.textbox.configure(**kwargs)
+        self._textbox.configure(**kwargs)

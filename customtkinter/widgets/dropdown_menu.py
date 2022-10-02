@@ -2,7 +2,7 @@ import tkinter
 import sys
 import copy
 import re
-from typing import Union
+from typing import Union, Tuple, Callable, List
 
 from ..theme_manager import ThemeManager
 from ..appearance_mode_tracker import AppearanceModeTracker
@@ -11,124 +11,127 @@ from ..scaling_tracker import ScalingTracker
 
 class DropdownMenu(tkinter.Menu):
     def __init__(self, *args,
-                 min_character_width=18,
-                 fg_color="default_theme",
-                 hover_color="default_theme",
-                 text_color="default_theme",
-                 text_font="default_theme",
-                 command=None,
-                 values=None,
+                 min_character_width: int = 18,
+                 fg_color: Union[str, Tuple[str, str]] = "default_theme",
+                 hover_color: Union[str, Tuple[str, str]] = "default_theme",
+                 text_color: Union[str, Tuple[str, str]] = "default_theme",
+                 text_font: Union[str, Tuple[str, str]] = "default_theme",
+                 command: Callable = None,
+                 values: List[str] = None,
                  **kwargs):
         super().__init__(*args, **kwargs)
 
-        ScalingTracker.add_widget(self.set_scaling, self)
+        ScalingTracker.add_widget(self._set_scaling, self)
         self._widget_scaling = ScalingTracker.get_widget_scaling(self)
         self._spacing_scaling = ScalingTracker.get_spacing_scaling(self)
 
-        AppearanceModeTracker.add(self.set_appearance_mode, self)
+        AppearanceModeTracker.add(self._set_appearance_mode, self)
         self._appearance_mode = AppearanceModeTracker.get_mode()  # 0: "Light" 1: "Dark"
 
-        self.min_character_width = min_character_width
-        self.fg_color = ThemeManager.theme["color"]["dropdown_color"] if fg_color == "default_theme" else fg_color
-        self.hover_color = ThemeManager.theme["color"]["dropdown_hover"] if hover_color == "default_theme" else hover_color
-        self.text_color = ThemeManager.theme["color"]["text"] if text_color == "default_theme" else text_color
-        self.text_font = (ThemeManager.theme["text"]["font"], ThemeManager.theme["text"]["size"]) if text_font == "default_theme" else text_font
+        self._min_character_width = min_character_width
+        self._fg_color = ThemeManager.theme["color"]["dropdown_color"] if fg_color == "default_theme" else fg_color
+        self._hover_color = ThemeManager.theme["color"]["dropdown_hover"] if hover_color == "default_theme" else hover_color
+        self._text_color = ThemeManager.theme["color"]["text"] if text_color == "default_theme" else text_color
+        self._text_font = (ThemeManager.theme["text"]["font"], ThemeManager.theme["text"]["size"]) if text_font == "default_theme" else text_font
 
-        self.configure_menu_for_platforms()
+        self._configure_menu_for_platforms()
 
-        self.values = values
-        self.command = command
+        self._values = values
+        self._command = command
 
-        self.add_menu_commands()
+        self._add_menu_commands()
 
-    def configure_menu_for_platforms(self):
-        """ apply platform specific appearance attributes """
+    def _configure_menu_for_platforms(self):
+        """ apply platform specific appearance attributes, configure all colors """
 
         if sys.platform == "darwin":
             self.configure(tearoff=False,
-                           font=self.apply_font_scaling(self.text_font))
+                           font=self._apply_font_scaling(self._text_font))
 
         elif sys.platform.startswith("win"):
             self.configure(tearoff=False,
                            relief="flat",
-                           activebackground=ThemeManager.single_color(self.hover_color, self._appearance_mode),
+                           activebackground=ThemeManager.single_color(self._hover_color, self._appearance_mode),
                            borderwidth=0,
-                           activeborderwidth=self.apply_widget_scaling(4),
-                           bg=ThemeManager.single_color(self.fg_color, self._appearance_mode),
-                           fg=ThemeManager.single_color(self.text_color, self._appearance_mode),
-                           activeforeground=ThemeManager.single_color(self.text_color, self._appearance_mode),
-                           font=self.apply_font_scaling(self.text_font),
+                           activeborderwidth=self._apply_widget_scaling(4),
+                           bg=ThemeManager.single_color(self._fg_color, self._appearance_mode),
+                           fg=ThemeManager.single_color(self._text_color, self._appearance_mode),
+                           activeforeground=ThemeManager.single_color(self._text_color, self._appearance_mode),
+                           font=self._apply_font_scaling(self._text_font),
                            cursor="hand2")
 
         else:
             self.configure(tearoff=False,
                            relief="flat",
-                           activebackground=ThemeManager.single_color(self.hover_color, self._appearance_mode),
+                           activebackground=ThemeManager.single_color(self._hover_color, self._appearance_mode),
                            borderwidth=0,
                            activeborderwidth=0,
-                           bg=ThemeManager.single_color(self.fg_color, self._appearance_mode),
-                           fg=ThemeManager.single_color(self.text_color, self._appearance_mode),
-                           activeforeground=ThemeManager.single_color(self.text_color, self._appearance_mode),
-                           font=self.apply_font_scaling(self.text_font))
+                           bg=ThemeManager.single_color(self._fg_color, self._appearance_mode),
+                           fg=ThemeManager.single_color(self._text_color, self._appearance_mode),
+                           activeforeground=ThemeManager.single_color(self._text_color, self._appearance_mode),
+                           font=self._apply_font_scaling(self._text_font))
 
-    def add_menu_commands(self):
+    def _add_menu_commands(self):
+        """ delete existing menu labels and createe new labels with command according to values list """
+
+        self.delete(0, "end")  # delete all old commands
+
         if sys.platform.startswith("linux"):
-            for value in self.values:
-                self.add_command(label="  " + value.ljust(self.min_character_width) + "  ",
-                                 command=lambda v=value: self.button_callback(v),
+            for value in self._values:
+                self.add_command(label="  " + value.ljust(self._min_character_width) + "  ",
+                                 command=lambda v=value: self._button_callback(v),
                                  compound="left")
         else:
-            for value in self.values:
-                self.add_command(label=value.ljust(self.min_character_width),
-                                 command=lambda v=value: self.button_callback(v),
+            for value in self._values:
+                self.add_command(label=value.ljust(self._min_character_width),
+                                 command=lambda v=value: self._button_callback(v),
                                  compound="left")
+
+    def _button_callback(self, value):
+        if self._command is not None:
+            self._command(value)
 
     def open(self, x: Union[int, float], y: Union[int, float]):
         if sys.platform == "darwin":
-            y += self.apply_widget_scaling(8)
+            y += self._apply_widget_scaling(8)
         else:
-            y += self.apply_widget_scaling(3)
+            y += self._apply_widget_scaling(3)
 
         if sys.platform == "darwin" or sys.platform.startswith("win"):
             self.post(int(x), int(y))
         else:  # Linux
             self.tk_popup(int(x), int(y))
 
-    def button_callback(self, value):
-        if self.command is not None:
-            self.command(value)
-
     def configure(self, **kwargs):
         if "values" in kwargs:
-            self.values = kwargs.pop("values")
-            self.delete(0, "end")  # delete all old commands
-            self.add_menu_commands()
+            self._values = kwargs.pop("values")
+            self._add_menu_commands()
 
         if "fg_color" in kwargs:
-            self.fg_color = kwargs.pop("fg_color")
-            self.configure(bg=ThemeManager.single_color(self.fg_color, self._appearance_mode))
+            self._fg_color = kwargs.pop("fg_color")
+            self.configure(bg=ThemeManager.single_color(self._fg_color, self._appearance_mode))
 
         if "hover_color" in kwargs:
-            self.hover_color = kwargs.pop("hover_color")
-            self.configure(activebackground=ThemeManager.single_color(self.hover_color, self._appearance_mode))
+            self._hover_color = kwargs.pop("hover_color")
+            self.configure(activebackground=ThemeManager.single_color(self._hover_color, self._appearance_mode))
 
         if "text_color" in kwargs:
-            self.text_color = kwargs.pop("text_color")
-            self.configure(fg=ThemeManager.single_color(self.text_color, self._appearance_mode))
+            self._text_color = kwargs.pop("text_color")
+            self.configure(fg=ThemeManager.single_color(self._text_color, self._appearance_mode))
 
         if "text_font" in kwargs:
-            self.text_font = kwargs.pop("text_font")
-            self.configure(font=self.apply_font_scaling(self.text_font))
+            self._text_font = kwargs.pop("text_font")
+            self.configure(font=self._apply_font_scaling(self._text_font))
 
         super().configure(**kwargs)
 
-    def apply_widget_scaling(self, value: Union[int, float, str]) -> Union[float, str]:
+    def _apply_widget_scaling(self, value: Union[int, float, str]) -> Union[float, str]:
         if isinstance(value, (int, float)):
             return value * self._widget_scaling
         else:
             return value
 
-    def apply_font_scaling(self, font):
+    def _apply_font_scaling(self, font):
         if type(font) == tuple or type(font) == list:
             font_list = list(font)
             for i in range(len(font_list)):
@@ -150,16 +153,16 @@ class DropdownMenu(tkinter.Menu):
         else:
             return font
 
-    def set_scaling(self, new_widget_scaling, new_spacing_scaling, new_window_scaling):
+    def _set_scaling(self, new_widget_scaling, new_spacing_scaling, new_window_scaling):
         self._widget_scaling = new_widget_scaling
         self._spacing_scaling = new_spacing_scaling
 
-        self.configure(font=self.apply_font_scaling(self.text_font))
+        self.configure(font=self._apply_font_scaling(self._text_font))
 
         if sys.platform.startswith("win"):
-            self.configure(activeborderwidth=self.apply_widget_scaling(4))
+            self.configure(activeborderwidth=self._apply_widget_scaling(4))
 
-    def set_appearance_mode(self, mode_string):
+    def _set_appearance_mode(self, mode_string):
         """ colors won't update on appearance mode change when dropdown is open, because it's not necessary """
 
         if mode_string.lower() == "dark":
@@ -167,4 +170,4 @@ class DropdownMenu(tkinter.Menu):
         elif mode_string.lower() == "light":
             self._appearance_mode = 0
 
-        self.configure_menu_for_platforms()
+        self._configure_menu_for_platforms()

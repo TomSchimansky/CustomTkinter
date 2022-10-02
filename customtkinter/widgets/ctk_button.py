@@ -10,7 +10,10 @@ from .widget_base_class import CTkBaseClass
 
 
 class CTkButton(CTkBaseClass):
-    """ button with border, rounded corners, hover effect, image support """
+    """
+    Button with rounded corners, border, hover effect, image support, click command and textvariable.
+    For detailed information check out the documentation.
+    """
 
     def __init__(self, *args,
                  bg_color: Union[str, Tuple[str, str], None] = None,
@@ -33,34 +36,34 @@ class CTkButton(CTkBaseClass):
                  command: Callable = None,
                  **kwargs):
 
-        # transfer basic functionality (bg_color, size, _appearance_mode, scaling) to CTkBaseClass
+        # transfer basic functionality (_bg_color, size, _appearance_mode, scaling) to CTkBaseClass
         super().__init__(*args, bg_color=bg_color, width=width, height=height, **kwargs)
 
         # color
-        self.fg_color = ThemeManager.theme["color"]["button"] if fg_color == "default_theme" else fg_color
-        self.hover_color = ThemeManager.theme["color"]["button_hover"] if hover_color == "default_theme" else hover_color
-        self.border_color = ThemeManager.theme["color"]["button_border"] if border_color == "default_theme" else border_color
-        self.text_color = ThemeManager.theme["color"]["text"] if text_color == "default_theme" else text_color
-        self.text_color_disabled = ThemeManager.theme["color"]["text_button_disabled"] if text_color_disabled == "default_theme" else text_color_disabled
+        self._fg_color = ThemeManager.theme["color"]["button"] if fg_color == "default_theme" else fg_color
+        self._hover_color = ThemeManager.theme["color"]["button_hover"] if hover_color == "default_theme" else hover_color
+        self._border_color = ThemeManager.theme["color"]["button_border"] if border_color == "default_theme" else border_color
+        self._text_color = ThemeManager.theme["color"]["text"] if text_color == "default_theme" else text_color
+        self._text_color_disabled = ThemeManager.theme["color"]["text_button_disabled"] if text_color_disabled == "default_theme" else text_color_disabled
 
         # shape
-        self.corner_radius = ThemeManager.theme["shape"]["button_corner_radius"] if corner_radius == "default_theme" else corner_radius
-        self.border_width = ThemeManager.theme["shape"]["button_border_width"] if border_width == "default_theme" else border_width
+        self._corner_radius = ThemeManager.theme["shape"]["button_corner_radius"] if corner_radius == "default_theme" else corner_radius
+        self._border_width = ThemeManager.theme["shape"]["button_border_width"] if border_width == "default_theme" else border_width
 
         # text, font, image
-        self.image = image
-        self.image_label = None
-        self.text = text
-        self.text_label = None
-        self.text_font = (ThemeManager.theme["text"]["font"], ThemeManager.theme["text"]["size"]) if text_font == "default_theme" else text_font
+        self._image = image
+        self._image_label = None
+        self._text = text
+        self._text_label = None
+        self._text_font = (ThemeManager.theme["text"]["font"], ThemeManager.theme["text"]["size"]) if text_font == "default_theme" else text_font
 
         # callback and hover functionality
-        self.command = command
-        self.textvariable = textvariable
-        self.state = state
-        self.hover = hover
-        self.compound = compound
-        self.click_animation_running = False
+        self._command = command
+        self._textvariable = textvariable
+        self._state = state
+        self._hover = hover
+        self._compound = compound
+        self._click_animation_running = False
 
         # configure grid system (2x2)
         self.grid_rowconfigure(0, weight=1)
@@ -69,309 +72,301 @@ class CTkButton(CTkBaseClass):
         self.grid_columnconfigure(1, weight=1)
 
         # canvas
-        self.canvas = CTkCanvas(master=self,
-                                highlightthickness=0,
-                                width=self.apply_widget_scaling(self._desired_width),
-                                height=self.apply_widget_scaling(self._desired_height))
-        self.canvas.grid(row=0, column=0, rowspan=2, columnspan=2, sticky="nsew")
-        self.draw_engine = DrawEngine(self.canvas)
+        self._canvas = CTkCanvas(master=self,
+                                 highlightthickness=0,
+                                 width=self._apply_widget_scaling(self._desired_width),
+                                 height=self._apply_widget_scaling(self._desired_height))
+        self._canvas.grid(row=0, column=0, rowspan=2, columnspan=2, sticky="nsew")
+        self._draw_engine = DrawEngine(self._canvas)
 
         # canvas event bindings
-        self.canvas.bind("<Enter>", self.on_enter)
-        self.canvas.bind("<Leave>", self.on_leave)
-        self.canvas.bind("<Button-1>", self.clicked)
-        self.canvas.bind("<Button-1>", self.clicked)
-        self.bind('<Configure>', self.update_dimensions_event)
+        self._canvas.bind("<Enter>", self._on_enter)
+        self._canvas.bind("<Leave>", self._on_leave)
+        self._canvas.bind("<Button-1>", self._clicked)
+        self._canvas.bind("<Button-1>", self._clicked)
+        self.bind('<Configure>', self._update_dimensions_event)
 
         # configure cursor and initial draw
-        self.set_cursor()
-        self.draw()
+        self._set_cursor()
+        self._draw()
 
-    def set_scaling(self, *args, **kwargs):
-        super().set_scaling(*args, **kwargs)
+    def _set_scaling(self, *args, **kwargs):
+        super()._set_scaling(*args, **kwargs)
 
-        if self.text_label is not None:
-            self.text_label.destroy()
-            self.text_label = None
-        if self.image_label is not None:
-            self.image_label.destroy()
-            self.image_label = None
+        if self._text_label is not None:
+            self._text_label.destroy()
+            self._text_label = None
+        if self._image_label is not None:
+            self._image_label.destroy()
+            self._image_label = None
 
-        self.canvas.configure(width=self.apply_widget_scaling(self._desired_width),
-                              height=self.apply_widget_scaling(self._desired_height))
-        self.draw()
+        self._canvas.configure(width=self._apply_widget_scaling(self._desired_width),
+                               height=self._apply_widget_scaling(self._desired_height))
+        self._draw()
 
-    def set_dimensions(self, width: int = None, height: int = None):
-        super().set_dimensions(width, height)
+    def _set_dimensions(self, width: int = None, height: int = None):
+        super()._set_dimensions(width, height)
 
-        self.canvas.configure(width=self.apply_widget_scaling(self._desired_width),
-                              height=self.apply_widget_scaling(self._desired_height))
-        self.draw()
+        self._canvas.configure(width=self._apply_widget_scaling(self._desired_width),
+                               height=self._apply_widget_scaling(self._desired_height))
+        self._draw()
 
-    def draw(self, no_color_updates=False):
-        requires_recoloring = self.draw_engine.draw_rounded_rect_with_border(self.apply_widget_scaling(self._current_width),
-                                                                             self.apply_widget_scaling(self._current_height),
-                                                                             self.apply_widget_scaling(self.corner_radius),
-                                                                             self.apply_widget_scaling(self.border_width))
+    def _draw(self, no_color_updates=False):
+        requires_recoloring = self._draw_engine.draw_rounded_rect_with_border(self._apply_widget_scaling(self._current_width),
+                                                                              self._apply_widget_scaling(self._current_height),
+                                                                              self._apply_widget_scaling(self._corner_radius),
+                                                                              self._apply_widget_scaling(self._border_width))
 
         if no_color_updates is False or requires_recoloring:
 
-            self.canvas.configure(bg=ThemeManager.single_color(self.bg_color, self._appearance_mode))
+            self._canvas.configure(bg=ThemeManager.single_color(self._bg_color, self._appearance_mode))
 
             # set color for the button border parts (outline)
-            self.canvas.itemconfig("border_parts",
-                                   outline=ThemeManager.single_color(self.border_color, self._appearance_mode),
-                                   fill=ThemeManager.single_color(self.border_color, self._appearance_mode))
+            self._canvas.itemconfig("border_parts",
+                                    outline=ThemeManager.single_color(self._border_color, self._appearance_mode),
+                                    fill=ThemeManager.single_color(self._border_color, self._appearance_mode))
 
             # set color for inner button parts
-            if self.fg_color is None:
-                self.canvas.itemconfig("inner_parts",
-                                       outline=ThemeManager.single_color(self.bg_color, self._appearance_mode),
-                                       fill=ThemeManager.single_color(self.bg_color, self._appearance_mode))
+            if self._fg_color is None:
+                self._canvas.itemconfig("inner_parts",
+                                        outline=ThemeManager.single_color(self._bg_color, self._appearance_mode),
+                                        fill=ThemeManager.single_color(self._bg_color, self._appearance_mode))
             else:
-                self.canvas.itemconfig("inner_parts",
-                                       outline=ThemeManager.single_color(self.fg_color, self._appearance_mode),
-                                       fill=ThemeManager.single_color(self.fg_color, self._appearance_mode))
+                self._canvas.itemconfig("inner_parts",
+                                        outline=ThemeManager.single_color(self._fg_color, self._appearance_mode),
+                                        fill=ThemeManager.single_color(self._fg_color, self._appearance_mode))
 
         # create text label if text given
-        if self.text is not None and self.text != "":
+        if self._text is not None and self._text != "":
 
-            if self.text_label is None:
-                self.text_label = tkinter.Label(master=self,
-                                                font=self.apply_font_scaling(self.text_font),
-                                                text=self.text,
-                                                textvariable=self.textvariable)
+            if self._text_label is None:
+                self._text_label = tkinter.Label(master=self,
+                                                 font=self._apply_font_scaling(self._text_font),
+                                                 text=self._text,
+                                                 textvariable=self._textvariable)
 
-                self.text_label.bind("<Enter>", self.on_enter)
-                self.text_label.bind("<Leave>", self.on_leave)
-                self.text_label.bind("<Button-1>", self.clicked)
-                self.text_label.bind("<Button-1>", self.clicked)
+                self._text_label.bind("<Enter>", self._on_enter)
+                self._text_label.bind("<Leave>", self._on_leave)
+                self._text_label.bind("<Button-1>", self._clicked)
+                self._text_label.bind("<Button-1>", self._clicked)
 
             if no_color_updates is False:
                 # set text_label fg color (text color)
-                self.text_label.configure(fg=ThemeManager.single_color(self.text_color, self._appearance_mode))
+                self._text_label.configure(fg=ThemeManager.single_color(self._text_color, self._appearance_mode))
 
-                if self.state == tkinter.DISABLED:
-                    self.text_label.configure(fg=(ThemeManager.single_color(self.text_color_disabled, self._appearance_mode)))
+                if self._state == tkinter.DISABLED:
+                    self._text_label.configure(fg=(ThemeManager.single_color(self._text_color_disabled, self._appearance_mode)))
                 else:
-                    self.text_label.configure(fg=ThemeManager.single_color(self.text_color, self._appearance_mode))
+                    self._text_label.configure(fg=ThemeManager.single_color(self._text_color, self._appearance_mode))
 
-                if self.fg_color is None:
-                    self.text_label.configure(bg=ThemeManager.single_color(self.bg_color, self._appearance_mode))
+                if self._fg_color is None:
+                    self._text_label.configure(bg=ThemeManager.single_color(self._bg_color, self._appearance_mode))
                 else:
-                    self.text_label.configure(bg=ThemeManager.single_color(self.fg_color, self._appearance_mode))
+                    self._text_label.configure(bg=ThemeManager.single_color(self._fg_color, self._appearance_mode))
 
         else:
             # delete text_label if no text given
-            if self.text_label is not None:
-                self.text_label.destroy()
-                self.text_label = None
+            if self._text_label is not None:
+                self._text_label.destroy()
+                self._text_label = None
 
         # create image label if image given
-        if self.image is not None:
+        if self._image is not None:
 
-            if self.image_label is None:
-                self.image_label = tkinter.Label(master=self)
+            if self._image_label is None:
+                self._image_label = tkinter.Label(master=self)
 
-                self.image_label.bind("<Enter>", self.on_enter)
-                self.image_label.bind("<Leave>", self.on_leave)
-                self.image_label.bind("<Button-1>", self.clicked)
-                self.image_label.bind("<Button-1>", self.clicked)
+                self._image_label.bind("<Enter>", self._on_enter)
+                self._image_label.bind("<Leave>", self._on_leave)
+                self._image_label.bind("<Button-1>", self._clicked)
+                self._image_label.bind("<Button-1>", self._clicked)
 
             if no_color_updates is False:
                 # set image_label bg color (background color of label)
-                if self.fg_color is None:
-                    self.image_label.configure(bg=ThemeManager.single_color(self.bg_color, self._appearance_mode))
+                if self._fg_color is None:
+                    self._image_label.configure(bg=ThemeManager.single_color(self._bg_color, self._appearance_mode))
                 else:
-                    self.image_label.configure(bg=ThemeManager.single_color(self.fg_color, self._appearance_mode))
+                    self._image_label.configure(bg=ThemeManager.single_color(self._fg_color, self._appearance_mode))
 
-            self.image_label.configure(image=self.image)  # set image
+            self._image_label.configure(image=self._image)  # set image
 
         else:
             # delete text_label if no text given
-            if self.image_label is not None:
-                self.image_label.destroy()
-                self.image_label = None
+            if self._image_label is not None:
+                self._image_label.destroy()
+                self._image_label = None
 
         # create grid layout with just an image given
-        if self.image_label is not None and self.text_label is None:
-            self.image_label.grid(row=0, column=0, rowspan=2, columnspan=2, sticky="",
-                                  pady=(self.apply_widget_scaling(self.border_width), self.apply_widget_scaling(self.border_width) + 1))  # bottom pady with +1 for rounding to even
+        if self._image_label is not None and self._text_label is None:
+            self._image_label.grid(row=0, column=0, rowspan=2, columnspan=2, sticky="",
+                                   pady=(self._apply_widget_scaling(self._border_width), self._apply_widget_scaling(self._border_width) + 1))  # bottom pady with +1 for rounding to even
 
         # create grid layout with just text given
-        if self.image_label is None and self.text_label is not None:
-            self.text_label.grid(row=0, column=0, rowspan=2, columnspan=2, sticky="",
-                                 padx=self.apply_widget_scaling(self.corner_radius),
-                                 pady=(self.apply_widget_scaling(self.border_width), self.apply_widget_scaling(self.border_width) + 1))  # bottom pady with +1 for rounding to even
+        if self._image_label is None and self._text_label is not None:
+            self._text_label.grid(row=0, column=0, rowspan=2, columnspan=2, sticky="",
+                                  padx=self._apply_widget_scaling(self._corner_radius),
+                                  pady=(self._apply_widget_scaling(self._border_width), self._apply_widget_scaling(self._border_width) + 1))  # bottom pady with +1 for rounding to even
 
         # create grid layout of image and text label in 2x2 grid system with given compound
-        if self.image_label is not None and self.text_label is not None:
-            if self.compound == tkinter.LEFT or self.compound == "left":
-                self.image_label.grid(row=0, column=0, sticky="e", rowspan=2, columnspan=1,
-                                      padx=(max(self.apply_widget_scaling(self.corner_radius), self.apply_widget_scaling(self.border_width)), 2),
-                                      pady=(self.apply_widget_scaling(self.border_width), self.apply_widget_scaling(self.border_width) + 1))
-                self.text_label.grid(row=0, column=1, sticky="w", rowspan=2, columnspan=1,
-                                     padx=(2, max(self.apply_widget_scaling(self.corner_radius), self.apply_widget_scaling(self.border_width))),
-                                     pady=(self.apply_widget_scaling(self.border_width), self.apply_widget_scaling(self.border_width) + 1))
-            elif self.compound == tkinter.TOP or self.compound == "top":
-                self.image_label.grid(row=0, column=0, sticky="s", columnspan=2, rowspan=1,
-                                      padx=max(self.apply_widget_scaling(self.corner_radius), self.apply_widget_scaling(self.border_width)),
-                                      pady=(self.apply_widget_scaling(self.border_width), 2))
-                self.text_label.grid(row=1, column=0, sticky="n", columnspan=2, rowspan=1,
-                                     padx=max(self.apply_widget_scaling(self.corner_radius), self.apply_widget_scaling(self.border_width)),
-                                     pady=(2, self.apply_widget_scaling(self.border_width)))
-            elif self.compound == tkinter.RIGHT or self.compound == "right":
-                self.image_label.grid(row=0, column=1, sticky="w", rowspan=2, columnspan=1,
-                                      padx=(2, max(self.apply_widget_scaling(self.corner_radius), self.apply_widget_scaling(self.border_width))),
-                                      pady=(self.apply_widget_scaling(self.border_width), self.apply_widget_scaling(self.border_width) + 1))
-                self.text_label.grid(row=0, column=0, sticky="e", rowspan=2, columnspan=1,
-                                     padx=(max(self.apply_widget_scaling(self.corner_radius), self.apply_widget_scaling(self.border_width)), 2),
-                                     pady=(self.apply_widget_scaling(self.border_width), self.apply_widget_scaling(self.border_width) + 1))
-            elif self.compound == tkinter.BOTTOM or self.compound == "bottom":
-                self.image_label.grid(row=1, column=0, sticky="n", columnspan=2, rowspan=1,
-                                      padx=max(self.apply_widget_scaling(self.corner_radius), self.apply_widget_scaling(self.border_width)),
-                                      pady=(2, self.apply_widget_scaling(self.border_width)))
-                self.text_label.grid(row=0, column=0, sticky="s", columnspan=2, rowspan=1,
-                                     padx=max(self.apply_widget_scaling(self.corner_radius), self.apply_widget_scaling(self.border_width)),
-                                     pady=(self.apply_widget_scaling(self.border_width), 2))
+        if self._image_label is not None and self._text_label is not None:
+            if self._compound == tkinter.LEFT or self._compound == "left":
+                self._image_label.grid(row=0, column=0, sticky="e", rowspan=2, columnspan=1,
+                                       padx=(max(self._apply_widget_scaling(self._corner_radius), self._apply_widget_scaling(self._border_width)), 2),
+                                       pady=(self._apply_widget_scaling(self._border_width), self._apply_widget_scaling(self._border_width) + 1))
+                self._text_label.grid(row=0, column=1, sticky="w", rowspan=2, columnspan=1,
+                                      padx=(2, max(self._apply_widget_scaling(self._corner_radius), self._apply_widget_scaling(self._border_width))),
+                                      pady=(self._apply_widget_scaling(self._border_width), self._apply_widget_scaling(self._border_width) + 1))
+            elif self._compound == tkinter.TOP or self._compound == "top":
+                self._image_label.grid(row=0, column=0, sticky="s", columnspan=2, rowspan=1,
+                                       padx=max(self._apply_widget_scaling(self._corner_radius), self._apply_widget_scaling(self._border_width)),
+                                       pady=(self._apply_widget_scaling(self._border_width), 2))
+                self._text_label.grid(row=1, column=0, sticky="n", columnspan=2, rowspan=1,
+                                      padx=max(self._apply_widget_scaling(self._corner_radius), self._apply_widget_scaling(self._border_width)),
+                                      pady=(2, self._apply_widget_scaling(self._border_width)))
+            elif self._compound == tkinter.RIGHT or self._compound == "right":
+                self._image_label.grid(row=0, column=1, sticky="w", rowspan=2, columnspan=1,
+                                       padx=(2, max(self._apply_widget_scaling(self._corner_radius), self._apply_widget_scaling(self._border_width))),
+                                       pady=(self._apply_widget_scaling(self._border_width), self._apply_widget_scaling(self._border_width) + 1))
+                self._text_label.grid(row=0, column=0, sticky="e", rowspan=2, columnspan=1,
+                                      padx=(max(self._apply_widget_scaling(self._corner_radius), self._apply_widget_scaling(self._border_width)), 2),
+                                      pady=(self._apply_widget_scaling(self._border_width), self._apply_widget_scaling(self._border_width) + 1))
+            elif self._compound == tkinter.BOTTOM or self._compound == "bottom":
+                self._image_label.grid(row=1, column=0, sticky="n", columnspan=2, rowspan=1,
+                                       padx=max(self._apply_widget_scaling(self._corner_radius), self._apply_widget_scaling(self._border_width)),
+                                       pady=(2, self._apply_widget_scaling(self._border_width)))
+                self._text_label.grid(row=0, column=0, sticky="s", columnspan=2, rowspan=1,
+                                      padx=max(self._apply_widget_scaling(self._corner_radius), self._apply_widget_scaling(self._border_width)),
+                                      pady=(self._apply_widget_scaling(self._border_width), 2))
 
     def configure(self, require_redraw=False, **kwargs):
         if "text" in kwargs:
-            self.text = kwargs.pop("text")
-            if self.text_label is None:
+            self._text = kwargs.pop("text")
+            if self._text_label is None:
                 require_redraw = True  # text_label will be created in .draw()
             else:
-                self.text_label.configure(text=self.text)
+                self._text_label.configure(text=self._text)
 
         if "text_font" in kwargs:
-            self.text_font = kwargs.pop("text_font")
-            if self.text_label is not None:
-                self.text_label.configure(font=self.apply_font_scaling(self.text_font))
+            self._text_font = kwargs.pop("text_font")
+            if self._text_label is not None:
+                self._text_label.configure(font=self._apply_font_scaling(self._text_font))
 
         if "state" in kwargs:
-            self.state = kwargs.pop("state")
-            self.set_cursor()
+            self._state = kwargs.pop("state")
+            self._set_cursor()
             require_redraw = True
 
         if "image" in kwargs:
-            self.image = kwargs.pop("image")
+            self._image = kwargs.pop("image")
             require_redraw = True
 
         if "corner_radius" in kwargs:
-            self.corner_radius = kwargs.pop("corner_radius")
+            self._corner_radius = kwargs.pop("corner_radius")
             require_redraw = True
 
         if "compound" in kwargs:
-            self.compound = kwargs.pop("compound")
+            self._compound = kwargs.pop("compound")
             require_redraw = True
 
         if "fg_color" in kwargs:
-            self.fg_color = kwargs.pop("fg_color")
+            self._fg_color = kwargs.pop("fg_color")
             require_redraw = True
 
         if "border_color" in kwargs:
-            self.border_color = kwargs.pop("border_color")
+            self._border_color = kwargs.pop("border_color")
             require_redraw = True
 
         if "hover_color" in kwargs:
-            self.hover_color = kwargs.pop("hover_color")
+            self._hover_color = kwargs.pop("hover_color")
             require_redraw = True
 
         if "text_color" in kwargs:
-            self.text_color = kwargs.pop("text_color")
+            self._text_color = kwargs.pop("text_color")
             require_redraw = True
 
         if "command" in kwargs:
-            self.command = kwargs.pop("command")
+            self._command = kwargs.pop("command")
 
         if "textvariable" in kwargs:
-            self.textvariable = kwargs.pop("textvariable")
-            if self.text_label is not None:
-                self.text_label.configure(textvariable=self.textvariable)
+            self._textvariable = kwargs.pop("textvariable")
+            if self._text_label is not None:
+                self._text_label.configure(textvariable=self._textvariable)
 
         if "width" in kwargs:
-            self.set_dimensions(width=kwargs.pop("width"))
+            self._set_dimensions(width=kwargs.pop("width"))
 
         if "height" in kwargs:
-            self.set_dimensions(height=kwargs.pop("height"))
+            self._set_dimensions(height=kwargs.pop("height"))
 
         super().configure(require_redraw=require_redraw, **kwargs)
 
-    def set_cursor(self):
+    def _set_cursor(self):
         if Settings.cursor_manipulation_enabled:
-            if self.state == tkinter.DISABLED:
-                if sys.platform == "darwin" and self.command is not None and Settings.cursor_manipulation_enabled:
+            if self._state == tkinter.DISABLED:
+                if sys.platform == "darwin" and self._command is not None and Settings.cursor_manipulation_enabled:
                     self.configure(cursor="arrow")
-                elif sys.platform.startswith("win") and self.command is not None and Settings.cursor_manipulation_enabled:
+                elif sys.platform.startswith("win") and self._command is not None and Settings.cursor_manipulation_enabled:
                     self.configure(cursor="arrow")
 
-            elif self.state == tkinter.NORMAL:
-                if sys.platform == "darwin" and self.command is not None and Settings.cursor_manipulation_enabled:
+            elif self._state == tkinter.NORMAL:
+                if sys.platform == "darwin" and self._command is not None and Settings.cursor_manipulation_enabled:
                     self.configure(cursor="pointinghand")
-                elif sys.platform.startswith("win") and self.command is not None and Settings.cursor_manipulation_enabled:
+                elif sys.platform.startswith("win") and self._command is not None and Settings.cursor_manipulation_enabled:
                     self.configure(cursor="hand2")
 
-    def set_image(self, image):
-        """ will be removed in next major """
-        self.configure(image=image)
-
-    def set_text(self, text):
-        """ will be removed in next major """
-        self.configure(text=text)
-
-    def on_enter(self, event=None):
-        if self.hover is True and self.state == tkinter.NORMAL:
-            if self.hover_color is None:
-                inner_parts_color = self.fg_color
+    def _on_enter(self, event=None):
+        if self._hover is True and self._state == tkinter.NORMAL:
+            if self._hover_color is None:
+                inner_parts_color = self._fg_color
             else:
-                inner_parts_color = self.hover_color
+                inner_parts_color = self._hover_color
 
             # set color of inner button parts to hover color
-            self.canvas.itemconfig("inner_parts",
-                                   outline=ThemeManager.single_color(inner_parts_color, self._appearance_mode),
-                                   fill=ThemeManager.single_color(inner_parts_color, self._appearance_mode))
+            self._canvas.itemconfig("inner_parts",
+                                    outline=ThemeManager.single_color(inner_parts_color, self._appearance_mode),
+                                    fill=ThemeManager.single_color(inner_parts_color, self._appearance_mode))
 
             # set text_label bg color to button hover color
-            if self.text_label is not None:
-                self.text_label.configure(bg=ThemeManager.single_color(inner_parts_color, self._appearance_mode))
+            if self._text_label is not None:
+                self._text_label.configure(bg=ThemeManager.single_color(inner_parts_color, self._appearance_mode))
 
             # set image_label bg color to button hover color
-            if self.image_label is not None:
-                self.image_label.configure(bg=ThemeManager.single_color(inner_parts_color, self._appearance_mode))
+            if self._image_label is not None:
+                self._image_label.configure(bg=ThemeManager.single_color(inner_parts_color, self._appearance_mode))
 
-    def on_leave(self, event=None):
-        self.click_animation_running = False
+    def _on_leave(self, event=None):
+        self._click_animation_running = False
 
-        if self.hover is True:
-            if self.fg_color is None:
-                inner_parts_color = self.bg_color
+        if self._hover is True:
+            if self._fg_color is None:
+                inner_parts_color = self._bg_color
             else:
-                inner_parts_color = self.fg_color
+                inner_parts_color = self._fg_color
 
             # set color of inner button parts
-            self.canvas.itemconfig("inner_parts",
-                                   outline=ThemeManager.single_color(inner_parts_color, self._appearance_mode),
-                                   fill=ThemeManager.single_color(inner_parts_color, self._appearance_mode))
+            self._canvas.itemconfig("inner_parts",
+                                    outline=ThemeManager.single_color(inner_parts_color, self._appearance_mode),
+                                    fill=ThemeManager.single_color(inner_parts_color, self._appearance_mode))
 
             # set text_label bg color (label color)
-            if self.text_label is not None:
-                self.text_label.configure(bg=ThemeManager.single_color(inner_parts_color, self._appearance_mode))
+            if self._text_label is not None:
+                self._text_label.configure(bg=ThemeManager.single_color(inner_parts_color, self._appearance_mode))
 
             # set image_label bg color (image bg color)
-            if self.image_label is not None:
-                self.image_label.configure(bg=ThemeManager.single_color(inner_parts_color, self._appearance_mode))
+            if self._image_label is not None:
+                self._image_label.configure(bg=ThemeManager.single_color(inner_parts_color, self._appearance_mode))
 
-    def click_animation(self):
-        if self.click_animation_running:
-            self.on_enter()
+    def _click_animation(self):
+        if self._click_animation_running:
+            self._on_enter()
 
-    def clicked(self, event=None):
-        if self.command is not None:
-            if self.state != tkinter.DISABLED:
+    def _clicked(self, event=None):
+        if self._command is not None:
+            if self._state != tkinter.DISABLED:
 
                 # click animation: change color with .on_leave() and back to normal after 100ms with click_animation()
-                self.on_leave()
-                self.click_animation_running = True
-                self.after(100, self.click_animation)
+                self._on_leave()
+                self._click_animation_running = True
+                self.after(100, self._click_animation)
 
-                self.command()
+                self._command()

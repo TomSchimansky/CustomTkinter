@@ -4,11 +4,32 @@ from typing import Union, Tuple
 
 
 class CTkCanvas(tkinter.Canvas):
+    """
+    Canvas with additional functionality to draw antialiased circles on Windows/Linux.
+
+    Call .init_font_character_mapping() at program start to load the correct character
+    dictionary according to the operating system. Characters (circle sizes) are optimised
+    to look best for rendering CustomTkinter shapes on the different operating systems.
+
+    - .create_aa_circle() creates antialiased circle and returns int identifier.
+    - .coords() is modified to support the aa-circle shapes correctly like you would expect.
+    - .itemconfig() is also modified to support aa-cricle shapes.
+
+    The aa-circles are created by choosing a character from the custom created and loaded
+    font 'CustomTkinter_shapes_font'. It contains circle shapes with different sizes filling
+    either the whole character space or just pert of it (characters A to R). Circles with a smaller
+    radius need a smaller circle character to look correct when rendered on the canvas.
+
+    For an optimal result, the draw-engine creates two aa-circles on top of each other, while
+    one is rotated by 90 degrees. This helps to make the circle look more symetric, which is
+    not can be a problem when using only a single circle character.
+    """
+
     radius_to_char_fine: dict = None  # dict to map radius to font circle character
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.aa_circle_canvas_ids = set()
+        self._aa_circle_canvas_ids = set()
 
     @classmethod
     def init_font_character_mapping(cls):
@@ -43,7 +64,7 @@ class CTkCanvas(tkinter.Canvas):
         else:
             cls.radius_to_char_fine = radius_to_char_fine_windows_10
 
-    def get_char_from_radius(self, radius: int) -> str:
+    def _get_char_from_radius(self, radius: int) -> str:
         if radius >= 20:
             return "A"
         else:
@@ -52,10 +73,10 @@ class CTkCanvas(tkinter.Canvas):
     def create_aa_circle(self, x_pos: int, y_pos: int, radius: int, angle: int = 0, fill: str = "white",
                          tags: Union[str, Tuple[str, ...]] = "", anchor: str = tkinter.CENTER) -> int:
         # create a circle with a font element
-        circle_1 = self.create_text(x_pos, y_pos, text=self.get_char_from_radius(radius), anchor=anchor, fill=fill,
+        circle_1 = self.create_text(x_pos, y_pos, text=self._get_char_from_radius(radius), anchor=anchor, fill=fill,
                                     font=("CustomTkinter_shapes_font", -radius * 2), tags=tags, angle=angle)
         self.addtag_withtag("ctk_aa_circle_font_element", circle_1)
-        self.aa_circle_canvas_ids.add(circle_1)
+        self._aa_circle_canvas_ids.add(circle_1)
 
         return circle_1
 
@@ -66,13 +87,13 @@ class CTkCanvas(tkinter.Canvas):
             super().coords(coords_id, *args[:2])
 
             if len(args) == 3:
-                super().itemconfigure(coords_id, font=("CustomTkinter_shapes_font", -int(args[2]) * 2), text=self.get_char_from_radius(args[2]))
+                super().itemconfigure(coords_id, font=("CustomTkinter_shapes_font", -int(args[2]) * 2), text=self._get_char_from_radius(args[2]))
 
-        elif type(tag_or_id) == int and tag_or_id in self.aa_circle_canvas_ids:
+        elif type(tag_or_id) == int and tag_or_id in self._aa_circle_canvas_ids:
             super().coords(tag_or_id, *args[:2])
 
             if len(args) == 3:
-                super().itemconfigure(tag_or_id, font=("CustomTkinter_shapes_font", -args[2] * 2), text=self.get_char_from_radius(args[2]))
+                super().itemconfigure(tag_or_id, font=("CustomTkinter_shapes_font", -args[2] * 2), text=self._get_char_from_radius(args[2]))
 
         else:
             super().coords(tag_or_id, *args)
@@ -83,14 +104,14 @@ class CTkCanvas(tkinter.Canvas):
             del kwargs_except_outline["outline"]
 
         if type(tag_or_id) == int:
-            if tag_or_id in self.aa_circle_canvas_ids:
+            if tag_or_id in self._aa_circle_canvas_ids:
                 super().itemconfigure(tag_or_id, *args, **kwargs_except_outline)
             else:
                 super().itemconfigure(tag_or_id, *args, **kwargs)
         else:
             configure_ids = self.find_withtag(tag_or_id)
             for configure_id in configure_ids:
-                if configure_id in self.aa_circle_canvas_ids:
+                if configure_id in self._aa_circle_canvas_ids:
                     super().itemconfigure(configure_id, *args, **kwargs_except_outline)
                 else:
                     super().itemconfigure(configure_id, *args, **kwargs)
