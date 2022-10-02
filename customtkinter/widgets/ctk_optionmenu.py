@@ -191,9 +191,8 @@ class CTkOptionMenu(CTkBaseClass):
 
         self._canvas.update_idletasks()
 
-    def _open_dropdown_menu(self):
-        self._dropdown_menu.open(self.winfo_rootx(),
-                                 self.winfo_rooty() + self._apply_widget_scaling(self._current_height + 0))
+    def config(self, *args, **kwargs):
+        return self.configure(*args, **kwargs)
 
     def configure(self, require_redraw=False, **kwargs):
         if "state" in kwargs:
@@ -267,6 +266,10 @@ class CTkOptionMenu(CTkBaseClass):
                 self.grid_propagate(1)
 
         super().configure(require_redraw=require_redraw, **kwargs)
+
+    def _open_dropdown_menu(self):
+        self._dropdown_menu.open(self.winfo_rootx(),
+                                 self.winfo_rooty() + self._apply_widget_scaling(self._current_height + 0))
 
     def _on_enter(self, event=0):
         if self._hover is True and self._state == tkinter.NORMAL and len(self._values) > 0:

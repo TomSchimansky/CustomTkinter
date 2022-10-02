@@ -117,6 +117,9 @@ class CTkBaseClass(tkinter.Frame):
 
         return scaled_kwargs
 
+    def config(self, *args, **kwargs):
+        return self.configure(*args, **kwargs)
+
     def configure(self, require_redraw=False, **kwargs):
         """ basic configure with _bg_color support, to be overridden """
 

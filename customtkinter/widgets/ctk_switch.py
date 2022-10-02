@@ -205,68 +205,8 @@ class CTkSwitch(CTkBaseClass):
 
         self._text_label.configure(bg=ThemeManager.single_color(self._bg_color, self._appearance_mode))
 
-    def toggle(self, event=None):
-        if self._state is not tkinter.DISABLED:
-            if self._check_state is True:
-                self._check_state = False
-            else:
-                self._check_state = True
-
-            self._draw(no_color_updates=True)
-
-            if self._variable is not None:
-                self._variable_callback_blocked = True
-                self._variable.set(self._onvalue if self._check_state is True else self._offvalue)
-                self._variable_callback_blocked = False
-
-            if self._command is not None:
-                self._command()
-
-    def select(self, from_variable_callback=False):
-        if self._state is not tkinter.DISABLED or from_variable_callback:
-            self._check_state = True
-
-            self._draw(no_color_updates=True)
-
-            if self._variable is not None and not from_variable_callback:
-                self._variable_callback_blocked = True
-                self._variable.set(self._onvalue)
-                self._variable_callback_blocked = False
-
-    def deselect(self, from_variable_callback=False):
-        if self._state is not tkinter.DISABLED or from_variable_callback:
-            self._check_state = False
-
-            self._draw(no_color_updates=True)
-
-            if self._variable is not None and not from_variable_callback:
-                self._variable_callback_blocked = True
-                self._variable.set(self._offvalue)
-                self._variable_callback_blocked = False
-
-    def get(self) -> Union[int, str]:
-        return self._onvalue if self._check_state is True else self._offvalue
-
-    def _on_enter(self, event=0):
-        self._hover_state = True
-
-        if self._state is not tkinter.DISABLED:
-            self._canvas.itemconfig("slider_parts",
-                                    fill=ThemeManager.single_color(self._button_hover_color, self._appearance_mode),
-                                    outline=ThemeManager.single_color(self._button_hover_color, self._appearance_mode))
-
-    def _on_leave(self, event=0):
-        self._hover_state = False
-        self._canvas.itemconfig("slider_parts",
-                                fill=ThemeManager.single_color(self._button_color, self._appearance_mode),
-                                outline=ThemeManager.single_color(self._button_color, self._appearance_mode))
-
-    def _variable_callback(self, var_name, index, mode):
-        if not self._variable_callback_blocked:
-            if self._variable.get() == self._onvalue:
-                self.select(from_variable_callback=True)
-            elif self._variable.get() == self._offvalue:
-                self.deselect(from_variable_callback=True)
+    def config(self, *args, **kwargs):
+        return self.configure(*args, **kwargs)
 
     def configure(self, require_redraw=False, **kwargs):
         if "text" in kwargs:
@@ -329,3 +269,66 @@ class CTkSwitch(CTkBaseClass):
                 require_redraw = True
 
         super().configure(require_redraw=require_redraw, **kwargs)
+
+    def toggle(self, event=None):
+        if self._state is not tkinter.DISABLED:
+            if self._check_state is True:
+                self._check_state = False
+            else:
+                self._check_state = True
+
+            self._draw(no_color_updates=True)
+
+            if self._variable is not None:
+                self._variable_callback_blocked = True
+                self._variable.set(self._onvalue if self._check_state is True else self._offvalue)
+                self._variable_callback_blocked = False
+
+            if self._command is not None:
+                self._command()
+
+    def select(self, from_variable_callback=False):
+        if self._state is not tkinter.DISABLED or from_variable_callback:
+            self._check_state = True
+
+            self._draw(no_color_updates=True)
+
+            if self._variable is not None and not from_variable_callback:
+                self._variable_callback_blocked = True
+                self._variable.set(self._onvalue)
+                self._variable_callback_blocked = False
+
+    def deselect(self, from_variable_callback=False):
+        if self._state is not tkinter.DISABLED or from_variable_callback:
+            self._check_state = False
+
+            self._draw(no_color_updates=True)
+
+            if self._variable is not None and not from_variable_callback:
+                self._variable_callback_blocked = True
+                self._variable.set(self._offvalue)
+                self._variable_callback_blocked = False
+
+    def get(self) -> Union[int, str]:
+        return self._onvalue if self._check_state is True else self._offvalue
+
+    def _on_enter(self, event=0):
+        self._hover_state = True
+
+        if self._state is not tkinter.DISABLED:
+            self._canvas.itemconfig("slider_parts",
+                                    fill=ThemeManager.single_color(self._button_hover_color, self._appearance_mode),
+                                    outline=ThemeManager.single_color(self._button_hover_color, self._appearance_mode))
+
+    def _on_leave(self, event=0):
+        self._hover_state = False
+        self._canvas.itemconfig("slider_parts",
+                                fill=ThemeManager.single_color(self._button_color, self._appearance_mode),
+                                outline=ThemeManager.single_color(self._button_color, self._appearance_mode))
+
+    def _variable_callback(self, var_name, index, mode):
+        if not self._variable_callback_blocked:
+            if self._variable.get() == self._onvalue:
+                self.select(from_variable_callback=True)
+            elif self._variable.get() == self._offvalue:
+                self.deselect(from_variable_callback=True)

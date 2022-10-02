@@ -110,8 +110,8 @@ class CTkLabel(CTkBaseClass):
 
             self._canvas.configure(bg=ThemeManager.single_color(self._bg_color, self._appearance_mode))
 
-    def config(self, **kwargs):
-        return self.configure(**kwargs)
+    def config(self, *args, **kwargs):
+        return self.configure(*args, **kwargs)
 
     def configure(self, require_redraw=False, **kwargs):
         if "anchor" in kwargs:

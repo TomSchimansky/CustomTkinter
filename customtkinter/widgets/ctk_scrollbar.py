@@ -148,13 +148,8 @@ class CTkScrollbar(CTkBaseClass):
 
         self._canvas.update_idletasks()
 
-    def set(self, start_value: float, end_value: float):
-        self._start_value = float(start_value)
-        self._end_value = float(end_value)
-        self._draw()
-
-    def get(self):
-        return self._start_value, self._end_value
+    def config(self, *args, **kwargs):
+        return self.configure(*args, **kwargs)
 
     def configure(self, require_redraw=False, **kwargs):
         if "fg_color" in kwargs:
@@ -222,3 +217,11 @@ class CTkScrollbar(CTkBaseClass):
                 self._command('scroll', -int(event.delta/40), 'units')
             else:
                 self._command('scroll', -event.delta, 'units')
+
+    def set(self, start_value: float, end_value: float):
+        self._start_value = float(start_value)
+        self._end_value = float(end_value)
+        self._draw()
+
+    def get(self):
+        return self._start_value, self._end_value

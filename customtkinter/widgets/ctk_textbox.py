@@ -116,29 +116,8 @@ class CTkTextbox(CTkBaseClass):
         self._canvas.tag_lower("inner_parts")
         self._canvas.tag_lower("border_parts")
 
-    def yview(self, *args):
-        return self._textbox.yview(*args)
-
-    def xview(self, *args):
-        return self._textbox.xview(*args)
-
-    def insert(self, *args, **kwargs):
-        return self._textbox.insert(*args, **kwargs)
-
-    def focus(self):
-        return self._textbox.focus()
-
-    def tag_add(self, *args, **kwargs):
-        return self._textbox.tag_add(*args, **kwargs)
-
-    def tag_config(self, *args, **kwargs):
-        return self._textbox.tag_config(*args, **kwargs)
-
-    def tag_configure(self, *args, **kwargs):
-        return self._textbox.tag_configure(*args, **kwargs)
-
-    def tag_remove(self, *args, **kwargs):
-        return self._textbox.tag_remove(*args, **kwargs)
+    def config(self, *args, **kwargs):
+        return self.configure(*args, **kwargs)
 
     def configure(self, require_redraw=False, **kwargs):
         if "fg_color" in kwargs:
@@ -181,3 +160,27 @@ class CTkTextbox(CTkBaseClass):
             super().configure(require_redraw=require_redraw)
 
         self._textbox.configure(**kwargs)
+
+    def yview(self, *args):
+        return self._textbox.yview(*args)
+
+    def xview(self, *args):
+        return self._textbox.xview(*args)
+
+    def insert(self, *args, **kwargs):
+        return self._textbox.insert(*args, **kwargs)
+
+    def focus(self):
+        return self._textbox.focus()
+
+    def tag_add(self, *args, **kwargs):
+        return self._textbox.tag_add(*args, **kwargs)
+
+    def tag_config(self, *args, **kwargs):
+        return self._textbox.tag_config(*args, **kwargs)
+
+    def tag_configure(self, *args, **kwargs):
+        return self._textbox.tag_configure(*args, **kwargs)
+
+    def tag_remove(self, *args, **kwargs):
+        return self._textbox.tag_remove(*args, **kwargs)

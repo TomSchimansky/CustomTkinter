@@ -102,6 +102,9 @@ class DropdownMenu(tkinter.Menu):
         else:  # Linux
             self.tk_popup(int(x), int(y))
 
+    def config(self, *args, **kwargs):
+        return self.configure(*args, **kwargs)
+
     def configure(self, **kwargs):
         if "values" in kwargs:
             self._values = kwargs.pop("values")

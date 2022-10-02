@@ -140,8 +140,8 @@ class CTkEntry(CTkBaseClass):
             if self._placeholder_text_active:
                 self._entry.config(fg=ThemeManager.single_color(self._placeholder_text_color, self._appearance_mode))
 
-    def bind(self, *args, **kwargs):
-        self._entry.bind(*args, **kwargs)
+    def config(self, *args, **kwargs):
+        return self.configure(*args, **kwargs)
 
     def configure(self, require_redraw=False, **kwargs):
         if "state" in kwargs:
@@ -209,6 +209,9 @@ class CTkEntry(CTkBaseClass):
             super().configure(require_redraw=require_redraw)
 
         self._entry.configure(**kwargs)  # pass remaining kwargs to entry
+
+    def bind(self, *args, **kwargs):
+        self._entry.bind(*args, **kwargs)
 
     def _activate_placeholder(self):
         if self._entry.get() == "" and self._placeholder_text is not None and (self._textvariable is None or self._textvariable == ""):
