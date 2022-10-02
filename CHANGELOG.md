@@ -4,6 +4,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Unreleased - 2022-10-2
+### Added
+ - added .cget() method to all widgets and windows
+
+### Changed
+ - changed 'text_font' attribute to 'font' in all widgets
+ - changed 'dropdown_color' attribute to 'dropdown_fg_color' for combobox, optionmenu
+ - changed 'orient' attribute of CTkProgressBar and CTkSlider to 'orientation'
+
+### Removed
+ - removed setter and getter functions like set_text in CTkButton
+
+### Fixed
+
+
 ## [4.6.0] - 2022-09-17
 ### Added
  - CTkProgressBar indeterminate mode, automatic progress loop with .start() and .stop()

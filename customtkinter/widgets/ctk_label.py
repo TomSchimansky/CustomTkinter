@@ -13,15 +13,20 @@ class CTkLabel(CTkBaseClass):
     For detailed information check out the documentation.
     """
 
+    # attributes that are passed to and managed by the tkinter entry only:
+    _valid_tk_label_attributes = {"compound", "cursor", ""}
+
     def __init__(self, *args,
+                 width: int = 140,
+                 height: int = 28,
+                 corner_radius: Union[int, str] = "default_theme",
+
                  bg_color: Union[str, Tuple[str, str], None] = None,
                  fg_color: Union[str, Tuple[str, str], None] = "default_theme",
                  text_color: Union[str, Tuple[str, str]] = "default_theme",
-                 corner_radius: Union[int, str] = "default_theme",
-                 width: int = 140,
-                 height: int = 28,
+
                  text: str = "CTkLabel",
-                 text_font: any = "default_theme",
+                 font: any = "default_theme",
                  anchor: str = "center",  # label anchor: center, n, e, s, w
                  **kwargs):
 
@@ -41,7 +46,7 @@ class CTkLabel(CTkBaseClass):
         # text
         self._anchor = anchor
         self._text = text
-        self._text_font = (ThemeManager.theme["text"]["font"], ThemeManager.theme["text"]["size"]) if text_font == "default_theme" else text_font
+        self._font = (ThemeManager.theme["text"]["font"], ThemeManager.theme["text"]["size"]) if font == "default_theme" else font
 
         # configure grid system (1x1)
         self.grid_rowconfigure(0, weight=1)
@@ -59,7 +64,7 @@ class CTkLabel(CTkBaseClass):
                                          bd=0,
                                          anchor=self._anchor,
                                          text=self._text,
-                                         font=self._apply_font_scaling(self._text_font),
+                                         font=self._apply_font_scaling(self._font),
                                          **kwargs)
         text_label_grid_sticky = self._anchor if self._anchor != "center" else ""
         self._text_label.grid(row=0, column=0, padx=self._apply_widget_scaling(self._corner_radius),
@@ -72,7 +77,7 @@ class CTkLabel(CTkBaseClass):
         super()._set_scaling(*args, **kwargs)
 
         self._canvas.configure(width=self._apply_widget_scaling(self._desired_width), height=self._apply_widget_scaling(self._desired_height))
-        self._text_label.configure(font=self._apply_font_scaling(self._text_font))
+        self._text_label.configure(font=self._apply_font_scaling(self._font))
         text_label_grid_sticky = self._anchor if self._anchor != "center" else ""
         self._text_label.grid(row=0, column=0, padx=self._apply_widget_scaling(self._corner_radius),
                               sticky=text_label_grid_sticky)
@@ -124,9 +129,9 @@ class CTkLabel(CTkBaseClass):
             self._text = kwargs.pop("text")
             self._text_label.configure(text=self._text)
 
-        if "text_font" in kwargs:
-            self._text_font = kwargs.pop("text_font")
-            self._text_label.configure(font=self._apply_font_scaling(self._text_font))
+        if "font" in kwargs:
+            self._font = kwargs.pop("font")
+            self._text_label.configure(font=self._apply_font_scaling(self._font))
 
         if "fg_color" in kwargs:
             self._fg_color = kwargs.pop("fg_color")
@@ -148,3 +153,21 @@ class CTkLabel(CTkBaseClass):
                 super().configure(require_redraw=require_redraw)
 
             self._text_label.configure(**kwargs)  # pass remaining kwargs to label
+
+    def cget(self, attribute_name: str) -> any:
+        if attribute_name == "corner_radius":
+            return self._corner_radius
+
+        elif attribute_name == "fg_color":
+            return self._fg_color
+        elif attribute_name == "text_color":
+            return self._text_color
+
+        elif attribute_name == "text":
+            return self._text
+        elif attribute_name == "font":
+            return self._font
+        elif attribute_name == "anchor":
+            return self._anchor
+        else:
+            return super().cget(attribute_name)

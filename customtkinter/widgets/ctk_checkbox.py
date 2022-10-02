@@ -16,26 +16,28 @@ class CTkCheckBox(CTkBaseClass):
     """
 
     def __init__(self, *args,
+                 width: int = 24,
+                 height: int = 24,
+                 corner_radius: Union[int, str] = "default_theme",
+                 border_width: Union[int, str] = "default_theme",
+
                  bg_color: Union[str, Tuple[str, str], None] = None,
                  fg_color: Union[str, Tuple[str, str]] = "default_theme",
                  hover_color: Union[str, Tuple[str, str]] = "default_theme",
                  border_color: Union[str, Tuple[str, str]] = "default_theme",
-                 border_width: Union[int, str] = "default_theme",
                  checkmark_color: Union[str, Tuple[str, str]] = "default_theme",
-                 width: int = 24,
-                 height: int = 24,
-                 corner_radius: Union[int, str] = "default_theme",
-                 text_font: any = "default_theme",
                  text_color: Union[str, Tuple[str, str]] = "default_theme",
-                 text: str = "CTkCheckBox",
                  text_color_disabled: Union[str, Tuple[str, str]] = "default_theme",
+
+                 text: str = "CTkCheckBox",
+                 font: any = "default_theme",
+                 textvariable: tkinter.Variable = None,
+                 state: str = tkinter.NORMAL,
                  hover: bool = True,
                  command: Callable = None,
-                 state: str = tkinter.NORMAL,
                  onvalue: Union[int, str] = 1,
                  offvalue: Union[int, str] = 0,
                  variable: tkinter.Variable = None,
-                 textvariable: tkinter.Variable = None,
                  **kwargs):
 
         # transfer basic functionality (_bg_color, size, _appearance_mode, scaling) to CTkBaseClass
@@ -56,7 +58,7 @@ class CTkCheckBox(CTkBaseClass):
         self._text_label: Union[tkinter.Label, None] = None
         self._text_color = ThemeManager.theme["color"]["text"] if text_color == "default_theme" else text_color
         self._text_color_disabled = ThemeManager.theme["color"]["text_disabled"] if text_color_disabled == "default_theme" else text_color_disabled
-        self._text_font = (ThemeManager.theme["text"]["font"], ThemeManager.theme["text"]["size"]) if text_font == "default_theme" else text_font
+        self._font = (ThemeManager.theme["text"]["font"], ThemeManager.theme["text"]["size"]) if font == "default_theme" else font
 
         # callback and hover functionality
         self._command = command
@@ -98,7 +100,7 @@ class CTkCheckBox(CTkBaseClass):
                                          bd=0,
                                          text=self._text,
                                          justify=tkinter.LEFT,
-                                         font=self._apply_font_scaling(self._text_font),
+                                         font=self._apply_font_scaling(self._font),
                                          textvariable=self._textvariable)
         self._text_label.grid(row=0, column=2, padx=0, pady=0, sticky="w")
         self._text_label["anchor"] = "w"
@@ -119,7 +121,7 @@ class CTkCheckBox(CTkBaseClass):
         super()._set_scaling(*args, **kwargs)
 
         self.grid_columnconfigure(1, weight=0, minsize=self._apply_widget_scaling(6))
-        self._text_label.configure(font=self._apply_font_scaling(self._text_font))
+        self._text_label.configure(font=self._apply_font_scaling(self._font))
 
         self._canvas.delete("checkmark")
         self._bg_canvas.configure(width=self._apply_widget_scaling(self._desired_width), height=self._apply_widget_scaling(self._desired_height))
@@ -183,10 +185,10 @@ class CTkCheckBox(CTkBaseClass):
             self._text = kwargs.pop("text")
             self._text_label.configure(text=self._text)
 
-        if "text_font" in kwargs:
-            self._text_font = kwargs.pop("text_font")
+        if "font" in kwargs:
+            self._font = kwargs.pop("font")
             if self._text_label is not None:
-                self._text_label.configure(font=self._apply_font_scaling(self._text_font))
+                self._text_label.configure(font=self._apply_font_scaling(self._font))
 
         if "state" in kwargs:
             self._state = kwargs.pop("state")
@@ -228,6 +230,44 @@ class CTkCheckBox(CTkBaseClass):
                 require_redraw = True
 
         super().configure(require_redraw=require_redraw, **kwargs)
+
+    def cget(self, attribute_name: str) -> any:
+        if attribute_name == "corner_radius":
+            return self._corner_radius
+        elif attribute_name == "border_width":
+            return self._border_width
+
+        elif attribute_name == "fg_color":
+            return self._fg_color
+        elif attribute_name == "hover_color":
+            return self._hover_color
+        elif attribute_name == "border_color":
+            return self._border_color
+        elif attribute_name == "checkmark_color":
+            return self._checkmark_color
+        elif attribute_name == "text_color":
+            return self._text_color
+        elif attribute_name == "text_color_disabled":
+            return self._text_color_disabled
+
+        elif attribute_name == "text":
+            return self._text
+        elif attribute_name == "font":
+            return self._font
+        elif attribute_name == "textvariable":
+            return self._textvariable
+        elif attribute_name == "state":
+            return self._state
+        elif attribute_name == "hover":
+            return self._hover
+        elif attribute_name == "onvalue":
+            return self._onvalue
+        elif attribute_name == "offvalue":
+            return self._offvalue
+        elif attribute_name == "variable":
+            return self._variable
+        else:
+            return super().cget(attribute_name)
 
     def _set_cursor(self):
         if Settings.cursor_manipulation_enabled:

@@ -16,24 +16,26 @@ class CTkButton(CTkBaseClass):
     """
 
     def __init__(self, *args,
+                 width: int = 140,
+                 height: int = 28,
+                 corner_radius: Union[int, str] = "default_theme",
+                 border_width: Union[int, str] = "default_theme",
+
                  bg_color: Union[str, Tuple[str, str], None] = None,
                  fg_color: Union[str, Tuple[str, str], None] = "default_theme",
                  hover_color: Union[str, Tuple[str, str]] = "default_theme",
                  border_color: Union[str, Tuple[str, str]] = "default_theme",
                  text_color: Union[str, Tuple[str, str]] = "default_theme",
                  text_color_disabled: Union[str, Tuple[str, str]] = "default_theme",
-                 width: int = 140,
-                 height: int = 28,
-                 corner_radius: Union[int, str] = "default_theme",
-                 border_width: Union[int, str] = "default_theme",
+
                  text: str = "CTkButton",
+                 font: any = "default_theme",
                  textvariable: tkinter.Variable = None,
-                 text_font: any = "default_theme",
                  image: tkinter.PhotoImage = None,
-                 hover: bool = True,
-                 compound: str = "left",
                  state: str = "normal",
+                 hover: bool = True,
                  command: Callable = None,
+                 compound: str = "left",
                  **kwargs):
 
         # transfer basic functionality (_bg_color, size, _appearance_mode, scaling) to CTkBaseClass
@@ -55,7 +57,7 @@ class CTkButton(CTkBaseClass):
         self._image_label = None
         self._text = text
         self._text_label = None
-        self._text_font = (ThemeManager.theme["text"]["font"], ThemeManager.theme["text"]["size"]) if text_font == "default_theme" else text_font
+        self._font = (ThemeManager.theme["text"]["font"], ThemeManager.theme["text"]["size"]) if font == "default_theme" else font
 
         # callback and hover functionality
         self._command = command
@@ -141,7 +143,7 @@ class CTkButton(CTkBaseClass):
 
             if self._text_label is None:
                 self._text_label = tkinter.Label(master=self,
-                                                 font=self._apply_font_scaling(self._text_font),
+                                                 font=self._apply_font_scaling(self._font),
                                                  text=self._text,
                                                  textvariable=self._textvariable)
 
@@ -249,10 +251,10 @@ class CTkButton(CTkBaseClass):
             else:
                 self._text_label.configure(text=self._text)
 
-        if "text_font" in kwargs:
-            self._text_font = kwargs.pop("text_font")
+        if "font" in kwargs:
+            self._font = kwargs.pop("font")
             if self._text_label is not None:
-                self._text_label.configure(font=self._apply_font_scaling(self._text_font))
+                self._text_label.configure(font=self._apply_font_scaling(self._font))
 
         if "state" in kwargs:
             self._state = kwargs.pop("state")
@@ -303,37 +305,41 @@ class CTkButton(CTkBaseClass):
 
         super().configure(require_redraw=require_redraw, **kwargs)
 
-    def cget(self, key: str) -> any:
-        if key == "fg_color":
-            return self._fg_color
-        elif key == "hover_color":
-            return self._hover_color
-        elif key == "border_color":
-            return self._border_color
-        elif key == "text_color":
-            return self._text_color
-        elif key == "text_color_disabled":
-            return self._text_color_disabled
-        elif key == "text":
-            return self._text
-        elif key == "textvariable":
-            return self._textvariable
-        elif key == "text_font":
-            return self._text_font
-        elif key == "command":
-            return self._command
-        elif key == "hover":
-            return self._hover
-        elif key == "border_width":
+    def cget(self, attribute_name: str) -> any:
+        if attribute_name == "corner_radius":
+            return self._corner_radius
+        elif attribute_name == "border_width":
             return self._border_width
-        elif key == "image":
+
+        elif attribute_name == "fg_color":
+            return self._fg_color
+        elif attribute_name == "hover_color":
+            return self._hover_color
+        elif attribute_name == "border_color":
+            return self._border_color
+        elif attribute_name == "text_color":
+            return self._text_color
+        elif attribute_name == "text_color_disabled":
+            return self._text_color_disabled
+
+        elif attribute_name == "text":
+            return self._text
+        elif attribute_name == "font":
+            return self._font
+        elif attribute_name == "textvariable":
+            return self._textvariable
+        elif attribute_name == "image":
             return self._image
-        elif key == "compound":
-            return self._compound
-        elif key == "state":
+        elif attribute_name == "state":
             return self._state
+        elif attribute_name == "hover":
+            return self._hover
+        elif attribute_name == "command":
+            return self._command
+        elif attribute_name == "compound":
+            return self._compound
         else:
-            return super().cget(key)
+            return super().cget(attribute_name)
 
     def _set_cursor(self):
         if Settings.cursor_manipulation_enabled:

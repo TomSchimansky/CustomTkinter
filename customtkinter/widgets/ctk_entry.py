@@ -6,6 +6,8 @@ from ..theme_manager import ThemeManager
 from ..draw_engine import DrawEngine
 from .widget_base_class import CTkBaseClass
 
+from .widget_helper_functions import *
+
 
 class CTkEntry(CTkBaseClass):
     """
@@ -13,23 +15,33 @@ class CTkEntry(CTkBaseClass):
     For detailed information check out the documentation.
     """
 
+    # attributes that are passed to and managed by the tkinter entry only:
+    _valid_tk_entry_attributes = {"exportselection", "font", "highlightbackground",
+                                  "highlightcolor", "insertbackground", "insertborderwidth",
+                                  "insertofftime", "insertontime", "insertwidth",
+                                  "justify", "selectbackground", "selectborderwidth",
+                                  "selectforeground", "show", "takefocus", "validate",
+                                  "validatecommand", "xscrollcommand"}
+
     def __init__(self, *args,
-                 bg_color: Union[str, Tuple[str, str], None] = None,
-                 fg_color: Union[str, Tuple[str, str], None] = "default_theme",
-                 text_color: Union[str, Tuple[str, str]] = "default_theme",
-                 placeholder_text_color: Union[str, Tuple[str, str]] = "default_theme",
-                 text_font: Union[str, Tuple[str, str]] = "default_theme",
-                 placeholder_text: str = None,
-                 corner_radius: int = "default_theme",
-                 border_width: int = "default_theme",
-                 border_color: Union[str, Tuple[str, str]] = "default_theme",
                  width: int = 140,
                  height: int = 28,
-                 state: str = tkinter.NORMAL,
+                 corner_radius: int = "default_theme",
+                 border_width: int = "default_theme",
+
+                 bg_color: Union[str, Tuple[str, str], None] = None,
+                 fg_color: Union[str, Tuple[str, str], None] = "default_theme",
+                 border_color: Union[str, Tuple[str, str]] = "default_theme",
+                 text_color: Union[str, Tuple[str, str]] = "default_theme",
+                 placeholder_text_color: Union[str, Tuple[str, str]] = "default_theme",
+
                  textvariable: tkinter.Variable = None,
+                 placeholder_text: str = None,
+                 font: Union[str, Tuple[str, str]] = "default_theme",
+                 state: str = tkinter.NORMAL,
                  **kwargs):
 
-        # transfer basic functionality (_bg_color, size, _appearance_mode, scaling) to CTkBaseClass
+        # transfer basic functionality (bg_color, size, appearance_mode, scaling) to CTkBaseClass
         if "master" in kwargs:
             super().__init__(*args, bg_color=bg_color, width=width, height=height, master=kwargs.pop("master"))
         else:
@@ -43,7 +55,7 @@ class CTkEntry(CTkBaseClass):
         self._fg_color = ThemeManager.theme["color"]["entry"] if fg_color == "default_theme" else fg_color
         self._text_color = ThemeManager.theme["color"]["text"] if text_color == "default_theme" else text_color
         self._placeholder_text_color = ThemeManager.theme["color"]["entry_placeholder_text"] if placeholder_text_color == "default_theme" else placeholder_text_color
-        self._text_font = (ThemeManager.theme["text"]["font"], ThemeManager.theme["text"]["size"]) if text_font == "default_theme" else text_font
+        self._font = (ThemeManager.theme["text"]["font"], ThemeManager.theme["text"]["size"]) if font == "default_theme" else font
         self._border_color = ThemeManager.theme["color"]["entry_border"] if border_color == "default_theme" else border_color
 
         # shape
@@ -71,10 +83,10 @@ class CTkEntry(CTkBaseClass):
                                     bd=0,
                                     width=1,
                                     highlightthickness=0,
-                                    font=self._apply_font_scaling(self._text_font),
+                                    font=self._apply_font_scaling(self._font),
                                     state=self._state,
                                     textvariable=self._textvariable,
-                                    **kwargs)
+                                    **filter_dict_by_set(kwargs, self._valid_tk_entry_attributes))
         self._entry.grid(column=0, row=0, sticky="nswe",
                          padx=self._apply_widget_scaling(self._corner_radius) if self._corner_radius >= 6 else self._apply_widget_scaling(6),
                          pady=(self._apply_widget_scaling(self._border_width), self._apply_widget_scaling(self._border_width + 1)))
@@ -89,7 +101,7 @@ class CTkEntry(CTkBaseClass):
     def _set_scaling(self, *args, **kwargs):
         super()._set_scaling(*args, **kwargs)
 
-        self._entry.configure(font=self._apply_font_scaling(self._text_font))
+        self._entry.configure(font=self._apply_font_scaling(self._font))
         self._entry.grid(column=0, row=0, sticky="we",
                          padx=self._apply_widget_scaling(self._corner_radius) if self._corner_radius >= 6 else self._apply_widget_scaling(6))
 
@@ -144,6 +156,8 @@ class CTkEntry(CTkBaseClass):
         return self.configure(*args, **kwargs)
 
     def configure(self, require_redraw=False, **kwargs):
+        self._entry.configure(**filter_dict_by_set(kwargs, self._valid_tk_entry_attributes))
+
         if "state" in kwargs:
             self._state = kwargs.pop("state")
             self._entry.configure(state=self._state)
@@ -193,9 +207,9 @@ class CTkEntry(CTkBaseClass):
             self._textvariable = kwargs.pop("textvariable")
             self._entry.configure(textvariable=self._textvariable)
 
-        if "text_font" in kwargs:
-            self._text_font = kwargs.pop("text_font")
-            self._entry.configure(font=self._apply_font_scaling(self._text_font))
+        if "font" in kwargs:
+            self._font = kwargs.pop("font")
+            self._entry.configure(font=self._apply_font_scaling(self._font))
 
         if "show" in kwargs:
             if self._placeholder_text_active:
@@ -203,12 +217,40 @@ class CTkEntry(CTkBaseClass):
             else:
                 self._entry.configure(show=kwargs.pop("show"))
 
-        if "_bg_color" in kwargs:
-            super().configure(bg_color=kwargs.pop("_bg_color"), require_redraw=require_redraw)
-        else:
-            super().configure(require_redraw=require_redraw)
+        super().configure(require_redraw=require_redraw, **kwargs)
 
-        self._entry.configure(**kwargs)  # pass remaining kwargs to entry
+    def cget(self, attribute_name: str) -> any:
+        if attribute_name == "corner_radius":
+            return self._corner_radius
+        elif attribute_name == "border_width":
+            return self._border_width
+
+        elif attribute_name == "fg_color":
+            return self._fg_color
+        elif attribute_name == "border_color":
+            return self._border_color
+        elif attribute_name == "text_color":
+            return self._text_color
+        elif attribute_name == "placeholder_text_color":
+            return self._placeholder_text_color
+
+        elif attribute_name == "textvariable":
+            return self._textvariable
+        elif attribute_name == "placeholder_text":
+            return self._placeholder_text
+        elif attribute_name == "text_font":
+            return self._font
+        elif attribute_name == "state":
+            return self._state
+
+        elif attribute_name in ["exportselection", "font", "highlightbackground",
+                                "highlightcolor", "insertbackground",
+                                "insertborderwidth", "insertofftime", "insertontime",
+                                "insertwidth", "justify", "selectbackground",
+                                "selectborderwidth", "selectforeground", "show",
+                                "takefocus", "validate", "validatecommand",
+                                "xscrollcommand"]:
+            return self._entry.cget(attribute_name)
 
     def bind(self, *args, **kwargs):
         self._entry.bind(*args, **kwargs)

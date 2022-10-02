@@ -227,6 +227,12 @@ class CTkToplevel(tkinter.Toplevel):
 
         super().configure(*args, **kwargs)
 
+    def cget(self, attribute_name: str) -> any:
+        if attribute_name == "fg_color":
+            return self._fg_color
+        else:
+            return super().cget(attribute_name)
+
     @staticmethod
     def _enable_macos_dark_title_bar():
         if sys.platform == "darwin" and not Settings.deactivate_macos_window_header_manipulation:  # macOS

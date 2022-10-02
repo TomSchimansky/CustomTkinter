@@ -15,18 +15,20 @@ class CTkScrollbar(CTkBaseClass):
     """
 
     def __init__(self, *args,
+                 width: Union[int, str] = "default_init",
+                 height: Union[int, str] = "default_init",
+                 corner_radius: Union[int, str] = "default_theme",
+                 border_spacing: Union[int, str] = "default_theme",
+                 minimum_pixel_length: int = 20,
+
                  bg_color: Union[str, Tuple[str, str], None] = None,
                  fg_color: Union[str, Tuple[str, str], None] = "default_theme",
                  scrollbar_color: Union[str, Tuple[str, str]] = "default_theme",
                  scrollbar_hover_color: Union[str, Tuple[str, str]] = "default_theme",
-                 border_spacing: Union[int, str] = "default_theme",
-                 corner_radius: Union[int, str] = "default_theme",
-                 width: Union[int, str] = "default_init",
-                 height: Union[int, str] = "default_init",
-                 minimum_pixel_length: int = 20,
-                 orientation: str = "vertical",
-                 command: Callable = None,
+
                  hover: bool = True,
+                 command: Callable = None,
+                 orientation: str = "vertical",
                  **kwargs):
 
         # set default dimensions according to orientation
@@ -182,6 +184,30 @@ class CTkScrollbar(CTkBaseClass):
             self._set_dimensions(height=kwargs.pop("height"))
 
         super().configure(require_redraw=require_redraw, **kwargs)
+
+    def cget(self, attribute_name: str) -> any:
+        if attribute_name == "corner_radius":
+            return self._corner_radius
+        elif attribute_name == "border_spacing":
+            return self._border_spacing
+        elif attribute_name == "minimum_pixel_length":
+            return self._minimum_pixel_length
+
+        elif attribute_name == "fg_color":
+            return self._fg_color
+        elif attribute_name == "scrollbar_color":
+            return self._scrollbar_color
+        elif attribute_name == "scrollbar_hover_color":
+            return self._scrollbar_hover_color
+
+        elif attribute_name == "hover":
+            return self._hover
+        elif attribute_name == "command":
+            return self._command
+        elif attribute_name == "orientation":
+            return self._orientation
+        else:
+            return super().cget(attribute_name)
 
     def _on_enter(self, event=0):
         if self._hover is True:

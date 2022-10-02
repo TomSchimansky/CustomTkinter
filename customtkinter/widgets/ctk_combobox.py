@@ -9,6 +9,8 @@ from ..settings import Settings
 from ..draw_engine import DrawEngine
 from .widget_base_class import CTkBaseClass
 
+from .widget_helper_functions import filter_dict_by_set
+
 
 class CTkComboBox(CTkBaseClass):
     """
@@ -17,27 +19,29 @@ class CTkComboBox(CTkBaseClass):
     """
 
     def __init__(self, *args,
+                 width: int = 140,
+                 height: int = 28,
+                 corner_radius: Union[int, str] = "default_theme",
+                 border_width: Union[int, str] = "default_theme",
+
                  bg_color: Union[str, Tuple[str, str], None] = None,
                  fg_color: Union[str, Tuple[str, str]] = "default_theme",
                  border_color: Union[str, Tuple[str, str]] = "default_theme",
                  button_color: Union[str, Tuple[str, str]] = "default_theme",
                  button_hover_color: Union[str, Tuple[str, str]] = "default_theme",
-                 dropdown_color: Union[str, Tuple[str, str]] = "default_theme",
+                 dropdown_fg_color: Union[str, Tuple[str, str]] = "default_theme",
                  dropdown_hover_color: Union[str, Tuple[str, str]] = "default_theme",
                  dropdown_text_color: Union[str, Tuple[str, str]] = "default_theme",
-                 variable: tkinter.Variable = None,
-                 values: List[str] = None,
-                 command: Callable = None,
-                 width: int = 140,
-                 height: int = 28,
-                 corner_radius: int = "default_theme",
-                 border_width: int = "default_theme",
-                 text_font: any = "default_theme",
-                 dropdown_text_font: any = "default_theme",
                  text_color: Union[str, Tuple[str, str]] = "default_theme",
                  text_color_disabled: Union[str, Tuple[str, str]] = "default_theme",
-                 hover: bool = True,
+
+                 font: any = "default_theme",
+                 dropdown_text_font: any = "default_theme",
+                 values: List[str] = None,
                  state: str = tkinter.NORMAL,
+                 hover: bool = True,
+                 variable: tkinter.Variable = None,
+                 command: Callable = None,
                  **kwargs):
 
         # transfer basic functionality (_bg_color, size, _appearance_mode, scaling) to CTkBaseClass
@@ -56,11 +60,11 @@ class CTkComboBox(CTkBaseClass):
         # text and font
         self._text_color = ThemeManager.theme["color"]["text"] if text_color == "default_theme" else text_color
         self._text_color_disabled = ThemeManager.theme["color"]["text_button_disabled"] if text_color_disabled == "default_theme" else text_color_disabled
-        self._text_font = (ThemeManager.theme["text"]["font"], ThemeManager.theme["text"]["size"]) if text_font == "default_theme" else text_font
+        self._font = (ThemeManager.theme["text"]["font"], ThemeManager.theme["text"]["size"]) if font == "default_theme" else font
 
         # callback and hover functionality
         self._command = command
-        self._textvariable = variable
+        self._variable = variable
         self._state = state
         self._hover = hover
 
@@ -72,10 +76,10 @@ class CTkComboBox(CTkBaseClass):
         self._dropdown_menu = DropdownMenu(master=self,
                                            values=self._values,
                                            command=self._dropdown_callback,
-                                           fg_color=dropdown_color,
+                                           fg_color=dropdown_fg_color,
                                            hover_color=dropdown_hover_color,
                                            text_color=dropdown_text_color,
-                                           text_font=dropdown_text_font)
+                                           font=dropdown_text_font)
 
         # configure grid system (1x1)
         self.grid_rowconfigure(0, weight=1)
@@ -93,7 +97,7 @@ class CTkComboBox(CTkBaseClass):
                                     width=1,
                                     bd=0,
                                     highlightthickness=0,
-                                    font=self._apply_font_scaling(self._text_font))
+                                    font=self._apply_font_scaling(self._font))
         left_section_width = self._current_width - self._current_height
         self._entry.grid(row=0, column=0, rowspan=1, columnspan=1, sticky="ew",
                          padx=(max(self._apply_widget_scaling(self._corner_radius), self._apply_widget_scaling(3)),
@@ -116,15 +120,15 @@ class CTkComboBox(CTkBaseClass):
         self._canvas.tag_bind("dropdown_arrow", "<Button-1>", self._clicked)
         self.bind('<Configure>', self._update_dimensions_event)
 
-        if self._textvariable is not None:
-            self._entry.configure(textvariable=self._textvariable)
+        if self._variable is not None:
+            self._entry.configure(textvariable=self._variable)
 
     def _set_scaling(self, *args, **kwargs):
         super()._set_scaling(*args, **kwargs)
 
         # change entry font size and grid padding
         left_section_width = self._current_width - self._current_height
-        self._entry.configure(font=self._apply_font_scaling(self._text_font))
+        self._entry.configure(font=self._apply_font_scaling(self._font))
         self._entry.grid(row=0, column=0, rowspan=1, columnspan=1, sticky="ew",
                          padx=(max(self._apply_widget_scaling(self._corner_radius), self._apply_widget_scaling(3)),
                                max(self._apply_widget_scaling(self._current_width - left_section_width + 3), self._apply_widget_scaling(3))))
@@ -210,16 +214,16 @@ class CTkComboBox(CTkBaseClass):
             self._text_color = kwargs.pop("text_color")
             require_redraw = True
 
-        if "text_font" in kwargs:
-            self._text_font = kwargs.pop("text_font")
-            self._entry.configure(font=self._apply_font_scaling(self._text_font))
+        if "font" in kwargs:
+            self._font = kwargs.pop("font")
+            self._entry.configure(font=self._apply_font_scaling(self._font))
 
         if "command" in kwargs:
             self._command = kwargs.pop("command")
 
         if "variable" in kwargs:
-            self._textvariable = kwargs.pop("variable")
-            self._entry.configure(textvariable=self._textvariable)
+            self._variable = kwargs.pop("variable")
+            self._entry.configure(textvariable=self._variable)
 
         if "width" in kwargs:
             self._set_dimensions(width=kwargs.pop("width"))
@@ -231,8 +235,8 @@ class CTkComboBox(CTkBaseClass):
             self._values = kwargs.pop("values")
             self._dropdown_menu.configure(values=self._values)
 
-        if "dropdown_color" in kwargs:
-            self._dropdown_menu.configure(fg_color=kwargs.pop("dropdown_color"))
+        if "dropdown_fg_color" in kwargs:
+            self._dropdown_menu.configure(fg_color=kwargs.pop("dropdown_fg_color"))
 
         if "dropdown_hover_color" in kwargs:
             self._dropdown_menu.configure(hover_color=kwargs.pop("dropdown_hover_color"))
@@ -244,6 +248,48 @@ class CTkComboBox(CTkBaseClass):
             self._dropdown_menu.configure(text_font=kwargs.pop("dropdown_text_font"))
 
         super().configure(require_redraw=require_redraw, **kwargs)
+
+    def cget(self, attribute_name: str) -> any:
+        if attribute_name == "corner_radius":
+            return self._corner_radius
+        elif attribute_name == "border_width":
+            return self._border_width
+
+        elif attribute_name == "fg_color":
+            return self._fg_color
+        elif attribute_name == "border_color":
+            return self._border_color
+        elif attribute_name == "button_color":
+            return self._button_color
+        elif attribute_name == "button_hover_color":
+            return self._button_hover_color
+        elif attribute_name == "dropdown_fg_color":
+            return self._dropdown_menu.cget("fg_color")
+        elif attribute_name == "dropdown_hover_color":
+            return self._dropdown_menu.cget("hover_color")
+        elif attribute_name == "dropdown_text_color":
+            return self._dropdown_menu.cget("text_color")
+        elif attribute_name == "text_color":
+            return self._text_color
+        elif attribute_name == "text_color_disabled":
+            return self._text_color_disabled
+
+        elif attribute_name == "font":
+            return self._font
+        elif attribute_name == "dropdown_text_font":
+            return self._dropdown_menu.cget("text_font")
+        elif attribute_name == "values":
+            return self._values
+        elif attribute_name == "state":
+            return self._state
+        elif attribute_name == "hover":
+            return self._hover
+        elif attribute_name == "variable":
+            return self._variable
+        elif attribute_name == "command":
+            return self._command
+        else:
+            return super().cget(attribute_name)
 
     def _on_enter(self, event=0):
         if self._hover is True and self._state == tkinter.NORMAL and len(self._values) > 0:

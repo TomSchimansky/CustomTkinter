@@ -15,16 +15,21 @@ from ..appearance_mode_tracker import AppearanceModeTracker
 from ..scaling_tracker import ScalingTracker
 from ..theme_manager import ThemeManager
 
+from .widget_helper_functions import filter_dict_by_set
+
 
 class CTkBaseClass(tkinter.Frame):
     """ Base class of every CTk widget, handles the dimensions, _bg_color,
         appearance_mode changes, scaling, bg changes of master if master is not a CTk widget """
 
-    def __init__(self,
-                 *args,
-                 bg_color: Union[str, tuple] = None,
+    # attributes that are passed to and managed by the tkinter frame only:
+    _valid_tk_frame_attributes = {"cursor"}
+
+    def __init__(self, *args,
                  width: int,
                  height: int,
+
+                 bg_color: Union[str, tuple] = None,
                  **kwargs):
 
         super().__init__(*args, width=width, height=height, **kwargs)  # set desired size of underlying tkinter.Frame
@@ -117,6 +122,10 @@ class CTkBaseClass(tkinter.Frame):
 
         return scaled_kwargs
 
+    def _draw(self, no_color_updates: bool = False):
+        """ abstract of draw method to be overridden """
+        pass
+
     def config(self, *args, **kwargs):
         return self.configure(*args, **kwargs)
 
@@ -131,7 +140,7 @@ class CTkBaseClass(tkinter.Frame):
                 self._bg_color = new_bg_color
             require_redraw = True
 
-        super().configure(**kwargs)
+        super().configure(**filter_dict_by_set(kwargs, self._valid_tk_frame_attributes))
 
         if require_redraw:
             self._draw()
@@ -143,7 +152,8 @@ class CTkBaseClass(tkinter.Frame):
             return self._desired_width
         elif key == "height":
             return self._desired_height
-        else:
+
+        elif key in self._valid_tk_frame_attributes:
             return super().cget(key)
 
     def _update_dimensions_event(self, event):
@@ -241,7 +251,3 @@ class CTkBaseClass(tkinter.Frame):
 
         else:
             return font
-
-    def _draw(self, no_color_updates: bool = False):
-        """ abstract of draw method to be overridden """
-        pass

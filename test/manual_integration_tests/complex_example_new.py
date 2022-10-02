@@ -24,7 +24,7 @@ class App(customtkinter.CTk):
         self.sidebar_frame = customtkinter.CTkFrame(self, width=140)
         self.sidebar_frame.grid(row=0, column=0, rowspan=4, sticky="nsew")
         self.sidebar_frame.grid_rowconfigure(4, weight=1)
-        self.logo_label = customtkinter.CTkLabel(self.sidebar_frame, text="CustomTkinter", text_font=("Roboto", -16))
+        self.logo_label = customtkinter.CTkLabel(self.sidebar_frame, text="CustomTkinter", font=("Roboto", -16))
         self.logo_label.grid(row=0, column=0, padx=20, pady=(20, 10))
         self.sidebar_button_1 = customtkinter.CTkButton(self.sidebar_frame, command=self.sidebar_button_callback)
         self.sidebar_button_1.grid(row=1, column=0, padx=20, pady=10)
@@ -103,9 +103,9 @@ class App(customtkinter.CTk):
         self.progressbar_2.grid(row=1, column=0, padx=(20, 10), pady=(10, 10), sticky="ew")
         self.slider_1 = customtkinter.CTkSlider(self.slider_progressbar_frame, from_=0, to=1, number_of_steps=4)
         self.slider_1.grid(row=2, column=0, padx=(20, 10), pady=(10, 10), sticky="ew")
-        self.slider_2 = customtkinter.CTkSlider(self.slider_progressbar_frame, orient="vertical")
+        self.slider_2 = customtkinter.CTkSlider(self.slider_progressbar_frame, orientation="vertical")
         self.slider_2.grid(row=0, column=1, rowspan=4, padx=(10, 10), pady=(10, 10), sticky="ns")
-        self.progressbar_3 = customtkinter.CTkProgressBar(self.slider_progressbar_frame, orient="vertical")
+        self.progressbar_3 = customtkinter.CTkProgressBar(self.slider_progressbar_frame, orientation="vertical")
         self.progressbar_3.grid(row=0, column=2, rowspan=4, padx=(10, 20), pady=(10, 10), sticky="ns")
 
         # set default values

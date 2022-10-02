@@ -18,12 +18,13 @@ class CTkInputDialog:
     """
 
     def __init__(self,
-                 master: any = None,
-                 title: str = "CTkDialog",
-                 text: str = "CTkDialog",
                  fg_color: Union[str, Tuple[str, str]] = "default_theme",
                  hover_color: Union[str, Tuple[str, str]] = "default_theme",
-                 border_color: Union[str, Tuple[str, str]] = "default_theme"):
+                 border_color: Union[str, Tuple[str, str]] = "default_theme",
+
+                 master: any = None,
+                 title: str = "CTkDialog",
+                 text: str = "CTkDialog"):
 
         self._appearance_mode = AppearanceModeTracker.get_mode()  # 0: "Light" 1: "Dark"
         self.master = master

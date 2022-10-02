@@ -12,30 +12,32 @@ from .dropdown_menu import DropdownMenu
 
 class CTkOptionMenu(CTkBaseClass):
     """
-    Optionemnu with rounded corners, dropdown menu, variable support, command.
+    Optionmenu with rounded corners, dropdown menu, variable support, command.
     For detailed information check out the documentation.
     """
 
     def __init__(self, *args,
+                 width: int = 140,
+                 height: int = 28,
+                 corner_radius: Union[int, str] = "default_theme",
+
                  bg_color: Union[str, Tuple[str, str], None] = None,
                  fg_color: Union[str, Tuple[str, str]] = "default_theme",
                  button_color: Union[str, Tuple[str, str]] = "default_theme",
                  button_hover_color: Union[str, Tuple[str, str]] = "default_theme",
                  text_color: Union[str, Tuple[str, str]] = "default_theme",
                  text_color_disabled: Union[str, Tuple[str, str]] = "default_theme",
-                 dropdown_color: Union[str, Tuple[str, str]] = "default_theme",
+                 dropdown_fg_color: Union[str, Tuple[str, str]] = "default_theme",
                  dropdown_hover_color: Union[str, Tuple[str, str]] = "default_theme",
                  dropdown_text_color: Union[str, Tuple[str, str]] = "default_theme",
-                 variable: tkinter.Variable = None,
-                 values: list = None,
-                 command: Callable = None,
-                 width: int = 140,
-                 height: int = 28,
-                 corner_radius: Union[int, str] = "default_theme",
-                 text_font: any = "default_theme",
+
+                 font: any = "default_theme",
                  dropdown_text_font: any = "default_theme",
-                 hover: bool = True,
+                 values: list = None,
+                 variable: tkinter.Variable = None,
                  state: str = tkinter.NORMAL,
+                 hover: bool = True,
+                 command: Callable = None,
                  dynamic_resizing: bool = True,
                  **kwargs):
 
@@ -53,7 +55,7 @@ class CTkOptionMenu(CTkBaseClass):
         # text and font
         self._text_color = ThemeManager.theme["color"]["text"] if text_color == "default_theme" else text_color
         self._text_color_disabled = ThemeManager.theme["color"]["text_button_disabled"] if text_color_disabled == "default_theme" else text_color_disabled
-        self._text_font = (ThemeManager.theme["text"]["font"], ThemeManager.theme["text"]["size"]) if text_font == "default_theme" else text_font
+        self._font = (ThemeManager.theme["text"]["font"], ThemeManager.theme["text"]["size"]) if font == "default_theme" else font
         self._dropdown_text_font = dropdown_text_font
 
         # callback and hover functionality
@@ -78,10 +80,10 @@ class CTkOptionMenu(CTkBaseClass):
         self._dropdown_menu = DropdownMenu(master=self,
                                            values=self._values,
                                            command=self._dropdown_callback,
-                                           fg_color=dropdown_color,
+                                           fg_color=dropdown_fg_color,
                                            hover_color=dropdown_hover_color,
                                            text_color=dropdown_text_color,
-                                           text_font=dropdown_text_font)
+                                           font=dropdown_text_font)
 
         # configure grid system (1x1)
         self.grid_rowconfigure(0, weight=1)
@@ -96,7 +98,7 @@ class CTkOptionMenu(CTkBaseClass):
 
         left_section_width = self._current_width - self._current_height
         self._text_label = tkinter.Label(master=self,
-                                         font=self._apply_font_scaling(self._text_font),
+                                         font=self._apply_font_scaling(self._font),
                                          anchor="w",
                                          text=self._current_value)
         self._text_label.grid(row=0, column=0, sticky="w",
@@ -137,7 +139,7 @@ class CTkOptionMenu(CTkBaseClass):
 
         # change label text size and grid padding
         left_section_width = self._current_width - self._current_height
-        self._text_label.configure(font=self._apply_font_scaling(self._text_font))
+        self._text_label.configure(font=self._apply_font_scaling(self._font))
         self._text_label.grid(row=0, column=0, sticky="w",
                               padx=(max(self._apply_widget_scaling(self._corner_radius), self._apply_widget_scaling(3)),
                                     max(self._apply_widget_scaling(self._current_width - left_section_width + 3), self._apply_widget_scaling(3))))
@@ -215,9 +217,9 @@ class CTkOptionMenu(CTkBaseClass):
             self._text_color = kwargs.pop("text_color")
             require_redraw = True
 
-        if "text_font" in kwargs:
-            self._text_font = kwargs.pop("text_font")
-            self._text_label.configure(font=self._apply_font_scaling(self._text_font))
+        if "font" in kwargs:
+            self._font = kwargs.pop("font")
+            self._text_label.configure(font=self._apply_font_scaling(self._font))
 
         if "command" in kwargs:
             self._command = kwargs.pop("command")
@@ -266,6 +268,46 @@ class CTkOptionMenu(CTkBaseClass):
                 self.grid_propagate(1)
 
         super().configure(require_redraw=require_redraw, **kwargs)
+
+    def cget(self, attribute_name: str) -> any:
+        if attribute_name == "corner_radius":
+            return self._corner_radius
+
+        elif attribute_name == "fg_color":
+            return self._fg_color
+        elif attribute_name == "button_color":
+            return self._button_color
+        elif attribute_name == "button_hover_color":
+            return self._button_hover_color
+        elif attribute_name == "text_color":
+            return self._text_color
+        elif attribute_name == "text_color_disabled":
+            return self._text_color_disabled
+        elif attribute_name == "dropdown_fg_color":
+            return self._dropdown_menu.cget("fg_color")
+        elif attribute_name == "dropdown_hover_color":
+            return self._dropdown_menu.cget("hover_color")
+        elif attribute_name == "dropdown_text_color":
+            return self._dropdown_menu.cget("text_color")
+
+        elif attribute_name == "font":
+            return self._font
+        elif attribute_name == "dropdown_text_font":
+            return self._dropdown_menu.cget("text_font")
+        elif attribute_name == "values":
+            return self._values
+        elif attribute_name == "variable":
+            return self._variable
+        elif attribute_name == "state":
+            return self._state
+        elif attribute_name == "hover":
+            return self._hover
+        elif attribute_name == "command":
+            return self._command
+        elif attribute_name == "dynamic_resizing":
+            return self._dynamic_resizing
+        else:
+            return super().cget(attribute_name)
 
     def _open_dropdown_menu(self):
         self._dropdown_menu.open(self.winfo_rootx(),

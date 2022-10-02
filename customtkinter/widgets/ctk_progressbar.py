@@ -16,16 +16,18 @@ class CTkProgressBar(CTkBaseClass):
     """
 
     def __init__(self, *args,
-                 bg_color: Union[str, Tuple[str, str], None] = None,
-                 border_color: Union[str, Tuple[str, str]] = "default_theme",
-                 fg_color: Union[str, Tuple[str, str]] = "default_theme",
-                 progress_color: Union[str, Tuple[str, str]] = "default_theme",
-                 corner_radius: Union[str, Tuple[str, str]] = "default_theme",
                  width: Union[int, str] = "default_init",
                  height: Union[int, str] = "default_init",
+                 corner_radius: Union[str, Tuple[str, str]] = "default_theme",
                  border_width: Union[int, str] = "default_theme",
+
+                 bg_color: Union[str, Tuple[str, str], None] = None,
+                 fg_color: Union[str, Tuple[str, str]] = "default_theme",
+                 border_color: Union[str, Tuple[str, str]] = "default_theme",
+                 progress_color: Union[str, Tuple[str, str]] = "default_theme",
+
                  variable: tkinter.Variable = None,
-                 orient: str = "horizontal",
+                 orientation: str = "horizontal",
                  mode: str = "determinate",
                  determinate_speed: float = 1,
                  indeterminate_speed: float = 1,
@@ -33,12 +35,12 @@ class CTkProgressBar(CTkBaseClass):
 
         # set default dimensions according to orientation
         if width == "default_init":
-            if orient.lower() == "vertical":
+            if orientation.lower() == "vertical":
                 width = 8
             else:
                 width = 200
         if height == "default_init":
-            if orient.lower() == "vertical":
+            if orientation.lower() == "vertical":
                 height = 200
             else:
                 height = 8
@@ -65,7 +67,7 @@ class CTkProgressBar(CTkBaseClass):
         self._indeterminate_width: float = 0.4  # range 0-1
         self._indeterminate_speed = indeterminate_speed  # range 0-1 to travel in 50ms
         self._loop_running: bool = False
-        self._orient = orient
+        self._orientation = orientation
         self._mode = mode  # "determinate" or "indeterminate"
 
         self.grid_rowconfigure(0, weight=1)
@@ -110,9 +112,9 @@ class CTkProgressBar(CTkBaseClass):
         super().destroy()
 
     def _draw(self, no_color_updates=False):
-        if self._orient.lower() == "horizontal":
+        if self._orientation.lower() == "horizontal":
             orientation = "w"
-        elif self._orient.lower() == "vertical":
+        elif self._orientation.lower() == "vertical":
             orientation = "s"
         else:
             orientation = "w"
@@ -199,6 +201,32 @@ class CTkProgressBar(CTkBaseClass):
             self._set_dimensions(height=kwargs.pop("height"))
 
         super().configure(require_redraw=require_redraw, **kwargs)
+
+    def cget(self, attribute_name: str) -> any:
+        if attribute_name == "corner_radius":
+            return self._corner_radius
+        elif attribute_name == "border_width":
+            return self._border_width
+
+        elif attribute_name == "fg_color":
+            return self._fg_color
+        elif attribute_name == "border_color":
+            return self._border_color
+        elif attribute_name == "progress_color":
+            return self._progress_color
+
+        elif attribute_name == "variable":
+            return self._variable
+        elif attribute_name == "orientation":
+            return self._orientation
+        elif attribute_name == "mode":
+            return self._mode
+        elif attribute_name == "determinate_speed":
+            return self._determinate_speed
+        elif attribute_name == "indeterminate_speed":
+            return self._indeterminate_speed
+        else:
+            return super().cget(attribute_name)
 
     def _variable_callback(self, var_name, index, mode):
         if not self._variable_callback_blocked:

@@ -16,35 +16,37 @@ class CTkSlider(CTkBaseClass):
     """
 
     def __init__(self, *args,
-                 bg_color: Union[str, Tuple[str, str], None] = None,
-                 border_color: Union[str, Tuple[str, str], None] = None,
-                 fg_color: Union[str, Tuple[str, str]] = "default_theme",
-                 progress_color: Union[str, Tuple[str, str], None] = "default_theme",
-                 button_color: Union[str, Tuple[str, str]] = "default_theme",
-                 button_hover_color: Union[str, Tuple[str, str]] = "default_theme",
-                 from_: int = 0,
-                 to: int = 1,
-                 number_of_steps: Union[int, None] = None,
                  width: Union[int, str] = "default_init",
                  height: Union[int, str] = "default_init",
                  corner_radius: Union[int, str] = "default_theme",
                  button_corner_radius: Union[int, str] = "default_theme",
                  border_width: Union[int, str] = "default_theme",
                  button_length: Union[int, str] = "default_theme",
+
+                 bg_color: Union[str, Tuple[str, str], None] = None,
+                 fg_color: Union[str, Tuple[str, str]] = "default_theme",
+                 border_color: Union[str, Tuple[str, str], None] = None,
+                 progress_color: Union[str, Tuple[str, str], None] = "default_theme",
+                 button_color: Union[str, Tuple[str, str]] = "default_theme",
+                 button_hover_color: Union[str, Tuple[str, str]] = "default_theme",
+
+                 from_: int = 0,
+                 to: int = 1,
+                 state: str = "normal",
+                 number_of_steps: Union[int, None] = None,
                  command: Callable = None,
                  variable: tkinter.Variable = None,
-                 orient: str = "horizontal",
-                 state: str = "normal",
+                 orientation: str = "horizontal",
                  **kwargs):
 
         # set default dimensions according to orientation
         if width == "default_init":
-            if orient.lower() == "vertical":
+            if orientation.lower() == "vertical":
                 width = 16
             else:
                 width = 200
         if height == "default_init":
-            if orient.lower() == "vertical":
+            if orientation.lower() == "vertical":
                 height = 200
             else:
                 height = 16
@@ -65,7 +67,7 @@ class CTkSlider(CTkBaseClass):
         self._border_width = ThemeManager.theme["shape"]["slider_border_width"] if border_width == "default_theme" else border_width
         self._button_length = ThemeManager.theme["shape"]["slider_button_length"] if button_length == "default_theme" else button_length
         self._value: float = 0.5  # initial value of slider in percent
-        self._orientation = orient
+        self._orientation = orientation
         self._hover_state: bool = False
         self._from_ = from_
         self._to = to
@@ -252,6 +254,44 @@ class CTkSlider(CTkBaseClass):
             self._set_dimensions(height=kwargs.pop("height"))
 
         super().configure(require_redraw=require_redraw, **kwargs)
+
+    def cget(self, attribute_name: str) -> any:
+        if attribute_name == "corner_radius":
+            return self._corner_radius
+        elif attribute_name == "button_corner_radius":
+            return self._button_corner_radius
+        elif attribute_name == "border_width":
+            return self._border_width
+        elif attribute_name == "button_length":
+            return self._button_length
+
+        elif attribute_name == "fg_color":
+            return self._fg_color
+        elif attribute_name == "border_color":
+            return self._border_color
+        elif attribute_name == "progress_color":
+            return self._progress_color
+        elif attribute_name == "button_color":
+            return self._button_color
+        elif attribute_name == "button_hover_color":
+            return self._button_hover_color
+
+        elif attribute_name == "from_":
+            return self._from_
+        elif attribute_name == "to":
+            return self._to
+        elif attribute_name == "state":
+            return self._state
+        elif attribute_name == "number_of_steps":
+            return self._number_of_steps
+        elif attribute_name == "command":
+            return self._command
+        elif attribute_name == "variable":
+            return self._variable
+        elif attribute_name == "orientation":
+            return self._orientation
+        else:
+            return super().cget(attribute_name)
 
     def _clicked(self, event=None):
         if self._state == "normal":

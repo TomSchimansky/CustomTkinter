@@ -15,13 +15,15 @@ class CTkFrame(CTkBaseClass):
     """
 
     def __init__(self, *args,
+                 width: int = 200,
+                 height: int = 200,
+                 corner_radius: Union[int, str] = "default_theme",
+                 border_width: Union[int, str] = "default_theme",
+
                  bg_color: Union[str, Tuple[str, str], None] = None,
                  fg_color: Union[str, Tuple[str, str], None] = "default_theme",
                  border_color: Union[str, Tuple[str, str]] = "default_theme",
-                 border_width: Union[int, str] = "default_theme",
-                 corner_radius: Union[int, str] = "default_theme",
-                 width: int = 200,
-                 height: int = 200,
+
                  overwrite_preferred_drawing_method: str = None,
                  **kwargs):
 
@@ -144,3 +146,16 @@ class CTkFrame(CTkBaseClass):
             self._set_dimensions(height=kwargs.pop("height"))
 
         super().configure(require_redraw=require_redraw, **kwargs)
+
+    def cget(self, attribute_name: str) -> any:
+        if attribute_name == "corner_radius":
+            return self._corner_radius
+        elif attribute_name == "border_width":
+            return self._border_width
+
+        elif attribute_name == "fg_color":
+            return self._fg_color
+        elif attribute_name == "border_color":
+            return self._border_color
+        else:
+            return super().cget(attribute_name)
