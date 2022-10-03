@@ -193,9 +193,6 @@ class CTkOptionMenu(CTkBaseClass):
 
         self._canvas.update_idletasks()
 
-    def config(self, *args, **kwargs):
-        return self.configure(*args, **kwargs)
-
     def configure(self, require_redraw=False, **kwargs):
         if "state" in kwargs:
             self._state = kwargs.pop("state")

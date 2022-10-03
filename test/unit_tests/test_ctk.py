@@ -76,14 +76,14 @@ class TestCTk():
     def test_configure(self):
         print(" -> test_configure: ", end="")
         self.root_ctk.configure(bg="white")
-        assert self.root_ctk.fg_color == "white"
+        assert self.root_ctk.cget("fg_color") == "white"
 
         self.root_ctk.configure(background="red")
-        assert self.root_ctk.fg_color == "red"
+        assert self.root_ctk.cget("fg_color") == "red"
         assert self.root_ctk.cget("bg") == "red"
 
         self.root_ctk.config(fg_color=("green", "#FFFFFF"))
-        assert self.root_ctk.fg_color == ("green", "#FFFFFF")
+        assert self.root_ctk.cget("fg_color") == ("green", "#FFFFFF")
         print("successful")
 
     def test_appearance_mode(self):

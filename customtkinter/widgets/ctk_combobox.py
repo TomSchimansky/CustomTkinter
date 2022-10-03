@@ -175,8 +175,10 @@ class CTkComboBox(CTkBaseClass):
 
             self._entry.configure(bg=ThemeManager.single_color(self._fg_color, self._appearance_mode),
                                   fg=ThemeManager.single_color(self._text_color, self._appearance_mode),
+                                  disabledbackground=ThemeManager.single_color(self._fg_color, self._appearance_mode),
                                   disabledforeground=ThemeManager.single_color(self._text_color_disabled, self._appearance_mode),
-                                  disabledbackground=ThemeManager.single_color(self._fg_color, self._appearance_mode))
+                                  highlightcolor=ThemeManager.single_color(self._fg_color, self._appearance_mode),
+                                  insertbackground=ThemeManager.single_color(self._text_color, self._appearance_mode))
 
             if self._state == tkinter.DISABLED:
                 self._canvas.itemconfig("dropdown_arrow",
@@ -188,9 +190,6 @@ class CTkComboBox(CTkBaseClass):
     def _open_dropdown_menu(self):
         self._dropdown_menu.open(self.winfo_rootx(),
                                  self.winfo_rooty() + self._apply_widget_scaling(self._current_height + 0))
-
-    def config(self, *args, **kwargs):
-        return self.configure(*args, **kwargs)
 
     def configure(self, require_redraw=False, **kwargs):
         if "state" in kwargs:

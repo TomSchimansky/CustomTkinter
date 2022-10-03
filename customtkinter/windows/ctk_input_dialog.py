@@ -17,7 +17,7 @@ class CTkInputDialog:
     For detailed information check out the documentation.
     """
 
-    def __init__(self,
+    def __init__(self, *args,
                  fg_color: Union[str, Tuple[str, str]] = "default_theme",
                  hover_color: Union[str, Tuple[str, str]] = "default_theme",
                  border_color: Union[str, Tuple[str, str]] = "default_theme",
@@ -27,7 +27,13 @@ class CTkInputDialog:
                  text: str = "CTkDialog"):
 
         self._appearance_mode = AppearanceModeTracker.get_mode()  # 0: "Light" 1: "Dark"
-        self.master = master
+
+        if len(args) > 0 and master is None:
+            self.master = args[0]
+        elif master is not None:
+            self.master = master
+        else:
+            raise ValueError("master argument is missing")
 
         self._window_bg_color = ThemeManager.theme["color"]["window_bg_color"]
         self._fg_color = ThemeManager.theme["color"]["button"] if fg_color == "default_theme" else fg_color
@@ -39,14 +45,15 @@ class CTkInputDialog:
         self._height: int = len(text.split("\n")) * 20 + 150
         self._text = text
 
-        self._toplevel_window = CTkToplevel()
+        self._toplevel_window = CTkToplevel(self.master)
         self._toplevel_window.geometry(f"{280}x{self._height}")
         self._toplevel_window.minsize(280, self._height)
         self._toplevel_window.maxsize(280, self._height)
         self._toplevel_window.title(title)
-        self._toplevel_window.lift()
         self._toplevel_window.focus_force()
-        self._toplevel_window.grab_set()
+        self._toplevel_window.grab_set()  # make other windows not clickable
+        self._toplevel_window.lift()  # lift window on top
+        self._toplevel_window.attributes("-topmost", True)  # stay on top
         self._toplevel_window.protocol("WM_DELETE_WINDOW", self._on_closing)
         self._toplevel_window.after(10, self._create_widgets)  # create widgets with slight delay, to avoid white flickering of background
 
@@ -99,25 +106,17 @@ class CTkInputDialog:
 
     def _ok_event(self, event=None):
         self._user_input = self._entry.get()
-        self._running = False
+        self._toplevel_window.grab_release()
+        self._toplevel_window.destroy()
 
     def _on_closing(self):
-        self._running = False
+        self._toplevel_window.grab_release()
+        self._toplevel_window.destroy()
 
     def _cancel_event(self):
-        self._running = False
+        self._toplevel_window.grab_release()
+        self._toplevel_window.destroy()
 
     def get_input(self):
-        self._running = True
-
-        while self._running:
-            try:
-                self._toplevel_window.update()
-            except Exception:
-                return self._user_input
-            finally:
-                time.sleep(0.01)
-
-        time.sleep(0.05)
-        self._toplevel_window.destroy()
+        self.master.wait_window(self._toplevel_window)
         return self._user_input

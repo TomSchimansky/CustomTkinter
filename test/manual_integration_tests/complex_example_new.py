@@ -13,6 +13,8 @@ class App(customtkinter.CTk):
 
         self.title("CustomTkinter complex_example.py")
         self.geometry(f"{920}x{500}")
+        self.minsize(700, 400)
+        self.maxsize(1200, 700)
         self.protocol("WM_DELETE_WINDOW", self.on_closing)  # call .on_closing() when app gets closed
 
         # configure grid layout (4x4)
@@ -126,7 +128,7 @@ class App(customtkinter.CTk):
         self.progressbar_1.start()
 
     def open_input_dialog(self):
-        dialog = customtkinter.CTkInputDialog(master=None, text="Type in a number:", title="CTkInputDialog")
+        dialog = customtkinter.CTkInputDialog(master=self, text="Type in a number:", title="CTkInputDialog")
         print("CTkInputDialog:", dialog.get_input())
 
     def change_appearance_mode(self, new_appearance_mode: str):
@@ -139,9 +141,7 @@ class App(customtkinter.CTk):
 
     def sidebar_button_callback(self):
         print("sidebar_button click")
-
         self.entry.delete(0, tkinter.END)
-
 
     def on_closing(self, event=0):
         self.destroy()

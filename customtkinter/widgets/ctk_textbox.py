@@ -118,9 +118,6 @@ class CTkTextbox(CTkBaseClass):
         self._canvas.tag_lower("inner_parts")
         self._canvas.tag_lower("border_parts")
 
-    def config(self, *args, **kwargs):
-        return self.configure(*args, **kwargs)
-
     def configure(self, require_redraw=False, **kwargs):
         if "fg_color" in kwargs:
             self._fg_color = kwargs.pop("fg_color")

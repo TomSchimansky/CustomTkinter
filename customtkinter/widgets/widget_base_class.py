@@ -15,7 +15,7 @@ from ..appearance_mode_tracker import AppearanceModeTracker
 from ..scaling_tracker import ScalingTracker
 from ..theme_manager import ThemeManager
 
-from .widget_helper_functions import filter_dict_by_set
+from .widget_helper_functions import pop_from_dict_by_set
 
 
 class CTkBaseClass(tkinter.Frame):
@@ -23,7 +23,7 @@ class CTkBaseClass(tkinter.Frame):
         appearance_mode changes, scaling, bg changes of master if master is not a CTk widget """
 
     # attributes that are passed to and managed by the tkinter frame only:
-    _valid_tk_frame_attributes = {"cursor"}
+    _valid_tk_frame_attributes = {"cursor", "master"}
 
     def __init__(self, *args,
                  width: int,
@@ -32,7 +32,10 @@ class CTkBaseClass(tkinter.Frame):
                  bg_color: Union[str, tuple] = None,
                  **kwargs):
 
-        super().__init__(*args, width=width, height=height, **kwargs)  # set desired size of underlying tkinter.Frame
+        super().__init__(*args, width=width, height=height, **pop_from_dict_by_set(kwargs, self._valid_tk_frame_attributes))
+
+        # check if kwargs is empty, if not raise error for unsupported arguments
+        self._check_kwargs_empty(kwargs, raise_error=True)
 
         # dimensions
         self._current_width = width  # _current_width and _current_height in pixel, represent current size of the widget
@@ -85,6 +88,18 @@ class CTkBaseClass(tkinter.Frame):
             self.master.config = new_configure
             self.master.configure = new_configure
 
+    @staticmethod
+    def _check_kwargs_empty(kwargs_dict, raise_error=False) -> bool:
+        """ returns True if kwargs are empty, False otherwise, raises error if not empty """
+
+        if len(kwargs_dict) > 0:
+            if raise_error:
+                raise ValueError(f"{list(kwargs_dict.keys())} are not supported arguments. Look at the documentation for supported arguments.")
+            else:
+                return True
+        else:
+            return False
+
     def destroy(self):
         AppearanceModeTracker.remove(self._set_appearance_mode)
         super().destroy()
@@ -127,10 +142,10 @@ class CTkBaseClass(tkinter.Frame):
         pass
 
     def config(self, *args, **kwargs):
-        return self.configure(*args, **kwargs)
+        raise AttributeError("'config' is not implemented for CTk widgets. For consistency, always use 'configure' instead.")
 
     def configure(self, require_redraw=False, **kwargs):
-        """ basic configure with _bg_color support, to be overridden """
+        """ basic configure with bg_color support, calls configure of tkinter.Frame, calls draw() in the end """
 
         if "bg_color" in kwargs:
             new_bg_color = kwargs.pop("bg_color")
@@ -140,21 +155,28 @@ class CTkBaseClass(tkinter.Frame):
                 self._bg_color = new_bg_color
             require_redraw = True
 
-        super().configure(**filter_dict_by_set(kwargs, self._valid_tk_frame_attributes))
+        super().configure(**pop_from_dict_by_set(kwargs, self._valid_tk_frame_attributes))  # configure tkinter.Frame
+
+        # if there are still items in the kwargs dict, raise ValueError
+        self._check_kwargs_empty(kwargs, raise_error=True)
 
         if require_redraw:
             self._draw()
 
-    def cget(self, key: str):
-        if key == "bg_color":
+    def cget(self, attribute_name: str):
+        """ basic cget with bg_color, width, height support, calls cget of tkinter.Frame """
+
+        if attribute_name == "bg_color":
             return self._bg_color
-        elif key == "width":
+        elif attribute_name == "width":
             return self._desired_width
-        elif key == "height":
+        elif attribute_name == "height":
             return self._desired_height
 
-        elif key in self._valid_tk_frame_attributes:
-            return super().cget(key)
+        elif attribute_name in self._valid_tk_frame_attributes:
+            return super().cget(attribute_name)  # cget of tkinter.Frame
+        else:
+            raise ValueError(f"'{attribute_name}' is not a supported argument. Look at the documentation for supported arguments.")
 
     def _update_dimensions_event(self, event):
         # only redraw if dimensions changed (for performance), independent of scaling

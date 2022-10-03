@@ -105,9 +105,6 @@ class DropdownMenu(tkinter.Menu):
         else:  # Linux
             self.tk_popup(int(x), int(y))
 
-    def config(self, **kwargs):
-        return self.configure(**kwargs)
-
     def configure(self, **kwargs):
         if "fg_color" in kwargs:
             self._fg_color = kwargs.pop("fg_color")

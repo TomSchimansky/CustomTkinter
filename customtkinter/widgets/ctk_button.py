@@ -240,9 +240,6 @@ class CTkButton(CTkBaseClass):
                                       padx=max(self._apply_widget_scaling(self._corner_radius), self._apply_widget_scaling(self._border_width)),
                                       pady=(self._apply_widget_scaling(self._border_width), 2))
 
-    def config(self, *args, **kwargs):
-        return self.configure(*args, **kwargs)
-
     def configure(self, require_redraw=False, **kwargs):
         if "text" in kwargs:
             self._text = kwargs.pop("text")

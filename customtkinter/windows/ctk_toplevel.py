@@ -161,9 +161,9 @@ class CTkToplevel(tkinter.Toplevel):
             self._iconify_called_after_windows_set_titlebar_color = True
         super().iconify()
 
-    def resizable(self, *args, **kwargs):
-        super().resizable(*args, **kwargs)
-        self._last_resizable_args = (args, kwargs)
+    def resizable(self, width: bool = None, height: bool = None):
+        super().resizable(width, height)
+        self._last_resizable_args = ([], {"width": width, "height": height})
 
         if sys.platform.startswith("win"):
             if self._appearance_mode == 1:
@@ -188,9 +188,6 @@ class CTkToplevel(tkinter.Toplevel):
         if self._current_height > height:
             self._current_height = height
         super().maxsize(self._apply_window_scaling(self._max_width), self._apply_window_scaling(self._max_height))
-
-    def config(self, *args, **kwargs):
-        self.configure(*args, **kwargs)
 
     def configure(self, *args, **kwargs):
         bg_changed = False

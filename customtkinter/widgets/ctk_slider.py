@@ -190,9 +190,6 @@ class CTkSlider(CTkBaseClass):
                                         fill=ThemeManager.single_color(self._button_color, self._appearance_mode),
                                         outline=ThemeManager.single_color(self._button_color, self._appearance_mode))
 
-    def config(self, *args, **kwargs):
-        return self.configure(*args, **kwargs)
-
     def configure(self, require_redraw=False, **kwargs):
         if "state" in kwargs:
             self._state = kwargs.pop("state")

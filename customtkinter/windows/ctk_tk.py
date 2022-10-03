@@ -142,9 +142,9 @@ class CTk(tkinter.Tk):
 
         super().mainloop(*args, **kwargs)
 
-    def resizable(self, *args, **kwargs):
-        super().resizable(*args, **kwargs)
-        self._last_resizable_args = (args, kwargs)
+    def resizable(self, width: bool = None, height: bool = None):
+        super().resizable(width, height)
+        self._last_resizable_args = ([], {"width": width, "height": height})
 
         if sys.platform.startswith("win"):
             if self._appearance_mode == 1:
@@ -224,9 +224,6 @@ class CTk(tkinter.Tk):
             return int(value * self._window_scaling)
         else:
             return value
-
-    def config(self, *args, **kwargs):
-        self.configure(*args, **kwargs)
 
     def configure(self, *args, **kwargs):
         bg_changed = False

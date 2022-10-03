@@ -150,9 +150,6 @@ class CTkScrollbar(CTkBaseClass):
 
         self._canvas.update_idletasks()
 
-    def config(self, *args, **kwargs):
-        return self.configure(*args, **kwargs)
-
     def configure(self, require_redraw=False, **kwargs):
         if "fg_color" in kwargs:
             self._fg_color = kwargs.pop("fg_color")
