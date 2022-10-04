@@ -248,3 +248,7 @@ class CTkScrollbar(CTkBaseClass):
 
     def get(self):
         return self._start_value, self._end_value
+
+    def bind(self, sequence=None, command=None, add=None):
+        """ called on the tkinter.Canvas """
+        return self._canvas.bind(sequence, command, add)

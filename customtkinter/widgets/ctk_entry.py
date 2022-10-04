@@ -89,10 +89,12 @@ class CTkEntry(CTkBaseClass):
                                     textvariable=self._textvariable,
                                     **pop_from_dict_by_set(kwargs, self._valid_tk_entry_attributes))
         if self._corner_radius >= self._minimum_x_padding:
-            self._entry.grid(column=0, row=0, sticky="nswe", padx=min(self._apply_widget_scaling(self._corner_radius), self._current_height),
+            self._entry.grid(column=0, row=0, sticky="nswe",
+                             padx=min(self._apply_widget_scaling(self._corner_radius), round(self._apply_widget_scaling(self._current_height/2))),
                              pady=(self._apply_widget_scaling(self._border_width), self._apply_widget_scaling(self._border_width + 1)))
         else:
-            self._entry.grid(column=0, row=0, sticky="nswe", padx=self._apply_widget_scaling(self._minimum_x_padding),
+            self._entry.grid(column=0, row=0, sticky="nswe",
+                             padx=self._apply_widget_scaling(self._minimum_x_padding),
                              pady=(self._apply_widget_scaling(self._border_width), self._apply_widget_scaling(self._border_width + 1)))
 
         self._check_kwargs_empty(kwargs, raise_error=True)
@@ -186,9 +188,11 @@ class CTkEntry(CTkBaseClass):
         if "corner_radius" in kwargs:
             self._corner_radius = kwargs.pop("corner_radius")
             if self._corner_radius >= self._minimum_x_padding:
-                self._entry.grid(column=0, row=0, sticky="we", padx=min(self._apply_widget_scaling(self._corner_radius), self._current_height / 2))
+                self._entry.grid(column=0, row=0, sticky="we",
+                                 padx=min(self._apply_widget_scaling(self._corner_radius), round(self._apply_widget_scaling(self._current_height/2))))
             else:
-                self._entry.grid(column=0, row=0, sticky="we", padx=self._apply_widget_scaling(self._minimum_x_padding))
+                self._entry.grid(column=0, row=0, sticky="we",
+                                 padx=self._apply_widget_scaling(self._minimum_x_padding))
             require_redraw = True
 
         if "width" in kwargs:
@@ -253,10 +257,11 @@ class CTkEntry(CTkBaseClass):
         elif attribute_name in self._valid_tk_entry_attributes:
             return self._entry.cget(attribute_name)  # cget of tkinter.Entry
         else:
-            return super().cget(attribute_name)
+            return super().cget(attribute_name)  # cget of CTkBaseClass
 
     def bind(self, sequence=None, command=None, add=None):
-        self._entry.bind(sequence, command, add)
+        """ called on the tkinter.Entry """
+        return self._entry.bind(sequence, command, add)
 
     def _activate_placeholder(self):
         if self._entry.get() == "" and self._placeholder_text is not None and (self._textvariable is None or self._textvariable == ""):

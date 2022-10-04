@@ -363,3 +363,7 @@ class CTkCheckBox(CTkBaseClass):
 
     def get(self) -> Union[int, str]:
         return self._onvalue if self._check_state is True else self._offvalue
+
+    def bind(self, sequence=None, command=None, add=None):
+        """ called on the tkinter.Canvas """
+        return self._canvas.bind(sequence, command, add)

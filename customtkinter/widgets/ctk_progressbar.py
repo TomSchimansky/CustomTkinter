@@ -281,3 +281,7 @@ class CTkProgressBar(CTkBaseClass):
         else:
             self._indeterminate_value += self._indeterminate_speed
             self._draw()
+
+    def bind(self, sequence=None, command=None, add=None):
+        """ called on the tkinter.Canvas """
+        return self._canvas.bind(sequence, command, add)

@@ -364,3 +364,7 @@ class CTkSlider(CTkBaseClass):
     def _variable_callback(self, var_name, index, mode):
         if not self._variable_callback_blocked:
             self.set(self._variable.get(), from_variable_callback=True)
+
+    def bind(self, sequence=None, command=None, add=None):
+        """ called on the tkinter.Canvas """
+        return self._canvas.bind(sequence, command, add)

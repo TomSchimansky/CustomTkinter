@@ -349,3 +349,7 @@ class CTkComboBox(CTkBaseClass):
     def _clicked(self, event=0):
         if self._state is not tkinter.DISABLED and len(self._values) > 0:
             self._open_dropdown_menu()
+
+    def bind(self, sequence=None, command=None, add=None):
+        """ called on the tkinter.Canvas """
+        return self._canvas.bind(sequence, command, add)

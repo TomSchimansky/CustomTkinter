@@ -324,3 +324,7 @@ class CTkRadioButton(CTkBaseClass):
             self._variable_callback_blocked = True
             self._variable.set("")
             self._variable_callback_blocked = False
+
+    def bind(self, sequence=None, command=None, add=None):
+        """ called on the tkinter.Canvas """
+        return self._canvas.bind(sequence, command, add)

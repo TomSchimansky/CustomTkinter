@@ -154,5 +154,10 @@ class CTkFrame(CTkBaseClass):
             return self._fg_color
         elif attribute_name == "border_color":
             return self._border_color
+
         else:
             return super().cget(attribute_name)
+
+    def bind(self, sequence=None, command=None, add=None):
+        """ called on the tkinter.Canvas """
+        return self._canvas.bind(sequence, command, add)

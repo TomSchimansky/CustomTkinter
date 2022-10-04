@@ -6,6 +6,8 @@ from ..theme_manager import ThemeManager
 from ..draw_engine import DrawEngine
 from .widget_base_class import CTkBaseClass
 
+from .widget_helper_functions import pop_from_dict_by_set
+
 
 class CTkLabel(CTkBaseClass):
     """
@@ -14,7 +16,8 @@ class CTkLabel(CTkBaseClass):
     """
 
     # attributes that are passed to and managed by the tkinter entry only:
-    _valid_tk_label_attributes = {"compound", "cursor", ""}
+    _valid_tk_label_attributes = {"compound", "cursor", "image", "justify", "padx", "pady",
+                                  "textvariable", "state", "takefocus", "underline", "wraplength"}
 
     def __init__(self, *args,
                  width: int = 140,
@@ -65,10 +68,13 @@ class CTkLabel(CTkBaseClass):
                                          anchor=self._anchor,
                                          text=self._text,
                                          font=self._apply_font_scaling(self._font),
-                                         **kwargs)
+                                         **pop_from_dict_by_set(kwargs, self._valid_tk_label_attributes))
+
         text_label_grid_sticky = self._anchor if self._anchor != "center" else ""
-        self._text_label.grid(row=0, column=0, padx=self._apply_widget_scaling(self._corner_radius),
-                              sticky=text_label_grid_sticky)
+        self._text_label.grid(row=0, column=0, sticky=text_label_grid_sticky,
+                              padx=min(self._apply_widget_scaling(self._corner_radius), round(self._current_height/2)))
+
+        self._check_kwargs_empty(kwargs, raise_error=True)
 
         self.bind('<Configure>', self._update_dimensions_event)
         self._draw()
@@ -78,9 +84,10 @@ class CTkLabel(CTkBaseClass):
 
         self._canvas.configure(width=self._apply_widget_scaling(self._desired_width), height=self._apply_widget_scaling(self._desired_height))
         self._text_label.configure(font=self._apply_font_scaling(self._font))
+
         text_label_grid_sticky = self._anchor if self._anchor != "center" else ""
-        self._text_label.grid(row=0, column=0, padx=self._apply_widget_scaling(self._corner_radius),
-                              sticky=text_label_grid_sticky)
+        self._text_label.grid(row=0, column=0, sticky=text_label_grid_sticky,
+                              padx=min(self._apply_widget_scaling(self._corner_radius), round(self._current_height/2)))
 
         self._draw()
 
@@ -119,8 +126,8 @@ class CTkLabel(CTkBaseClass):
         if "anchor" in kwargs:
             self._anchor = kwargs.pop("anchor")
             text_label_grid_sticky = self._anchor if self._anchor != "center" else ""
-            self._text_label.grid(row=0, column=0, padx=self._apply_widget_scaling(self._corner_radius),
-                                  sticky=text_label_grid_sticky)
+            self._text_label.grid(row=0, column=0, sticky=text_label_grid_sticky,
+                                  padx=min(self._apply_widget_scaling(self._corner_radius), round(self._current_height/2)))
 
         if "text" in kwargs:
             self._text = kwargs.pop("text")
@@ -144,12 +151,15 @@ class CTkLabel(CTkBaseClass):
         if "height" in kwargs:
             self._set_dimensions(height=kwargs.pop("height"))
 
-            if "_bg_color" in kwargs:
-                super().configure(bg_color=kwargs.pop("_bg_color"), require_redraw=require_redraw)
-            else:
-                super().configure(require_redraw=require_redraw)
+        if "corner_radius" in kwargs:
+            self._corner_radius = kwargs.pop("corner_radius")
+            text_label_grid_sticky = self._anchor if self._anchor != "center" else ""
+            self._text_label.grid(row=0, column=0, sticky=text_label_grid_sticky,
+                                  padx=min(self._apply_widget_scaling(self._corner_radius), round(self._current_height/2)))
+            require_redraw = True
 
-            self._text_label.configure(**kwargs)  # pass remaining kwargs to label
+        self._text_label.configure(**pop_from_dict_by_set(kwargs, self._valid_tk_label_attributes))  # configure tkinter.Label
+        super().configure(require_redraw=require_redraw, **kwargs)  # configure CTkBaseClass
 
     def cget(self, attribute_name: str) -> any:
         if attribute_name == "corner_radius":
@@ -166,5 +176,12 @@ class CTkLabel(CTkBaseClass):
             return self._font
         elif attribute_name == "anchor":
             return self._anchor
+
+        elif attribute_name in self._valid_tk_label_attributes:
+            return self._text_label.cget(attribute_name)  # cget of tkinter.Label
         else:
-            return super().cget(attribute_name)
+            return super().cget(attribute_name)  # cget of CTkBaseClass
+
+    def bind(self, sequence=None, command=None, add=None):
+        """ called on the tkinter.Label """
+        return self._text_label.bind(sequence, command, add)

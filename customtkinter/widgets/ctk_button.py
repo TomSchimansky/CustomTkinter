@@ -408,3 +408,7 @@ class CTkButton(CTkBaseClass):
                 self.after(100, self._click_animation)
 
                 self._command()
+
+    def bind(self, sequence=None, command=None, add=None):
+        """ called on the tkinter.Canvas """
+        return self._canvas.bind(sequence, command, add)

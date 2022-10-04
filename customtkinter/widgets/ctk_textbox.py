@@ -178,6 +178,10 @@ class CTkTextbox(CTkBaseClass):
         else:
             return super().cget(attribute_name)
 
+    def bind(self, sequence=None, command=None, add=None):
+        """ called on the tkinter.Text """
+        return self._textbox.bind(sequence, command, add)
+
     def yview(self, *args):
         return self._textbox.yview(*args)
 
