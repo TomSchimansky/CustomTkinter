@@ -364,4 +364,4 @@ class CTkOptionMenu(CTkBaseClass):
 
     def unbind(self, sequence, funcid=None):
         """ called on the tkinter.Label """
-        return self._text_label.bind(sequence, funcid)
+        return self._text_label.unbind(sequence, funcid)

@@ -415,4 +415,4 @@ class CTkButton(CTkBaseClass):
 
     def unbind(self, sequence, funcid=None):
         """ called on the tkinter.Canvas """
-        return self._canvas.bind(sequence, funcid)
+        return self._canvas.unbind(sequence, funcid)

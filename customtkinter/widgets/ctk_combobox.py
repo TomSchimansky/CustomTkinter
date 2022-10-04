@@ -356,4 +356,4 @@ class CTkComboBox(CTkBaseClass):
 
     def unbind(self, sequence, funcid=None):
         """ called on the tkinter.Entry """
-        return self._entry.bind(sequence, funcid)
+        return self._entry.unbind(sequence, funcid)

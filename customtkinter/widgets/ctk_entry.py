@@ -70,7 +70,7 @@ class CTkEntry(CTkBaseClass):
         self._state = state
         self._textvariable_callback_name: str = ""
 
-        if not (self._textvariable is None or self._textvariable is ""):
+        if not (self._textvariable is None or self._textvariable == ""):
             self._textvariable_callback_name = self._textvariable.trace_add("write", self._textvariable_callback)
 
         self._canvas = CTkCanvas(master=self,
@@ -265,7 +265,7 @@ class CTkEntry(CTkBaseClass):
 
     def unbind(self, sequence, funcid=None):
         """ called on the tkinter.Entry """
-        return self._entry.bind(sequence, funcid)
+        return self._entry.unbind(sequence, funcid)
 
     def _activate_placeholder(self):
         if self._entry.get() == "" and self._placeholder_text is not None and (self._textvariable is None or self._textvariable == ""):

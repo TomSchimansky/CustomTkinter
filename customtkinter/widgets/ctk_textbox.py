@@ -11,7 +11,7 @@ from .widget_helper_functions import pop_from_dict_by_set
 
 class CTkTextbox(CTkBaseClass):
     """
-    Textbox with rounded corners, and all text features of tkinter Text widget.
+    Textbox with rounded corners, and all text features of tkinter.Text widget.
     For detailed information check out the documentation.
     """
 
@@ -78,7 +78,9 @@ class CTkTextbox(CTkBaseClass):
                                      insertbackground=ThemeManager.single_color(self._text_color, self._appearance_mode),
                                      bg=ThemeManager.single_color(self._fg_color, self._appearance_mode),
                                      **pop_from_dict_by_set(kwargs, self._valid_tk_text_attributes))
-        self._textbox.grid(row=0, column=0, padx=self._corner_radius, pady=self._corner_radius, rowspan=1, columnspan=1, sticky="nsew")
+        self._textbox.grid(row=0, column=0, rowspan=1, columnspan=1, sticky="nsew",
+                           padx=self._apply_widget_scaling(self._corner_radius),
+                           pady=self._apply_widget_scaling(self._corner_radius))
 
         self._check_kwargs_empty(kwargs, raise_error=True)
 
@@ -89,6 +91,10 @@ class CTkTextbox(CTkBaseClass):
         super()._set_scaling(*args, **kwargs)
 
         self._textbox.configure(font=self._apply_font_scaling(self._font))
+        self._textbox.grid(row=0, column=0, rowspan=1, columnspan=1, sticky="nsew",
+                           padx=self._apply_widget_scaling(self._corner_radius),
+                           pady=self._apply_widget_scaling(self._corner_radius))
+
         self._canvas.configure(width=self._apply_widget_scaling(self._desired_width),
                                height=self._apply_widget_scaling(self._desired_height))
         self._draw()
@@ -143,8 +149,15 @@ class CTkTextbox(CTkBaseClass):
             self._border_color = kwargs.pop("border_color")
             require_redraw = True
 
+        if "text_color" in kwargs:
+            self._text_color = kwargs.pop("text_color")
+            require_redraw = True
+
         if "corner_radius" in kwargs:
             self._corner_radius = kwargs.pop("corner_radius")
+            self._textbox.grid(row=0, column=0, rowspan=1, columnspan=1, sticky="nsew",
+                               padx=self._apply_widget_scaling(self._corner_radius),
+                               pady=self._apply_widget_scaling(self._corner_radius))
             require_redraw = True
 
         if "border_width" in kwargs:
@@ -160,9 +173,6 @@ class CTkTextbox(CTkBaseClass):
         if "font" in kwargs:
             self._font = kwargs.pop("font")
             self._textbox.configure(font=self._apply_font_scaling(self._font))
-
-        if "font" in kwargs:
-            raise ValueError("No attribute named font. Use text_font instead of font for CTk widgets")
 
         self._textbox.configure(**pop_from_dict_by_set(kwargs, self._valid_tk_text_attributes))
         super().configure(require_redraw=require_redraw, **kwargs)
@@ -192,16 +202,20 @@ class CTkTextbox(CTkBaseClass):
 
     def unbind(self, sequence, funcid=None):
         """ called on the tkinter.Text """
-        return self._textbox.bind(sequence, funcid)
+        return self._textbox.unbind(sequence, funcid)
+
+    def insert(self, index, text, tags=None):
+        return self._textbox.insert(index, text, tags)
+
+    def get(self, index1, index2=None):
+        return self._textbox.get(index1, index2)
+
 
     def yview(self, *args):
         return self._textbox.yview(*args)
 
     def xview(self, *args):
         return self._textbox.xview(*args)
-
-    def insert(self, *args, **kwargs):
-        return self._textbox.insert(*args, **kwargs)
 
     def focus(self):
         return self._textbox.focus()
