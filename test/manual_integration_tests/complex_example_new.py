@@ -127,6 +127,9 @@ class App(customtkinter.CTk):
         self.progressbar_1.configure(mode="indeterminnate")
         self.progressbar_1.start()
 
+        r = self.logo_label.bind("<Button-1>", lambda e: print("click"))
+        print(r, type(r))
+
     def open_input_dialog(self):
         dialog = customtkinter.CTkInputDialog(master=self, text="Type in a number:", title="CTkInputDialog")
         print("CTkInputDialog:", dialog.get_input())
@@ -142,7 +145,6 @@ class App(customtkinter.CTk):
     def sidebar_button_callback(self):
         print("sidebar_button click")
         self.entry.delete(0, tkinter.END)
-        print(self.textbox.get("0.0", "end"))
 
     def on_closing(self, event=0):
         self.destroy()

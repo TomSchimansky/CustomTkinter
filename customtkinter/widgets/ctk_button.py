@@ -409,10 +409,14 @@ class CTkButton(CTkBaseClass):
 
                 self._command()
 
-    def bind(self, sequence=None, command=None, add=None):
-        """ called on the tkinter.Canvas """
-        return self._canvas.bind(sequence, command, add)
+    def bind(self, sequence: str = None, command: Callable = None, add: str = None) -> str:
+        """ called on the tkinter.Label and tkinter.Canvas """
+        canvas_bind_return = self._canvas.bind(sequence, command, add)
+        label_bind_return = self._text_label.bind(sequence, command, add)
+        return canvas_bind_return + " + " + label_bind_return
 
-    def unbind(self, sequence, funcid=None):
-        """ called on the tkinter.Canvas """
-        return self._canvas.unbind(sequence, funcid)
+    def unbind(self, sequence: str, funcid: str = None):
+        """ called on the tkinter.Label and tkinter.Canvas """
+        canvas_bind_return, label_bind_return = funcid.split(" + ")
+        self._canvas.unbind(sequence, canvas_bind_return)
+        self._text_label.unbind(sequence, label_bind_return)

@@ -210,24 +210,3 @@ class CTkTextbox(CTkBaseClass):
     def get(self, index1, index2=None):
         return self._textbox.get(index1, index2)
 
-
-    def yview(self, *args):
-        return self._textbox.yview(*args)
-
-    def xview(self, *args):
-        return self._textbox.xview(*args)
-
-    def focus(self):
-        return self._textbox.focus()
-
-    def tag_add(self, *args, **kwargs):
-        return self._textbox.tag_add(*args, **kwargs)
-
-    def tag_config(self, *args, **kwargs):
-        return self._textbox.tag_config(*args, **kwargs)
-
-    def tag_configure(self, *args, **kwargs):
-        return self._textbox.tag_configure(*args, **kwargs)
-
-    def tag_remove(self, *args, **kwargs):
-        return self._textbox.tag_remove(*args, **kwargs)
