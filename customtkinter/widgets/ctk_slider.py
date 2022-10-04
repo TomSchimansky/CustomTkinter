@@ -100,7 +100,7 @@ class CTkSlider(CTkBaseClass):
         self._canvas.bind("<B1-Motion>", self._clicked)
 
         # Each time an item is resized due to pack position mode, the binding Configure is called on the widget
-        self.bind('<Configure>', self._update_dimensions_event)
+        super().bind('<Configure>', self._update_dimensions_event)
 
         self._set_cursor()
         self._draw()  # initial draw
@@ -287,6 +287,7 @@ class CTkSlider(CTkBaseClass):
             return self._variable
         elif attribute_name == "orientation":
             return self._orientation
+
         else:
             return super().cget(attribute_name)
 
@@ -368,3 +369,7 @@ class CTkSlider(CTkBaseClass):
     def bind(self, sequence=None, command=None, add=None):
         """ called on the tkinter.Canvas """
         return self._canvas.bind(sequence, command, add)
+
+    def unbind(self, sequence, funcid=None):
+        """ called on the tkinter.Canvas """
+        return self._canvas.bind(sequence, funcid)

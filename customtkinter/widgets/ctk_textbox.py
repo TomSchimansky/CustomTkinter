@@ -6,12 +6,21 @@ from ..theme_manager import ThemeManager
 from ..draw_engine import DrawEngine
 from .widget_base_class import CTkBaseClass
 
+from .widget_helper_functions import pop_from_dict_by_set
+
 
 class CTkTextbox(CTkBaseClass):
     """
     Textbox with rounded corners, and all text features of tkinter Text widget.
     For detailed information check out the documentation.
     """
+
+    # attributes that are passed to and managed by the tkinter textbox only:
+    _valid_tk_text_attributes = {"autoseparators", "cursor", "exportselection",
+                                 "insertborderwidth", "insertofftime", "insertontime", "insertwidth",
+                                 "maxundo", "padx", "pady", "selectborderwidth", "spacing1",
+                                 "spacing2", "spacing3", "state", "tabs", "takefocus", "undo", "wrap",
+                                 "xscrollcommand", "yscrollcommand"}
 
     def __init__(self, *args,
                  width: int = 200,
@@ -66,12 +75,14 @@ class CTkTextbox(CTkBaseClass):
                                      font=self._font,
                                      highlightthickness=0,
                                      relief="flat",
-                                     insertbackground=ThemeManager.single_color(("black", "white"), self._appearance_mode),
+                                     insertbackground=ThemeManager.single_color(self._text_color, self._appearance_mode),
                                      bg=ThemeManager.single_color(self._fg_color, self._appearance_mode),
-                                     **kwargs)
+                                     **pop_from_dict_by_set(kwargs, self._valid_tk_text_attributes))
         self._textbox.grid(row=0, column=0, padx=self._corner_radius, pady=self._corner_radius, rowspan=1, columnspan=1, sticky="nsew")
 
-        self.bind('<Configure>', self._update_dimensions_event)
+        self._check_kwargs_empty(kwargs, raise_error=True)
+
+        super().bind('<Configure>', self._update_dimensions_event)
         self._draw()
 
     def _set_scaling(self, *args, **kwargs):
@@ -113,7 +124,7 @@ class CTkTextbox(CTkBaseClass):
 
             self._textbox.configure(fg=ThemeManager.single_color(self._text_color, self._appearance_mode),
                                     bg=ThemeManager.single_color(self._fg_color, self._appearance_mode),
-                                    insertbackground=ThemeManager.single_color(("black", "white"), self._appearance_mode))
+                                    insertbackground=ThemeManager.single_color(self._text_color, self._appearance_mode))
 
         self._canvas.tag_lower("inner_parts")
         self._canvas.tag_lower("border_parts")
@@ -153,12 +164,8 @@ class CTkTextbox(CTkBaseClass):
         if "font" in kwargs:
             raise ValueError("No attribute named font. Use text_font instead of font for CTk widgets")
 
-        if "bg_color" in kwargs:
-            super().configure(bg_color=kwargs.pop("bg_color"), require_redraw=require_redraw)
-        else:
-            super().configure(require_redraw=require_redraw)
-
-        self._textbox.configure(**kwargs)
+        self._textbox.configure(**pop_from_dict_by_set(kwargs, self._valid_tk_text_attributes))
+        super().configure(require_redraw=require_redraw, **kwargs)
 
     def cget(self, attribute_name: str) -> any:
         if attribute_name == "corner_radius":
@@ -175,12 +182,17 @@ class CTkTextbox(CTkBaseClass):
 
         elif attribute_name == "font":
             return self._font
+
         else:
             return super().cget(attribute_name)
 
     def bind(self, sequence=None, command=None, add=None):
         """ called on the tkinter.Text """
         return self._textbox.bind(sequence, command, add)
+
+    def unbind(self, sequence, funcid=None):
+        """ called on the tkinter.Text """
+        return self._textbox.bind(sequence, funcid)
 
     def yview(self, *args):
         return self._textbox.yview(*args)

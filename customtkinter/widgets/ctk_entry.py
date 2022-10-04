@@ -263,6 +263,10 @@ class CTkEntry(CTkBaseClass):
         """ called on the tkinter.Entry """
         return self._entry.bind(sequence, command, add)
 
+    def unbind(self, sequence, funcid=None):
+        """ called on the tkinter.Entry """
+        return self._entry.bind(sequence, funcid)
+
     def _activate_placeholder(self):
         if self._entry.get() == "" and self._placeholder_text is not None and (self._textvariable is None or self._textvariable == ""):
             self._placeholder_text_active = True

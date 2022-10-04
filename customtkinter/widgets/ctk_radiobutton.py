@@ -247,6 +247,7 @@ class CTkRadioButton(CTkBaseClass):
             return self._hover
         elif attribute_name == "command":
             return self._command
+
         else:
             return super().cget(attribute_name)
 
@@ -328,3 +329,7 @@ class CTkRadioButton(CTkBaseClass):
     def bind(self, sequence=None, command=None, add=None):
         """ called on the tkinter.Canvas """
         return self._canvas.bind(sequence, command, add)
+
+    def unbind(self, sequence, funcid=None):
+        """ called on the tkinter.Canvas """
+        return self._canvas.bind(sequence, funcid)

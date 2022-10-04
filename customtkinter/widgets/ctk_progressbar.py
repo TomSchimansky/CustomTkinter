@@ -81,7 +81,7 @@ class CTkProgressBar(CTkBaseClass):
         self._draw_engine = DrawEngine(self._canvas)
 
         # Each time an item is resized due to pack position mode, the binding Configure is called on the widget
-        self.bind('<Configure>', self._update_dimensions_event)
+        super().bind('<Configure>', self._update_dimensions_event)
 
         self._draw()  # initial draw
 
@@ -222,6 +222,7 @@ class CTkProgressBar(CTkBaseClass):
             return self._determinate_speed
         elif attribute_name == "indeterminate_speed":
             return self._indeterminate_speed
+
         else:
             return super().cget(attribute_name)
 
@@ -285,3 +286,7 @@ class CTkProgressBar(CTkBaseClass):
     def bind(self, sequence=None, command=None, add=None):
         """ called on the tkinter.Canvas """
         return self._canvas.bind(sequence, command, add)
+
+    def unbind(self, sequence, funcid=None):
+        """ called on the tkinter.Canvas """
+        return self._canvas.bind(sequence, funcid)

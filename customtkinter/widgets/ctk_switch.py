@@ -308,6 +308,7 @@ class CTkSwitch(CTkBaseClass):
             return self._command
         elif attribute_name == "state":
             return self._state
+
         else:
             return super().cget(attribute_name)
 
@@ -377,3 +378,7 @@ class CTkSwitch(CTkBaseClass):
     def bind(self, sequence=None, command=None, add=None):
         """ called on the tkinter.Canvas """
         return self._canvas.bind(sequence, command, add)
+
+    def unbind(self, sequence, funcid=None):
+        """ called on the tkinter.Canvas """
+        return self._canvas.bind(sequence, funcid)

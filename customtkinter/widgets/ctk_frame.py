@@ -58,7 +58,7 @@ class CTkFrame(CTkBaseClass):
         self._draw_engine = DrawEngine(self._canvas)
         self._overwrite_preferred_drawing_method = overwrite_preferred_drawing_method
 
-        self.bind('<Configure>', self._update_dimensions_event)
+        super().bind('<Configure>', self._update_dimensions_event)
 
         self._draw()
 
@@ -161,3 +161,7 @@ class CTkFrame(CTkBaseClass):
     def bind(self, sequence=None, command=None, add=None):
         """ called on the tkinter.Canvas """
         return self._canvas.bind(sequence, command, add)
+
+    def unbind(self, sequence, funcid=None):
+        """ called on the tkinter.Canvas """
+        return self._canvas.bind(sequence, funcid)

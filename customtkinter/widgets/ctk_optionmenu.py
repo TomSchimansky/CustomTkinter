@@ -125,7 +125,7 @@ class CTkOptionMenu(CTkBaseClass):
         self._text_label.bind("<Button-1>", self._clicked)
         self._text_label.bind("<Button-1>", self._clicked)
 
-        self.bind('<Configure>', self._update_dimensions_event)
+        super().bind('<Configure>', self._update_dimensions_event)
 
         self._draw()  # initial draw
 
@@ -303,6 +303,7 @@ class CTkOptionMenu(CTkBaseClass):
             return self._command
         elif attribute_name == "dynamic_resizing":
             return self._dynamic_resizing
+
         else:
             return super().cget(attribute_name)
 
@@ -358,5 +359,9 @@ class CTkOptionMenu(CTkBaseClass):
             self._open_dropdown_menu()
 
     def bind(self, sequence=None, command=None, add=None):
-        """ called on the tkinter.Canvas """
-        return self._canvas.bind(sequence, command, add)
+        """ called on the tkinter.Label """
+        return self._text_label.bind(sequence, command, add)
+
+    def unbind(self, sequence, funcid=None):
+        """ called on the tkinter.Label """
+        return self._text_label.bind(sequence, funcid)

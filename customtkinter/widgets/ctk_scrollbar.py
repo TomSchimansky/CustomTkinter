@@ -75,7 +75,7 @@ class CTkScrollbar(CTkBaseClass):
         self._canvas.tag_bind("border_parts", "<Button-1>", self._clicked)
         self._canvas.bind("<B1-Motion>", self._clicked)
         self._canvas.bind("<MouseWheel>", self._mouse_scroll_event)
-        self.bind('<Configure>', self._update_dimensions_event)
+        super().bind('<Configure>', self._update_dimensions_event)
 
         self._draw()
 
@@ -203,6 +203,7 @@ class CTkScrollbar(CTkBaseClass):
             return self._command
         elif attribute_name == "orientation":
             return self._orientation
+
         else:
             return super().cget(attribute_name)
 
@@ -252,3 +253,7 @@ class CTkScrollbar(CTkBaseClass):
     def bind(self, sequence=None, command=None, add=None):
         """ called on the tkinter.Canvas """
         return self._canvas.bind(sequence, command, add)
+
+    def unbind(self, sequence, funcid=None):
+        """ called on the tkinter.Canvas """
+        return self._canvas.bind(sequence, funcid)

@@ -86,7 +86,7 @@ class CTkButton(CTkBaseClass):
         self._canvas.bind("<Leave>", self._on_leave)
         self._canvas.bind("<Button-1>", self._clicked)
         self._canvas.bind("<Button-1>", self._clicked)
-        self.bind('<Configure>', self._update_dimensions_event)
+        super().bind('<Configure>', self._update_dimensions_event)
 
         # configure cursor and initial draw
         self._set_cursor()
@@ -412,3 +412,7 @@ class CTkButton(CTkBaseClass):
     def bind(self, sequence=None, command=None, add=None):
         """ called on the tkinter.Canvas """
         return self._canvas.bind(sequence, command, add)
+
+    def unbind(self, sequence, funcid=None):
+        """ called on the tkinter.Canvas """
+        return self._canvas.bind(sequence, funcid)

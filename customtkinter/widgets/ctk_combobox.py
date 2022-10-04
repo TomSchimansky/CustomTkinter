@@ -118,7 +118,7 @@ class CTkComboBox(CTkBaseClass):
         self._canvas.tag_bind("dropdown_arrow", "<Leave>", self._on_leave)
         self._canvas.tag_bind("right_parts", "<Button-1>", self._clicked)
         self._canvas.tag_bind("dropdown_arrow", "<Button-1>", self._clicked)
-        self.bind('<Configure>', self._update_dimensions_event)
+        super().bind('<Configure>', self._update_dimensions_event)
 
         if self._variable is not None:
             self._entry.configure(textvariable=self._variable)
@@ -351,5 +351,9 @@ class CTkComboBox(CTkBaseClass):
             self._open_dropdown_menu()
 
     def bind(self, sequence=None, command=None, add=None):
-        """ called on the tkinter.Canvas """
-        return self._canvas.bind(sequence, command, add)
+        """ called on the tkinter.Entry """
+        return self._entry.bind(sequence, command, add)
+
+    def unbind(self, sequence, funcid=None):
+        """ called on the tkinter.Entry """
+        return self._entry.bind(sequence, funcid)
