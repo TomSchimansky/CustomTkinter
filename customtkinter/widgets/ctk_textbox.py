@@ -210,3 +210,142 @@ class CTkTextbox(CTkBaseClass):
     def get(self, index1, index2=None):
         return self._textbox.get(index1, index2)
 
+    def bbox(self, index):
+        return self._textbox.bbox(index)
+
+    def compare(self, index, op, index2):
+        return self._textbox.compare(index, op, index2)
+
+    def dlineinfo(self, index):
+        return self._textbox.dlineinfo(index)
+
+    def edit_modified(self, arg=None):
+        return self._textbox.edit_modified(arg)
+
+    def edit_redo(self):
+        return self._textbox.edit_redo()
+
+    def edit_reset(self):
+        return self._textbox.edit_reset()
+
+    def edit_separator(self):
+        return self._textbox.edit_separator()
+
+    def edit_undo(self):
+        return self._textbox.edit_undo()
+
+    def image_create(self, index, **kwargs):
+        raise AttributeError("embedding images is forbidden, because would be incompatible with scaling")
+
+    def image_cget(self, index, option):
+        raise AttributeError("embedding images is forbidden, because would be incompatible with scaling")
+
+    def image_configure(self, index):
+        raise AttributeError("embedding images is forbidden, because would be incompatible with scaling")
+
+    def image_names(self):
+        raise AttributeError("embedding images is forbidden, because would be incompatible with scaling")
+
+    def index(self, i):
+        return self._textbox.index(i)
+
+    def mark_gravity(self, mark, gravity=None):
+        return self._textbox.mark_gravity(mark, gravity)
+
+    def mark_names(self):
+        return self._textbox.mark_names()
+
+    def mark_next(self, index):
+        return self._textbox.mark_next(index)
+
+    def mark_previous(self, index):
+        return self._textbox.mark_previous(index)
+
+    def mark_set(self, mark, index):
+        return self._textbox.mark_set(mark, index)
+
+    def mark_unset(self, mark):
+        return self._textbox.mark_unset(mark)
+
+    def scan_dragto(self, x, y):
+        return self._textbox.scan_dragto(x, y)
+
+    def scan_mark(self, x, y):
+        return self._textbox.scan_mark(x, y)
+
+    def search(self, pattern, index, *args, **kwargs):
+        return self._textbox.search(pattern, index, *args, **kwargs)
+
+    def see(self, index):
+        return self._textbox.see(index)
+
+    def tag_add(self, tagName, index1, index2=None):
+        return self._textbox.tag_add(tagName, index1, index2)
+
+    def tag_bind(self, tagName, sequence, func, add=None):
+        return self._textbox.tag_bind(tagName, sequence, func, add)
+
+    def tag_cget(self, tagName, option):
+        return self._textbox.tag_cget(tagName, option)
+
+    def tag_config(self, tagName, **kwargs):
+        if "font" in kwargs:
+            raise AttributeError("'font' option forbidden, because would be incompatible with scaling")
+        return self._textbox.tag_config(tagName, **kwargs)
+
+    def tag_delete(self, *tagName):
+        return self._textbox.tag_delete(*tagName)
+
+    def tag_lower(self, tagName, belowThis=None):
+        return self._textbox.tag_lower(tagName, belowThis)
+
+    def tag_names(self, index=None):
+        return self._textbox.tag_names(index)
+
+    def tag_nextrange(self, tagName, index1, index2=None):
+        return self._textbox.tag_nextrange(tagName, index1, index2)
+
+    def tag_prevrange(self, tagName, index1, index2=None):
+        return self._textbox.tag_prevrange(tagName, index1, index2)
+
+    def tag_raise(self, tagName, aboveThis=None):
+        return self._textbox.tag_raise(tagName, aboveThis)
+
+    def tag_ranges(self, tagName):
+        return self._textbox.tag_ranges(tagName)
+
+    def tag_remove(self, tagName, index1, index2=None):
+        return self._textbox.tag_remove(tagName, index1, index2)
+
+    def tag_unbind(self, tagName, sequence, funcid=None):
+        return self._textbox.tag_unbind(tagName, sequence, funcid)
+
+    def window_cget(self, index, option):
+        raise AttributeError("embedding widgets is forbidden, would probably cause all kinds of problems ;)")
+
+    def window_configure(self, index, option):
+        raise AttributeError("embedding widgets is forbidden, would probably cause all kinds of problems ;)")
+
+    def window_create(self, index, **kwargs):
+        raise AttributeError("embedding widgets is forbidden, would probably cause all kinds of problems ;)")
+
+    def window_names(self):
+        raise AttributeError("embedding widgets is forbidden, would probably cause all kinds of problems ;)")
+
+    def xview(self, *args):
+        return self._textbox.xview(*args)
+
+    def xview_moveto(self, fraction):
+        return self._textbox.xview_moveto(fraction)
+
+    def xview_scroll(self, n, what):
+        return self._textbox.xview_scroll(n, what)
+
+    def yview(self, *args):
+        return self._textbox.yview(*args)
+
+    def yview_moveto(self, fraction):
+        return self._textbox.yview_moveto(fraction)
+
+    def yview_scroll(self, n, what):
+        return self._textbox.yview_scroll(n, what)

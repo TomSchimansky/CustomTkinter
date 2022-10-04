@@ -58,48 +58,38 @@ class CTkInputDialog:
         self._toplevel_window.after(10, self._create_widgets)  # create widgets with slight delay, to avoid white flickering of background
 
     def _create_widgets(self):
-        self._label_frame = CTkFrame(master=self._toplevel_window,
-                                     corner_radius=0,
-                                     fg_color=self._window_bg_color,
-                                     width=300,
-                                     height=self._height-100)
-        self._label_frame.place(relx=0.5, rely=0, anchor=tkinter.N)
 
-        self._button_and_entry_frame = CTkFrame(master=self._toplevel_window,
-                                                corner_radius=0,
-                                                fg_color=self._window_bg_color,
-                                                width=300,
-                                                height=100)
-        self._button_and_entry_frame.place(relx=0.5, rely=1, anchor=tkinter.S)
+        self._toplevel_window.grid_columnconfigure((0, 1), weight=1)
+        self._toplevel_window.rowconfigure(0, weight=1)
 
-        self._myLabel = CTkLabel(master=self._label_frame,
+        self._myLabel = CTkLabel(master=self._toplevel_window,
                                  text=self._text,
                                  width=300,
                                  fg_color=None,
                                  height=self._height-100)
-        self._myLabel.place(relx=0.5, rely=0.5, anchor=tkinter.CENTER)
+        self._myLabel.grid(row=0, column=0, columnspan=2, padx=20, pady=20, sticky="ew")
 
-        self._entry = CTkEntry(master=self._button_and_entry_frame,
+        self._entry = CTkEntry(master=self._toplevel_window,
                                width=230)
-        self._entry.place(relx=0.5, rely=0.15, anchor=tkinter.CENTER)
+        self._entry.grid(row=1, column=0, columnspan=2, padx=20, pady=(0, 20), sticky="ew")
 
-        self._ok_button = CTkButton(master=self._button_and_entry_frame,
+        self._ok_button = CTkButton(master=self._toplevel_window,
                                     text='Ok',
                                     width=100,
                                     command=self._ok_event,
                                     fg_color=self._fg_color,
                                     hover_color=self._hover_color,
                                     border_color=self._border_color)
-        self._ok_button.place(relx=0.28, rely=0.65, anchor=tkinter.CENTER)
+        self._ok_button.grid(row=2, column=0, columnspan=1, padx=(20, 10), pady=(0, 20), sticky="ew")
 
-        self._cancel_button = CTkButton(master=self._button_and_entry_frame,
+        self._cancel_button = CTkButton(master=self._toplevel_window,
                                         text='Cancel',
                                         width=100,
                                         command=self._cancel_event,
                                         fg_color=self._fg_color,
                                         hover_color=self._hover_color,
                                         border_color=self._border_color)
-        self._cancel_button.place(relx=0.72, rely=0.65, anchor=tkinter.CENTER)
+        self._cancel_button.grid(row=2, column=1, columnspan=1, padx=(10, 20), pady=(0, 20), sticky="ew")
 
         self._entry.focus_force()
         self._entry.bind("<Return>", self._ok_event)
