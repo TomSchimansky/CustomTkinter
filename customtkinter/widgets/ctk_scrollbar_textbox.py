@@ -1,7 +1,9 @@
+import time
 import tkinter
 from typing import Union, Tuple
 
 from .ctk_canvas import CTkCanvas
+from .ctk_scrollbar import CTkScrollbar
 from ..theme_manager import ThemeManager
 from ..draw_engine import DrawEngine
 from .widget_base_class import CTkBaseClass
@@ -9,15 +11,20 @@ from .widget_base_class import CTkBaseClass
 from .widget_helper_functions import pop_from_dict_by_set
 
 
-class CTkTextbox(CTkBaseClass):
+class CTkScrolledTextbox(CTkBaseClass):
     """
-    Textbox with rounded corners, and all text features of tkinter.Text widget.
+    Textbox with x and y scrollbars, rounded corners, and all text features of tkinter.Text widget.
+    Scrollbars only appear when they are needed. Text is wrapped on line end by default,
+    set wrap='none' to disable automatic line wrapping.
     For detailed information check out the documentation.
 
     Detailed methods and parameters of the underlaying tkinter.Text widget can be found here:
     https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/text.html
     (most of them are implemented here too)
     """
+
+    _scrollbar_update_time = 200  # interval in ms, to check if scrollbars are needed
+    _scrollbars_activated = True
 
     # attributes that are passed to and managed by the tkinter textbox only:
     _valid_tk_text_attributes = {"autoseparators", "cursor", "exportselection",
@@ -36,6 +43,8 @@ class CTkTextbox(CTkBaseClass):
                  fg_color: Union[str, Tuple[str, str], None] = "default_theme",
                  border_color: Union[str, Tuple[str, str]] = "default_theme",
                  text_color: Union[str, str] = "default_theme",
+                 scrollbar_color: Union[str, Tuple[str, str]] = "default_theme",
+                 scrollbar_hover_color:  Union[str, Tuple[str, str]] = "default_theme",
 
                  font: any = "default_theme",
                  **kwargs):
@@ -50,6 +59,8 @@ class CTkTextbox(CTkBaseClass):
         self._fg_color = ThemeManager.theme["color"]["entry"] if fg_color == "default_theme" else fg_color
         self._border_color = ThemeManager.theme["color"]["frame_border"] if border_color == "default_theme" else border_color
         self._text_color = ThemeManager.theme["color"]["text"] if text_color == "default_theme" else text_color
+        self._scrollbar_color = ThemeManager.theme["color"]["scrollbar_button"] if scrollbar_color == "default_theme" else scrollbar_color
+        self._scrollbar_hover_color = ThemeManager.theme["color"]["scrollbar_button_hover"] if scrollbar_hover_color == "default_theme" else scrollbar_hover_color
 
         # shape
         self._corner_radius = ThemeManager.theme["shape"]["frame_corner_radius"] if corner_radius == "default_theme" else corner_radius
@@ -58,15 +69,11 @@ class CTkTextbox(CTkBaseClass):
         # text
         self._font = (ThemeManager.theme["text"]["font"], ThemeManager.theme["text"]["size"]) if font == "default_theme" else font
 
-        # configure 1x1 grid
-        self.grid_rowconfigure(0, weight=1)
-        self.grid_columnconfigure(0, weight=1)
-
         self._canvas = CTkCanvas(master=self,
                                  highlightthickness=0,
                                  width=self._apply_widget_scaling(self._current_width),
                                  height=self._apply_widget_scaling(self._current_height))
-        self._canvas.grid(row=0, column=0, padx=0, pady=0, rowspan=1, columnspan=1, sticky="nsew")
+        self._canvas.grid(row=0, column=0, padx=0, pady=0, rowspan=2, columnspan=2, sticky="nsew")
         self._canvas.configure(bg=ThemeManager.single_color(self._bg_color, self._appearance_mode))
         self._draw_engine = DrawEngine(self._canvas)
 
@@ -74,31 +81,106 @@ class CTkTextbox(CTkBaseClass):
                                      fg=ThemeManager.single_color(self._text_color, self._appearance_mode),
                                      width=0,
                                      height=0,
-                                     font=self._font,
+                                     font=self._apply_font_scaling(self._font),
                                      highlightthickness=0,
                                      relief="flat",
                                      insertbackground=ThemeManager.single_color(self._text_color, self._appearance_mode),
                                      bg=ThemeManager.single_color(self._fg_color, self._appearance_mode),
                                      **pop_from_dict_by_set(kwargs, self._valid_tk_text_attributes))
-        self._textbox.grid(row=0, column=0, rowspan=1, columnspan=1, sticky="nsew",
-                           padx=self._apply_widget_scaling(self._corner_radius),
-                           pady=self._apply_widget_scaling(self._corner_radius))
 
         self._check_kwargs_empty(kwargs, raise_error=True)
 
+        self._y_scrollbar = CTkScrollbar(self,
+                                         width=8,
+                                         border_spacing=0,
+                                         fg_color=self._fg_color,
+                                         scrollbar_color=self._scrollbar_color,
+                                         scrollbar_hover_color=self._scrollbar_hover_color,
+                                         orientation="vertical",
+                                         command=self._textbox.yview)
+        self._textbox.configure(yscrollcommand=self._y_scrollbar.set)
+        self._y_scrollbar.grid(row=0, column=1, rowspan=1, columnspan=1, sticky="ns",
+                               padx=(self._apply_widget_scaling(3), self._apply_widget_scaling(3 + self._border_width)),
+                               pady=(self._apply_widget_scaling(self._corner_radius + self._border_width), 0))
+
+        self._x_scrollbar = CTkScrollbar(self,
+                                         height=8,
+                                         border_spacing=0,
+                                         fg_color=self._fg_color,
+                                         scrollbar_color=self._scrollbar_color,
+                                         scrollbar_hover_color=self._scrollbar_hover_color,
+                                         orientation="horizontal",
+                                         command=self._textbox.xview)
+        self._textbox.configure(xscrollcommand=self._x_scrollbar.set)
+        self._x_scrollbar.grid(row=1, column=0, rowspan=1, columnspan=1, sticky="ew",
+                               pady=(self._apply_widget_scaling(3), self._apply_widget_scaling(3 + self._border_width)),
+                               padx=(self._apply_widget_scaling(self._corner_radius + self._border_width), 0))
+
+        self._hide_x_scrollbar = True
+        self._hide_y_scrollbar = True
+        self._manage_grid_commands(re_grid_textbox=True, re_grid_x_scrollbar=True, re_grid_y_scrollbar=True)
+
+        self.after(500, self._check_if_scrollbars_needed)
+
         super().bind('<Configure>', self._update_dimensions_event)
         self._draw()
+
+    def _manage_grid_commands(self, re_grid_textbox=False, re_grid_x_scrollbar=False, re_grid_y_scrollbar=False):
+
+        # configure 2x2 grid
+        self.grid_rowconfigure(0, weight=1)
+        self.grid_rowconfigure(1, weight=0, minsize=self._apply_widget_scaling(max(self._corner_radius, self._border_width)))
+        self.grid_columnconfigure(0, weight=1)
+        self.grid_columnconfigure(1, weight=0, minsize=self._apply_widget_scaling(max(self._corner_radius, self._border_width)))
+
+        if re_grid_textbox:
+            self._textbox.grid(row=0, column=0, rowspan=1, columnspan=1, sticky="nsew",
+                               padx=(self._apply_widget_scaling(max(self._corner_radius, self._border_width)), 0),
+                               pady=(self._apply_widget_scaling(max(self._corner_radius, self._border_width)), 0))
+
+        if re_grid_x_scrollbar:
+            if not self._hide_x_scrollbar:
+                self._x_scrollbar.grid(row=1, column=0, rowspan=1, columnspan=1, sticky="ew",
+                                       pady=(3, 3 + self._border_width),
+                                       padx=(max(self._corner_radius, self._border_width), 0))  # scrollbar grid method without scaling
+            else:
+                self._x_scrollbar.grid_forget()
+
+        if re_grid_y_scrollbar:
+            if not self._hide_y_scrollbar:
+                self._y_scrollbar.grid(row=0, column=1, rowspan=1, columnspan=1, sticky="ns",
+                                       padx=(3, 3 + self._border_width),
+                                       pady=(max(self._corner_radius, self._border_width), 0))  # scrollbar grid method without scaling
+            else:
+                self._y_scrollbar.grid_forget()
+
+    def _check_if_scrollbars_needed(self, event=None):
+        """ Method hides or places the scrollbars if they are needed on key release event of tkinter.text widget """
+
+        if self._textbox.xview() != (0.0, 1.0) and not self._x_scrollbar.winfo_ismapped():  # x scrollbar needed
+            self._hide_x_scrollbar = False
+            self._manage_grid_commands(re_grid_x_scrollbar=True)
+        elif self._textbox.xview() == (0.0, 1.0) and self._x_scrollbar.winfo_ismapped():  # x scrollbar not needed
+            self._hide_x_scrollbar = True
+            self._manage_grid_commands(re_grid_x_scrollbar=True)
+
+        if self._textbox.yview() != (0.0, 1.0) and not self._y_scrollbar.winfo_ismapped():  # y scrollbar needed
+            self._hide_y_scrollbar = False
+            self._manage_grid_commands(re_grid_y_scrollbar=True)
+        elif self._textbox.yview() == (0.0, 1.0) and self._y_scrollbar.winfo_ismapped():  # y scrollbar not needed
+            self._hide_y_scrollbar = True
+            self._manage_grid_commands(re_grid_y_scrollbar=True)
+
+        if self._textbox.winfo_exists():
+            self.after(200, self._check_if_scrollbars_needed)
 
     def _set_scaling(self, *args, **kwargs):
         super()._set_scaling(*args, **kwargs)
 
         self._textbox.configure(font=self._apply_font_scaling(self._font))
-        self._textbox.grid(row=0, column=0, rowspan=1, columnspan=1, sticky="nsew",
-                           padx=self._apply_widget_scaling(self._corner_radius),
-                           pady=self._apply_widget_scaling(self._corner_radius))
-
         self._canvas.configure(width=self._apply_widget_scaling(self._desired_width),
                                height=self._apply_widget_scaling(self._desired_height))
+        self._manage_grid_commands(re_grid_textbox=False, re_grid_x_scrollbar=True, re_grid_y_scrollbar=True)
         self._draw()
 
     def _set_dimensions(self, width=None, height=None):
@@ -120,19 +202,29 @@ class CTkTextbox(CTkBaseClass):
                 self._canvas.itemconfig("inner_parts",
                                         fill=ThemeManager.single_color(self._bg_color, self._appearance_mode),
                                         outline=ThemeManager.single_color(self._bg_color, self._appearance_mode))
+                self._textbox.configure(fg=ThemeManager.single_color(self._text_color, self._appearance_mode),
+                                        bg=ThemeManager.single_color(self._bg_color, self._appearance_mode),
+                                        insertbackground=ThemeManager.single_color(self._text_color, self._appearance_mode))
+                self._x_scrollbar.configure(fg_color=self._bg_color, scrollbar_color=self._scrollbar_color,
+                                            scrollbar_hover_color=self._scrollbar_hover_color)
+                self._y_scrollbar.configure(fg_color=self._bg_color, scrollbar_color=self._scrollbar_color,
+                                            scrollbar_hover_color=self._scrollbar_hover_color)
             else:
                 self._canvas.itemconfig("inner_parts",
                                         fill=ThemeManager.single_color(self._fg_color, self._appearance_mode),
                                         outline=ThemeManager.single_color(self._fg_color, self._appearance_mode))
+                self._textbox.configure(fg=ThemeManager.single_color(self._text_color, self._appearance_mode),
+                                        bg=ThemeManager.single_color(self._fg_color, self._appearance_mode),
+                                        insertbackground=ThemeManager.single_color(self._text_color, self._appearance_mode))
+                self._x_scrollbar.configure(fg_color=self._fg_color, scrollbar_color=self._scrollbar_color,
+                                            scrollbar_hover_color=self._scrollbar_hover_color)
+                self._y_scrollbar.configure(fg_color=self._fg_color, scrollbar_color=self._scrollbar_color,
+                                            scrollbar_hover_color=self._scrollbar_hover_color)
 
             self._canvas.itemconfig("border_parts",
                                     fill=ThemeManager.single_color(self._border_color, self._appearance_mode),
                                     outline=ThemeManager.single_color(self._border_color, self._appearance_mode))
             self._canvas.configure(bg=ThemeManager.single_color(self._bg_color, self._appearance_mode))
-
-            self._textbox.configure(fg=ThemeManager.single_color(self._text_color, self._appearance_mode),
-                                    bg=ThemeManager.single_color(self._fg_color, self._appearance_mode),
-                                    insertbackground=ThemeManager.single_color(self._text_color, self._appearance_mode))
 
         self._canvas.tag_lower("inner_parts")
         self._canvas.tag_lower("border_parts")
@@ -157,13 +249,12 @@ class CTkTextbox(CTkBaseClass):
 
         if "corner_radius" in kwargs:
             self._corner_radius = kwargs.pop("corner_radius")
-            self._textbox.grid(row=0, column=0, rowspan=1, columnspan=1, sticky="nsew",
-                               padx=self._apply_widget_scaling(self._corner_radius),
-                               pady=self._apply_widget_scaling(self._corner_radius))
+            self._manage_grid_commands(re_grid_textbox=True, re_grid_x_scrollbar=True, re_grid_y_scrollbar=True)
             require_redraw = True
 
         if "border_width" in kwargs:
             self._border_width = kwargs.pop("border_width")
+            self._manage_grid_commands(re_grid_textbox=True, re_grid_x_scrollbar=True, re_grid_y_scrollbar=True)
             require_redraw = True
 
         if "width" in kwargs:
@@ -200,13 +291,19 @@ class CTkTextbox(CTkBaseClass):
 
     def bind(self, sequence=None, command=None, add=None):
         """ called on the tkinter.Text """
-        return self._textbox.bind(sequence, command, add)
+
+        # if sequence is <KeyRelease>, allow only to add the binding to keep the _textbox_modified_event() being called
+        if sequence == "<KeyRelease>":
+            return self._textbox.bind(sequence, command, add="+")
+        else:
+            return self._textbox.bind(sequence, command, add)
 
     def unbind(self, sequence, funcid=None):
         """ called on the tkinter.Text """
         return self._textbox.unbind(sequence, funcid)
 
     def insert(self, index, text, tags=None):
+        self._check_if_scrollbars_needed()
         return self._textbox.insert(index, text, tags)
 
     def get(self, index1, index2=None):
@@ -225,6 +322,7 @@ class CTkTextbox(CTkBaseClass):
         return self._textbox.edit_modified(arg)
 
     def edit_redo(self):
+        self._check_if_scrollbars_needed()
         return self._textbox.edit_redo()
 
     def edit_reset(self):
@@ -234,6 +332,7 @@ class CTkTextbox(CTkBaseClass):
         return self._textbox.edit_separator()
 
     def edit_undo(self):
+        self._check_if_scrollbars_needed()
         return self._textbox.edit_undo()
 
     def image_create(self, index, **kwargs):

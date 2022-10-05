@@ -52,7 +52,7 @@ class App(customtkinter.CTk):
         self.main_button_1 = customtkinter.CTkButton(self, fg_color=None, border_width=2)
         self.main_button_1.grid(row=3, column=3, padx=(10, 20), pady=(10, 20), sticky="nsew")
 
-        self.textbox = customtkinter.CTkTextbox(self)
+        self.textbox = customtkinter.CTkScrolledTextbox(self)
         self.textbox.grid(row=0, column=1, padx=(20, 10), pady=(20, 10), sticky="nsew")
 
         # create radiobutton frame
@@ -121,14 +121,14 @@ class App(customtkinter.CTk):
         self.scaling_optionemenu.set("100%")
         self.optionmenu_1.set("CTkOptionmenu")
         self.combobox_1.set("CTkComboBox")
-        self.textbox.insert("1.0", "CTkTextbox\n\nLorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.")
         self.slider_1.configure(command=self.progressbar_2.set)
         self.slider_2.configure(command=self.progressbar_3.set)
         self.progressbar_1.configure(mode="indeterminnate")
         self.progressbar_1.start()
 
-        r = self.logo_label.bind("<Button-1>", lambda e: print("click"))
-        print(r, type(r))
+        self.textbox.insert("1.0", "CTkTextbox\n\n" + "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.\n\n" * 20)
+        self.textbox.configure(border_width=5, corner_radius=20, wrap="none")
+        self.radiobutton_frame.configure(border_width=3)
 
     def open_input_dialog(self):
         dialog = customtkinter.CTkInputDialog(master=self, text="Type in a number:", title="CTkInputDialog")
@@ -144,7 +144,6 @@ class App(customtkinter.CTk):
 
     def sidebar_button_callback(self):
         print("sidebar_button click")
-        self.entry.delete(0, tkinter.END)
 
     def on_closing(self, event=0):
         self.destroy()

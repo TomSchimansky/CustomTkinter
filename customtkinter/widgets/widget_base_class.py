@@ -106,15 +106,27 @@ class CTkBaseClass(tkinter.Frame):
 
     def place(self, **kwargs):
         self._last_geometry_manager_call = {"function": super().place, "kwargs": kwargs}
-        super().place(**self._apply_argument_scaling(kwargs))
+        return super().place(**self._apply_argument_scaling(kwargs))
+
+    def place_forget(self):
+        self._last_geometry_manager_call = None
+        return super().place_forget()
 
     def pack(self, **kwargs):
         self._last_geometry_manager_call = {"function": super().pack, "kwargs": kwargs}
-        super().pack(**self._apply_argument_scaling(kwargs))
+        return super().pack(**self._apply_argument_scaling(kwargs))
+
+    def pack_forget(self):
+        self._last_geometry_manager_call = None
+        return super().pack_forget()
 
     def grid(self, **kwargs):
         self._last_geometry_manager_call = {"function": super().grid, "kwargs": kwargs}
-        super().grid(**self._apply_argument_scaling(kwargs))
+        return super().grid(**self._apply_argument_scaling(kwargs))
+
+    def grid_forget(self):
+        self._last_geometry_manager_call = None
+        return super().grid_forget()
 
     def _apply_argument_scaling(self, kwargs: dict) -> dict:
         scaled_kwargs = copy.copy(kwargs)

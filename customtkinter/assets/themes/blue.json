@@ -9,7 +9,7 @@
     "entry": ["#F9F9FA", "#343638"],
     "entry_border": ["#979DA2", "#565B5E"],
     "entry_placeholder_text": ["gray52", "gray62"],
-    "frame_border": ["#979DA2", "#1F2122"],
+    "frame_border": ["#979DA2", "#565B5E"],
     "frame_low": ["#D1D5D8", "#2A2D2E"],
     "frame_high": ["#C0C2C5", "#343638"],
     "label": [null, null],
