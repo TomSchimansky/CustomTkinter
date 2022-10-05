@@ -290,3 +290,12 @@ class CTkProgressBar(CTkBaseClass):
     def unbind(self, sequence, funcid=None):
         """ called on the tkinter.Canvas """
         return self._canvas.unbind(sequence, funcid)
+
+    def focus(self):
+        return self._canvas.focus()
+
+    def focus_set(self):
+        return self._canvas.focus_set()
+
+    def focus_force(self):
+        return self._canvas.focus_force()

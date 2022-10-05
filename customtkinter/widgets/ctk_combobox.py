@@ -357,3 +357,12 @@ class CTkComboBox(CTkBaseClass):
     def unbind(self, sequence, funcid=None):
         """ called on the tkinter.Entry """
         return self._entry.unbind(sequence, funcid)
+
+    def focus(self):
+        return self._entry.focus()
+
+    def focus_set(self):
+        return self._entry.focus_set()
+
+    def focus_force(self):
+        return self._entry.focus_force()

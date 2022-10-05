@@ -90,6 +90,9 @@ class CTkFrame(CTkBaseClass):
 
     def _draw(self, no_color_updates=False):
 
+        if not self._canvas.winfo_exists():
+            return
+
         requires_recoloring = self._draw_engine.draw_rounded_rect_with_border(self._apply_widget_scaling(self._current_width),
                                                                               self._apply_widget_scaling(self._current_height),
                                                                               self._apply_widget_scaling(self._corner_radius),

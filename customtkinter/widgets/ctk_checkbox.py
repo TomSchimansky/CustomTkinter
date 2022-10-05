@@ -371,3 +371,12 @@ class CTkCheckBox(CTkBaseClass):
     def unbind(self, sequence, funcid=None):
         """ called on the tkinter.Canvas """
         return self._canvas.unbind(sequence, funcid)
+
+    def focus(self):
+        return self._text_label.focus()
+
+    def focus_set(self):
+        return self._text_label.focus_set()
+
+    def focus_force(self):
+        return self._text_label.focus_force()

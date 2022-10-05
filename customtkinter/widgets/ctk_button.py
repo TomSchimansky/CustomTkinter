@@ -54,9 +54,9 @@ class CTkButton(CTkBaseClass):
 
         # text, font, image
         self._image = image
-        self._image_label = None
+        self._image_label: Union[tkinter.Label, None] = None
         self._text = text
-        self._text_label = None
+        self._text_label: Union[tkinter.Label, None] = None
         self._font = (ThemeManager.theme["text"]["font"], ThemeManager.theme["text"]["size"]) if font == "default_theme" else font
 
         # callback and hover functionality
@@ -65,7 +65,7 @@ class CTkButton(CTkBaseClass):
         self._state = state
         self._hover = hover
         self._compound = compound
-        self._click_animation_running = False
+        self._click_animation_running: bool = False
 
         # configure grid system (2x2)
         self.grid_rowconfigure(0, weight=1)
@@ -420,3 +420,12 @@ class CTkButton(CTkBaseClass):
         canvas_bind_return, label_bind_return = funcid.split(" + ")
         self._canvas.unbind(sequence, canvas_bind_return)
         self._text_label.unbind(sequence, label_bind_return)
+
+    def focus(self):
+        return self._text_label.focus()
+
+    def focus_set(self):
+        return self._text_label.focus_set()
+
+    def focus_force(self):
+        return self._text_label.focus_force()

@@ -193,3 +193,12 @@ class CTkLabel(CTkBaseClass):
         canvas_bind_return, label_bind_return = funcid.split(" + ")
         self._canvas.unbind(sequence, canvas_bind_return)
         self._text_label.unbind(sequence, label_bind_return)
+
+    def focus(self):
+        return self._text_label.focus()
+
+    def focus_set(self):
+        return self._text_label.focus_set()
+
+    def focus_force(self):
+        return self._text_label.focus_force()

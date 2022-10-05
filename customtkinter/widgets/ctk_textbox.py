@@ -203,6 +203,9 @@ class CTkTextbox(CTkBaseClass):
 
     def _draw(self, no_color_updates=False):
 
+        if not self._canvas.winfo_exists():
+            return
+
         requires_recoloring = self._draw_engine.draw_rounded_rect_with_border(self._apply_widget_scaling(self._current_width),
                                                                               self._apply_widget_scaling(self._current_height),
                                                                               self._apply_widget_scaling(self._corner_radius),
@@ -312,6 +315,15 @@ class CTkTextbox(CTkBaseClass):
     def unbind(self, sequence, funcid=None):
         """ called on the tkinter.Text """
         return self._textbox.unbind(sequence, funcid)
+
+    def focus(self):
+        return self._textbox.focus()
+
+    def focus_set(self):
+        return self._textbox.focus_set()
+
+    def focus_force(self):
+        return self._textbox.focus_force()
 
     def insert(self, index, text, tags=None):
         self._check_if_scrollbars_needed()
