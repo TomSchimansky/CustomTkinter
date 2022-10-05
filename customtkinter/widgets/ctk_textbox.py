@@ -124,14 +124,14 @@ class CTkTextbox(CTkBaseClass):
                                pady=(self._apply_widget_scaling(3), self._apply_widget_scaling(self._border_spacing + self._border_width)),
                                padx=(self._apply_widget_scaling(self._corner_radius + self._border_width), 0))
 
-        self._manage_grid_commands(re_grid_textbox=True, re_grid_x_scrollbar=True, re_grid_y_scrollbar=True)
+        self._create_grid_for_text_and_scrollbars(re_grid_textbox=True, re_grid_x_scrollbar=True, re_grid_y_scrollbar=True)
 
-        self.after(500, self._check_if_scrollbars_needed)
+        self.after(50, self._check_if_scrollbars_needed)
 
         super().bind('<Configure>', self._update_dimensions_event)
         self._draw()
 
-    def _manage_grid_commands(self, re_grid_textbox=False, re_grid_x_scrollbar=False, re_grid_y_scrollbar=False):
+    def _create_grid_for_text_and_scrollbars(self, re_grid_textbox=False, re_grid_x_scrollbar=False, re_grid_y_scrollbar=False):
 
         # configure 2x2 grid
         self.grid_rowconfigure(0, weight=1)
@@ -148,7 +148,7 @@ class CTkTextbox(CTkBaseClass):
             if not self._hide_x_scrollbar and self._scrollbars_activated:
                 self._x_scrollbar.grid(row=1, column=0, rowspan=1, columnspan=1, sticky="ewn",
                                        pady=(3, self._border_spacing + self._border_width),
-                                       padx=(max(self._corner_radius, self._border_width + self._border_spacing), self._border_spacing))  # scrollbar grid method without scaling
+                                       padx=(max(self._corner_radius, self._border_width + self._border_spacing), 0))  # scrollbar grid method without scaling
             else:
                 self._x_scrollbar.grid_forget()
 
@@ -156,34 +156,34 @@ class CTkTextbox(CTkBaseClass):
             if not self._hide_y_scrollbar and self._scrollbars_activated:
                 self._y_scrollbar.grid(row=0, column=1, rowspan=1, columnspan=1, sticky="nsw",
                                        padx=(3, self._border_spacing + self._border_width),
-                                       pady=(max(self._corner_radius, self._border_width + self._border_spacing), self._border_spacing))  # scrollbar grid method without scaling
+                                       pady=(max(self._corner_radius, self._border_width + self._border_spacing), 0))  # scrollbar grid method without scaling
             else:
                 self._y_scrollbar.grid_forget()
 
-    def _check_if_scrollbars_needed(self, event=None):
+    def _check_if_scrollbars_needed(self, event=None, continue_loop: bool = True):
         """ Method hides or places the scrollbars if they are needed on key release event of tkinter.text widget """
 
         if self._scrollbars_activated:
             if self._textbox.xview() != (0.0, 1.0) and not self._x_scrollbar.winfo_ismapped():  # x scrollbar needed
                 self._hide_x_scrollbar = False
-                self._manage_grid_commands(re_grid_x_scrollbar=True)
+                self._create_grid_for_text_and_scrollbars(re_grid_x_scrollbar=True)
             elif self._textbox.xview() == (0.0, 1.0) and self._x_scrollbar.winfo_ismapped():  # x scrollbar not needed
                 self._hide_x_scrollbar = True
-                self._manage_grid_commands(re_grid_x_scrollbar=True)
+                self._create_grid_for_text_and_scrollbars(re_grid_x_scrollbar=True)
 
             if self._textbox.yview() != (0.0, 1.0) and not self._y_scrollbar.winfo_ismapped():  # y scrollbar needed
                 self._hide_y_scrollbar = False
-                self._manage_grid_commands(re_grid_y_scrollbar=True)
+                self._create_grid_for_text_and_scrollbars(re_grid_y_scrollbar=True)
             elif self._textbox.yview() == (0.0, 1.0) and self._y_scrollbar.winfo_ismapped():  # y scrollbar not needed
                 self._hide_y_scrollbar = True
-                self._manage_grid_commands(re_grid_y_scrollbar=True)
+                self._create_grid_for_text_and_scrollbars(re_grid_y_scrollbar=True)
         else:
             self._hide_x_scrollbar = False
             self._hide_x_scrollbar = False
-            self._manage_grid_commands(re_grid_y_scrollbar=True)
+            self._create_grid_for_text_and_scrollbars(re_grid_y_scrollbar=True)
 
-        if self._textbox.winfo_exists():
-            self.after(200, self._check_if_scrollbars_needed)
+        if self._textbox.winfo_exists() and continue_loop is True:
+            self.after(self._scrollbar_update_time, lambda: self._check_if_scrollbars_needed(continue_loop=True))
 
     def _set_scaling(self, *args, **kwargs):
         super()._set_scaling(*args, **kwargs)
@@ -191,7 +191,7 @@ class CTkTextbox(CTkBaseClass):
         self._textbox.configure(font=self._apply_font_scaling(self._font))
         self._canvas.configure(width=self._apply_widget_scaling(self._desired_width),
                                height=self._apply_widget_scaling(self._desired_height))
-        self._manage_grid_commands(re_grid_textbox=False, re_grid_x_scrollbar=True, re_grid_y_scrollbar=True)
+        self._create_grid_for_text_and_scrollbars(re_grid_textbox=False, re_grid_x_scrollbar=True, re_grid_y_scrollbar=True)
         self._draw()
 
     def _set_dimensions(self, width=None, height=None):
@@ -260,12 +260,12 @@ class CTkTextbox(CTkBaseClass):
 
         if "corner_radius" in kwargs:
             self._corner_radius = kwargs.pop("corner_radius")
-            self._manage_grid_commands(re_grid_textbox=True, re_grid_x_scrollbar=True, re_grid_y_scrollbar=True)
+            self._create_grid_for_text_and_scrollbars(re_grid_textbox=True, re_grid_x_scrollbar=True, re_grid_y_scrollbar=True)
             require_redraw = True
 
         if "border_width" in kwargs:
             self._border_width = kwargs.pop("border_width")
-            self._manage_grid_commands(re_grid_textbox=True, re_grid_x_scrollbar=True, re_grid_y_scrollbar=True)
+            self._create_grid_for_text_and_scrollbars(re_grid_textbox=True, re_grid_x_scrollbar=True, re_grid_y_scrollbar=True)
             require_redraw = True
 
         if "width" in kwargs:
