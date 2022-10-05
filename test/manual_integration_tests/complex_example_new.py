@@ -52,7 +52,7 @@ class App(customtkinter.CTk):
         self.main_button_1 = customtkinter.CTkButton(self, fg_color=None, border_width=2)
         self.main_button_1.grid(row=3, column=3, padx=(10, 20), pady=(10, 20), sticky="nsew")
 
-        self.textbox = customtkinter.CTkScrolledTextbox(self)
+        self.textbox = customtkinter.CTkTextbox(self)
         self.textbox.grid(row=0, column=1, padx=(20, 10), pady=(20, 10), sticky="nsew")
 
         # create radiobutton frame
@@ -127,7 +127,7 @@ class App(customtkinter.CTk):
         self.progressbar_1.start()
 
         self.textbox.insert("1.0", "CTkTextbox\n\n" + "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.\n\n" * 20)
-        self.textbox.configure(border_width=5, corner_radius=20, wrap="none")
+        self.textbox.configure(border_width=5, corner_radius=5, wrap="none")
         self.radiobutton_frame.configure(border_width=3)
 
     def open_input_dialog(self):
