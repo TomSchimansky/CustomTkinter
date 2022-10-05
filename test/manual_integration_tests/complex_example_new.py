@@ -127,8 +127,6 @@ class App(customtkinter.CTk):
         self.progressbar_1.start()
 
         self.textbox.insert("1.0", "CTkTextbox\n\n" + "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.\n\n" * 20)
-        self.textbox.configure(border_width=5, corner_radius=5, wrap="none")
-        self.radiobutton_frame.configure(border_width=3)
 
     def open_input_dialog(self):
         dialog = customtkinter.CTkInputDialog(master=self, text="Type in a number:", title="CTkInputDialog")

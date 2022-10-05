@@ -12,6 +12,7 @@ ToDo:
 ## Unreleased - 2022-10-2
 ### Added
  - added .cget() method to all widgets and windows
+ - added CTkTextbox with automatic x and y scrollbars, corner_radius, border_width, border_spacing
 
 ### Changed
  - changed 'text_font' attribute to 'font' in all widgets
