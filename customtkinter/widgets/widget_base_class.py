@@ -23,16 +23,17 @@ class CTkBaseClass(tkinter.Frame):
         appearance_mode changes, scaling, bg changes of master if master is not a CTk widget """
 
     # attributes that are passed to and managed by the tkinter frame only:
-    _valid_tk_frame_attributes = {"cursor", "master"}
+    _valid_tk_frame_attributes = {"cursor"}
 
-    def __init__(self, *args,
-                 width: int,
-                 height: int,
+    def __init__(self,
+                 master: any = None,
+                 width: int = 0,
+                 height: int = 0,
 
                  bg_color: Union[str, tuple] = None,
                  **kwargs):
 
-        super().__init__(*args, width=width, height=height, **pop_from_dict_by_set(kwargs, self._valid_tk_frame_attributes))
+        super().__init__(master=master, width=width, height=height, **pop_from_dict_by_set(kwargs, self._valid_tk_frame_attributes))
 
         # check if kwargs is empty, if not raise error for unsupported arguments
         self._check_kwargs_empty(kwargs, raise_error=True)
@@ -231,6 +232,7 @@ class CTkBaseClass(tkinter.Frame):
         elif mode_string.lower() == "light":
             self._appearance_mode = 0
 
+        super().configure(bg=ThemeManager.single_color(self._bg_color, self._appearance_mode))
         self._draw()
 
     def _set_scaling(self, new_widget_scaling, new_spacing_scaling, new_window_scaling):

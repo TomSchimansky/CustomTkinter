@@ -15,7 +15,8 @@ class CTkSlider(CTkBaseClass):
     For detailed information check out the documentation.
     """
 
-    def __init__(self, *args,
+    def __init__(self,
+                 master: any = None,
                  width: Union[int, str] = "default_init",
                  height: Union[int, str] = "default_init",
                  corner_radius: Union[int, str] = "default_theme",
@@ -52,7 +53,7 @@ class CTkSlider(CTkBaseClass):
                 height = 16
 
         # transfer basic functionality (_bg_color, size, _appearance_mode, scaling) to CTkBaseClass
-        super().__init__(*args, bg_color=bg_color, width=width, height=height, **kwargs)
+        super().__init__(master=master, bg_color=bg_color, width=width, height=height, **kwargs)
 
         # color
         self._border_color = border_color

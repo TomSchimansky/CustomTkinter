@@ -31,7 +31,8 @@ class CTkTextbox(CTkBaseClass):
                                  "spacing2", "spacing3", "state", "tabs", "takefocus", "undo", "wrap",
                                  "xscrollcommand", "yscrollcommand"}
 
-    def __init__(self, *args,
+    def __init__(self,
+                 master: any = None,
                  width: int = 200,
                  height: int = 200,
                  corner_radius: Union[int, str] = "default_theme",
@@ -50,10 +51,7 @@ class CTkTextbox(CTkBaseClass):
                  **kwargs):
 
         # transfer basic functionality (_bg_color, size, _appearance_mode, scaling) to CTkBaseClass
-        if "master" in kwargs:
-            super().__init__(*args, bg_color=bg_color, width=width, height=height, master=kwargs.pop("master"))
-        else:
-            super().__init__(*args, bg_color=bg_color, width=width, height=height)
+        super().__init__(master=master, bg_color=bg_color, width=width, height=height)
 
         # color
         self._fg_color = ThemeManager.theme["color"]["entry"] if fg_color == "default_theme" else fg_color

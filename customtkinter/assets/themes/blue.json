@@ -35,7 +35,10 @@
     "dropdown_hover": ["gray75", "gray28"],
     "dropdown_text": ["gray10", "#DCE4EE"],
     "scrollbar_button": ["gray55", "gray41"],
-    "scrollbar_button_hover": ["gray40", "gray53"]
+    "scrollbar_button_hover": ["gray40", "gray53"],
+    "tabview_button_frame": ["gray70", "gray35"],
+    "tabview_button": ["gray60", "gray45"],
+    "tabview_button_hover": ["gray50", "gray55"]
   },
   "text": {
     "macOS": {

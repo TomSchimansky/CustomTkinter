@@ -18,7 +18,8 @@ class CTkComboBox(CTkBaseClass):
     For detailed information check out the documentation.
     """
 
-    def __init__(self, *args,
+    def __init__(self,
+                 master: any = None,
                  width: int = 140,
                  height: int = 28,
                  corner_radius: Union[int, str] = "default_theme",
@@ -45,7 +46,7 @@ class CTkComboBox(CTkBaseClass):
                  **kwargs):
 
         # transfer basic functionality (_bg_color, size, _appearance_mode, scaling) to CTkBaseClass
-        super().__init__(*args, bg_color=bg_color, width=width, height=height, **kwargs)
+        super().__init__(master=master, bg_color=bg_color, width=width, height=height, **kwargs)
 
         # color variables
         self._fg_color = ThemeManager.theme["color"]["entry"] if fg_color == "default_theme" else fg_color

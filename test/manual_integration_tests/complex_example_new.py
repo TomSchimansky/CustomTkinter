@@ -49,7 +49,7 @@ class App(customtkinter.CTk):
         self.entry = customtkinter.CTkEntry(self, placeholder_text="CTkEntry")
         self.entry.grid(row=3, column=1, columnspan=2, padx=(20, 10), pady=(10, 20), sticky="nsew")
 
-        self.main_button_1 = customtkinter.CTkButton(self, fg_color=None, border_width=2)
+        self.main_button_1 = customtkinter.CTkButton(master=self, fg_color=None, border_width=2)
         self.main_button_1.grid(row=3, column=3, padx=(10, 20), pady=(10, 20), sticky="nsew")
 
         self.textbox = customtkinter.CTkTextbox(self)

@@ -15,7 +15,8 @@ class CTkProgressBar(CTkBaseClass):
     For detailed information check out the documentation.
     """
 
-    def __init__(self, *args,
+    def __init__(self,
+                 master: any = None,
                  width: Union[int, str] = "default_init",
                  height: Union[int, str] = "default_init",
                  corner_radius: Union[str, Tuple[str, str]] = "default_theme",
@@ -46,7 +47,7 @@ class CTkProgressBar(CTkBaseClass):
                 height = 8
 
         # transfer basic functionality (_bg_color, size, _appearance_mode, scaling) to CTkBaseClass
-        super().__init__(*args, bg_color=bg_color, width=width, height=height, **kwargs)
+        super().__init__(master=master, bg_color=bg_color, width=width, height=height, **kwargs)
 
         # color
         self._border_color = ThemeManager.theme["color"]["progressbar_border"] if border_color == "default_theme" else border_color

@@ -22,7 +22,8 @@ class CTkEntry(CTkBaseClass):
                                   "insertontime", "insertwidth", "justify", "selectborderwidth",
                                   "show", "takefocus", "validate", "validatecommand", "xscrollcommand"}
 
-    def __init__(self, *args,
+    def __init__(self,
+                 master: any = None,
                  width: int = 140,
                  height: int = 28,
                  corner_radius: int = "default_theme",
@@ -41,10 +42,7 @@ class CTkEntry(CTkBaseClass):
                  **kwargs):
 
         # transfer basic functionality (bg_color, size, appearance_mode, scaling) to CTkBaseClass
-        if "master" in kwargs:
-            super().__init__(*args, bg_color=bg_color, width=width, height=height, master=kwargs.pop("master"))
-        else:
-            super().__init__(*args, bg_color=bg_color, width=width, height=height)
+        super().__init__(master=master, bg_color=bg_color, width=width, height=height)
 
         # configure grid system (1x1)
         self.grid_rowconfigure(0, weight=1)
