@@ -99,5 +99,5 @@ scrollbar4 = customtkinter.CTkScrollbar(app, command=textbox_4.yview)
 scrollbar4.grid(row=0, column=5, sticky="nsew")
 textbox_4.configure(yscrollcommand=scrollbar4.set)
 
-app.after(3000, lambda: customtkinter.set_appearance_mode("light"))
+# app.after(3000, lambda: customtkinter.set_appearance_mode("light"))
 app.mainloop()
