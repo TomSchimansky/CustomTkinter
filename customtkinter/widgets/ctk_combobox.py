@@ -60,7 +60,7 @@ class CTkComboBox(CTkBaseClass):
 
         # text and font
         self._text_color = ThemeManager.theme["color"]["text"] if text_color == "default_theme" else text_color
-        self._text_color_disabled = ThemeManager.theme["color"]["text_button_disabled"] if text_color_disabled == "default_theme" else text_color_disabled
+        self._text_color_disabled = ThemeManager.theme["color"]["text_disabled"] if text_color_disabled == "default_theme" else text_color_disabled
         self._font = (ThemeManager.theme["text"]["font"], ThemeManager.theme["text"]["size"]) if font == "default_theme" else font
 
         # callback and hover functionality

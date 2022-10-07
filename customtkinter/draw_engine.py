@@ -30,6 +30,12 @@ class DrawEngine:
 
     def __init__(self, canvas: CTkCanvas):
         self._canvas = canvas
+        self._round_width_to_even_numbers: bool = True
+        self._round_height_to_even_numbers: bool = True
+
+    def set_round_to_even_numbers(self, round_width_to_even_numbers: bool = True, round_height_to_even_numbers: bool = True):
+        self._round_width_to_even_numbers: bool = round_width_to_even_numbers
+        self._round_height_to_even_numbers: bool = round_height_to_even_numbers
 
     def __calc_optimal_corner_radius(self, user_corner_radius: Union[float, int]) -> Union[float, int]:
         # optimize for drawing with polygon shapes
@@ -55,6 +61,38 @@ class DrawEngine:
             else:
                 return user_corner_radius
 
+    def draw_background_corners(self, width: Union[float, int], height: Union[float, int]):
+        if self._round_width_to_even_numbers:
+            width = math.floor(width / 2) * 2  # round (floor) _current_width and _current_height and restrict them to even values only
+        if self._round_height_to_even_numbers:
+            height = math.floor(height / 2) * 2
+
+        requires_recoloring = False
+
+        if not self._canvas.find_withtag("background_corner_top_left"):
+            self._canvas.create_rectangle((0, 0, 0, 0), tags=("background_parts", "background_corner_top_left"), width=0)
+            requires_recoloring = True
+        if not self._canvas.find_withtag("background_corner_top_right"):
+            self._canvas.create_rectangle((0, 0, 0, 0), tags=("background_parts", "background_corner_top_right"), width=0)
+            requires_recoloring = True
+        if not self._canvas.find_withtag("background_corner_bottom_right"):
+            self._canvas.create_rectangle((0, 0, 0, 0), tags=("background_parts", "background_corner_bottom_right"), width=0)
+            requires_recoloring = True
+        if not self._canvas.find_withtag("background_corner_bottom_left"):
+            self._canvas.create_rectangle((0, 0, 0, 0), tags=("background_parts", "background_corner_bottom_left"), width=0)
+            requires_recoloring = True
+
+        mid_width, mid_height = round(width / 2), round(height / 2)
+        self._canvas.coords("background_corner_top_left", (0, 0, mid_width, mid_height))
+        self._canvas.coords("background_corner_top_right", (mid_width, 0, width, mid_height))
+        self._canvas.coords("background_corner_bottom_right", (mid_width, mid_height, width, height))
+        self._canvas.coords("background_corner_bottom_left", (0, mid_height, mid_width, height))
+
+        if requires_recoloring:  # new parts were added -> manage z-order
+            self._canvas.tag_lower("background_parts")
+
+        return requires_recoloring
+
     def draw_rounded_rect_with_border(self, width: Union[float, int], height: Union[float, int], corner_radius: Union[float, int],
                                       border_width: Union[float, int], overwrite_preferred_drawing_method: str = None) -> bool:
         """ Draws a rounded rectangle with a corner_radius and border_width on the canvas. The border elements have a 'border_parts' tag,
@@ -62,11 +100,13 @@ class DrawEngine:
 
             returns bool if recoloring is necessary """
 
-        width = math.floor(width / 2) * 2  # round (floor) _current_width and _current_height and restrict them to even values only
-        height = math.floor(height / 2) * 2
+        if self._round_width_to_even_numbers:
+            width = math.floor(width / 2) * 2  # round (floor) _current_width and _current_height and restrict them to even values only
+        if self._round_height_to_even_numbers:
+            height = math.floor(height / 2) * 2
         corner_radius = round(corner_radius)
 
-        if corner_radius > width / 2 or corner_radius > height / 2:  # restrict corner_radius if it's too larger
+        if corner_radius > width / 2 or corner_radius > height / 2:  # restrict corner_radius if it's too large
             corner_radius = min(width / 2, height / 2)
 
         border_width = round(border_width)
@@ -139,6 +179,7 @@ class DrawEngine:
         if requires_recoloring:  # new parts were added -> manage z-order
             self._canvas.tag_lower("inner_parts")
             self._canvas.tag_lower("border_parts")
+            self._canvas.tag_lower("background_parts")
 
         return requires_recoloring
 
@@ -277,6 +318,7 @@ class DrawEngine:
         if requires_recoloring:  # new parts were added -> manage z-order
             self._canvas.tag_lower("inner_parts")
             self._canvas.tag_lower("border_parts")
+            self._canvas.tag_lower("background_parts")
 
         return requires_recoloring
 
@@ -364,8 +406,10 @@ class DrawEngine:
             returns bool if recoloring is necessary """
 
         left_section_width = round(left_section_width)
-        width = math.floor(width / 2) * 2  # round (floor) _current_width and _current_height and restrict them to even values only
-        height = math.floor(height / 2) * 2
+        if self._round_width_to_even_numbers:
+            width = math.floor(width / 2) * 2  # round (floor) _current_width and _current_height and restrict them to even values only
+        if self._round_height_to_even_numbers:
+            height = math.floor(height / 2) * 2
         corner_radius = round(corner_radius)
 
         if corner_radius > width / 2 or corner_radius > height / 2:  # restrict corner_radius if it's too larger
@@ -478,6 +522,7 @@ class DrawEngine:
         if requires_recoloring:  # new parts were added -> manage z-order
             self._canvas.tag_lower("inner_parts")
             self._canvas.tag_lower("border_parts")
+            self._canvas.tag_lower("background_parts")
 
         return requires_recoloring
 
@@ -641,6 +686,7 @@ class DrawEngine:
         if requires_recoloring:  # new parts were added -> manage z-order
             self._canvas.tag_lower("inner_parts")
             self._canvas.tag_lower("border_parts")
+            self._canvas.tag_lower("background_parts")
 
         return requires_recoloring
 
@@ -652,8 +698,10 @@ class DrawEngine:
 
             returns bool if recoloring is necessary """
 
-        width = math.floor(width / 2) * 2  # round _current_width and _current_height and restrict them to even values only
-        height = math.floor(height / 2) * 2
+        if self._round_width_to_even_numbers:
+            width = math.floor(width / 2) * 2  # round _current_width and _current_height and restrict them to even values only
+        if self._round_height_to_even_numbers:
+            height = math.floor(height / 2) * 2
 
         if corner_radius > width / 2 or corner_radius > height / 2:  # restrict corner_radius if it's too larger
             corner_radius = min(width / 2, height / 2)
@@ -824,8 +872,10 @@ class DrawEngine:
                                                    border_width: Union[float, int], button_length: Union[float, int], button_corner_radius: Union[float, int],
                                                    slider_value: float, orientation: str) -> bool:
 
-        width = math.floor(width / 2) * 2  # round _current_width and _current_height and restrict them to even values only
-        height = math.floor(height / 2) * 2
+        if self._round_width_to_even_numbers:
+            width = math.floor(width / 2) * 2  # round _current_width and _current_height and restrict them to even values only
+        if self._round_height_to_even_numbers:
+            height = math.floor(height / 2) * 2
 
         if corner_radius > width / 2 or corner_radius > height / 2:  # restrict corner_radius if it's too larger
             corner_radius = min(width / 2, height / 2)
@@ -980,8 +1030,11 @@ class DrawEngine:
 
     def draw_rounded_scrollbar(self, width: Union[float, int], height: Union[float, int], corner_radius: Union[float, int],
                                border_spacing: Union[float, int], start_value: float, end_value: float, orientation: str) -> bool:
-        width = math.floor(width / 2) * 2  # round _current_width and _current_height and restrict them to even values only
-        height = math.floor(height / 2) * 2
+
+        if self._round_width_to_even_numbers:
+            width = math.floor(width / 2) * 2  # round _current_width and _current_height and restrict them to even values only
+        if self._round_height_to_even_numbers:
+            height = math.floor(height / 2) * 2
 
         if corner_radius > width / 2 or corner_radius > height / 2:  # restrict corner_radius if it's too larger
             corner_radius = min(width / 2, height / 2)

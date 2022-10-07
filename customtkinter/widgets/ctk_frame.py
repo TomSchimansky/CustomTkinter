@@ -128,6 +128,12 @@ class CTkFrame(CTkBaseClass):
                 if isinstance(child, CTkBaseClass):
                     child.configure(bg_color=self._fg_color)
 
+                    # only workaround, to enable one layer of passing new bg_color for children with fg_color=None,
+                    # but needs to be abstracted to n-layers somehow
+                    if isinstance(child, CTkFrame) and child.cget("fg_color") is None:
+                        for childrens_child in child.winfo_children():
+                            childrens_child.configure(bg_color=self._fg_color)
+
         if "border_color" in kwargs:
             self._border_color = kwargs.pop("border_color")
             require_redraw = True

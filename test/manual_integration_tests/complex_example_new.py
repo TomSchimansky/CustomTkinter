@@ -98,17 +98,22 @@ class App(customtkinter.CTk):
         self.slider_progressbar_frame = customtkinter.CTkFrame(self, fg_color=None)
         self.slider_progressbar_frame.grid(row=1, column=1, columnspan=2, padx=(20, 10), pady=(10, 10), sticky="nsew")
         self.slider_progressbar_frame.grid_columnconfigure(0, weight=1)
-        self.slider_progressbar_frame.grid_rowconfigure(3, weight=1)
+        self.slider_progressbar_frame.grid_rowconfigure(4, weight=1)
+
+        self.seg_button = customtkinter._CTkSegmentedButton(self.slider_progressbar_frame, corner_radius=1000,
+                                                            values=["CTkSegmentedButton", "Value 2", "Value 3"])
+        self.seg_button.grid(row=0, column=0, padx=(20, 10), pady=(10, 10), sticky="ew")
+
         self.progressbar_1 = customtkinter.CTkProgressBar(self.slider_progressbar_frame)
-        self.progressbar_1.grid(row=0, column=0, padx=(20, 10), pady=(10, 10), sticky="ew")
+        self.progressbar_1.grid(row=1, column=0, padx=(20, 10), pady=(10, 10), sticky="ew")
         self.progressbar_2 = customtkinter.CTkProgressBar(self.slider_progressbar_frame)
-        self.progressbar_2.grid(row=1, column=0, padx=(20, 10), pady=(10, 10), sticky="ew")
+        self.progressbar_2.grid(row=2, column=0, padx=(20, 10), pady=(10, 10), sticky="ew")
         self.slider_1 = customtkinter.CTkSlider(self.slider_progressbar_frame, from_=0, to=1, number_of_steps=4)
-        self.slider_1.grid(row=2, column=0, padx=(20, 10), pady=(10, 10), sticky="ew")
+        self.slider_1.grid(row=3, column=0, padx=(20, 10), pady=(10, 10), sticky="ew")
         self.slider_2 = customtkinter.CTkSlider(self.slider_progressbar_frame, orientation="vertical")
-        self.slider_2.grid(row=0, column=1, rowspan=4, padx=(10, 10), pady=(10, 10), sticky="ns")
+        self.slider_2.grid(row=0, column=1, rowspan=5, padx=(10, 10), pady=(10, 10), sticky="ns")
         self.progressbar_3 = customtkinter.CTkProgressBar(self.slider_progressbar_frame, orientation="vertical")
-        self.progressbar_3.grid(row=0, column=2, rowspan=4, padx=(10, 20), pady=(10, 10), sticky="ns")
+        self.progressbar_3.grid(row=0, column=2, rowspan=5, padx=(10, 20), pady=(10, 10), sticky="ns")
 
         # set default values
         self.sidebar_button_3.configure(state="disabled", text="Disabled CTkButton")

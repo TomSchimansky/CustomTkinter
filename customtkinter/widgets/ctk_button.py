@@ -29,6 +29,10 @@ class CTkButton(CTkBaseClass):
                  text_color: Union[str, Tuple[str, str]] = "default_theme",
                  text_color_disabled: Union[str, Tuple[str, str]] = "default_theme",
 
+                 background_corner_colors: Tuple[Union[str, Tuple[str, str]]] = None,
+                 round_width_to_even_numbers: bool = True,
+                 round_height_to_even_numbers: bool = True,
+
                  text: str = "CTkButton",
                  font: any = "default_theme",
                  textvariable: tkinter.Variable = None,
@@ -46,12 +50,17 @@ class CTkButton(CTkBaseClass):
         self._fg_color = ThemeManager.theme["color"]["button"] if fg_color == "default_theme" else fg_color
         self._hover_color = ThemeManager.theme["color"]["button_hover"] if hover_color == "default_theme" else hover_color
         self._border_color = ThemeManager.theme["color"]["button_border"] if border_color == "default_theme" else border_color
-        self._text_color = ThemeManager.theme["color"]["text"] if text_color == "default_theme" else text_color
+        self._text_color = ThemeManager.theme["color"]["text_button"] if text_color == "default_theme" else text_color
         self._text_color_disabled = ThemeManager.theme["color"]["text_button_disabled"] if text_color_disabled == "default_theme" else text_color_disabled
+        self._background_corner_colors = background_corner_colors  # rendering options for DrawEngine
 
         # shape
         self._corner_radius = ThemeManager.theme["shape"]["button_corner_radius"] if corner_radius == "default_theme" else corner_radius
         self._border_width = ThemeManager.theme["shape"]["button_border_width"] if border_width == "default_theme" else border_width
+        self._round_width_to_even_numbers = round_width_to_even_numbers  # rendering options for DrawEngine
+        self._round_height_to_even_numbers = round_height_to_even_numbers  # rendering options for DrawEngine
+
+        self._corner_radius = min(self._corner_radius, round(self._current_height/2))
 
         # text, font, image
         self._image = image
@@ -81,6 +90,7 @@ class CTkButton(CTkBaseClass):
                                  height=self._apply_widget_scaling(self._desired_height))
         self._canvas.grid(row=0, column=0, rowspan=2, columnspan=2, sticky="nsew")
         self._draw_engine = DrawEngine(self._canvas)
+        self._draw_engine.set_round_to_even_numbers(self._round_width_to_even_numbers, self._round_height_to_even_numbers)  # rendering options
 
         # canvas event bindings
         self._canvas.bind("<Enter>", self._on_enter)
@@ -115,6 +125,16 @@ class CTkButton(CTkBaseClass):
         self._draw()
 
     def _draw(self, no_color_updates=False):
+        if self._background_corner_colors is not None:
+            self._draw_engine.draw_background_corners(self._apply_widget_scaling(self._current_width),
+                                                      self._apply_widget_scaling(self._current_height))
+            self._canvas.itemconfig("background_corner_top_left", fill=ThemeManager.single_color(self._background_corner_colors[0], self._appearance_mode))
+            self._canvas.itemconfig("background_corner_top_right", fill=ThemeManager.single_color(self._background_corner_colors[1], self._appearance_mode))
+            self._canvas.itemconfig("background_corner_bottom_right", fill=ThemeManager.single_color(self._background_corner_colors[2], self._appearance_mode))
+            self._canvas.itemconfig("background_corner_bottom_left", fill=ThemeManager.single_color(self._background_corner_colors[3], self._appearance_mode))
+        else:
+            self._canvas.delete("background_parts")
+
         requires_recoloring = self._draw_engine.draw_rounded_rect_with_border(self._apply_widget_scaling(self._current_width),
                                                                               self._apply_widget_scaling(self._current_height),
                                                                               self._apply_widget_scaling(self._corner_radius),
@@ -267,6 +287,10 @@ class CTkButton(CTkBaseClass):
             self._corner_radius = kwargs.pop("corner_radius")
             require_redraw = True
 
+        if "border_width" in kwargs:
+            self._border_width = kwargs.pop("border_width")
+            require_redraw = True
+
         if "compound" in kwargs:
             self._compound = kwargs.pop("compound")
             require_redraw = True
@@ -301,6 +325,10 @@ class CTkButton(CTkBaseClass):
         if "height" in kwargs:
             self._set_dimensions(height=kwargs.pop("height"))
 
+        if "background_corner_colors" in kwargs:
+            self._background_corner_colors = kwargs.pop("background_corner_colors")
+            require_redraw = True
+
         super().configure(require_redraw=require_redraw, **kwargs)
 
     def cget(self, attribute_name: str) -> any:
@@ -319,6 +347,8 @@ class CTkButton(CTkBaseClass):
             return self._text_color
         elif attribute_name == "text_color_disabled":
             return self._text_color_disabled
+        elif attribute_name == "background_corner_colors":
+            return self._background_corner_colors
 
         elif attribute_name == "text":
             return self._text

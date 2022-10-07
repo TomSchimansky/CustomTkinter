@@ -54,7 +54,7 @@ class CTkOptionMenu(CTkBaseClass):
         self._corner_radius = ThemeManager.theme["shape"]["button_corner_radius"] if corner_radius == "default_theme" else corner_radius
 
         # text and font
-        self._text_color = ThemeManager.theme["color"]["text"] if text_color == "default_theme" else text_color
+        self._text_color = ThemeManager.theme["color"]["text_button"] if text_color == "default_theme" else text_color
         self._text_color_disabled = ThemeManager.theme["color"]["text_button_disabled"] if text_color_disabled == "default_theme" else text_color_disabled
         self._font = (ThemeManager.theme["text"]["font"], ThemeManager.theme["text"]["size"]) if font == "default_theme" else font
         self._dropdown_text_font = dropdown_text_font
@@ -155,6 +155,12 @@ class CTkOptionMenu(CTkBaseClass):
         self._canvas.configure(width=self._apply_widget_scaling(self._desired_width),
                                height=self._apply_widget_scaling(self._desired_height))
         self._draw()
+
+    def destroy(self):
+        if self._variable is not None:  # remove old callback
+            self._variable.trace_remove("write", self._variable_callback_name)
+
+        super().destroy()
 
     def _draw(self, no_color_updates=False):
         left_section_width = self._current_width - self._current_height

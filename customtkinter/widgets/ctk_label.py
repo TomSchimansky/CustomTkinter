@@ -70,7 +70,7 @@ class CTkLabel(CTkBaseClass):
 
         text_label_grid_sticky = self._anchor if self._anchor != "center" else ""
         self._text_label.grid(row=0, column=0, sticky=text_label_grid_sticky,
-                              padx=min(self._apply_widget_scaling(self._corner_radius), round(self._current_height/2)))
+                              padx=self._apply_widget_scaling(min(self._corner_radius, round(self._current_height/2))))
 
         self._check_kwargs_empty(kwargs, raise_error=True)
 
@@ -85,7 +85,7 @@ class CTkLabel(CTkBaseClass):
 
         text_label_grid_sticky = self._anchor if self._anchor != "center" else ""
         self._text_label.grid(row=0, column=0, sticky=text_label_grid_sticky,
-                              padx=min(self._apply_widget_scaling(self._corner_radius), round(self._current_height/2)))
+                              padx=self._apply_widget_scaling(min(self._corner_radius, round(self._current_height/2))))
 
         self._draw()
 
@@ -125,7 +125,7 @@ class CTkLabel(CTkBaseClass):
             self._anchor = kwargs.pop("anchor")
             text_label_grid_sticky = self._anchor if self._anchor != "center" else ""
             self._text_label.grid(row=0, column=0, sticky=text_label_grid_sticky,
-                                  padx=min(self._apply_widget_scaling(self._corner_radius), round(self._current_height/2)))
+                                  padx=self._apply_widget_scaling(min(self._corner_radius, round(self._current_height/2))))
 
         if "text" in kwargs:
             self._text = kwargs.pop("text")
@@ -153,7 +153,7 @@ class CTkLabel(CTkBaseClass):
             self._corner_radius = kwargs.pop("corner_radius")
             text_label_grid_sticky = self._anchor if self._anchor != "center" else ""
             self._text_label.grid(row=0, column=0, sticky=text_label_grid_sticky,
-                                  padx=min(self._apply_widget_scaling(self._corner_radius), round(self._current_height/2)))
+                                  padx=self._apply_widget_scaling(min(self._corner_radius, round(self._current_height/2))))
             require_redraw = True
 
         self._text_label.configure(**pop_from_dict_by_set(kwargs, self._valid_tk_label_attributes))  # configure tkinter.Label
