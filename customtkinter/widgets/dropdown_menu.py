@@ -52,6 +52,7 @@ class DropdownMenu(tkinter.Menu):
                            font=self._apply_font_scaling(self._font))
 
         elif sys.platform.startswith("win"):
+            print("dropdon win")
             self.configure(tearoff=False,
                            relief="flat",
                            activebackground=ThemeManager.single_color(self._hover_color, self._appearance_mode),
@@ -95,6 +96,7 @@ class DropdownMenu(tkinter.Menu):
             self._command(value)
 
     def open(self, x: Union[int, float], y: Union[int, float]):
+
         if sys.platform == "darwin":
             y += self._apply_widget_scaling(8)
         else:
@@ -128,6 +130,8 @@ class DropdownMenu(tkinter.Menu):
         if "values" in kwargs:
             self._values = kwargs.pop("values")
             self._add_menu_commands()
+
+        super().configure(**kwargs)
 
     def cget(self, attribute_name: str) -> any:
         if attribute_name == "min_character_width":
