@@ -59,7 +59,7 @@ class CTkSegmentedButton(CTkFrame):
 
         self._dynamic_resizing = dynamic_resizing
         if not self._dynamic_resizing:
-            self.grid_propagate(0)
+            self.grid_propagate(False)
 
         self._check_unique_values(self._value_list)
         self._current_value: str = ""
@@ -241,9 +241,9 @@ class CTkSegmentedButton(CTkFrame):
         if "dynamic_resizing" in kwargs:
             self._dynamic_resizing = kwargs.pop("dynamic_resizing")
             if not self._dynamic_resizing:
-                self.grid_propagate(0)
+                self.grid_propagate(False)
             else:
-                self.grid_propagate(1)
+                self.grid_propagate(True)
 
         super().configure(**kwargs)
 
@@ -252,6 +252,7 @@ class CTkSegmentedButton(CTkFrame):
             return self._sb_corner_radius
         elif attribute_name == "border_width":
             return self._sb_border_width
+
         elif attribute_name == "fg_color":
             return self._sb_fg_color
         elif attribute_name == "selected_color":
@@ -266,18 +267,20 @@ class CTkSegmentedButton(CTkFrame):
             return self._sb_text_color
         elif attribute_name == "text_color_disabled":
             return self._sb_text_color_disabled
+
         elif attribute_name == "values":
             return self._value_list
         elif attribute_name == "variable":
             return self._variable
         elif attribute_name == "dynamic_resizing":
             return self._dynamic_resizing
+
         else:
             return super().cget(attribute_name)
 
     def set(self, value: str, from_variable_callback: bool = False):
         if value == self._current_value:
-            print("value == self._current_value")
+            return
         elif value in self._buttons_dict:
             self._select_button_by_value(value)
 

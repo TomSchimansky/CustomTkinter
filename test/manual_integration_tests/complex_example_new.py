@@ -100,7 +100,7 @@ class App(customtkinter.CTk):
         self.slider_progressbar_frame.grid_columnconfigure(0, weight=1)
         self.slider_progressbar_frame.grid_rowconfigure(4, weight=1)
 
-        self.seg_button = customtkinter._CTkSegmentedButton(self.slider_progressbar_frame, corner_radius=1000,
+        self.seg_button = customtkinter._CTkSegmentedButton(self.slider_progressbar_frame,
                                                             values=["CTkSegmentedButton", "Value 2", "Value 3"])
         self.seg_button.grid(row=0, column=0, padx=(20, 10), pady=(10, 10), sticky="ew")
 
