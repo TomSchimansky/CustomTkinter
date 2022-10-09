@@ -104,9 +104,9 @@ class CTkTextbox(CTkBaseClass):
                                          orientation="vertical",
                                          command=self._textbox.yview)
         self._textbox.configure(yscrollcommand=self._y_scrollbar.set)
-        self._y_scrollbar.grid(row=0, column=1, rowspan=1, columnspan=1, sticky="ns",
-                               padx=(self._apply_widget_scaling(3), self._apply_widget_scaling(self._border_spacing + self._border_width)),
-                               pady=(self._apply_widget_scaling(self._corner_radius + self._border_width), 0))
+        #self._y_scrollbar.grid(row=0, column=1, rowspan=1, columnspan=1, sticky="ns",
+        #                       padx=(self._apply_widget_scaling(3), self._apply_widget_scaling(self._border_spacing + self._border_width)),
+        #                       pady=(self._apply_widget_scaling(self._corner_radius + self._border_width), 0))
 
         self._x_scrollbar = CTkScrollbar(self,
                                          height=8,
@@ -118,9 +118,9 @@ class CTkTextbox(CTkBaseClass):
                                          orientation="horizontal",
                                          command=self._textbox.xview)
         self._textbox.configure(xscrollcommand=self._x_scrollbar.set)
-        self._x_scrollbar.grid(row=1, column=0, rowspan=1, columnspan=1, sticky="ew",
-                               pady=(self._apply_widget_scaling(3), self._apply_widget_scaling(self._border_spacing + self._border_width)),
-                               padx=(self._apply_widget_scaling(self._corner_radius + self._border_width), 0))
+        #self._x_scrollbar.grid(row=1, column=0, rowspan=1, columnspan=1, sticky="ew",
+        #                       pady=(self._apply_widget_scaling(3), self._apply_widget_scaling(self._border_spacing + self._border_width)),
+        #                       padx=(self._apply_widget_scaling(self._corner_radius + self._border_width), 0))
 
         self._create_grid_for_text_and_scrollbars(re_grid_textbox=True, re_grid_x_scrollbar=True, re_grid_y_scrollbar=True)
 
@@ -269,6 +269,11 @@ class CTkTextbox(CTkBaseClass):
             self._create_grid_for_text_and_scrollbars(re_grid_textbox=True, re_grid_x_scrollbar=True, re_grid_y_scrollbar=True)
             require_redraw = True
 
+        if "border_spacing" in kwargs:
+            self._border_spacing = kwargs.pop("border_spacing")
+            self._create_grid_for_text_and_scrollbars(re_grid_textbox=True, re_grid_x_scrollbar=True, re_grid_y_scrollbar=True)
+            require_redraw = True
+
         if "width" in kwargs:
             self._set_dimensions(width=kwargs.pop("width"))
 
@@ -287,6 +292,8 @@ class CTkTextbox(CTkBaseClass):
             return self._corner_radius
         elif attribute_name == "border_width":
             return self._border_width
+        elif attribute_name == "border_spacing":
+            return self._border_spacing
 
         elif attribute_name == "fg_color":
             return self._fg_color
@@ -335,6 +342,9 @@ class CTkTextbox(CTkBaseClass):
 
     def compare(self, index, op, index2):
         return self._textbox.compare(index, op, index2)
+
+    def delete(self, index1, index2=None):
+        return self._textbox.delete(index1, index2)
 
     def dlineinfo(self, index):
         return self._textbox.dlineinfo(index)

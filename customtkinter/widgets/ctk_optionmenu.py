@@ -38,7 +38,7 @@ class CTkOptionMenu(CTkBaseClass):
                  variable: tkinter.Variable = None,
                  state: str = tkinter.NORMAL,
                  hover: bool = True,
-                 command: Callable = None,
+                 command: Callable[[str], None] = None,
                  dynamic_resizing: bool = True,
                  **kwargs):
 

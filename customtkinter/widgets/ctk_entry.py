@@ -37,7 +37,7 @@ class CTkEntry(CTkBaseClass):
 
                  textvariable: tkinter.Variable = None,
                  placeholder_text: str = None,
-                 font: Union[str, Tuple[str, str]] = "default_theme",
+                 font: Union[str, Tuple] = "default_theme",
                  state: str = tkinter.NORMAL,
                  **kwargs):
 

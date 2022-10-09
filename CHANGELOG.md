@@ -8,11 +8,14 @@ ToDo:
  - remove bg and background support for CTk and CTkToplevel (to be done)
  - enforce font size in pixel
  - enforce font to be tuple
+ - complete other theme files
+ - auto scaling of images
 
 ## Unreleased - 2022-10-2
 ### Added
  - added .cget() method to all widgets and windows
  - added CTkTextbox with automatic x and y scrollbars, corner_radius, border_width, border_spacing
+ - added CTkSegmentedButton
 
 ### Changed
  - changed 'text_font' attribute to 'font' in all widgets

@@ -2,7 +2,7 @@ import tkinter
 import tkinter.ttk as ttk
 import copy
 import re
-from typing import Union, Callable
+from typing import Union, Callable, Tuple
 
 try:
     from typing import TypedDict
@@ -30,7 +30,7 @@ class CTkBaseClass(tkinter.Frame):
                  width: int = 0,
                  height: int = 0,
 
-                 bg_color: Union[str, tuple] = None,
+                 bg_color: Union[str, Tuple[str, str], None] = None,
                  **kwargs):
 
         super().__init__(master=master, width=width, height=height, **pop_from_dict_by_set(kwargs, self._valid_tk_frame_attributes))
@@ -64,7 +64,7 @@ class CTkBaseClass(tkinter.Frame):
         self._appearance_mode = AppearanceModeTracker.get_mode()  # 0: "Light" 1: "Dark"
 
         # background color
-        self._bg_color = self._detect_color_of_master() if bg_color is None else bg_color
+        self._bg_color:  Union[str, Tuple[str, str]] = self._detect_color_of_master() if bg_color is None else bg_color
 
         super().configure(bg=ThemeManager.single_color(self._bg_color, self._appearance_mode))
 
@@ -104,6 +104,7 @@ class CTkBaseClass(tkinter.Frame):
     def destroy(self):
         """ Destroy this and all descendants widgets. """
         AppearanceModeTracker.remove(self._set_appearance_mode)
+        ScalingTracker.remove_widget(self._set_scaling, self)
         super().destroy()
 
     def place(self, **kwargs):
@@ -240,6 +241,7 @@ class CTkBaseClass(tkinter.Frame):
             raise ValueError(f"'{attribute_name}' is not a supported argument. Look at the documentation for supported arguments.")
 
     def _update_dimensions_event(self, event):
+        print(event)
         # only redraw if dimensions changed (for performance), independent of scaling
         if round(self._current_width) != round(event.width / self._widget_scaling) or round(self._current_height) != round(event.height / self._widget_scaling):
             self._current_width = (event.width / self._widget_scaling)  # adjust current size according to new size given by event
@@ -247,7 +249,7 @@ class CTkBaseClass(tkinter.Frame):
 
             self._draw(no_color_updates=True)  # faster drawing without color changes
 
-    def _detect_color_of_master(self, master_widget=None):
+    def _detect_color_of_master(self, master_widget=None) -> Union[str, Tuple[str, str]]:
         """ detect color of self.master widget to set correct _bg_color """
 
         if master_widget is None:

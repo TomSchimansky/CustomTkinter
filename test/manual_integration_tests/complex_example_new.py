@@ -12,14 +12,14 @@ class App(customtkinter.CTk):
         super().__init__()
 
         self.title("CustomTkinter complex_example.py")
-        self.geometry(f"{920}x{500}")
-        self.minsize(700, 400)
-        self.maxsize(1200, 700)
+        self.geometry(f"{1100}x{580}")
+        self.minsize(800, 400)
+        self.maxsize(1300, 700)
         self.protocol("WM_DELETE_WINDOW", self.on_closing)  # call .on_closing() when app gets closed
 
         # configure grid layout (4x4)
         self.grid_columnconfigure(1, weight=1)
-        self.grid_columnconfigure((2, 3), weight=0, minsize=200)
+        self.grid_columnconfigure((2, 3, 4), weight=0, minsize=200)
         self.grid_rowconfigure((0, 1, 2), weight=1)
 
         # create sidebar frame with widgets
@@ -52,21 +52,9 @@ class App(customtkinter.CTk):
         self.main_button_1 = customtkinter.CTkButton(master=self, fg_color=None, border_width=2)
         self.main_button_1.grid(row=3, column=3, padx=(10, 20), pady=(10, 20), sticky="nsew")
 
+        # create textbox
         self.textbox = customtkinter.CTkTextbox(self)
         self.textbox.grid(row=0, column=1, padx=(20, 10), pady=(20, 10), sticky="nsew")
-
-        # create radiobutton frame
-        self.radiobutton_frame = customtkinter.CTkFrame(self)
-        self.radiobutton_frame.grid(row=0, column=3, padx=(10, 20), pady=(20, 10), sticky="nsew")
-        self.radio_var = tkinter.IntVar(value=0)
-        self.label_radio_group = customtkinter.CTkLabel(master=self.radiobutton_frame, text="CTkRadioButton Group:")
-        self.label_radio_group.grid(row=0, column=2, columnspan=1, padx=10, pady=10, sticky="")
-        self.radio_button_1 = customtkinter.CTkRadioButton(master=self.radiobutton_frame, variable=self.radio_var, value=0)
-        self.radio_button_1.grid(row=1, column=2, pady=10, padx=20, sticky="n")
-        self.radio_button_2 = customtkinter.CTkRadioButton(master=self.radiobutton_frame, variable=self.radio_var, value=1)
-        self.radio_button_2.grid(row=2, column=2, pady=10, padx=20, sticky="n")
-        self.radio_button_3 = customtkinter.CTkRadioButton(master=self.radiobutton_frame, variable=self.radio_var, value=2)
-        self.radio_button_3.grid(row=3, column=2, pady=10, padx=20, sticky="n")
 
         # create optionemnu and combobox frame
         self.optionemnu_combobox_frame = customtkinter.CTkFrame(self)
@@ -82,9 +70,22 @@ class App(customtkinter.CTk):
                                                            command=self.open_input_dialog)
         self.string_input_button.grid(row=2, column=0, padx=20, pady=(10, 10), sticky="ew")
 
+        # create radiobutton frame
+        self.radiobutton_frame = customtkinter.CTkFrame(self)
+        self.radiobutton_frame.grid(row=0, column=3, padx=(10, 10), pady=(20, 10), sticky="nsew")
+        self.radio_var = tkinter.IntVar(value=0)
+        self.label_radio_group = customtkinter.CTkLabel(master=self.radiobutton_frame, text="CTkRadioButton Group:")
+        self.label_radio_group.grid(row=0, column=2, columnspan=1, padx=10, pady=10, sticky="")
+        self.radio_button_1 = customtkinter.CTkRadioButton(master=self.radiobutton_frame, variable=self.radio_var, value=0)
+        self.radio_button_1.grid(row=1, column=2, pady=10, padx=20, sticky="n")
+        self.radio_button_2 = customtkinter.CTkRadioButton(master=self.radiobutton_frame, variable=self.radio_var, value=1)
+        self.radio_button_2.grid(row=2, column=2, pady=10, padx=20, sticky="n")
+        self.radio_button_3 = customtkinter.CTkRadioButton(master=self.radiobutton_frame, variable=self.radio_var, value=2)
+        self.radio_button_3.grid(row=3, column=2, pady=10, padx=20, sticky="n")
+
         # create checkbox and switch frame
         self.checkbox_slider_frame = customtkinter.CTkFrame(self)
-        self.checkbox_slider_frame.grid(row=1, column=3, padx=(10, 20), pady=(10, 10), sticky="nsew")
+        self.checkbox_slider_frame.grid(row=0, column=4, padx=(10, 20), pady=(20, 10), sticky="nsew")
         self.checkbox_1 = customtkinter.CTkCheckBox(master=self.checkbox_slider_frame)
         self.checkbox_1.grid(row=1, column=0, pady=(20, 10), padx=20, sticky="n")
         self.checkbox_2 = customtkinter.CTkCheckBox(master=self.checkbox_slider_frame)
@@ -100,9 +101,8 @@ class App(customtkinter.CTk):
         self.slider_progressbar_frame.grid_columnconfigure(0, weight=1)
         self.slider_progressbar_frame.grid_rowconfigure(4, weight=1)
 
-        self.seg_button = customtkinter._CTkSegmentedButton(self.slider_progressbar_frame,
-                                                            values=["CTkSegmentedButton", "Value 2", "Value 3"])
-        self.seg_button.grid(row=0, column=0, padx=(20, 10), pady=(10, 10), sticky="ew")
+        self.seg_button_1 = customtkinter._CTkSegmentedButton(self.slider_progressbar_frame)
+        self.seg_button_1.grid(row=0, column=0, padx=(20, 10), pady=(10, 10), sticky="ew")
 
         self.progressbar_1 = customtkinter.CTkProgressBar(self.slider_progressbar_frame)
         self.progressbar_1.grid(row=1, column=0, padx=(20, 10), pady=(10, 10), sticky="ew")
@@ -114,6 +114,10 @@ class App(customtkinter.CTk):
         self.slider_2.grid(row=0, column=1, rowspan=5, padx=(10, 10), pady=(10, 10), sticky="ns")
         self.progressbar_3 = customtkinter.CTkProgressBar(self.slider_progressbar_frame, orientation="vertical")
         self.progressbar_3.grid(row=0, column=2, rowspan=5, padx=(10, 20), pady=(10, 10), sticky="ns")
+
+        # create tabview
+        self.tabview = customtkinter._CTkTabview(self)
+        self.tabview.grid(row=1, column=3, columnspan=2, padx=(10, 20), pady=(10, 10), sticky="nsew")
 
         # set default values
         self.sidebar_button_3.configure(state="disabled", text="Disabled CTkButton")
@@ -130,8 +134,11 @@ class App(customtkinter.CTk):
         self.slider_2.configure(command=self.progressbar_3.set)
         self.progressbar_1.configure(mode="indeterminnate")
         self.progressbar_1.start()
+        self.textbox.insert("0.0", "CTkTextbox\n\n" + "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.\n\n" * 20)
+        self.seg_button_1.configure(values=["CTkSegmentedButton", "Value 2", "Value 3"])
+        self.seg_button_1.set("Value 2")
 
-        self.textbox.insert("1.0", "CTkTextbox\n\n" + "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.\n\n" * 20)
+        self.radiobutton_frame.configure(border_width=50)
 
     def open_input_dialog(self):
         dialog = customtkinter.CTkInputDialog(master=self, text="Type in a number:", title="CTkInputDialog")

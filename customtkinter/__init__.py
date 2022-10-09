@@ -4,6 +4,7 @@ import os
 import sys
 from tkinter.constants import *
 from tkinter import StringVar, IntVar, DoubleVar, BooleanVar
+from tkinter import filedialog
 
 # import manager classes
 from .settings import Settings

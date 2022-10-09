@@ -1,6 +1,5 @@
 import tkinter
 import tkinter.messagebox
-from tkinter import filedialog as fd
 import customtkinter
 
 
@@ -23,35 +22,31 @@ class App(customtkinter.CTk):
         self.minsize(App.WIDTH, App.HEIGHT)
 
         self.protocol("WM_DELETE_WINDOW", self.on_closing)
-        # ============ create two CTkFrames ============
 
         self.frame_left = customtkinter.CTkFrame(master=self,
-                                                width=220,
-                                                height=App.HEIGHT-40,
-                                                corner_radius=5)
+                                                 width=220,
+                                                 height=App.HEIGHT-40,
+                                                 corner_radius=5)
         self.frame_left.place(relx=0.38, rely=0.5, anchor=tkinter.E)
 
         self.frame_right = customtkinter.CTkFrame(master=self,
-                                                width=350,
-                                                height=App.HEIGHT-40,
-                                                corner_radius=5)
+                                                  width=350,
+                                                  height=App.HEIGHT-40,
+                                                  corner_radius=5)
         self.frame_right.place(relx=0.40, rely=0.5, anchor=tkinter.W)
 
-#        # ============ frame_right ============
-
         self.button_output = customtkinter.CTkButton(master=self.frame_right, border_color=App.MAIN_COLOR,
-                                                fg_color=None, hover_color=App.MAIN_HOVER,
-                                                height=28, text="Output Folder", command=self.button_outputFunc,
-                                                border_width=3, corner_radius=10, text_font=('Calibri',12))
+                                                     fg_color=None, hover_color=App.MAIN_HOVER,
+                                                     height=28, text="Output Folder", command=self.button_outputFunc,
+                                                     border_width=3, corner_radius=10, font=('Calibri',12))
         self.button_output.place(relx=0.05, rely=0.06, anchor=tkinter.NW)
         self.entry_output = customtkinter.CTkEntry(master=self.frame_right, width=320, height=38, corner_radius=5)
         self.entry_output.place(relx=0.05, rely=0.18, anchor=tkinter.NW)
 
     def button_outputFunc(self):
         self.entry_output.delete(0, 'end')
-        filename = fd.askdirectory()
-        self.entry_output.insert(0,str(filename))
-        pass
+        filename = customtkinter.filedialog.askdirectory()
+        self.entry_output.insert(0, str(filename))
 
     def on_closing(self, event=0):
         self.destroy()

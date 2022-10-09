@@ -35,7 +35,7 @@ class CTkSlider(CTkBaseClass):
                  to: int = 1,
                  state: str = "normal",
                  number_of_steps: Union[int, None] = None,
-                 command: Callable = None,
+                 command: Callable[[float], None] = None,
                  variable: tkinter.Variable = None,
                  orientation: str = "horizontal",
                  **kwargs):

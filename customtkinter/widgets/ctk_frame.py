@@ -24,6 +24,7 @@ class CTkFrame(CTkBaseClass):
                  bg_color: Union[str, Tuple[str, str], None] = None,
                  fg_color: Union[str, Tuple[str, str], None] = "default_theme",
                  border_color: Union[str, Tuple[str, str]] = "default_theme",
+                 background_corner_colors: Tuple[Union[str, Tuple[str, str]]] = None,
 
                  overwrite_preferred_drawing_method: str = None,
                  **kwargs):
@@ -45,6 +46,8 @@ class CTkFrame(CTkBaseClass):
                 self._fg_color = ThemeManager.theme["color"]["frame_low"]
         else:
             self._fg_color = fg_color
+
+        self._background_corner_colors = background_corner_colors  # rendering options for DrawEngine
 
         # shape
         self._corner_radius = ThemeManager.theme["shape"]["frame_corner_radius"] if corner_radius == "default_theme" else corner_radius
@@ -90,9 +93,18 @@ class CTkFrame(CTkBaseClass):
         self._draw()
 
     def _draw(self, no_color_updates=False):
-
         if not self._canvas.winfo_exists():
             return
+
+        if self._background_corner_colors is not None:
+            self._draw_engine.draw_background_corners(self._apply_widget_scaling(self._current_width),
+                                                      self._apply_widget_scaling(self._current_height))
+            self._canvas.itemconfig("background_corner_top_left", fill=ThemeManager.single_color(self._background_corner_colors[0], self._appearance_mode))
+            self._canvas.itemconfig("background_corner_top_right", fill=ThemeManager.single_color(self._background_corner_colors[1], self._appearance_mode))
+            self._canvas.itemconfig("background_corner_bottom_right", fill=ThemeManager.single_color(self._background_corner_colors[2], self._appearance_mode))
+            self._canvas.itemconfig("background_corner_bottom_left", fill=ThemeManager.single_color(self._background_corner_colors[3], self._appearance_mode))
+        else:
+            self._canvas.delete("background_parts")
 
         requires_recoloring = self._draw_engine.draw_rounded_rect_with_border(self._apply_widget_scaling(self._current_width),
                                                                               self._apply_widget_scaling(self._current_height),
@@ -115,27 +127,32 @@ class CTkFrame(CTkBaseClass):
                                     outline=ThemeManager.single_color(self._border_color, self._appearance_mode))
             self._canvas.configure(bg=ThemeManager.single_color(self._bg_color, self._appearance_mode))
 
-        self._canvas.tag_lower("inner_parts")
-        self._canvas.tag_lower("border_parts")
+        # self._canvas.tag_lower("inner_parts")  # maybe unnecessary, I don't know ???
+        # self._canvas.tag_lower("border_parts")
 
     def configure(self, require_redraw=False, **kwargs):
         if "fg_color" in kwargs:
             self._fg_color = kwargs.pop("fg_color")
             require_redraw = True
 
-            # check if CTk widgets are children of the frame and change their _bg_color to new frame fg_color
+            # check if CTk widgets are children of the frame and change their bg_color to new frame fg_color
             for child in self.winfo_children():
                 if isinstance(child, CTkBaseClass):
                     child.configure(bg_color=self._fg_color)
 
-                    # only workaround, to enable one layer of passing new bg_color for children with fg_color=None,
-                    # but needs to be abstracted to n-layers somehow
-                    if isinstance(child, CTkFrame) and child.cget("fg_color") is None:
-                        for childrens_child in child.winfo_children():
-                            childrens_child.configure(bg_color=self._fg_color)
+        if "bg_color" in kwargs:
+            # pass bg_color change to children if fg_color is None
+            if self._fg_color is None:
+                for child in self.winfo_children():
+                    if isinstance(child, CTkBaseClass):
+                        child.configure(bg_color=self._fg_color)
 
         if "border_color" in kwargs:
             self._border_color = kwargs.pop("border_color")
+            require_redraw = True
+
+        if "background_corner_colors" in kwargs:
+            self._background_corner_colors = kwargs.pop("background_corner_colors")
             require_redraw = True
 
         if "corner_radius" in kwargs:
@@ -164,6 +181,8 @@ class CTkFrame(CTkBaseClass):
             return self._fg_color
         elif attribute_name == "border_color":
             return self._border_color
+        elif attribute_name == "background_corner_colors":
+            return self._background_corner_colors
 
         else:
             return super().cget(attribute_name)

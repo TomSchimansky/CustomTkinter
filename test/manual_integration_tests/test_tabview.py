@@ -1,16 +1,14 @@
 import customtkinter
-import tkinter.ttk as ttk
 
 app = customtkinter.CTk()
 
-tabview = customtkinter._CTkTabview(app)
-tabview.pack(pady=20, padx=20)
+tabview_1 = customtkinter._CTkTabview(app)
+tabview_1.pack(padx=20, pady=20)
+tabview_1.add("tab 1")
+tabview_1.insert(0, "tab 0 g |ß$§")
 
-tabview.create_tab(identifier="tab1", text="Tab 1")
-tabview.select_tab("tab1")
+app.update()
 
-
-switch = customtkinter.CTkSwitch(app, text="Darkmode", onvalue="dark", offvalue="light",
-                                 command=lambda: customtkinter.set_appearance_mode(switch.get()))
-switch.pack(padx=20, pady=20)
+tabview_1._segmented_button._buttons_dict["tab 0 g |ß$§"]._text_label.configure(padx=0, pady=0, bd=0)
+tabview_1._segmented_button._buttons_dict["tab 0 g |ß$§"]._text_label.configure(bg="red")
 app.mainloop()
