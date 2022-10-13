@@ -138,8 +138,6 @@ class App(customtkinter.CTk):
         self.seg_button_1.configure(values=["CTkSegmentedButton", "Value 2", "Value 3"])
         self.seg_button_1.set("Value 2")
 
-        self.radiobutton_frame.configure(border_width=50)
-
     def open_input_dialog(self):
         dialog = customtkinter.CTkInputDialog(master=self, text="Type in a number:", title="CTkInputDialog")
         print("CTkInputDialog:", dialog.get_input())

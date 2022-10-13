@@ -180,7 +180,7 @@ class CTk(tkinter.Tk):
                 self._current_width = max(self._min_width, min(width, self._max_width))  # bound value between min and max
                 self._current_height = max(self._min_height, min(height, self._max_height))
         else:
-            return self.reverse_geometry_scaling(super().geometry())
+            return self._reverse_geometry_scaling(super().geometry())
 
     @staticmethod
     def _parse_geometry_string(geometry_string: str) -> tuple:

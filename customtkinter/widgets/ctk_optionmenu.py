@@ -101,6 +101,9 @@ class CTkOptionMenu(CTkBaseClass):
         self._text_label = tkinter.Label(master=self,
                                          font=self._apply_font_scaling(self._font),
                                          anchor="w",
+                                         padx=0,
+                                         pady=0,
+                                         borderwidth=1,
                                          text=self._current_value)
         self._text_label.grid(row=0, column=0, sticky="w",
                               padx=(max(self._apply_widget_scaling(self._corner_radius), self._apply_widget_scaling(3)),

@@ -241,7 +241,6 @@ class CTkBaseClass(tkinter.Frame):
             raise ValueError(f"'{attribute_name}' is not a supported argument. Look at the documentation for supported arguments.")
 
     def _update_dimensions_event(self, event):
-        print(event)
         # only redraw if dimensions changed (for performance), independent of scaling
         if round(self._current_width) != round(event.width / self._widget_scaling) or round(self._current_height) != round(event.height / self._widget_scaling):
             self._current_width = (event.width / self._widget_scaling)  # adjust current size according to new size given by event

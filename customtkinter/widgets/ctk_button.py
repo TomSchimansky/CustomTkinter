@@ -166,6 +166,9 @@ class CTkButton(CTkBaseClass):
                 self._text_label = tkinter.Label(master=self,
                                                  font=self._apply_font_scaling(self._font),
                                                  text=self._text,
+                                                 padx=0,
+                                                 pady=0,
+                                                 borderwidth=1,
                                                  textvariable=self._textvariable)
 
                 self._text_label.bind("<Enter>", self._on_enter)

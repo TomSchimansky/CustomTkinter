@@ -62,11 +62,13 @@ class CTkLabel(CTkBaseClass):
 
         self._text_label = tkinter.Label(master=self,
                                          highlightthickness=0,
-                                         bd=0,
+                                         padx=0,
+                                         pady=0,
+                                         borderwidth=1,
                                          anchor=self._anchor,
                                          text=self._text,
-                                         font=self._apply_font_scaling(self._font),
-                                         **pop_from_dict_by_set(kwargs, self._valid_tk_label_attributes))
+                                         font=self._apply_font_scaling(self._font))
+        self._text_label.configure(**pop_from_dict_by_set(kwargs, self._valid_tk_label_attributes))
 
         text_label_grid_sticky = self._anchor if self._anchor != "center" else ""
         self._text_label.grid(row=0, column=0, sticky=text_label_grid_sticky,
