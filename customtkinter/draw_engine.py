@@ -61,7 +61,7 @@ class DrawEngine:
             else:
                 return user_corner_radius
 
-    def draw_background_corners(self, width: Union[float, int], height: Union[float, int]):
+    def draw_background_corners(self, width: Union[float, int], height: Union[float, int], ):
         if self._round_width_to_even_numbers:
             width = math.floor(width / 2) * 2  # round (floor) _current_width and _current_height and restrict them to even values only
         if self._round_height_to_even_numbers:

@@ -325,10 +325,6 @@ class CTkSegmentedButton(CTkFrame):
             return super().cget(attribute_name)
 
     def set(self, value: str, from_variable_callback: bool = False, from_button_callback: bool = False):
-        if from_button_callback:
-            if self._command is not None:
-                self._command(self._current_value)
-
         if value == self._current_value:
             return
         elif value in self._buttons_dict:
@@ -347,6 +343,10 @@ class CTkSegmentedButton(CTkFrame):
                 self._variable_callback_blocked = True
                 self._variable.set(value)
                 self._variable_callback_blocked = False
+
+        if from_button_callback:
+            if self._command is not None:
+                self._command(self._current_value)
 
     def get(self) -> str:
         return self._current_value
@@ -376,8 +376,16 @@ class CTkSegmentedButton(CTkFrame):
             index_to_remove = self._get_index_by_value(value)
             self._value_list.pop(index_to_remove)
 
-            if index_to_remove <= len(self._buttons_dict) - 1:
-                self._configure_button_corners_for_index(index_to_remove)
+            # removed index was outer right element
+            if index_to_remove == len(self._buttons_dict) and len(self._buttons_dict) > 0:
+                self._configure_button_corners_for_index(index_to_remove - 1)
+
+            # removed index was outer left element
+            if index_to_remove == 0 and len(self._buttons_dict) > 0:
+                self._configure_button_corners_for_index(0)
+
+            #if index_to_remove <= len(self._buttons_dict) - 1:
+            #    self._configure_button_corners_for_index(index_to_remove)
 
             self._create_button_grid()
         else:
