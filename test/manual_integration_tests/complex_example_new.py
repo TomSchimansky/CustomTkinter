@@ -14,7 +14,7 @@ class App(customtkinter.CTk):
         self.title("CustomTkinter complex_example.py")
         self.geometry(f"{1100}x{580}")
         self.minsize(800, 400)
-        self.maxsize(1300, 700)
+        #self.maxsize(1200, 700)
         self.protocol("WM_DELETE_WINDOW", self.on_closing)  # call .on_closing() when app gets closed
 
         # configure grid layout (4x4)
@@ -23,7 +23,7 @@ class App(customtkinter.CTk):
         self.grid_rowconfigure((0, 1, 2), weight=1)
 
         # create sidebar frame with widgets
-        self.sidebar_frame = customtkinter.CTkFrame(self, width=140)
+        self.sidebar_frame = customtkinter.CTkFrame(self, width=140, corner_radius=0)
         self.sidebar_frame.grid(row=0, column=0, rowspan=4, sticky="nsew")
         self.sidebar_frame.grid_rowconfigure(4, weight=1)
         self.logo_label = customtkinter.CTkLabel(self.sidebar_frame, text="CustomTkinter", font=("Roboto", -16))

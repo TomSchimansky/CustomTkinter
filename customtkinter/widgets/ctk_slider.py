@@ -114,7 +114,7 @@ class CTkSlider(CTkBaseClass):
 
         self._canvas.configure(width=self._apply_widget_scaling(self._desired_width),
                                height=self._apply_widget_scaling(self._desired_height))
-        self._draw()
+        self._draw(no_color_updates=True)
 
     def _set_dimensions(self, width=None, height=None):
         super()._set_dimensions(width, height)

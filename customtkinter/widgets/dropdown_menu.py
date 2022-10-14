@@ -48,32 +48,31 @@ class DropdownMenu(tkinter.Menu):
         """ apply platform specific appearance attributes, configure all colors """
 
         if sys.platform == "darwin":
-            self.configure(tearoff=False,
-                           font=self._apply_font_scaling(self._font))
+            super().configure(tearoff=False,
+                              font=self._apply_font_scaling(self._font))
 
         elif sys.platform.startswith("win"):
-            print("dropdon win")
-            self.configure(tearoff=False,
-                           relief="flat",
-                           activebackground=ThemeManager.single_color(self._hover_color, self._appearance_mode),
-                           borderwidth=0,
-                           activeborderwidth=self._apply_widget_scaling(4),
-                           bg=ThemeManager.single_color(self._fg_color, self._appearance_mode),
-                           fg=ThemeManager.single_color(self._text_color, self._appearance_mode),
-                           activeforeground=ThemeManager.single_color(self._text_color, self._appearance_mode),
-                           font=self._apply_font_scaling(self._font),
-                           cursor="hand2")
+            super().configure(tearoff=False,
+                              relief="flat",
+                              activebackground=ThemeManager.single_color(self._hover_color, self._appearance_mode),
+                              borderwidth=self._apply_widget_scaling(4),
+                              activeborderwidth=self._apply_widget_scaling(4),
+                              bg=ThemeManager.single_color(self._fg_color, self._appearance_mode),
+                              fg=ThemeManager.single_color(self._text_color, self._appearance_mode),
+                              activeforeground=ThemeManager.single_color(self._text_color, self._appearance_mode),
+                              font=self._apply_font_scaling(self._font),
+                              cursor="hand2")
 
         else:
-            self.configure(tearoff=False,
-                           relief="flat",
-                           activebackground=ThemeManager.single_color(self._hover_color, self._appearance_mode),
-                           borderwidth=0,
-                           activeborderwidth=0,
-                           bg=ThemeManager.single_color(self._fg_color, self._appearance_mode),
-                           fg=ThemeManager.single_color(self._text_color, self._appearance_mode),
-                           activeforeground=ThemeManager.single_color(self._text_color, self._appearance_mode),
-                           font=self._apply_font_scaling(self._font))
+            super().configure(tearoff=False,
+                              relief="flat",
+                              activebackground=ThemeManager.single_color(self._hover_color, self._appearance_mode),
+                              borderwidth=0,
+                              activeborderwidth=0,
+                              bg=ThemeManager.single_color(self._fg_color, self._appearance_mode),
+                              fg=ThemeManager.single_color(self._text_color, self._appearance_mode),
+                              activeforeground=ThemeManager.single_color(self._text_color, self._appearance_mode),
+                              font=self._apply_font_scaling(self._font))
 
     def _add_menu_commands(self):
         """ delete existing menu labels and createe new labels with command according to values list """
@@ -110,15 +109,15 @@ class DropdownMenu(tkinter.Menu):
     def configure(self, **kwargs):
         if "fg_color" in kwargs:
             self._fg_color = kwargs.pop("fg_color")
-            self.configure(bg=ThemeManager.single_color(self._fg_color, self._appearance_mode))
+            super().configure(bg=ThemeManager.single_color(self._fg_color, self._appearance_mode))
 
         if "hover_color" in kwargs:
             self._hover_color = kwargs.pop("hover_color")
-            self.configure(activebackground=ThemeManager.single_color(self._hover_color, self._appearance_mode))
+            super().configure(activebackground=ThemeManager.single_color(self._hover_color, self._appearance_mode))
 
         if "text_color" in kwargs:
             self._text_color = kwargs.pop("text_color")
-            self.configure(fg=ThemeManager.single_color(self._text_color, self._appearance_mode))
+            super().configure(fg=ThemeManager.single_color(self._text_color, self._appearance_mode))
 
         if "font" in kwargs:
             self._font = kwargs.pop("font")
@@ -150,6 +149,9 @@ class DropdownMenu(tkinter.Menu):
             return self._command
         elif attribute_name == "values":
             return self._values
+
+        else:
+            return super().cget(attribute_name)
 
     def _apply_widget_scaling(self, value: Union[int, float, str]) -> Union[float, str]:
         if isinstance(value, (int, float)):
@@ -183,10 +185,7 @@ class DropdownMenu(tkinter.Menu):
         self._widget_scaling = new_widget_scaling
         self._spacing_scaling = new_spacing_scaling
 
-        super().configure(font=self._apply_font_scaling(self._font))
-
-        if sys.platform.startswith("win"):
-            self.configure(activeborderwidth=self._apply_widget_scaling(4))
+        self._configure_menu_for_platforms()
 
     def _set_appearance_mode(self, mode_string):
         """ colors won't update on appearance mode change when dropdown is open, because it's not necessary """

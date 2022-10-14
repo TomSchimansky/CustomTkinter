@@ -137,7 +137,7 @@ class CTkCheckBox(CTkBaseClass):
                                   height=self._apply_widget_scaling(self._desired_height))
         self._canvas.configure(width=self._apply_widget_scaling(self._checkbox_width),
                                height=self._apply_widget_scaling(self._checkbox_height))
-        self._draw()
+        self._draw(no_color_updates=True)
 
     def _set_dimensions(self, width: int = None, height: int = None):
         super()._set_dimensions(width, height)

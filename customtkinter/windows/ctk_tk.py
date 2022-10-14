@@ -5,6 +5,7 @@ import os
 import platform
 import ctypes
 import re
+import time
 from typing import Union, Tuple
 
 from ..appearance_mode_tracker import AppearanceModeTracker
@@ -78,6 +79,7 @@ class CTk(tkinter.Tk):
 
     def _update_dimensions_event(self, event=None):
         if not self._block_update_dimensions_event:
+            self.update_idletasks()
             detected_width = self.winfo_width()  # detect current window size
             detected_height = self.winfo_height()
 
@@ -94,7 +96,8 @@ class CTk(tkinter.Tk):
         # force new dimensions on window by using min, max, and geometry
         super().minsize(self._apply_window_scaling(self._current_width), self._apply_window_scaling(self._current_height))
         super().maxsize(self._apply_window_scaling(self._current_width), self._apply_window_scaling(self._current_height))
-        super().geometry(f"{self._apply_window_scaling(self._current_width)}x" + f"{self._apply_window_scaling(self._current_height)}")
+
+        super().geometry(f"{self._apply_window_scaling(self._current_width)}x{self._apply_window_scaling(self._current_height)}")
 
         # set new scaled min and max with 400ms delay (otherwise it won't work for some reason)
         self.after(400, self._set_scaled_min_max)
@@ -251,11 +254,11 @@ class CTk(tkinter.Tk):
             if "bg" in args[0]:
                 self._fg_color = args[0]["bg"]
                 bg_changed = True
-                args[0]["bg"] = ThemeManager.single_color(self.fg_color, self.appearance_mode)
+                args[0]["bg"] = ThemeManager.single_color(self._fg_color, self._appearance_mode)
             elif "background" in args[0]:
                 self._fg_color = args[0]["background"]
                 bg_changed = True
-                args[0]["background"] = ThemeManager.single_color(self.fg_color, self.appearance_mode)
+                args[0]["background"] = ThemeManager.single_color(self._fg_color, self._appearance_mode)
 
         if bg_changed:
             from ..widgets.widget_base_class import CTkBaseClass

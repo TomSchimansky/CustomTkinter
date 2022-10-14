@@ -1,6 +1,6 @@
 import tkinter
 import sys
-from typing import Callable
+from typing import Callable, Dict
 
 
 class ScalingTracker:
@@ -14,7 +14,8 @@ class ScalingTracker:
     spacing_scaling = 1
 
     update_loop_running = False
-    update_loop_interval = 150  # milliseconds
+    update_loop_interval = 600  # ms
+    loop_pause_after_new_scaling = 1000  # ms
 
     @classmethod
     def get_widget_scaling(cls, widget) -> float:
@@ -162,18 +163,32 @@ class ScalingTracker:
 
     @classmethod
     def check_dpi_scaling(cls):
+        new_scaling_detected = False
+
         # check for every window if scaling value changed
         for window in cls.window_widgets_dict:
-            if window.winfo_exists():
+            if window.winfo_exists() and not window.state() == "iconic":
                 current_dpi_scaling_value = cls.get_window_dpi_scaling(window)
                 if current_dpi_scaling_value != cls.window_dpi_scaling_dict[window]:
                     cls.window_dpi_scaling_dict[window] = current_dpi_scaling_value
+
+                    if sys.platform.startswith("win"):
+                        window.attributes("-alpha", 0.15)
+
                     cls.update_scaling_callbacks_for_window(window)
+
+                    if sys.platform.startswith("win"):
+                        window.after(200, lambda: window.attributes("-alpha", 1))
+
+                    new_scaling_detected = True
 
         # find an existing tkinter object for the next call of .after()
         for app in cls.window_widgets_dict.keys():
             try:
-                app.after(cls.update_loop_interval, cls.check_dpi_scaling)
+                if new_scaling_detected:
+                    app.after(cls.loop_pause_after_new_scaling, cls.check_dpi_scaling)
+                else:
+                    app.after(cls.update_loop_interval, cls.check_dpi_scaling)
                 return
             except Exception:
                 continue

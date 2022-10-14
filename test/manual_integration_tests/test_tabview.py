@@ -2,7 +2,7 @@ import customtkinter
 
 app = customtkinter.CTk()
 
-tabview_1 = customtkinter._CTkTabview(app, state="disabled")
+tabview_1 = customtkinter._CTkTabview(app)
 tabview_1.pack(padx=20, pady=20)
 
 tab_1 = tabview_1.add("tab 1")

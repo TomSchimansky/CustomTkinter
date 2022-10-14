@@ -182,7 +182,7 @@ class CTkTextbox(CTkBaseClass):
         self._canvas.configure(width=self._apply_widget_scaling(self._desired_width),
                                height=self._apply_widget_scaling(self._desired_height))
         self._create_grid_for_text_and_scrollbars(re_grid_textbox=False, re_grid_x_scrollbar=True, re_grid_y_scrollbar=True)
-        self._draw()
+        self._draw(no_color_updates=True)
 
     def _set_dimensions(self, width=None, height=None):
         super()._set_dimensions(width, height)

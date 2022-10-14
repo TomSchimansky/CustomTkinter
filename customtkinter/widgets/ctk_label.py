@@ -88,7 +88,7 @@ class CTkLabel(CTkBaseClass):
         self._text_label.grid(row=0, column=0, sticky=text_label_grid_sticky,
                               padx=self._apply_widget_scaling(min(self._corner_radius, round(self._current_height/2))))
 
-        self._draw()
+        self._draw(no_color_updates=True)
 
     def _set_dimensions(self, width=None, height=None):
         super()._set_dimensions(width, height)

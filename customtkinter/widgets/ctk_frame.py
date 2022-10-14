@@ -62,7 +62,7 @@ class CTkFrame(CTkBaseClass):
         self._draw_engine = DrawEngine(self._canvas)
         self._overwrite_preferred_drawing_method = overwrite_preferred_drawing_method
 
-        self._draw()
+        self._draw(no_color_updates=True)
 
     def winfo_children(self) -> List[any]:
         """

@@ -132,7 +132,7 @@ class CTkRadioButton(CTkBaseClass):
                                   height=self._apply_widget_scaling(self._desired_height))
         self._canvas.configure(width=self._apply_widget_scaling(self._radiobutton_width),
                                height=self._apply_widget_scaling(self._radiobutton_height))
-        self._draw()
+        self._draw(no_color_updates=True)
 
     def _set_dimensions(self, width: int = None, height: int = None):
         super()._set_dimensions(width, height)

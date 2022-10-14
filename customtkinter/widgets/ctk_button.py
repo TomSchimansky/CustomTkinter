@@ -106,15 +106,11 @@ class CTkButton(CTkBaseClass):
         super()._set_scaling(*args, **kwargs)
 
         if self._text_label is not None:
-            self._text_label.destroy()
-            self._text_label = None
-        if self._image_label is not None:
-            self._image_label.destroy()
-            self._image_label = None
+            self._text_label.configure(font=self._apply_font_scaling(self._font))
 
         self._canvas.configure(width=self._apply_widget_scaling(self._desired_width),
                                height=self._apply_widget_scaling(self._desired_height))
-        self._draw()
+        self._draw(no_color_updates=True)
 
     def _set_dimensions(self, width: int = None, height: int = None):
         super()._set_dimensions(width, height)
