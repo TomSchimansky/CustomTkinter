@@ -377,7 +377,7 @@ class CTkSegmentedButton(CTkFrame):
                 self.delete(value)
                 self.insert(new_index, value)
             else:
-                raise ValueError(f"CTkSegmentedButton has no value named {value}")
+                raise ValueError(f"CTkSegmentedButton has no value named '{value}'")
         else:
             raise ValueError(f"CTkSegmentedButton new_index {new_index} not in range of value list with len {len(self._value_list)}")
 

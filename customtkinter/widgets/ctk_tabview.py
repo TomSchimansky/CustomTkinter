@@ -316,6 +316,15 @@ class CTkTabview(CTkBaseClass):
         """ appends new tab with given name """
         return self.insert(len(self._tab_dict), name)
 
+    def move(self, new_index: int, name: str):
+        if 0 <= new_index < len(self._name_list):
+            if name in self._tab_dict:
+                self._segmented_button.move(new_index, name)
+            else:
+                raise ValueError(f"CTkTabview has no name '{name}'")
+        else:
+            raise ValueError(f"CTkTabview new_index {new_index} not in range of name list with len {len(self._name_list)}")
+
     def delete(self, name: str):
         """ delete tab by name """
 
