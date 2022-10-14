@@ -371,6 +371,16 @@ class CTkSegmentedButton(CTkFrame):
         else:
             raise ValueError(f"CTkSegmentedButton can not insert value '{value}', already part of the values")
 
+    def move(self, new_index: int, value: str):
+        if 0 <= new_index < len(self._value_list):
+            if value in self._buttons_dict:
+                self.delete(value)
+                self.insert(new_index, value)
+            else:
+                raise ValueError(f"CTkSegmentedButton has no value named {value}")
+        else:
+            raise ValueError(f"CTkSegmentedButton new_index {new_index} not in range of value list with len {len(self._value_list)}")
+
     def delete(self, value: str):
         if value in self._buttons_dict:
             self._buttons_dict[value].destroy()
