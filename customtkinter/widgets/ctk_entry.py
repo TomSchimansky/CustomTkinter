@@ -97,7 +97,6 @@ class CTkEntry(CTkBaseClass):
 
         self._check_kwargs_empty(kwargs, raise_error=True)
 
-        super().bind('<Configure>', self._update_dimensions_event)
         self._entry.bind('<FocusOut>', self._entry_focus_out)
         self._entry.bind('<FocusIn>', self._entry_focus_in)
 

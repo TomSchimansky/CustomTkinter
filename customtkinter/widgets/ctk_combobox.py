@@ -119,7 +119,6 @@ class CTkComboBox(CTkBaseClass):
         self._canvas.tag_bind("dropdown_arrow", "<Leave>", self._on_leave)
         self._canvas.tag_bind("right_parts", "<Button-1>", self._clicked)
         self._canvas.tag_bind("dropdown_arrow", "<Button-1>", self._clicked)
-        super().bind('<Configure>', self._update_dimensions_event)
 
         if self._variable is not None:
             self._entry.configure(textvariable=self._variable)

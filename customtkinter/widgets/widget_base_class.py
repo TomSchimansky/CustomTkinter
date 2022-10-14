@@ -67,6 +67,7 @@ class CTkBaseClass(tkinter.Frame):
         self._bg_color:  Union[str, Tuple[str, str]] = self._detect_color_of_master() if bg_color is None else bg_color
 
         super().configure(bg=ThemeManager.single_color(self._bg_color, self._appearance_mode))
+        super().bind('<Configure>', self._update_dimensions_event)
 
         # overwrite configure methods of master when master is tkinter widget, so that bg changes get applied on child CTk widget as well
         if isinstance(self.master, (tkinter.Tk, tkinter.Toplevel, tkinter.Frame)) and not isinstance(self.master, (CTkBaseClass, CTk, CTkToplevel)):

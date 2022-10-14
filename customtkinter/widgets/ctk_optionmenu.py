@@ -129,8 +129,6 @@ class CTkOptionMenu(CTkBaseClass):
         self._text_label.bind("<Button-1>", self._clicked)
         self._text_label.bind("<Button-1>", self._clicked)
 
-        super().bind('<Configure>', self._update_dimensions_event)
-
         self._draw()  # initial draw
 
         if self._variable is not None:

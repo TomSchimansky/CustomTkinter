@@ -100,9 +100,6 @@ class CTkSlider(CTkBaseClass):
         self._canvas.bind("<Button-1>", self._clicked)
         self._canvas.bind("<B1-Motion>", self._clicked)
 
-        # Each time an item is resized due to pack position mode, the binding Configure is called on the widget
-        super().bind('<Configure>', self._update_dimensions_event)
-
         self._set_cursor()
         self._draw()  # initial draw
 

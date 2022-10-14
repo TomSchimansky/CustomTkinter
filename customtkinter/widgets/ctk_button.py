@@ -97,7 +97,6 @@ class CTkButton(CTkBaseClass):
         self._canvas.bind("<Leave>", self._on_leave)
         self._canvas.bind("<Button-1>", self._clicked)
         self._canvas.bind("<Button-1>", self._clicked)
-        super().bind('<Configure>', self._update_dimensions_event)
 
         # configure cursor and initial draw
         self._set_cursor()

@@ -76,7 +76,6 @@ class CTkLabel(CTkBaseClass):
 
         self._check_kwargs_empty(kwargs, raise_error=True)
 
-        super().bind('<Configure>', self._update_dimensions_event)
         self._draw()
 
     def _set_scaling(self, *args, **kwargs):

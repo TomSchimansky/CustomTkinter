@@ -81,9 +81,6 @@ class CTkProgressBar(CTkBaseClass):
         self._canvas.grid(row=0, column=0, rowspan=1, columnspan=1, sticky="nswe")
         self._draw_engine = DrawEngine(self._canvas)
 
-        # Each time an item is resized due to pack position mode, the binding Configure is called on the widget
-        super().bind('<Configure>', self._update_dimensions_event)
-
         self._draw()  # initial draw
 
         if self._variable is not None:

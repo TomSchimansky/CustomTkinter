@@ -76,7 +76,6 @@ class CTkScrollbar(CTkBaseClass):
         self._canvas.tag_bind("border_parts", "<Button-1>", self._clicked)
         self._canvas.bind("<B1-Motion>", self._clicked)
         self._canvas.bind("<MouseWheel>", self._mouse_scroll_event)
-        super().bind('<Configure>', self._update_dimensions_event)
 
         self._draw()
 

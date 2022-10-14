@@ -92,10 +92,9 @@ class CTkTabview(CTkBaseClass):
         self._tab_dict: Dict[str, CTkFrame] = {}
         self._name_list: List[str] = []  # list of unique tab names in order of tabs
         self._current_name: str = ""
-
         self._command = command
 
-        super().bind('<Configure>', self._update_dimensions_event)
+        self._draw()
 
     def _segmented_button_callback(self, selected_name):
         self._current_name = selected_name

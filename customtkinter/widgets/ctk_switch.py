@@ -17,8 +17,10 @@ class CTkSwitch(CTkBaseClass):
 
     def __init__(self,
                  master: any = None,
-                 width: int = 36,
-                 height: int = 18,
+                 width: int = 100,
+                 height: int = 24,
+                 switch_width: int = 36,
+                 switch_height: int = 18,
                  corner_radius: Union[int, str] = "default_theme",
                  border_width: Union[int, str] = "default_theme",
                  button_length: Union[int, str] = "default_theme",
@@ -44,6 +46,10 @@ class CTkSwitch(CTkBaseClass):
 
         # transfer basic functionality (_bg_color, size, _appearance_mode, scaling) to CTkBaseClass
         super().__init__(master=master, bg_color=bg_color, width=width, height=height, **kwargs)
+
+        # dimensions
+        self._switch_width = switch_width
+        self._switch_height = switch_height
 
         # color
         self._border_color = border_color
@@ -86,13 +92,13 @@ class CTkSwitch(CTkBaseClass):
                                     highlightthickness=0,
                                     width=self._apply_widget_scaling(self._current_width),
                                     height=self._apply_widget_scaling(self._current_height))
-        self._bg_canvas.grid(row=0, column=0, padx=0, pady=0, columnspan=3, rowspan=1, sticky="nswe")
+        self._bg_canvas.grid(row=0, column=0, columnspan=3, sticky="nswe")
 
         self._canvas = CTkCanvas(master=self,
                                  highlightthickness=0,
-                                 width=self._apply_widget_scaling(self._current_width),
-                                 height=self._apply_widget_scaling(self._current_height))
-        self._canvas.grid(row=0, column=0, padx=0, pady=0, columnspan=1, sticky="nswe")
+                                 width=self._apply_widget_scaling(self._switch_width),
+                                 height=self._apply_widget_scaling(self._switch_height))
+        self._canvas.grid(row=0, column=0, sticky="nswe")
         self._draw_engine = DrawEngine(self._canvas)
 
         self._canvas.bind("<Enter>", self._on_enter)
@@ -101,11 +107,13 @@ class CTkSwitch(CTkBaseClass):
 
         self._text_label = tkinter.Label(master=self,
                                          bd=0,
+                                         padx=0,
+                                         pady=0,
                                          text=self._text,
                                          justify=tkinter.LEFT,
                                          font=self._apply_font_scaling(self._font),
                                          textvariable=self._textvariable)
-        self._text_label.grid(row=0, column=2, padx=0, pady=0, sticky="w")
+        self._text_label.grid(row=0, column=2, sticky="w")
         self._text_label["anchor"] = "w"
 
         self._text_label.bind("<Enter>", self._on_enter)
@@ -125,9 +133,17 @@ class CTkSwitch(CTkBaseClass):
         self.grid_columnconfigure(1, weight=0, minsize=self._apply_widget_scaling(6))
         self._text_label.configure(font=self._apply_font_scaling(self._font))
 
-        self._bg_canvas.configure(width=self._apply_widget_scaling(self._desired_width), height=self._apply_widget_scaling(self._desired_height))
-        self._canvas.configure(width=self._apply_widget_scaling(self._desired_width), height=self._apply_widget_scaling(self._desired_height))
+        self._bg_canvas.configure(width=self._apply_widget_scaling(self._desired_width),
+                                  height=self._apply_widget_scaling(self._desired_height))
+        self._canvas.configure(width=self._apply_widget_scaling(self._switch_width),
+                               height=self._apply_widget_scaling(self._switch_height))
         self._draw()
+
+    def _set_dimensions(self, width: int = None, height: int = None):
+        super()._set_dimensions(width, height)
+
+        self._bg_canvas.configure(width=self._apply_widget_scaling(self._desired_width),
+                                  height=self._apply_widget_scaling(self._desired_height))
 
     def destroy(self):
         # remove variable_callback from variable callbacks if variable exists
@@ -161,16 +177,16 @@ class CTkSwitch(CTkBaseClass):
     def _draw(self, no_color_updates=False):
 
         if self._check_state is True:
-            requires_recoloring = self._draw_engine.draw_rounded_slider_with_border_and_button(self._apply_widget_scaling(self._current_width),
-                                                                                               self._apply_widget_scaling(self._current_height),
+            requires_recoloring = self._draw_engine.draw_rounded_slider_with_border_and_button(self._apply_widget_scaling(self._switch_width),
+                                                                                               self._apply_widget_scaling(self._switch_height),
                                                                                                self._apply_widget_scaling(self._corner_radius),
                                                                                                self._apply_widget_scaling(self._border_width),
                                                                                                self._apply_widget_scaling(self._button_length),
                                                                                                self._apply_widget_scaling(self._corner_radius),
                                                                                                1, "w")
         else:
-            requires_recoloring = self._draw_engine.draw_rounded_slider_with_border_and_button(self._apply_widget_scaling(self._current_width),
-                                                                                               self._apply_widget_scaling(self._current_height),
+            requires_recoloring = self._draw_engine.draw_rounded_slider_with_border_and_button(self._apply_widget_scaling(self._switch_width),
+                                                                                               self._apply_widget_scaling(self._switch_height),
                                                                                                self._apply_widget_scaling(self._corner_radius),
                                                                                                self._apply_widget_scaling(self._border_width),
                                                                                                self._apply_widget_scaling(self._button_length),
@@ -201,14 +217,24 @@ class CTkSwitch(CTkBaseClass):
             self._canvas.itemconfig("slider_parts", fill=ThemeManager.single_color(self._button_color, self._appearance_mode),
                                     outline=ThemeManager.single_color(self._button_color, self._appearance_mode))
 
-        if self._state == tkinter.DISABLED:
-            self._text_label.configure(fg=(ThemeManager.single_color(self._text_color_disabled, self._appearance_mode)))
-        else:
-            self._text_label.configure(fg=ThemeManager.single_color(self._text_color, self._appearance_mode))
+            if self._state == tkinter.DISABLED:
+                self._text_label.configure(fg=(ThemeManager.single_color(self._text_color_disabled, self._appearance_mode)))
+            else:
+                self._text_label.configure(fg=ThemeManager.single_color(self._text_color, self._appearance_mode))
 
-        self._text_label.configure(bg=ThemeManager.single_color(self._bg_color, self._appearance_mode))
+            self._text_label.configure(bg=ThemeManager.single_color(self._bg_color, self._appearance_mode))
 
     def configure(self, require_redraw=False, **kwargs):
+        if "switch_width" in kwargs:
+            self._switch_width = kwargs.pop("switch_width")
+            self._canvas.configure(width=self._apply_widget_scaling(self._switch_width))
+            require_redraw = True
+
+        if "switch_height" in kwargs:
+            self._switch_height = kwargs.pop("switch_height")
+            self._canvas.configure(height=self._apply_widget_scaling(self._switch_height))
+            require_redraw = True
+
         if "text" in kwargs:
             self._text = kwargs.pop("text")
             self._text_label.configure(text=self._text)
@@ -277,6 +303,10 @@ class CTkSwitch(CTkBaseClass):
             return self._border_width
         elif attribute_name == "button_length":
             return self._button_length
+        elif attribute_name == "switch_width":
+            return self._switch_width
+        elif attribute_name == "switch_height":
+            return self._switch_height
 
         elif attribute_name == "fg_color":
             return self._fg_color
