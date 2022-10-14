@@ -274,12 +274,6 @@ class CTkTextbox(CTkBaseClass):
             self._create_grid_for_text_and_scrollbars(re_grid_textbox=True, re_grid_x_scrollbar=True, re_grid_y_scrollbar=True)
             require_redraw = True
 
-        if "width" in kwargs:
-            self._set_dimensions(width=kwargs.pop("width"))
-
-        if "height" in kwargs:
-            self._set_dimensions(height=kwargs.pop("height"))
-
         if "font" in kwargs:
             self._font = kwargs.pop("font")
             self._textbox.configure(font=self._apply_font_scaling(self._font))

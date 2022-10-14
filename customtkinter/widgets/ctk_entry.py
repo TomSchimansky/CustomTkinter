@@ -193,12 +193,6 @@ class CTkEntry(CTkBaseClass):
                                  padx=self._apply_widget_scaling(self._minimum_x_padding))
             require_redraw = True
 
-        if "width" in kwargs:
-            self._set_dimensions(width=kwargs.pop("width"))
-
-        if "height" in kwargs:
-            self._set_dimensions(height=kwargs.pop("height"))
-
         if "placeholder_text" in kwargs:
             self._placeholder_text = kwargs.pop("placeholder_text")
             if self._placeholder_text_active:

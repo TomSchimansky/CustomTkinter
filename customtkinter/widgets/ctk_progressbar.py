@@ -192,12 +192,6 @@ class CTkProgressBar(CTkBaseClass):
         if "indeterminate_speed" in kwargs:
             self._indeterminate_speed = kwargs.pop("indeterminate_speed")
 
-        if "width" in kwargs:
-            self._set_dimensions(width=kwargs.pop("width"))
-
-        if "height" in kwargs:
-            self._set_dimensions(height=kwargs.pop("height"))
-
         super().configure(require_redraw=require_redraw, **kwargs)
 
     def cget(self, attribute_name: str) -> any:

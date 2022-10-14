@@ -225,12 +225,6 @@ class CTkComboBox(CTkBaseClass):
             self._variable = kwargs.pop("variable")
             self._entry.configure(textvariable=self._variable)
 
-        if "width" in kwargs:
-            self._set_dimensions(width=kwargs.pop("width"))
-
-        if "height" in kwargs:
-            self._set_dimensions(height=kwargs.pop("height"))
-
         if "values" in kwargs:
             self._values = kwargs.pop("values")
             self._dropdown_menu.configure(values=self._values)

@@ -212,6 +212,9 @@ class CTkTabview(CTkBaseClass):
                                     outline=ThemeManager.single_color(self._border_color, self._appearance_mode))
             self._canvas.configure(bg=ThemeManager.single_color(self._bg_color, self._appearance_mode))
 
+    def configure(self, **kwargs):
+        return
+
     def tab(self, name: str) -> CTkFrame:
         """ returns reference to the tab with given name """
 

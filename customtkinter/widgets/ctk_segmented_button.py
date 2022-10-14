@@ -91,6 +91,12 @@ class CTkSegmentedButton(CTkFrame):
 
         super().destroy()
 
+    def _set_dimensions(self, width: int = None, height: int = None):
+        super()._set_dimensions(width, height)
+
+        for button in self._buttons_dict.values():
+            button.configure(height=height)
+
     def _variable_callback(self, var_name, index, mode):
         if not self._variable_callback_blocked:
             self.set(self._variable.get(), from_variable_callback=True)
@@ -184,10 +190,6 @@ class CTkSegmentedButton(CTkFrame):
             self._configure_button_corners_for_index(index)
 
     def configure(self, **kwargs):
-        if "height" in kwargs:
-            for button in self._buttons_dict.values():
-                button.configure(height=kwargs["height"])
-
         if "bg_color" in kwargs:
             super().configure(bg_color=kwargs.pop("bg_color"))
 

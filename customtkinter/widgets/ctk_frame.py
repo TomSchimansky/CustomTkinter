@@ -163,12 +163,6 @@ class CTkFrame(CTkBaseClass):
             self._border_width = kwargs.pop("border_width")
             require_redraw = True
 
-        if "width" in kwargs:
-            self._set_dimensions(width=kwargs.pop("width"))
-
-        if "height" in kwargs:
-            self._set_dimensions(height=kwargs.pop("height"))
-
         super().configure(require_redraw=require_redraw, **kwargs)
 
     def cget(self, attribute_name: str) -> any:

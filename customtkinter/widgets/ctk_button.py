@@ -322,12 +322,6 @@ class CTkButton(CTkBaseClass):
             if self._text_label is not None:
                 self._text_label.configure(textvariable=self._textvariable)
 
-        if "width" in kwargs:
-            self._set_dimensions(width=kwargs.pop("width"))
-
-        if "height" in kwargs:
-            self._set_dimensions(height=kwargs.pop("height"))
-
         if "background_corner_colors" in kwargs:
             self._background_corner_colors = kwargs.pop("background_corner_colors")
             require_redraw = True

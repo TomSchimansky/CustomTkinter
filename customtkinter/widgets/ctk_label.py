@@ -145,12 +145,6 @@ class CTkLabel(CTkBaseClass):
             self._text_color = kwargs.pop("text_color")
             require_redraw = True
 
-        if "width" in kwargs:
-            self._set_dimensions(width=kwargs.pop("width"))
-
-        if "height" in kwargs:
-            self._set_dimensions(height=kwargs.pop("height"))
-
         if "corner_radius" in kwargs:
             self._corner_radius = kwargs.pop("corner_radius")
             text_label_grid_sticky = self._anchor if self._anchor != "center" else ""
