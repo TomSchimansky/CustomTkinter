@@ -211,8 +211,74 @@ class CTkTabview(CTkBaseClass):
                                     outline=ThemeManager.single_color(self._border_color, self._appearance_mode))
             self._canvas.configure(bg=ThemeManager.single_color(self._bg_color, self._appearance_mode))
 
-    def configure(self, **kwargs):
-        return
+    def configure(self, require_redraw=False, **kwargs):
+        if "corner_radius" in kwargs:
+            self._corner_radius = kwargs.pop("corner_radius")
+            require_redraw = True
+        if "border_width" in kwargs:
+            self._border_width = kwargs.pop("border_width")
+            require_redraw = True
+
+        if "fg_color" in kwargs:
+            self._fg_color = kwargs.pop("fg_color")
+            require_redraw = True
+        if "border_color" in kwargs:
+            self._border_color = kwargs.pop("border_color")
+            require_redraw = True
+        if "segmented_button_fg_color" in kwargs:
+            self._segmented_button.configure(fg_color=kwargs.pop("segmented_button_fg_color"))
+        if "segmented_button_selected_color" in kwargs:
+            self._segmented_button.configure(selected_color=kwargs.pop("segmented_button_selected_color"))
+        if "segmented_button_selected_hover_color" in kwargs:
+            self._segmented_button.configure(selected_hover_color=kwargs.pop("segmented_button_selected_hover_color"))
+        if "segmented_button_unselected_color" in kwargs:
+            self._segmented_button.configure(unselected_color=kwargs.pop("segmented_button_unselected_color"))
+        if "segmented_button_unselected_hover_color" in kwargs:
+            self._segmented_button.configure(unselected_hover_color=kwargs.pop("segmented_button_unselected_hover_color"))
+        if "text_color" in kwargs:
+            self._segmented_button.configure(text_color=kwargs.pop("text_color"))
+        if "text_color_disabled" in kwargs:
+            self._segmented_button.configure(text_color_disabled=kwargs.pop("text_color_disabled"))
+
+        if "command" in kwargs:
+            self._command = kwargs.pop("command")
+        if "state" in kwargs:
+            self._segmented_button.configure(state=kwargs.pop("state"))
+
+        super().configure(require_redraw=require_redraw, **kwargs)
+
+    def cget(self, attribute_name: str):
+        if attribute_name == "corner_radius":
+            return self._corner_radius
+        elif attribute_name == "border_width":
+            return self._border_width
+
+        elif attribute_name == "fg_color":
+            return self._fg_color
+        elif attribute_name == "border_color":
+            return self._border_color
+        elif attribute_name == "segmented_button_fg_color":
+            return self._segmented_button.cget(attribute_name)
+        elif attribute_name == "segmented_button_selected_color":
+            return self._segmented_button.cget(attribute_name)
+        elif attribute_name == "segmented_button_selected_hover_color":
+            return self._segmented_button.cget(attribute_name)
+        elif attribute_name == "segmented_button_unselected_color":
+            return self._segmented_button.cget(attribute_name)
+        elif attribute_name == "segmented_button_unselected_hover_color":
+            return self._segmented_button.cget(attribute_name)
+        elif attribute_name == "text_color":
+            return self._segmented_button.cget(attribute_name)
+        elif attribute_name == "text_color_disabled":
+            return self._segmented_button.cget(attribute_name)
+
+        elif attribute_name == "command":
+            return self._command
+        elif attribute_name == "state":
+            return self._segmented_button.cget(attribute_name)
+
+        else:
+            return super().cget(attribute_name)
 
     def tab(self, name: str) -> CTkFrame:
         """ returns reference to the tab with given name """
