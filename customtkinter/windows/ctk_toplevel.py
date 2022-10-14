@@ -63,6 +63,12 @@ class CTkToplevel(tkinter.Toplevel):
                 self._windows_set_titlebar_color("light")
 
         self.bind('<Configure>', self._update_dimensions_event)
+        self.bind('<FocusIn>', self._focus_in_event)
+
+    def _focus_in_event(self, event):
+        # sometimes window looses focus on macOS if window is selected from Mission Control, so focus has to be forced again
+        if sys.platform == "darwin":
+            self.focus_force()
 
     def _update_dimensions_event(self, event=None):
         detected_width = self.winfo_width()  # detect current window size
