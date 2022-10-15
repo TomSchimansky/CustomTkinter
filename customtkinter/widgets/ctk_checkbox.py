@@ -152,19 +152,20 @@ class CTkCheckBox(CTkBaseClass):
         super().destroy()
 
     def _draw(self, no_color_updates=False):
-        requires_recoloring = self._draw_engine.draw_rounded_rect_with_border(self._apply_widget_scaling(self._checkbox_width),
-                                                                              self._apply_widget_scaling(self._checkbox_height),
-                                                                              self._apply_widget_scaling(self._corner_radius),
-                                                                              self._apply_widget_scaling(self._border_width))
+        requires_recoloring_1 = self._draw_engine.draw_rounded_rect_with_border(self._apply_widget_scaling(self._checkbox_width),
+                                                                                self._apply_widget_scaling(self._checkbox_height),
+                                                                                self._apply_widget_scaling(self._corner_radius),
+                                                                                self._apply_widget_scaling(self._border_width))
 
         if self._check_state is True:
-            self._draw_engine.draw_checkmark(self._apply_widget_scaling(self._checkbox_width),
-                                             self._apply_widget_scaling(self._checkbox_height),
-                                             self._apply_widget_scaling(self._checkbox_height * 0.58))
+            requires_recoloring_2 = self._draw_engine.draw_checkmark(self._apply_widget_scaling(self._checkbox_width),
+                                                                     self._apply_widget_scaling(self._checkbox_height),
+                                                                     self._apply_widget_scaling(self._checkbox_height * 0.58))
         else:
+            requires_recoloring_2 = False
             self._canvas.delete("checkmark")
 
-        if no_color_updates is False or requires_recoloring:
+        if no_color_updates is False or requires_recoloring_1 or requires_recoloring_2:
             self._bg_canvas.configure(bg=ThemeManager.single_color(self._bg_color, self._appearance_mode))
             self._canvas.configure(bg=ThemeManager.single_color(self._bg_color, self._appearance_mode))
 

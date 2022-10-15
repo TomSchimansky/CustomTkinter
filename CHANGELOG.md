@@ -5,6 +5,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ToDo:
+ -
  - remove bg and background support for CTk and CTkToplevel (to be done)
  - enforce font size in pixel
  - enforce font to be tuple
@@ -13,17 +14,20 @@ ToDo:
 
 ## Unreleased - 2022-10-2
 ### Added
- - added .cget() method to all widgets and windows
- - added CTkTextbox with automatic x and y scrollbars, corner_radius, border_width, border_spacing
- - added CTkSegmentedButton
+ - Added CTkTextbox with automatic x and y scrollbars, corner_radius, border_width, border_spacing
+ - Added CTkSegmentedButton
+ - Added CTkTabview
+ - Added .cget() method to all widgets and windows
+ - Added .bind() and .focus() methods to almost all widgets
 
 ### Changed
- - changed 'text_font' attribute to 'font' in all widgets
- - changed 'dropdown_color' attribute to 'dropdown_fg_color' for combobox, optionmenu
- - changed 'orient' attribute of CTkProgressBar and CTkSlider to 'orientation'
+ - Changed 'text_font' attribute to 'font' in all widgets
+ - Changed 'dropdown_color' attribute to 'dropdown_fg_color' for combobox, optionmenu
+ - Changed 'orient' attribute of CTkProgressBar and CTkSlider to 'orientation'
+ - Width and height attributes of CTkCheckBox, CTkRadioButton, CTkSwitch now describe the outer dimensions of the whole widget. The button/switch size is described by separate attributes like checkbox_width, checkbox_height
 
 ### Removed
- - removed setter and getter functions like set_text in CTkButton
+ - Removed setter and getter functions like set_text in CTkButton
 
 ### Fixed
 

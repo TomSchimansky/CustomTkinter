@@ -16,7 +16,7 @@ tabview_1.delete("tab 42")
 tabview_1.insert(1, "tab 42")
 tabview_1.delete("tab 42")
 
-tabview_1.move(0, "tab 3")
+tabview_1.move(0, "tab 2")
 
 b1 = customtkinter.CTkButton(master=tab_1, text="button tab 1")
 b1.pack(pady=20)
