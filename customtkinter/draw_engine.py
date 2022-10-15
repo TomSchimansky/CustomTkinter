@@ -1229,6 +1229,7 @@ class DrawEngine:
                 self._canvas.tag_raise("dropdown_arrow")
                 requires_recoloring = True
 
+            self._canvas.itemconfigure("dropdown_arrow", font=("CustomTkinter_shapes_font", -size))
             self._canvas.coords("dropdown_arrow", x_position, y_position)
 
         return requires_recoloring
