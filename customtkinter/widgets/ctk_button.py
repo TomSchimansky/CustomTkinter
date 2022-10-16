@@ -7,6 +7,7 @@ from ..theme_manager import ThemeManager
 from ..settings import Settings
 from ..draw_engine import DrawEngine
 from .widget_base_class import CTkBaseClass
+from ..utility.ctk_font import CTkFont
 
 
 class CTkButton(CTkBaseClass):
@@ -34,7 +35,7 @@ class CTkButton(CTkBaseClass):
                  round_height_to_even_numbers: bool = True,
 
                  text: str = "CTkButton",
-                 font: any = "default_theme",
+                 font: Union[tuple, CTkFont] = "default_theme",
                  textvariable: tkinter.Variable = None,
                  image: tkinter.PhotoImage = None,
                  state: str = "normal",
@@ -67,7 +68,7 @@ class CTkButton(CTkBaseClass):
         self._image_label: Union[tkinter.Label, None] = None
         self._text = text
         self._text_label: Union[tkinter.Label, None] = None
-        self._font = (ThemeManager.theme["text"]["font"], ThemeManager.theme["text"]["size"]) if font == "default_theme" else font
+        self._font = CTkFont() if font == "default_theme" else self._check_font_type_and_values(font)
 
         # callback and hover functionality
         self._command = command

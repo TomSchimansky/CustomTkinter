@@ -6,7 +6,7 @@ from ..theme_manager import ThemeManager
 from ..draw_engine import DrawEngine
 from .widget_base_class import CTkBaseClass
 
-from .widget_helper_functions import pop_from_dict_by_set
+from customtkinter.utility.utility_functions import pop_from_dict_by_set, check_kwargs_empty
 
 
 class CTkLabel(CTkBaseClass):
@@ -74,7 +74,7 @@ class CTkLabel(CTkBaseClass):
         self._text_label.grid(row=0, column=0, sticky=text_label_grid_sticky,
                               padx=self._apply_widget_scaling(min(self._corner_radius, round(self._current_height/2))))
 
-        self._check_kwargs_empty(kwargs, raise_error=True)
+        check_kwargs_empty(kwargs, raise_error=True)
 
         self._draw()
 

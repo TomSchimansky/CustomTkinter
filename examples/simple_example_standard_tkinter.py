@@ -5,7 +5,6 @@ app = tkinter.Tk()
 app.geometry("400x350")
 app.title("simple_example_standard_tkinter.py")
 
-
 def button_function():
     print("button pressed")
 

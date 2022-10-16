@@ -6,7 +6,7 @@ from ..theme_manager import ThemeManager
 from ..draw_engine import DrawEngine
 from .widget_base_class import CTkBaseClass
 
-from .widget_helper_functions import pop_from_dict_by_set
+from customtkinter.utility.utility_functions import pop_from_dict_by_set, check_kwargs_empty
 
 
 class CTkEntry(CTkBaseClass):
@@ -95,7 +95,7 @@ class CTkEntry(CTkBaseClass):
                              padx=self._apply_widget_scaling(self._minimum_x_padding),
                              pady=(self._apply_widget_scaling(self._border_width), self._apply_widget_scaling(self._border_width + 1)))
 
-        self._check_kwargs_empty(kwargs, raise_error=True)
+        check_kwargs_empty(kwargs, raise_error=True)
 
         self._entry.bind('<FocusOut>', self._entry_focus_out)
         self._entry.bind('<FocusIn>', self._entry_focus_in)

@@ -12,6 +12,8 @@ from ..theme_manager import ThemeManager
 from ..settings import Settings
 from ..scaling_tracker import ScalingTracker
 
+from ..utility.utility_functions import pop_from_dict_by_set, check_kwargs_empty
+
 
 class CTkToplevel(tkinter.Toplevel):
     """
@@ -19,12 +21,21 @@ class CTkToplevel(tkinter.Toplevel):
     For detailed information check out the documentation.
     """
 
+    _valid_tk_toplevel_arguments = {"bd", "borderwidth", "class", "container", "cursor", "height",
+                                    "highlightbackground", "highlightthickness", "menu", "relief",
+                                    "screen", "takefocus", "use", "visual", "width"}
+
     def __init__(self, *args,
                  fg_color: Union[str, Tuple[str, str]] = "default_theme",
                  **kwargs):
 
         self._enable_macos_dark_title_bar()
-        super().__init__(*args, **kwargs)
+
+        super().__init__(*args, **pop_from_dict_by_set(kwargs, self._valid_tk_toplevel_arguments))
+        check_kwargs_empty(kwargs, raise_error=True)
+
+        # add set_appearance_mode method to callback list of AppearanceModeTracker for appearance mode changes
+        AppearanceModeTracker.add(self._set_appearance_mode, self)
         self._appearance_mode = AppearanceModeTracker.get_mode()  # 0: "Light" 1: "Dark"
 
         # add set_scaling method to callback list of ScalingTracker for automatic scaling changes
@@ -41,13 +52,6 @@ class CTkToplevel(tkinter.Toplevel):
 
         self._fg_color = ThemeManager.theme["color"]["window_bg_color"] if fg_color == "default_theme" else fg_color
 
-        if "bg" in kwargs:
-            self._fg_color = kwargs.pop("bg")
-        elif "background" in kwargs:
-            self.fg_color = kwargs.pop("background")
-
-        # add set_appearance_mode method to callback list of AppearanceModeTracker for appearance mode changes
-        AppearanceModeTracker.add(self._set_appearance_mode, self)
         super().configure(bg=ThemeManager.single_color(self._fg_color, self._appearance_mode))
         super().title("CTkToplevel")
 
@@ -195,40 +199,19 @@ class CTkToplevel(tkinter.Toplevel):
             self._current_height = height
         super().maxsize(self._apply_window_scaling(self._max_width), self._apply_window_scaling(self._max_height))
 
-    def configure(self, *args, **kwargs):
-        bg_changed = False
-
-        if "bg" in kwargs:
-            self._fg_color = kwargs["bg"]
-            bg_changed = True
-            kwargs["bg"] = ThemeManager.single_color(self._fg_color, self._appearance_mode)
-        elif "background" in kwargs:
-            self._fg_color = kwargs["background"]
-            bg_changed = True
-            kwargs["background"] = ThemeManager.single_color(self._fg_color, self._appearance_mode)
-        elif "fg_color" in kwargs:
+    def configure(self, **kwargs):
+        if "fg_color" in kwargs:
             self._fg_color = kwargs.pop("fg_color")
-            kwargs["bg"] = ThemeManager.single_color(self._fg_color, self._appearance_mode)
-            bg_changed = True
-
-        elif len(args) > 0 and type(args[0]) == dict:
-            if "bg" in args[0]:
-                self._fg_color = args[0]["bg"]
-                bg_changed = True
-                args[0]["bg"] = ThemeManager.single_color(self._fg_color, self._appearance_mode)
-            elif "background" in args[0]:
-                self._fg_color = args[0]["background"]
-                bg_changed = True
-                args[0]["background"] = ThemeManager.single_color(self._fg_color, self._appearance_mode)
-
-        if bg_changed:
-            from ..widgets.widget_base_class import CTkBaseClass
+            super().configure(bg=ThemeManager.single_color(self._fg_color, self._appearance_mode))
 
             for child in self.winfo_children():
-                if isinstance(child, CTkBaseClass) and hasattr(child, "_fg_color"):
+                try:
                     child.configure(bg_color=self._fg_color)
+                except Exception:
+                    pass
 
-        super().configure(*args, **kwargs)
+        super().configure(**pop_from_dict_by_set(kwargs, self._valid_tk_toplevel_arguments))
+        check_kwargs_empty(kwargs)
 
     def cget(self, attribute_name: str) -> any:
         if attribute_name == "fg_color":

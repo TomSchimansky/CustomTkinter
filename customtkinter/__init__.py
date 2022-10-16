@@ -73,6 +73,9 @@ from .windows.ctk_tk import CTk
 from .windows.ctk_toplevel import CTkToplevel
 from .windows.ctk_input_dialog import CTkInputDialog
 
+# util classes
+from .utility.ctk_font import CTkFont
+
 
 def set_appearance_mode(mode_string: str):
     """ possible values: light, dark, system """

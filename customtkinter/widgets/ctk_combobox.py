@@ -9,8 +9,6 @@ from ..settings import Settings
 from ..draw_engine import DrawEngine
 from .widget_base_class import CTkBaseClass
 
-from .widget_helper_functions import filter_dict_by_set
-
 
 class CTkComboBox(CTkBaseClass):
     """

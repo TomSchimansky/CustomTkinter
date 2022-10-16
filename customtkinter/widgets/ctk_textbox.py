@@ -7,7 +7,7 @@ from ..theme_manager import ThemeManager
 from ..draw_engine import DrawEngine
 from .widget_base_class import CTkBaseClass
 
-from .widget_helper_functions import pop_from_dict_by_set
+from customtkinter.utility.utility_functions import pop_from_dict_by_set, check_kwargs_empty
 
 
 class CTkTextbox(CTkBaseClass):
@@ -87,7 +87,7 @@ class CTkTextbox(CTkBaseClass):
                                      bg=ThemeManager.single_color(self._fg_color, self._appearance_mode),
                                      **pop_from_dict_by_set(kwargs, self._valid_tk_text_attributes))
 
-        self._check_kwargs_empty(kwargs, raise_error=True)
+        check_kwargs_empty(kwargs, raise_error=True)
 
         # scrollbars
         self._scrollbars_activated = activate_scrollbars
