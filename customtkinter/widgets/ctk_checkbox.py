@@ -158,7 +158,7 @@ class CTkCheckBox(CTkBaseClass):
             # Workaround to force grid to be resized when text changes size.
             # Otherwise grid will lag and only resizes if other mouse action occurs.
             self._bg_canvas.grid_forget()
-            self._bg_canvas.grid(row=0, column=0, sticky="nswe")
+            self._bg_canvas.grid(row=0, column=0, columnspan=3, sticky="nswe")
 
     def destroy(self):
         if self._variable is not None:

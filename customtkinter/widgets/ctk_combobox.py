@@ -8,6 +8,7 @@ from ..theme_manager import ThemeManager
 from ..settings import Settings
 from ..draw_engine import DrawEngine
 from .widget_base_class import CTkBaseClass
+from ..utility.ctk_font import CTkFont
 
 
 class CTkComboBox(CTkBaseClass):
@@ -34,7 +35,7 @@ class CTkComboBox(CTkBaseClass):
                  text_color: Union[str, Tuple[str, str]] = "default_theme",
                  text_color_disabled: Union[str, Tuple[str, str]] = "default_theme",
 
-                 font: any = "default_theme",
+                 font: Union[tuple, CTkFont] = "default_theme",
                  dropdown_text_font: any = "default_theme",
                  values: List[str] = None,
                  state: str = tkinter.NORMAL,
@@ -59,7 +60,11 @@ class CTkComboBox(CTkBaseClass):
         # text and font
         self._text_color = ThemeManager.theme["color"]["text"] if text_color == "default_theme" else text_color
         self._text_color_disabled = ThemeManager.theme["color"]["text_disabled"] if text_color_disabled == "default_theme" else text_color_disabled
-        self._font = (ThemeManager.theme["text"]["font"], ThemeManager.theme["text"]["size"]) if font == "default_theme" else font
+
+        # font
+        self._font = CTkFont() if font == "default_theme" else self._check_font_type(font)
+        if isinstance(self._font, CTkFont):
+            self._font.add_size_configure_callback(self._update_font)
 
         # callback and hover functionality
         self._command = command
@@ -88,7 +93,6 @@ class CTkComboBox(CTkBaseClass):
                                  highlightthickness=0,
                                  width=self._apply_widget_scaling(self._desired_width),
                                  height=self._apply_widget_scaling(self._desired_height))
-        self._canvas.grid(row=0, column=0, rowspan=1, columnspan=1, sticky="nsew")
         self.draw_engine = DrawEngine(self._canvas)
 
         self._entry = tkinter.Entry(master=self,
@@ -97,10 +101,8 @@ class CTkComboBox(CTkBaseClass):
                                     bd=0,
                                     highlightthickness=0,
                                     font=self._apply_font_scaling(self._font))
-        left_section_width = self._current_width - self._current_height
-        self._entry.grid(row=0, column=0, rowspan=1, columnspan=1, sticky="ew",
-                         padx=(max(self._apply_widget_scaling(self._corner_radius), self._apply_widget_scaling(3)),
-                               max(self._apply_widget_scaling(self._current_width - left_section_width + 3), self._apply_widget_scaling(3))))
+
+        self._configure_grid_system()
 
         # insert default value
         if len(self._values) > 0:
@@ -121,15 +123,21 @@ class CTkComboBox(CTkBaseClass):
         if self._variable is not None:
             self._entry.configure(textvariable=self._variable)
 
+    def _configure_grid_system(self):
+        self._canvas.grid(row=0, column=0, rowspan=1, columnspan=1, sticky="nsew")
+
+        left_section_width = self._current_width - self._current_height
+        self._entry.grid(row=0, column=0, rowspan=1, columnspan=1, sticky="ew",
+                         padx=(max(self._apply_widget_scaling(self._corner_radius), self._apply_widget_scaling(3)),
+                               max(self._apply_widget_scaling(self._current_width - left_section_width + 3), self._apply_widget_scaling(3))),
+                         pady=self._border_width)
+
     def _set_scaling(self, *args, **kwargs):
         super()._set_scaling(*args, **kwargs)
 
         # change entry font size and grid padding
-        left_section_width = self._current_width - self._current_height
         self._entry.configure(font=self._apply_font_scaling(self._font))
-        self._entry.grid(row=0, column=0, rowspan=1, columnspan=1, sticky="ew",
-                         padx=(max(self._apply_widget_scaling(self._corner_radius), self._apply_widget_scaling(3)),
-                               max(self._apply_widget_scaling(self._current_width - left_section_width + 3), self._apply_widget_scaling(3))))
+        self._configure_grid_system()
 
         self._canvas.configure(width=self._apply_widget_scaling(self._desired_width),
                                height=self._apply_widget_scaling(self._desired_height))
@@ -141,6 +149,21 @@ class CTkComboBox(CTkBaseClass):
         self._canvas.configure(width=self._apply_widget_scaling(self._desired_width),
                                height=self._apply_widget_scaling(self._desired_height))
         self._draw()
+
+    def _update_font(self):
+        """ pass font to tkinter widgets with applied font scaling and update grid with workaround """
+        self._entry.configure(font=self._apply_font_scaling(self._font))
+
+        # Workaround to force grid to be resized when text changes size.
+        # Otherwise grid will lag and only resizes if other mouse action occurs.
+        self._canvas.grid_forget()
+        self._canvas.grid(row=0, column=0, columnspan=3, sticky="nswe")
+
+    def destroy(self):
+        if isinstance(self._font, CTkFont):
+            self._font.remove_size_configure_callback(self._update_font)
+
+        super().destroy()
 
     def _draw(self, no_color_updates=False):
         left_section_width = self._current_width - self._current_height
@@ -190,6 +213,15 @@ class CTkComboBox(CTkBaseClass):
                                  self.winfo_rooty() + self._apply_widget_scaling(self._current_height + 0))
 
     def configure(self, require_redraw=False, **kwargs):
+        if "corner_radius" in kwargs:
+            self._corner_radius = kwargs.pop("corner_radius")
+            require_redraw = True
+
+        if "border_width" in kwargs:
+            self._border_width = kwargs.pop("border_width")
+            self._configure_grid_system()
+            require_redraw = True
+
         if "state" in kwargs:
             self._state = kwargs.pop("state")
             self._entry.configure(state=self._state)
@@ -212,8 +244,13 @@ class CTkComboBox(CTkBaseClass):
             require_redraw = True
 
         if "font" in kwargs:
-            self._font = kwargs.pop("font")
-            self._entry.configure(font=self._apply_font_scaling(self._font))
+            if isinstance(self._font, CTkFont):
+                self._font.remove_size_configure_callback(self._update_font)
+            self._font = self._check_font_type(kwargs.pop("font"))
+            if isinstance(self._font, CTkFont):
+                self._font.add_size_configure_callback(self._update_font)
+
+            self._update_font()
 
         if "command" in kwargs:
             self._command = kwargs.pop("command")
