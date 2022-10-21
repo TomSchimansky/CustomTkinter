@@ -239,9 +239,9 @@ class CTkBaseClass(tkinter.Frame):
             if len(font) == 1:
                 return font
             elif len(font) == 2:
-                return font[0], round(font[1] * self._widget_scaling)
+                return font[0], -abs(round(font[1] * self._widget_scaling))
             elif len(font) == 3:
-                return font[0], round(font[1] * self._widget_scaling), font[2]
+                return font[0], -abs(round(font[1] * self._widget_scaling)), font[2]
             else:
                 raise ValueError(f"Can not scale font {font}. font needs to be tuple of len 1, 2 or 3")
 

@@ -102,7 +102,7 @@ class CTkComboBox(CTkBaseClass):
                                     highlightthickness=0,
                                     font=self._apply_font_scaling(self._font))
 
-        self._configure_grid_system()
+        self._create_grid()
 
         # insert default value
         if len(self._values) > 0:
@@ -123,21 +123,21 @@ class CTkComboBox(CTkBaseClass):
         if self._variable is not None:
             self._entry.configure(textvariable=self._variable)
 
-    def _configure_grid_system(self):
+    def _create_grid(self):
         self._canvas.grid(row=0, column=0, rowspan=1, columnspan=1, sticky="nsew")
 
         left_section_width = self._current_width - self._current_height
         self._entry.grid(row=0, column=0, rowspan=1, columnspan=1, sticky="ew",
                          padx=(max(self._apply_widget_scaling(self._corner_radius), self._apply_widget_scaling(3)),
                                max(self._apply_widget_scaling(self._current_width - left_section_width + 3), self._apply_widget_scaling(3))),
-                         pady=self._border_width)
+                         pady=self._apply_widget_scaling(self._border_width))
 
     def _set_scaling(self, *args, **kwargs):
         super()._set_scaling(*args, **kwargs)
 
         # change entry font size and grid padding
         self._entry.configure(font=self._apply_font_scaling(self._font))
-        self._configure_grid_system()
+        self._create_grid()
 
         self._canvas.configure(width=self._apply_widget_scaling(self._desired_width),
                                height=self._apply_widget_scaling(self._desired_height))
@@ -157,7 +157,7 @@ class CTkComboBox(CTkBaseClass):
         # Workaround to force grid to be resized when text changes size.
         # Otherwise grid will lag and only resizes if other mouse action occurs.
         self._canvas.grid_forget()
-        self._canvas.grid(row=0, column=0, columnspan=3, sticky="nswe")
+        self._canvas.grid(row=0, column=0, rowspan=1, columnspan=1, sticky="nsew")
 
     def destroy(self):
         if isinstance(self._font, CTkFont):
@@ -219,7 +219,7 @@ class CTkComboBox(CTkBaseClass):
 
         if "border_width" in kwargs:
             self._border_width = kwargs.pop("border_width")
-            self._configure_grid_system()
+            self._create_grid()
             require_redraw = True
 
         if "state" in kwargs:

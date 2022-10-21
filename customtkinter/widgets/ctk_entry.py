@@ -5,6 +5,7 @@ from .ctk_canvas import CTkCanvas
 from ..theme_manager import ThemeManager
 from ..draw_engine import DrawEngine
 from .widget_base_class import CTkBaseClass
+from ..utility.ctk_font import CTkFont
 
 from customtkinter.utility.utility_functions import pop_from_dict_by_set, check_kwargs_empty
 
@@ -37,7 +38,7 @@ class CTkEntry(CTkBaseClass):
 
                  textvariable: tkinter.Variable = None,
                  placeholder_text: str = None,
-                 font: Union[str, Tuple] = "default_theme",
+                 font: Union[tuple, CTkFont] = "default_theme",
                  state: str = tkinter.NORMAL,
                  **kwargs):
 
@@ -59,7 +60,6 @@ class CTkEntry(CTkBaseClass):
         self._border_width = ThemeManager.theme["shape"]["entry_border_width"] if border_width == "default_theme" else border_width
 
         # text and state
-        self._font = (ThemeManager.theme["text"]["font"], ThemeManager.theme["text"]["size"]) if font == "default_theme" else font
         self._is_focused: bool = True
         self._placeholder_text = placeholder_text
         self._placeholder_text_active = False
@@ -68,6 +68,11 @@ class CTkEntry(CTkBaseClass):
         self._state = state
         self._textvariable_callback_name: str = ""
 
+        # font
+        self._font = CTkFont() if font == "default_theme" else self._check_font_type(font)
+        if isinstance(self._font, CTkFont):
+            self._font.add_size_configure_callback(self._update_font)
+
         if not (self._textvariable is None or self._textvariable == ""):
             self._textvariable_callback_name = self._textvariable.trace_add("write", self._textvariable_callback)
 
@@ -75,7 +80,6 @@ class CTkEntry(CTkBaseClass):
                                  highlightthickness=0,
                                  width=self._apply_widget_scaling(self._current_width),
                                  height=self._apply_widget_scaling(self._current_height))
-        self._canvas.grid(column=0, row=0, sticky="nswe")
         self._draw_engine = DrawEngine(self._canvas)
 
         self._entry = tkinter.Entry(master=self,
@@ -86,14 +90,8 @@ class CTkEntry(CTkBaseClass):
                                     state=self._state,
                                     textvariable=self._textvariable,
                                     **pop_from_dict_by_set(kwargs, self._valid_tk_entry_attributes))
-        if self._corner_radius >= self._minimum_x_padding:
-            self._entry.grid(column=0, row=0, sticky="nswe",
-                             padx=min(self._apply_widget_scaling(self._corner_radius), round(self._apply_widget_scaling(self._current_height/2))),
-                             pady=(self._apply_widget_scaling(self._border_width), self._apply_widget_scaling(self._border_width + 1)))
-        else:
-            self._entry.grid(column=0, row=0, sticky="nswe",
-                             padx=self._apply_widget_scaling(self._minimum_x_padding),
-                             pady=(self._apply_widget_scaling(self._border_width), self._apply_widget_scaling(self._border_width + 1)))
+
+        self._create_grid()
 
         check_kwargs_empty(kwargs, raise_error=True)
 
@@ -103,6 +101,18 @@ class CTkEntry(CTkBaseClass):
         self._activate_placeholder()
         self._draw()
 
+    def _create_grid(self):
+        self._canvas.grid(column=0, row=0, sticky="nswe")
+
+        if self._corner_radius >= self._minimum_x_padding:
+            self._entry.grid(column=0, row=0, sticky="nswe",
+                             padx=min(self._apply_widget_scaling(self._corner_radius), round(self._apply_widget_scaling(self._current_height/2))),
+                             pady=(self._apply_widget_scaling(self._border_width), self._apply_widget_scaling(self._border_width + 1)))
+        else:
+            self._entry.grid(column=0, row=0, sticky="nswe",
+                             padx=self._apply_widget_scaling(self._minimum_x_padding),
+                             pady=(self._apply_widget_scaling(self._border_width), self._apply_widget_scaling(self._border_width + 1)))
+
     def _textvariable_callback(self, var_name, index, mode):
         if self._textvariable.get() == "":
             self._activate_placeholder()
@@ -111,10 +121,8 @@ class CTkEntry(CTkBaseClass):
         super()._set_scaling(*args, **kwargs)
 
         self._entry.configure(font=self._apply_font_scaling(self._font))
-        self._entry.grid(column=0, row=0, sticky="we",
-                         padx=self._apply_widget_scaling(self._corner_radius) if self._corner_radius >= 6 else self._apply_widget_scaling(6))
-
         self._canvas.configure(width=self._apply_widget_scaling(self._desired_width), height=self._apply_widget_scaling(self._desired_height))
+        self._create_grid()
         self._draw(no_color_updates=True)
 
     def _set_dimensions(self, width=None, height=None):
@@ -123,6 +131,21 @@ class CTkEntry(CTkBaseClass):
         self._canvas.configure(width=self._apply_widget_scaling(self._desired_width),
                                height=self._apply_widget_scaling(self._desired_height))
         self._draw()
+
+    def _update_font(self):
+        """ pass font to tkinter widgets with applied font scaling and update grid with workaround """
+        self._entry.configure(font=self._apply_font_scaling(self._font))
+
+        # Workaround to force grid to be resized when text changes size.
+        # Otherwise grid will lag and only resizes if other mouse action occurs.
+        self._canvas.grid_forget()
+        self._canvas.grid(column=0, row=0, sticky="nswe")
+
+    def destroy(self):
+        if isinstance(self._font, CTkFont):
+            self._font.remove_size_configure_callback(self._update_font)
+
+        super().destroy()
 
     def _draw(self, no_color_updates=False):
         self._canvas.configure(bg=ThemeManager.single_color(self._bg_color, self._appearance_mode))
@@ -180,16 +203,12 @@ class CTkEntry(CTkBaseClass):
 
         if "border_width" in kwargs:
             self._border_width = kwargs.pop("border_width")
+            self._create_grid()
             require_redraw = True
 
         if "corner_radius" in kwargs:
             self._corner_radius = kwargs.pop("corner_radius")
-            if self._corner_radius >= self._minimum_x_padding:
-                self._entry.grid(column=0, row=0, sticky="we",
-                                 padx=min(self._apply_widget_scaling(self._corner_radius), round(self._apply_widget_scaling(self._current_height/2))))
-            else:
-                self._entry.grid(column=0, row=0, sticky="we",
-                                 padx=self._apply_widget_scaling(self._minimum_x_padding))
+            self._create_grid()
             require_redraw = True
 
         if "placeholder_text" in kwargs:
@@ -209,8 +228,13 @@ class CTkEntry(CTkBaseClass):
             self._entry.configure(textvariable=self._textvariable)
 
         if "font" in kwargs:
-            self._font = kwargs.pop("font")
-            self._entry.configure(font=self._apply_font_scaling(self._font))
+            if isinstance(self._font, CTkFont):
+                self._font.remove_size_configure_callback(self._update_font)
+            self._font = self._check_font_type(kwargs.pop("font"))
+            if isinstance(self._font, CTkFont):
+                self._font.add_size_configure_callback(self._update_font)
+
+            self._update_font()
 
         if "show" in kwargs:
             if self._placeholder_text_active:

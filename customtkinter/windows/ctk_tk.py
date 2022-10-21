@@ -76,9 +76,9 @@ class CTk(tkinter.Tk):
         self._block_update_dimensions_event = False
 
     def _focus_in_event(self, event):
-        # sometimes window looses focus on macOS if window is selected from Mission Control, so focus has to be forced again
+        # sometimes window looses jumps back on macOS if window is selected from Mission Control, so has to be lifted again
         if sys.platform == "darwin":
-            self.focus_force()
+            self.lift()
 
     def _update_dimensions_event(self, event=None):
         if not self._block_update_dimensions_event:

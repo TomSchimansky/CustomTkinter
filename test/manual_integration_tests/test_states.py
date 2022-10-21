@@ -8,9 +8,9 @@ app.title("CustomTkinter Test")
 
 
 def change_state(widget):
-    if widget.state == tkinter.NORMAL:
+    if widget.cget("state") == tkinter.NORMAL:
         widget.configure(state=tkinter.DISABLED)
-    elif widget.state == tkinter.DISABLED:
+    elif widget.cget("state") == tkinter.DISABLED:
         widget.configure(state=tkinter.NORMAL)
 
 
