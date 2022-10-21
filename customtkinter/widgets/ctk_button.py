@@ -63,12 +63,16 @@ class CTkButton(CTkBaseClass):
 
         self._corner_radius = min(self._corner_radius, round(self._current_height/2))
 
-        # text, font, image
+        # text, image
         self._image = image
         self._image_label: Union[tkinter.Label, None] = None
         self._text = text
         self._text_label: Union[tkinter.Label, None] = None
-        self._font = CTkFont() if font == "default_theme" else self._check_font_type_and_values(font)
+
+        # font
+        self._font = CTkFont() if font == "default_theme" else self._check_font_type(font)
+        if isinstance(self._font, CTkFont):
+            self._font.add_size_configure_callback(self._update_font)
 
         # callback and hover functionality
         self._command = command
@@ -119,6 +123,21 @@ class CTkButton(CTkBaseClass):
         self._canvas.configure(width=self._apply_widget_scaling(self._desired_width),
                                height=self._apply_widget_scaling(self._desired_height))
         self._draw()
+
+    def _update_font(self):
+        """ pass font to tkinter widgets with applied font scaling and update grid with workaround """
+        if self._text_label is not None:
+            self._text_label.configure(font=self._apply_font_scaling(self._font))
+
+            # Workaround to force grid to be resized when text changes size.
+            # Otherwise grid will lag and only resizes if other mouse action occurs.
+            self._canvas.grid_forget()
+            self._canvas.grid(row=0, column=0, rowspan=2, columnspan=2, sticky="nsew")
+
+    def destroy(self):
+        if isinstance(self._font, CTkFont):
+            self._font.remove_size_configure_callback(self._update_font)
+        super().destroy()
 
     def _draw(self, no_color_updates=False):
         if self._background_corner_colors is not None:
@@ -269,7 +288,12 @@ class CTkButton(CTkBaseClass):
                 self._text_label.configure(text=self._text)
 
         if "font" in kwargs:
-            self._font = kwargs.pop("font")
+            if isinstance(self._font, CTkFont):
+                self._font.remove_size_configure_callback(self._update_font)
+            self._font = self._check_font_type(kwargs.pop("font"))
+            if isinstance(self._font, CTkFont):
+                self._font.add_size_configure_callback(self._update_font)
+
             if self._text_label is not None:
                 self._text_label.configure(font=self._apply_font_scaling(self._font))
 

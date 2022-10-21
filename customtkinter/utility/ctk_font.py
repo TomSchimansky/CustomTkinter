@@ -1,15 +1,25 @@
 from tkinter.font import Font
 import copy
-import sys
+from typing import List, Callable, Tuple
 
-from ..scaling_tracker import ScalingTracker
 from ..theme_manager import ThemeManager
 
 
 class CTkFont(Font):
     """
-    Font object with size in pixel independent of scaling.
+    Font object with size in pixel, independent of scaling.
+    To get scaled tuple representation use create_scaled_tuple() method.
+
+    family	The font family name as a string.
+    size	The font height as an integer in pixel.
+    weight	'bold' for boldface, 'normal' for regular weight.
+    slant	'italic' for italic, 'roman' for unslanted.
+    underline	1 for underlined text, 0 for normal.
+    overstrike	1 for overstruck text, 0 for normal.
+
+    Tkinter Font: https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/fonts.html
     """
+
     def __init__(self,
                  family: str = "default_theme",
                  size: int = "default_theme",
@@ -18,34 +28,30 @@ class CTkFont(Font):
                  underline: bool = False,
                  overstrike: bool = False):
 
-        # unscaled font size in px
-        self._size = ThemeManager.theme["text"]["size"] if size == "default_theme" else size
+        self._size_configure_callback_list: List[Callable] = []
 
-        if self._size < 0:
-            sys.stderr.write(f"Warning: size {self._size} of CTkFont don't has to be negative, it's measured in pixel by default\n")
+        self._family = family
+        self._size = ThemeManager.theme["text"]["size"] if size == "default_theme" else size
+        self._tuple_style_string = f"{weight} {slant} {'underline' if underline else ''} {'overstrike' if overstrike else ''}"
 
         super().__init__(family=ThemeManager.theme["text"]["font"] if family == "default_theme" else family,
-                         size=self._size,
+                         size=-abs(self._size),
                          weight=weight,
                          slant=slant,
                          underline=underline,
                          overstrike=overstrike)
 
-    def _set_scaling(self, new_widget_scaling, new_spacing_scaling, new_window_scaling):
-        self._widget_scaling = new_widget_scaling
-        super().configure(size=round(self._apply_widget_scaling(self._size)))
+    def add_size_configure_callback(self, callback: Callable):
+        """ add function, that gets called when font got configured """
+        self._size_configure_callback_list.append(callback)
 
-    def _apply_widget_scaling(self, value: int) -> int:
-        if isinstance(value, int):
-            return round(value * self._widget_scaling)
-        else:
-            raise ValueError(f"CTkFont can not scale size of type {type(value)}, only int allowed")
+    def remove_size_configure_callback(self, callback: Callable):
+        """ remove function, that gets called when font got configured """
+        self._size_configure_callback_list.remove(callback)
 
-    def _reverse_widget_scaling(self, value: int) -> int:
-        if isinstance(value, int):
-            return round(value / self._widget_scaling)
-        else:
-            raise ValueError(f"CTkFont can not scale size of type {type(value)}, only int allowed")
+    def create_scaled_tuple(self, font_scaling: float) -> Tuple[str, int, str]:
+        """ return scaled tuple representation of font in the form (family: str, size: int, style: str)"""
+        return self._family, round(self._size * font_scaling), self._tuple_style_string
 
     def config(self, *args, **kwargs):
         raise AttributeError("'config' is not implemented for CTk widgets. For consistency, always use 'configure' instead.")
@@ -53,42 +59,22 @@ class CTkFont(Font):
     def configure(self, **kwargs):
         if "size" in kwargs:
             self._size = kwargs.pop("size")
-            super().configure(size=self._apply_widget_scaling(self._size))
+            super().configure(size=-abs(self._size))
 
         super().configure(**kwargs)
 
-    def cget(self, attribute_name) -> any:
+        # update style string for create_scaled_tuple() method
+        self._tuple_style_string = f"{super().cget('weight')} {super().cget('slant')} {'underline' if super().cget('underline') else ''} {'overstrike' if super().cget('overstrike') else ''}"
+
+        # call all functions registered with add_size_configure_callback()
+        for callback in self._size_configure_callback_list:
+            callback()
+
+    def cget(self, attribute_name: str) -> any:
         if attribute_name == "size":
             return self._size
         else:
-            super().cget(attribute_name)
+            return super().cget(attribute_name)
 
     def copy(self) -> "CTkFont":
         return copy.deepcopy(self)
-
-    def measure(self, text, displayof=None) -> int:
-        """ measure width of text in px independent of scaling  """
-        return self._reverse_widget_scaling(super().measure(text, displayof=displayof))
-
-    def metrics(self, *options: any, **kw: any) -> dict:
-        """ metrics of font, all values independent of scaling """
-        metrics_dict = super().metrics(*options, **kw)
-
-        if "ascent" in metrics_dict:
-            metrics_dict["ascent"] = self._reverse_widget_scaling(metrics_dict["ascent"])
-        if "descent" in metrics_dict:
-            metrics_dict["descent"] = self._reverse_widget_scaling(metrics_dict["descent"])
-        if "linespace" in metrics_dict:
-            metrics_dict["linespace"] = self._reverse_widget_scaling(metrics_dict["linespace"])
-
-        return metrics_dict
-
-    def actual(self, option: any = None, displayof: any = None) -> dict:
-        """ get back a dictionary of the font's actual attributes, which may differ from the ones you requested, size independent of scaling """
-        actual_dict = super().actual(option, displayof)
-
-        if "size" in actual_dict:
-            actual_dict["size"] = self._reverse_widget_scaling(actual_dict["size"])
-
-        return actual_dict
-

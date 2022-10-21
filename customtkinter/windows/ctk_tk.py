@@ -82,9 +82,14 @@ class CTk(tkinter.Tk):
 
     def _update_dimensions_event(self, event=None):
         if not self._block_update_dimensions_event:
-            self.update_idletasks()
+
+            # removed this because of python stackoverflow error with many label widgets
+            # self.update_idletasks()
             detected_width = self.winfo_width()  # detect current window size
             detected_height = self.winfo_height()
+
+            # detected_width = event.width
+            # detected_height = event.height
 
             if self._current_width != round(detected_width / self._window_scaling) or self._current_height != round(detected_height / self._window_scaling):
                 self._current_width = round(detected_width / self._window_scaling)  # adjust current size according to new size given by event

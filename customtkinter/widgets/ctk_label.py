@@ -5,6 +5,7 @@ from .ctk_canvas import CTkCanvas
 from ..theme_manager import ThemeManager
 from ..draw_engine import DrawEngine
 from .widget_base_class import CTkBaseClass
+from ..utility.ctk_font import CTkFont
 
 from customtkinter.utility.utility_functions import pop_from_dict_by_set, check_kwargs_empty
 
@@ -30,7 +31,7 @@ class CTkLabel(CTkBaseClass):
                  text_color: Union[str, Tuple[str, str]] = "default_theme",
 
                  text: str = "CTkLabel",
-                 font: any = "default_theme",
+                 font: Union[tuple, CTkFont] = "default_theme",
                  anchor: str = "center",  # label anchor: center, n, e, s, w
                  **kwargs):
 
@@ -47,7 +48,11 @@ class CTkLabel(CTkBaseClass):
         # text
         self._anchor = anchor
         self._text = text
-        self._font = (ThemeManager.theme["text"]["font"], ThemeManager.theme["text"]["size"]) if font == "default_theme" else font
+
+        # font
+        self._font = CTkFont() if font == "default_theme" else self._check_font_type(font)
+        if isinstance(self._font, CTkFont):
+            self._font.add_size_configure_callback(self._update_font)
 
         # configure grid system (1x1)
         self.grid_rowconfigure(0, weight=1)
@@ -97,6 +102,20 @@ class CTkLabel(CTkBaseClass):
                                height=self._apply_widget_scaling(self._desired_height))
         self._draw()
 
+    def _update_font(self):
+        """ pass font to tkinter widgets with applied font scaling and update grid with workaround """
+        self._text_label.configure(font=self._apply_font_scaling(self._font))
+
+        # Workaround to force grid to be resized when text changes size.
+        # Otherwise grid will lag and only resizes if other mouse action occurs.
+        self._canvas.grid_forget()
+        self._canvas.grid(row=0, column=0, sticky="nswe")
+
+    def destroy(self):
+        if isinstance(self._font, CTkFont):
+            self._font.remove_size_configure_callback(self._update_font)
+        super().destroy()
+
     def _draw(self, no_color_updates=False):
         requires_recoloring = self._draw_engine.draw_rounded_rect_with_border(self._apply_widget_scaling(self._current_width),
                                                                               self._apply_widget_scaling(self._current_height),
@@ -133,8 +152,13 @@ class CTkLabel(CTkBaseClass):
             self._text_label.configure(text=self._text)
 
         if "font" in kwargs:
-            self._font = kwargs.pop("font")
-            self._text_label.configure(font=self._apply_font_scaling(self._font))
+            if isinstance(self._font, CTkFont):
+                self._font.remove_size_configure_callback(self._update_font)
+            self._font = self._check_font_type(kwargs.pop("font"))
+            if isinstance(self._font, CTkFont):
+                self._font.add_size_configure_callback(self._update_font)
+
+            self._update_font()
 
         if "fg_color" in kwargs:
             self._fg_color = kwargs.pop("fg_color")

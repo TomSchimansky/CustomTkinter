@@ -23,7 +23,7 @@ b1.pack(pady=20)
 b2 = customtkinter.CTkButton(master=tabview_1.tab("tab 2"), text="button tab 2")
 b2.pack()
 
-tabview_1.tab("tab 2").configure(fg_color="red")
+# tabview_1.tab("tab 2").configure(fg_color="red")
 tabview_1.configure(state="normal")
 # tabview_1.delete("tab 1")
 

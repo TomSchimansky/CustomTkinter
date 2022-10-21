@@ -74,7 +74,7 @@ from .windows.ctk_toplevel import CTkToplevel
 from .windows.ctk_input_dialog import CTkInputDialog
 
 # util classes
-from .utility.ctk_font import CTkFont
+from .utility.ctk_font import CTkFont as _CTkFont
 
 
 def set_appearance_mode(mode_string: str):

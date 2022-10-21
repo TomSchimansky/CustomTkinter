@@ -1,3 +1,4 @@
+import sys
 import tkinter
 import tkinter.ttk as ttk
 import copy
@@ -118,7 +119,7 @@ class CTkBaseClass(tkinter.Frame):
         super().configure(**pop_from_dict_by_set(kwargs, self._valid_tk_frame_attributes))  # configure tkinter.Frame
 
         # if there are still items in the kwargs dict, raise ValueError
-        self._check_kwargs_empty(kwargs, raise_error=True)
+        check_kwargs_empty(kwargs, raise_error=True)
 
         if require_redraw:
             self._draw()
@@ -139,10 +140,23 @@ class CTkBaseClass(tkinter.Frame):
             raise ValueError(f"'{attribute_name}' is not a supported argument. Look at the documentation for supported arguments.")
 
     @staticmethod
-    def _check_font_type_and_values(font: any):
-        if not isinstance(font, CTkFont):
-            raise ValueError(f"\nFor consistency, Customtkinter requires the font argument {font} to be an instance of CTkFont.\n" +
-                             f"\nUsage example: font=customtkinter.CTkFont(family='name', size='size in px')\n(other arguments in the documentation)\n")
+    def _check_font_type(font: any):
+        if isinstance(font, CTkFont):
+            return font
+
+        elif type(font) == tuple and len(font) == 1:
+            sys.stderr.write(f"Warning: font {font} given without size, will be extended with default text size of current theme\n")
+            return font[0], ThemeManager.theme["text"]["size"]
+
+        elif type(font) == tuple and 2 <= len(font) <= 3:
+            return font
+
+        else:
+            raise ValueError(f"Wrong font type {type(font)}\n" +
+                             f"For consistency, Customtkinter requires the font argument to be a tuple of len 2 or 3 or an instance of CTkFont.\n" +
+                             f"\nUsage example:\n" +
+                             f"font=customtkinter.CTkFont(family='<name>', size=<size in px>)\n" +
+                             f"font=('<name>', <size in px>)\n")
 
     def _update_dimensions_event(self, event):
         # only redraw if dimensions changed (for performance), independent of scaling
@@ -219,15 +233,22 @@ class CTkBaseClass(tkinter.Frame):
         else:
             return value
 
-    def _apply_font_scaling(self, font: Union[tuple, CTkFont]) -> Union[tuple, CTkFont]:
+    def _apply_font_scaling(self, font: Union[Tuple, CTkFont]) -> tuple:
+        """ Takes CTkFont object and returns tuple font with scaled size, has to be called again for every change of font object """
         if type(font) == tuple:
-            font_list = list(font)
-            if len(font_list) >= 2 and type(font_list[1]) == int:
-                font_list[1] = int(font_list[1] * self._widget_scaling)
-            return tuple(font_list)
+            if len(font) == 1:
+                return font
+            elif len(font) == 2:
+                return font[0], round(font[1] * self._widget_scaling)
+            elif len(font) == 3:
+                return font[0], round(font[1] * self._widget_scaling), font[2]
+            else:
+                raise ValueError(f"Can not scale font {font}. font needs to be tuple of len 1, 2 or 3")
 
         elif isinstance(font, CTkFont):
-            return font
+            return font.create_scaled_tuple(self._widget_scaling)
+        else:
+            raise ValueError(f"Can not scale font '{font}' of type {type(font)}. font needs to be tuple or instance of CTkFont")
 
     def _apply_argument_scaling(self, kwargs: dict) -> dict:
         scaled_kwargs = copy.copy(kwargs)

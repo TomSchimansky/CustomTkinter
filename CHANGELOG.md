@@ -5,10 +5,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ToDo:
- -
- - remove bg and background support for CTk and CTkToplevel (to be done)
- - enforce font size in pixel
- - enforce font to be tuple
+ - enforce font size in pixel and enforce CTkFont class
  - complete other theme files
  - auto scaling of images
 
@@ -28,6 +25,7 @@ ToDo:
 
 ### Removed
  - Removed setter and getter functions like set_text in CTkButton
+ - Removed bg and background attribute from CTk and CTkToplevel, always use fg_color
 
 ### Fixed
 

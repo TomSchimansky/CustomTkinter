@@ -7,6 +7,7 @@ from ..theme_manager import ThemeManager
 from ..settings import Settings
 from ..draw_engine import DrawEngine
 from .widget_base_class import CTkBaseClass
+from ..utility.ctk_font import CTkFont
 
 
 class CTkCheckBox(CTkBaseClass):
@@ -33,7 +34,7 @@ class CTkCheckBox(CTkBaseClass):
                  text_color_disabled: Union[str, Tuple[str, str]] = "default_theme",
 
                  text: str = "CTkCheckBox",
-                 font: any = "default_theme",
+                 font: Union[tuple, CTkFont] = "default_theme",
                  textvariable: tkinter.Variable = None,
                  state: str = tkinter.NORMAL,
                  hover: bool = True,
@@ -65,7 +66,11 @@ class CTkCheckBox(CTkBaseClass):
         self._text_label: Union[tkinter.Label, None] = None
         self._text_color = ThemeManager.theme["color"]["text"] if text_color == "default_theme" else text_color
         self._text_color_disabled = ThemeManager.theme["color"]["text_disabled"] if text_color_disabled == "default_theme" else text_color_disabled
-        self._font = (ThemeManager.theme["text"]["font"], ThemeManager.theme["text"]["size"]) if font == "default_theme" else font
+
+        # font
+        self._font = CTkFont() if font == "default_theme" else self._check_font_type(font)
+        if isinstance(self._font, CTkFont):
+            self._font.add_size_configure_callback(self._update_font)
 
         # callback and hover functionality
         self._command = command
@@ -145,9 +150,22 @@ class CTkCheckBox(CTkBaseClass):
         self._bg_canvas.configure(width=self._apply_widget_scaling(self._desired_width),
                                   height=self._apply_widget_scaling(self._desired_height))
 
+    def _update_font(self):
+        """ pass font to tkinter widgets with applied font scaling and update grid with workaround """
+        if self._text_label is not None:
+            self._text_label.configure(font=self._apply_font_scaling(self._font))
+
+            # Workaround to force grid to be resized when text changes size.
+            # Otherwise grid will lag and only resizes if other mouse action occurs.
+            self._bg_canvas.grid_forget()
+            self._bg_canvas.grid(row=0, column=0, sticky="nswe")
+
     def destroy(self):
         if self._variable is not None:
             self._variable.trace_remove("write", self._variable_callback_name)
+
+        if isinstance(self._font, CTkFont):
+            self._font.remove_size_configure_callback(self._update_font)
 
         super().destroy()
 
@@ -212,9 +230,13 @@ class CTkCheckBox(CTkBaseClass):
             self._text_label.configure(text=self._text)
 
         if "font" in kwargs:
-            self._font = kwargs.pop("font")
-            if self._text_label is not None:
-                self._text_label.configure(font=self._apply_font_scaling(self._font))
+            if isinstance(self._font, CTkFont):
+                self._font.remove_size_configure_callback(self._update_font)
+            self._font = self._check_font_type(kwargs.pop("font"))
+            if isinstance(self._font, CTkFont):
+                self._font.add_size_configure_callback(self._update_font)
+
+            self._update_font()
 
         if "state" in kwargs:
             self._state = kwargs.pop("state")
