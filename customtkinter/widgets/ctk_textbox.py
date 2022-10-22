@@ -6,6 +6,7 @@ from .ctk_scrollbar import CTkScrollbar
 from ..theme_manager import ThemeManager
 from ..draw_engine import DrawEngine
 from .widget_base_class import CTkBaseClass
+from ..utility.ctk_font import CTkFont
 
 from customtkinter.utility.utility_functions import pop_from_dict_by_set, check_kwargs_empty
 
@@ -46,7 +47,7 @@ class CTkTextbox(CTkBaseClass):
                  scrollbar_color: Union[str, Tuple[str, str]] = "default_theme",
                  scrollbar_hover_color:  Union[str, Tuple[str, str]] = "default_theme",
 
-                 font: any = "default_theme",
+                 font: Union[tuple, CTkFont] = "default_theme",
                  activate_scrollbars: bool = True,
                  **kwargs):
 
@@ -65,14 +66,16 @@ class CTkTextbox(CTkBaseClass):
         self._border_width = ThemeManager.theme["shape"]["frame_border_width"] if border_width == "default_theme" else border_width
         self._border_spacing = border_spacing
 
-        # text
-        self._font = (ThemeManager.theme["text"]["font"], ThemeManager.theme["text"]["size"]) if font == "default_theme" else font
+        # font
+        self._font = CTkFont() if font == "default_theme" else self._check_font_type(font)
+        if isinstance(self._font, CTkFont):
+            self._font.add_size_configure_callback(self._update_font)
 
         self._canvas = CTkCanvas(master=self,
                                  highlightthickness=0,
                                  width=self._apply_widget_scaling(self._current_width),
                                  height=self._apply_widget_scaling(self._current_height))
-        self._canvas.grid(row=0, column=0, padx=0, pady=0, rowspan=2, columnspan=2, sticky="nsew")
+        self._canvas.grid(row=0, column=0, rowspan=2, columnspan=2, sticky="nsew")
         self._canvas.configure(bg=ThemeManager.single_color(self._bg_color, self._appearance_mode))
         self._draw_engine = DrawEngine(self._canvas)
 
@@ -191,6 +194,21 @@ class CTkTextbox(CTkBaseClass):
                                height=self._apply_widget_scaling(self._desired_height))
         self._draw()
 
+    def _update_font(self):
+        """ pass font to tkinter widgets with applied font scaling and update grid with workaround """
+        self._textbox.configure(font=self._apply_font_scaling(self._font))
+
+        # Workaround to force grid to be resized when text changes size.
+        # Otherwise grid will lag and only resizes if other mouse action occurs.
+        self._canvas.grid_forget()
+        self._canvas.grid(row=0, column=0, rowspan=2, columnspan=2, sticky="nsew")
+
+    def destroy(self):
+        if isinstance(self._font, CTkFont):
+            self._font.remove_size_configure_callback(self._update_font)
+
+        super().destroy()
+
     def _draw(self, no_color_updates=False):
 
         if not self._canvas.winfo_exists():
@@ -267,8 +285,13 @@ class CTkTextbox(CTkBaseClass):
             require_redraw = True
 
         if "font" in kwargs:
-            self._font = kwargs.pop("font")
-            self._textbox.configure(font=self._apply_font_scaling(self._font))
+            if isinstance(self._font, CTkFont):
+                self._font.remove_size_configure_callback(self._update_font)
+            self._font = self._check_font_type(kwargs.pop("font"))
+            if isinstance(self._font, CTkFont):
+                self._font.add_size_configure_callback(self._update_font)
+
+            self._update_font()
 
         self._textbox.configure(**pop_from_dict_by_set(kwargs, self._valid_tk_text_attributes))
         super().configure(require_redraw=require_redraw, **kwargs)

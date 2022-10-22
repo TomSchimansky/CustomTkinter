@@ -7,6 +7,7 @@ from typing import Union, Tuple, Callable, List
 from ..theme_manager import ThemeManager
 from ..appearance_mode_tracker import AppearanceModeTracker
 from ..scaling_tracker import ScalingTracker
+from ..utility.ctk_font import CTkFont
 
 
 class DropdownMenu(tkinter.Menu):
@@ -17,7 +18,7 @@ class DropdownMenu(tkinter.Menu):
                  hover_color: Union[str, Tuple[str, str]] = "default_theme",
                  text_color: Union[str, Tuple[str, str]] = "default_theme",
 
-                 font: Union[str, Tuple[str, str]] = "default_theme",
+                 font: Union[tuple, CTkFont] = "default_theme",
                  command: Callable = None,
                  values: List[str] = None,
                  **kwargs):
@@ -35,7 +36,11 @@ class DropdownMenu(tkinter.Menu):
         self._fg_color = ThemeManager.theme["color"]["dropdown_color"] if fg_color == "default_theme" else fg_color
         self._hover_color = ThemeManager.theme["color"]["dropdown_hover"] if hover_color == "default_theme" else hover_color
         self._text_color = ThemeManager.theme["color"]["text"] if text_color == "default_theme" else text_color
-        self._font = (ThemeManager.theme["text"]["font"], ThemeManager.theme["text"]["size"]) if font == "default_theme" else font
+
+        # font
+        self._font = CTkFont() if font == "default_theme" else self._check_font_type(font)
+        if isinstance(self._font, CTkFont):
+            self._font.add_size_configure_callback(self._update_font)
 
         self._configure_menu_for_platforms()
 
@@ -43,6 +48,15 @@ class DropdownMenu(tkinter.Menu):
         self._command = command
 
         self._add_menu_commands()
+
+    def _update_font(self):
+        """ pass font to tkinter widgets with applied font scaling """
+        super().configure(font=self._apply_font_scaling(self._font))
+
+    def destroy(self):
+        if isinstance(self._font, CTkFont):
+            self._font.remove_size_configure_callback(self._update_font)
+        super().destroy()
 
     def _configure_menu_for_platforms(self):
         """ apply platform specific appearance attributes, configure all colors """
@@ -120,8 +134,13 @@ class DropdownMenu(tkinter.Menu):
             super().configure(fg=ThemeManager.single_color(self._text_color, self._appearance_mode))
 
         if "font" in kwargs:
-            self._font = kwargs.pop("font")
-            super().configure(font=self._apply_font_scaling(self._font))
+            if isinstance(self._font, CTkFont):
+                self._font.remove_size_configure_callback(self._update_font)
+            self._font = self._check_font_type(kwargs.pop("font"))
+            if isinstance(self._font, CTkFont):
+                self._font.add_size_configure_callback(self._update_font)
+
+            self._update_font()
 
         if "command" in kwargs:
             self._command = kwargs.pop("command")
@@ -159,27 +178,41 @@ class DropdownMenu(tkinter.Menu):
         else:
             return value
 
-    def _apply_font_scaling(self, font):
-        if type(font) == tuple or type(font) == list:
-            font_list = list(font)
-            for i in range(len(font_list)):
-                if (type(font_list[i]) == int or type(font_list[i]) == float) and font_list[i] < 0:
-                    font_list[i] = int(font_list[i] * self._widget_scaling)
-            return tuple(font_list)
+    def _apply_font_scaling(self, font: Union[Tuple, CTkFont]) -> tuple:
+        """ Takes CTkFont object and returns tuple font with scaled size, has to be called again for every change of font object """
+        if type(font) == tuple:
+            if len(font) == 1:
+                return font
+            elif len(font) == 2:
+                return font[0], -abs(round(font[1] * self._widget_scaling))
+            elif len(font) == 3:
+                return font[0], -abs(round(font[1] * self._widget_scaling)), font[2]
+            else:
+                raise ValueError(f"Can not scale font {font}. font needs to be tuple of len 1, 2 or 3")
 
-        elif type(font) == str:
-            for negative_number in re.findall(r" -\d* ", font):
-                font = font.replace(negative_number, f" {int(int(negative_number) * self._widget_scaling)} ")
+        elif isinstance(font, CTkFont):
+            return font.create_scaled_tuple(self._widget_scaling)
+        else:
+            raise ValueError(f"Can not scale font '{font}' of type {type(font)}. font needs to be tuple or instance of CTkFont")
+
+    @staticmethod
+    def _check_font_type(font: any):
+        if isinstance(font, CTkFont):
             return font
 
-        elif isinstance(font, tkinter.font.Font):
-            new_font_object = copy.copy(font)
-            if font.cget("size") < 0:
-                new_font_object.config(size=int(font.cget("size") * self._widget_scaling))
-            return new_font_object
+        elif type(font) == tuple and len(font) == 1:
+            sys.stderr.write(f"Warning: font {font} given without size, will be extended with default text size of current theme\n")
+            return font[0], ThemeManager.theme["text"]["size"]
+
+        elif type(font) == tuple and 2 <= len(font) <= 3:
+            return font
 
         else:
-            return font
+            raise ValueError(f"Wrong font type {type(font)}\n" +
+                             f"For consistency, Customtkinter requires the font argument to be a tuple of len 2 or 3 or an instance of CTkFont.\n" +
+                             f"\nUsage example:\n" +
+                             f"font=customtkinter.CTkFont(family='<name>', size=<size in px>)\n" +
+                             f"font=('<name>', <size in px>)\n")
 
     def _set_scaling(self, new_widget_scaling, new_spacing_scaling, new_window_scaling):
         self._widget_scaling = new_widget_scaling

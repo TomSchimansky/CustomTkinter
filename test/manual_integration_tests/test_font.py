@@ -56,12 +56,25 @@ for i in range(30):
     b.grid(row=i, column=1, pady=1)
     c = customtkinter.CTkCheckBox(frame_2, font=label_font)
     c.grid(row=i, column=2, pady=1)
-    c = customtkinter.CTkComboBox(frame_2, font=label_font, height=15)
+    c = customtkinter.CTkComboBox(frame_2, font=label_font, dropdown_font=label_font, height=15)
     c.grid(row=i, column=3, pady=1)
     e = customtkinter.CTkEntry(frame_2, font=label_font, height=15, placeholder_text="testtest")
     e.grid(row=i, column=4, pady=1)
+    o = customtkinter.CTkOptionMenu(frame_2, font=label_font, height=15, width=50)
+    o.grid(row=i, column=5, pady=1)
+    r = customtkinter.CTkRadioButton(frame_2, font=label_font, height=15, width=50)
+    r.grid(row=i, column=6, pady=1)
+    s = customtkinter.CTkSwitch(frame_2, font=label_font, height=15, width=50)
+    s.grid(row=i, column=7, pady=1)
 frame_2.grid_columnconfigure((0, 1, 2, 3, 4), weight=1)
 
-app.after(1500, lambda: label_font.configure(size=10))
-# app.after(1500, lambda: l.configure(text="dshgfldjskhfjdslafhdjsgkkjdaslö"))
+def change_font():
+    import time
+    t1 = time.perf_counter()
+    label_font.configure(size=10, overstrike=True)
+    t2 = time.perf_counter()
+    print("change_font:", (t2-t1)*1000, "ms")
+
+app.after(3000, change_font)
+app.after(6000, lambda: label_font.configure(size=8, overstrike=False))
 app.mainloop()

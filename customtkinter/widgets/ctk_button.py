@@ -293,8 +293,7 @@ class CTkButton(CTkBaseClass):
             if isinstance(self._font, CTkFont):
                 self._font.add_size_configure_callback(self._update_font)
 
-            if self._text_label is not None:
-                self._text_label.configure(font=self._apply_font_scaling(self._font))
+            self._update_font()
 
         if "state" in kwargs:
             self._state = kwargs.pop("state")

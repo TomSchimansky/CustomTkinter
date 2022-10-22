@@ -7,6 +7,7 @@ from ..theme_manager import ThemeManager
 from ..draw_engine import DrawEngine
 from .widget_base_class import CTkBaseClass
 from .dropdown_menu import DropdownMenu
+from ..utility.ctk_font import CTkFont
 
 
 class CTkOptionMenu(CTkBaseClass):
@@ -31,8 +32,8 @@ class CTkOptionMenu(CTkBaseClass):
                  dropdown_hover_color: Union[str, Tuple[str, str]] = "default_theme",
                  dropdown_text_color: Union[str, Tuple[str, str]] = "default_theme",
 
-                 font: any = "default_theme",
-                 dropdown_font: any = "default_theme",
+                 font: Union[tuple, CTkFont] = "default_theme",
+                 dropdown_font: Union[tuple, CTkFont] = "default_theme",
                  values: list = None,
                  variable: tkinter.Variable = None,
                  state: str = tkinter.NORMAL,
@@ -56,7 +57,11 @@ class CTkOptionMenu(CTkBaseClass):
         # text and font
         self._text_color = ThemeManager.theme["color"]["text_button"] if text_color == "default_theme" else text_color
         self._text_color_disabled = ThemeManager.theme["color"]["text_button_disabled"] if text_color_disabled == "default_theme" else text_color_disabled
-        self._font = (ThemeManager.theme["text"]["font"], ThemeManager.theme["text"]["size"]) if font == "default_theme" else font
+
+        # font
+        self._font = CTkFont() if font == "default_theme" else self._check_font_type(font)
+        if isinstance(self._font, CTkFont):
+            self._font.add_size_configure_callback(self._update_font)
 
         # callback and hover functionality
         self._command = command
@@ -132,7 +137,7 @@ class CTkOptionMenu(CTkBaseClass):
             self._text_label.configure(text=self._current_value)
 
     def _create_grid(self):
-        self._canvas.grid(row=0, column=0, rowspan=1, columnspan=1, sticky="nsew")
+        self._canvas.grid(row=0, column=0, sticky="nsew")
 
         left_section_width = self._current_width - self._current_height
         self._text_label.grid(row=0, column=0, sticky="ew",
@@ -156,9 +161,21 @@ class CTkOptionMenu(CTkBaseClass):
                                height=self._apply_widget_scaling(self._desired_height))
         self._draw()
 
+    def _update_font(self):
+        """ pass font to tkinter widgets with applied font scaling and update grid with workaround """
+        self._text_label.configure(font=self._apply_font_scaling(self._font))
+
+        # Workaround to force grid to be resized when text changes size.
+        # Otherwise grid will lag and only resizes if other mouse action occurs.
+        self._canvas.grid_forget()
+        self._canvas.grid(row=0, column=0, sticky="nsew")
+
     def destroy(self):
         if self._variable is not None:  # remove old callback
             self._variable.trace_remove("write", self._variable_callback_name)
+
+        if isinstance(self._font, CTkFont):
+            self._font.remove_size_configure_callback(self._update_font)
 
         super().destroy()
 
@@ -232,8 +249,13 @@ class CTkOptionMenu(CTkBaseClass):
             self._dropdown_menu.configure(text_color=kwargs.pop("dropdown_text_color"))
 
         if "font" in kwargs:
-            self._font = kwargs.pop("font")
-            self._text_label.configure(font=self._apply_font_scaling(self._font))
+            if isinstance(self._font, CTkFont):
+                self._font.remove_size_configure_callback(self._update_font)
+            self._font = self._check_font_type(kwargs.pop("font"))
+            if isinstance(self._font, CTkFont):
+                self._font.add_size_configure_callback(self._update_font)
+
+            self._update_font()
 
         if "command" in kwargs:
             self._command = kwargs.pop("command")
