@@ -54,6 +54,9 @@ class App(customtkinter.CTk):
                                                 hover_color="#C77C78", command=self.button_function)
         self.button_5.grid(row=0, column=1, padx=20, pady=20)
 
+        self.scaling_button = customtkinter.CTkSegmentedButton(self, values=[0.8, 0.9, 1.0, 1.1, 1.2, 1.5])
+        self.scaling_button.grid(row=1, column=0, pady=(0, 20))
+
     def load_image(self, path, image_size):
         """ load rectangular image with path relative to PATH """
         return ImageTk.PhotoImage(Image.open(PATH + path).resize((image_size, image_size)))

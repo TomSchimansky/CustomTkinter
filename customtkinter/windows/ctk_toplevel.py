@@ -84,7 +84,7 @@ class CTkToplevel(tkinter.Toplevel):
             self._current_width = round(detected_width / self._window_scaling)  # adjust current size according to new size given by event
             self._current_height = round(detected_height / self._window_scaling)  # _current_width and _current_height are independent of the scale
 
-    def _set_scaling(self, new_widget_scaling, new_spacing_scaling, new_window_scaling):
+    def _set_scaling(self, new_widget_scaling, new_window_scaling):
         self._window_scaling = new_window_scaling
 
         # force new dimensions on window by using min, max, and geometry

@@ -13,7 +13,6 @@ frame_2.grid(row=0, column=1, sticky="nsew", padx=10, pady=10)
 
 def set_scaling(scaling):
     customtkinter.set_widget_scaling(scaling)
-    customtkinter.set_spacing_scaling(scaling)
 
 scaling_button = customtkinter.CTkSegmentedButton(frame_1, values=[0.8, 0.9, 1.0, 1.1, 1.2, 1.3, 1.5, 2.0], command=set_scaling)
 scaling_button.pack(pady=(2, 10))

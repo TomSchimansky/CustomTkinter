@@ -27,7 +27,6 @@ class DropdownMenu(tkinter.Menu):
 
         ScalingTracker.add_widget(self._set_scaling, self)
         self._widget_scaling = ScalingTracker.get_widget_scaling(self)
-        self._spacing_scaling = ScalingTracker.get_spacing_scaling(self)
 
         AppearanceModeTracker.add(self._set_appearance_mode, self)
         self._appearance_mode = AppearanceModeTracker.get_mode()  # 0: "Light" 1: "Dark"
@@ -214,9 +213,8 @@ class DropdownMenu(tkinter.Menu):
                              f"font=customtkinter.CTkFont(family='<name>', size=<size in px>)\n" +
                              f"font=('<name>', <size in px>)\n")
 
-    def _set_scaling(self, new_widget_scaling, new_spacing_scaling, new_window_scaling):
+    def _set_scaling(self, new_widget_scaling, new_window_scaling):
         self._widget_scaling = new_widget_scaling
-        self._spacing_scaling = new_spacing_scaling
 
         self._configure_menu_for_platforms()
 

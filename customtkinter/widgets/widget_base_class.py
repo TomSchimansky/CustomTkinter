@@ -51,7 +51,6 @@ class CTkBaseClass(tkinter.Frame):
         # scaling
         ScalingTracker.add_widget(self._set_scaling, self)  # add callback for automatic scaling changes
         self._widget_scaling = ScalingTracker.get_widget_scaling(self)
-        self._spacing_scaling = ScalingTracker.get_spacing_scaling(self)
 
         super().configure(width=self._apply_widget_scaling(self._desired_width),
                           height=self._apply_widget_scaling(self._desired_height))
@@ -175,8 +174,8 @@ class CTkBaseClass(tkinter.Frame):
             master_widget = self.master
 
         if isinstance(master_widget, (CTkBaseClass, CTk, CTkToplevel)) and hasattr(master_widget, "_fg_color"):
-            if master_widget._fg_color is not None:
-                return master_widget._fg_color
+            if master_widget.cget("fg_color") is not None:
+                return master_widget.cget("fg_color")
 
             # if fg_color of master is None, try to retrieve fg_color from master of master
             elif hasattr(master_widget.master, "master"):
@@ -204,9 +203,8 @@ class CTkBaseClass(tkinter.Frame):
         super().configure(bg=ThemeManager.single_color(self._bg_color, self._appearance_mode))
         self._draw()
 
-    def _set_scaling(self, new_widget_scaling, new_spacing_scaling, new_window_scaling):
+    def _set_scaling(self, new_widget_scaling, new_window_scaling):
         self._widget_scaling = new_widget_scaling
-        self._spacing_scaling = new_spacing_scaling
 
         super().configure(width=self._apply_widget_scaling(self._desired_width),
                           height=self._apply_widget_scaling(self._desired_height))
@@ -226,12 +224,6 @@ class CTkBaseClass(tkinter.Frame):
     def _apply_widget_scaling(self, value: Union[int, float, str]) -> Union[float, str]:
         if isinstance(value, (int, float)):
             return value * self._widget_scaling
-        else:
-            return value
-
-    def _apply_spacing_scaling(self, value: Union[int, float, str]) -> Union[float, str]:
-        if isinstance(value, (int, float)):
-            return value * self._spacing_scaling
         else:
             return value
 
@@ -257,19 +249,19 @@ class CTkBaseClass(tkinter.Frame):
 
         if "pady" in scaled_kwargs:
             if isinstance(scaled_kwargs["pady"], (int, float, str)):
-                scaled_kwargs["pady"] = self._apply_spacing_scaling(scaled_kwargs["pady"])
+                scaled_kwargs["pady"] = self._apply_widget_scaling(scaled_kwargs["pady"])
             elif isinstance(scaled_kwargs["pady"], tuple):
-                scaled_kwargs["pady"] = tuple([self._apply_spacing_scaling(v) for v in scaled_kwargs["pady"]])
+                scaled_kwargs["pady"] = tuple([self._apply_widget_scaling(v) for v in scaled_kwargs["pady"]])
         if "padx" in kwargs:
             if isinstance(scaled_kwargs["padx"], (int, float, str)):
-                scaled_kwargs["padx"] = self._apply_spacing_scaling(scaled_kwargs["padx"])
+                scaled_kwargs["padx"] = self._apply_widget_scaling(scaled_kwargs["padx"])
             elif isinstance(scaled_kwargs["padx"], tuple):
-                scaled_kwargs["padx"] = tuple([self._apply_spacing_scaling(v) for v in scaled_kwargs["padx"]])
+                scaled_kwargs["padx"] = tuple([self._apply_widget_scaling(v) for v in scaled_kwargs["padx"]])
 
         if "x" in scaled_kwargs:
-            scaled_kwargs["x"] = self._apply_spacing_scaling(scaled_kwargs["x"])
+            scaled_kwargs["x"] = self._apply_widget_scaling(scaled_kwargs["x"])
         if "y" in scaled_kwargs:
-            scaled_kwargs["y"] = self._apply_spacing_scaling(scaled_kwargs["y"])
+            scaled_kwargs["y"] = self._apply_widget_scaling(scaled_kwargs["y"])
 
         return scaled_kwargs
 

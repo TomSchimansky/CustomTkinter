@@ -11,7 +11,6 @@ class ScalingTracker:
 
     widget_scaling = 1  # user values which multiply to detected window scaling factor
     window_scaling = 1
-    spacing_scaling = 1
 
     update_loop_running = False
     update_loop_interval = 600  # ms
@@ -23,11 +22,6 @@ class ScalingTracker:
         return cls.window_dpi_scaling_dict[window_root] * cls.widget_scaling
 
     @classmethod
-    def get_spacing_scaling(cls, widget) -> float:
-        window_root = cls.get_window_root_of_widget(widget)
-        return cls.window_dpi_scaling_dict[window_root] * cls.spacing_scaling
-
-    @classmethod
     def get_window_scaling(cls, window) -> float:
         window_root = cls.get_window_root_of_widget(window)
         return cls.window_dpi_scaling_dict[window_root] * cls.window_scaling
@@ -35,11 +29,6 @@ class ScalingTracker:
     @classmethod
     def set_widget_scaling(cls, widget_scaling_factor: float):
         cls.widget_scaling = max(widget_scaling_factor, 0.4)
-        cls.update_scaling_callbacks_all()
-
-    @classmethod
-    def set_spacing_scaling(cls, spacing_scaling_factor: float):
-        cls.spacing_scaling = max(spacing_scaling_factor, 0.4)
         cls.update_scaling_callbacks_all()
 
     @classmethod
@@ -63,11 +52,9 @@ class ScalingTracker:
             for set_scaling_callback in callback_list:
                 if not cls.deactivate_automatic_dpi_awareness:
                     set_scaling_callback(cls.window_dpi_scaling_dict[window] * cls.widget_scaling,
-                                         cls.window_dpi_scaling_dict[window] * cls.spacing_scaling,
                                          cls.window_dpi_scaling_dict[window] * cls.window_scaling)
                 else:
                     set_scaling_callback(cls.widget_scaling,
-                                         cls.spacing_scaling,
                                          cls.window_scaling)
 
     @classmethod
@@ -75,11 +62,9 @@ class ScalingTracker:
         for set_scaling_callback in cls.window_widgets_dict[window]:
             if not cls.deactivate_automatic_dpi_awareness:
                 set_scaling_callback(cls.window_dpi_scaling_dict[window] * cls.widget_scaling,
-                                     cls.window_dpi_scaling_dict[window] * cls.spacing_scaling,
                                      cls.window_dpi_scaling_dict[window] * cls.window_scaling)
             else:
                 set_scaling_callback(cls.widget_scaling,
-                                     cls.spacing_scaling,
                                      cls.window_scaling)
 
     @classmethod

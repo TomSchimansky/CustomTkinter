@@ -2,7 +2,6 @@ import customtkinter
 
 #customtkinter.set_widget_scaling(0.9)
 #customtkinter.set_window_scaling(0.9)
-#customtkinter.set_spacing_scaling(0.9)
 
 customtkinter.set_appearance_mode("dark")
 

@@ -149,7 +149,6 @@ class App(customtkinter.CTk):
 
     def change_scaling(self, new_scaling: str):
         new_scaling_float = int(new_scaling.replace("%", "")) / 100
-        customtkinter.set_spacing_scaling(new_scaling_float)
         customtkinter.set_widget_scaling(new_scaling_float)
 
     def sidebar_button_callback(self):

@@ -34,7 +34,6 @@ combobox_1 = customtkinter.CTkComboBox(app, variable=variable, values=countries,
 combobox_1.pack(pady=20, padx=10)
 
 def set_new_scaling(scaling):
-    customtkinter.set_spacing_scaling(scaling)
     customtkinter.set_window_scaling(scaling)
     customtkinter.set_widget_scaling(scaling)
 

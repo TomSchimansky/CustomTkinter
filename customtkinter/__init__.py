@@ -99,11 +99,6 @@ def set_widget_scaling(scaling_value: float):
     ScalingTracker.set_widget_scaling(scaling_value)
 
 
-def set_spacing_scaling(scaling_value: float):
-    """ set scaling for geometry manager calls (place, pack, grid)"""
-    ScalingTracker.set_spacing_scaling(scaling_value)
-
-
 def set_window_scaling(scaling_value: float):
     """ set scaling for window dimensions """
     ScalingTracker.set_window_scaling(scaling_value)
