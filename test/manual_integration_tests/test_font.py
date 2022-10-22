@@ -15,7 +15,7 @@ def set_scaling(scaling):
     customtkinter.set_widget_scaling(scaling)
     customtkinter.set_spacing_scaling(scaling)
 
-scaling_button = customtkinter._CTkSegmentedButton(frame_1, values=[0.8, 0.9, 1.0, 1.1, 1.2, 1.3, 1.5, 2.0], command=set_scaling)
+scaling_button = customtkinter.CTkSegmentedButton(frame_1, values=[0.8, 0.9, 1.0, 1.1, 1.2, 1.3, 1.5, 2.0], command=set_scaling)
 scaling_button.pack(pady=(2, 10))
 
 b = customtkinter.CTkButton(frame_1, text="single name", font=("Times", ))
@@ -29,14 +29,14 @@ b.pack(pady=2)
 
 b = customtkinter.CTkButton(frame_1, text="object default")
 b.pack(pady=(10, 2))
-b = customtkinter.CTkButton(frame_1, text="object single name", font=customtkinter._CTkFont("Times"))
+b = customtkinter.CTkButton(frame_1, text="object single name", font=customtkinter.CTkFont("Times"))
 b.pack(pady=2)
-b = customtkinter.CTkButton(frame_1, text="object with name and size", font=customtkinter._CTkFont("Times", 18))
+b = customtkinter.CTkButton(frame_1, text="object with name and size", font=customtkinter.CTkFont("Times", 18))
 b.pack(pady=2)
-b = customtkinter.CTkButton(frame_1, text="object with name and negative size", font=customtkinter._CTkFont("Times", -18))
+b = customtkinter.CTkButton(frame_1, text="object with name and negative size", font=customtkinter.CTkFont("Times", -18))
 b.pack(pady=2)
 b = customtkinter.CTkButton(frame_1, text="object with extra keywords",
-                            font=customtkinter._CTkFont("Times", -18, weight="bold", slant="italic", underline=True, overstrike=True))
+                            font=customtkinter.CTkFont("Times", -18, weight="bold", slant="italic", underline=True, overstrike=True))
 b.pack(pady=2)
 
 b1 = customtkinter.CTkButton(frame_1, text="object default modified")
@@ -46,9 +46,9 @@ print("test_font.py:", b1.cget("font").cget("size"), b1.cget("font").cget("famil
 
 b2 = customtkinter.CTkButton(frame_1, text="object default overridden")
 b2.pack(pady=10)
-b2.configure(font=customtkinter._CTkFont(family="Times"))
+b2.configure(font=customtkinter.CTkFont(family="Times"))
 
-label_font = customtkinter._CTkFont(size=5)
+label_font = customtkinter.CTkFont(size=5)
 for i in range(30):
     l = customtkinter.CTkLabel(frame_2, font=label_font, height=0)
     l.grid(row=i, column=0, pady=1)

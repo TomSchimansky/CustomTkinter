@@ -64,8 +64,8 @@ from .widgets.ctk_optionmenu import CTkOptionMenu
 from .widgets.ctk_combobox import CTkComboBox
 from .widgets.ctk_scrollbar import CTkScrollbar
 from .widgets.ctk_textbox import CTkTextbox
-from .widgets.ctk_tabview import CTkTabview as _CTkTabview
-from .widgets.ctk_segmented_button import CTkSegmentedButton as _CTkSegmentedButton
+from .widgets.ctk_tabview import CTkTabview
+from .widgets.ctk_segmented_button import CTkSegmentedButton
 
 # import windows
 from .windows.ctk_tk import CTk
@@ -73,7 +73,7 @@ from .windows.ctk_toplevel import CTkToplevel
 from .windows.ctk_input_dialog import CTkInputDialog
 
 # util classes
-from .utility.ctk_font import CTkFont as _CTkFont
+from .utility.ctk_font import CTkFont
 
 
 def set_appearance_mode(mode_string: str):
