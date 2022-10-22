@@ -7,7 +7,6 @@ from tkinter import StringVar, IntVar, DoubleVar, BooleanVar
 from tkinter import filedialog
 
 # import manager classes
-from .settings import Settings
 from .appearance_mode_tracker import AppearanceModeTracker
 from .theme_manager import ThemeManager
 from .scaling_tracker import ScalingTracker

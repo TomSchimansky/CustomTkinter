@@ -4,7 +4,6 @@ from typing import Union, Tuple, Callable
 
 from .ctk_canvas import CTkCanvas
 from ..theme_manager import ThemeManager
-from ..settings import Settings
 from ..draw_engine import DrawEngine
 from .widget_base_class import CTkBaseClass
 
@@ -35,6 +34,7 @@ class CTkSlider(CTkBaseClass):
                  to: int = 1,
                  state: str = "normal",
                  number_of_steps: Union[int, None] = None,
+                 hover: bool = True,
                  command: Callable[[float], None] = None,
                  variable: tkinter.Variable = None,
                  orientation: str = "horizontal",
@@ -70,6 +70,7 @@ class CTkSlider(CTkBaseClass):
         self._value: float = 0.5  # initial value of slider in percent
         self._orientation = orientation
         self._hover_state: bool = False
+        self._hover = hover
         self._from_ = from_
         self._to = to
         self._number_of_steps = number_of_steps
@@ -131,13 +132,13 @@ class CTkSlider(CTkBaseClass):
         super().destroy()
 
     def _set_cursor(self):
-        if self._state == "normal" and Settings.cursor_manipulation_enabled:
+        if self._state == "normal" and self._cursor_manipulation_enabled:
             if sys.platform == "darwin":
                 self.configure(cursor="pointinghand")
             elif sys.platform.startswith("win"):
                 self.configure(cursor="hand2")
 
-        elif self._state == "disabled" and Settings.cursor_manipulation_enabled:
+        elif self._state == "disabled" and self._cursor_manipulation_enabled:
             if sys.platform == "darwin":
                 self.configure(cursor="arrow")
             elif sys.platform.startswith("win"):
@@ -227,6 +228,9 @@ class CTkSlider(CTkBaseClass):
         if "number_of_steps" in kwargs:
             self._number_of_steps = kwargs.pop("number_of_steps")
 
+        if "hover" in kwargs:
+            self._hover = kwargs.pop("hover")
+
         if "command" in kwargs:
             self._command = kwargs.pop("command")
 
@@ -273,6 +277,8 @@ class CTkSlider(CTkBaseClass):
             return self._state
         elif attribute_name == "number_of_steps":
             return self._number_of_steps
+        elif attribute_name == "hover":
+            return self._hover
         elif attribute_name == "command":
             return self._command
         elif attribute_name == "variable":
@@ -309,7 +315,7 @@ class CTkSlider(CTkBaseClass):
                 self._command(self._output_value)
 
     def _on_enter(self, event=0):
-        if self._state == "normal":
+        if self._hover is True and self._state == "normal":
             self._hover_state = True
             self._canvas.itemconfig("slider_parts",
                                     fill=ThemeManager.single_color(self._button_hover_color, self._appearance_mode),

@@ -25,7 +25,9 @@ class CTkBaseClass(tkinter.Frame):
         appearance_mode changes, scaling, bg changes of master if master is not a CTk widget """
 
     # attributes that are passed to and managed by the tkinter frame only:
-    _valid_tk_frame_attributes = {"cursor"}
+    _valid_tk_frame_attributes: set = {"cursor"}
+
+    _cursor_manipulation_enabled: bool = True
 
     def __init__(self,
                  master: any = None,

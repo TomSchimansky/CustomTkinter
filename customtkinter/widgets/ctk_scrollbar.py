@@ -163,6 +163,9 @@ class CTkScrollbar(CTkBaseClass):
             self._scrollbar_hover_color = kwargs.pop("scrollbar_hover_color")
             require_redraw = True
 
+        if "hover" in kwargs:
+            self._hover = kwargs.pop("hover")
+
         if "command" in kwargs:
             self._command = kwargs.pop("command")
 

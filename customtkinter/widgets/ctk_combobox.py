@@ -5,7 +5,6 @@ from typing import Union, Tuple, Callable, List
 from .dropdown_menu import DropdownMenu
 from .ctk_canvas import CTkCanvas
 from ..theme_manager import ThemeManager
-from ..settings import Settings
 from ..draw_engine import DrawEngine
 from .widget_base_class import CTkBaseClass
 from ..utility.ctk_font import CTkFont
@@ -36,12 +35,13 @@ class CTkComboBox(CTkBaseClass):
                  text_color_disabled: Union[str, Tuple[str, str]] = "default_theme",
 
                  font: Union[tuple, CTkFont] = "default_theme",
-                 dropdown_text_font: any = "default_theme",
+                 dropdown_font: any = "default_theme",
                  values: List[str] = None,
                  state: str = tkinter.NORMAL,
                  hover: bool = True,
                  variable: tkinter.Variable = None,
                  command: Callable = None,
+                 justify: str = "left",
                  **kwargs):
 
         # transfer basic functionality (_bg_color, size, _appearance_mode, scaling) to CTkBaseClass
@@ -83,7 +83,7 @@ class CTkComboBox(CTkBaseClass):
                                            fg_color=dropdown_fg_color,
                                            hover_color=dropdown_hover_color,
                                            text_color=dropdown_text_color,
-                                           font=dropdown_text_font)
+                                           font=dropdown_font)
 
         # configure grid system (1x1)
         self.grid_rowconfigure(0, weight=1)
@@ -99,6 +99,7 @@ class CTkComboBox(CTkBaseClass):
                                     state=self._state,
                                     width=1,
                                     bd=0,
+                                    justify=justify,
                                     highlightthickness=0,
                                     font=self._apply_font_scaling(self._font))
 
@@ -252,6 +253,9 @@ class CTkComboBox(CTkBaseClass):
 
             self._update_font()
 
+        if "hover" in kwargs:
+            self._hover = kwargs.pop("hover")
+
         if "command" in kwargs:
             self._command = kwargs.pop("command")
 
@@ -272,8 +276,11 @@ class CTkComboBox(CTkBaseClass):
         if "dropdown_text_color" in kwargs:
             self._dropdown_menu.configure(text_color=kwargs.pop("dropdown_text_color"))
 
-        if "dropdown_text_font" in kwargs:
-            self._dropdown_menu.configure(text_font=kwargs.pop("dropdown_text_font"))
+        if "dropdown_font" in kwargs:
+            self._dropdown_menu.configure(font=kwargs.pop("dropdown_font"))
+
+        if "justify" in kwargs:
+            self._entry.configure(justify=kwargs.pop("justify"))
 
         super().configure(require_redraw=require_redraw, **kwargs)
 
@@ -304,8 +311,8 @@ class CTkComboBox(CTkBaseClass):
 
         elif attribute_name == "font":
             return self._font
-        elif attribute_name == "dropdown_text_font":
-            return self._dropdown_menu.cget("text_font")
+        elif attribute_name == "dropdown_font":
+            return self._dropdown_menu.cget("font")
         elif attribute_name == "values":
             return self._values
         elif attribute_name == "state":
@@ -316,14 +323,16 @@ class CTkComboBox(CTkBaseClass):
             return self._variable
         elif attribute_name == "command":
             return self._command
+        elif attribute_name == "justify":
+            return self._entry.cget("justify")
         else:
             return super().cget(attribute_name)
 
     def _on_enter(self, event=0):
         if self._hover is True and self._state == tkinter.NORMAL and len(self._values) > 0:
-            if sys.platform == "darwin" and len(self._values) > 0 and Settings.cursor_manipulation_enabled:
+            if sys.platform == "darwin" and len(self._values) > 0 and self._cursor_manipulation_enabled:
                 self._canvas.configure(cursor="pointinghand")
-            elif sys.platform.startswith("win") and len(self._values) > 0 and Settings.cursor_manipulation_enabled:
+            elif sys.platform.startswith("win") and len(self._values) > 0 and self._cursor_manipulation_enabled:
                 self._canvas.configure(cursor="hand2")
 
             # set color of inner button parts to hover color
@@ -335,19 +344,18 @@ class CTkComboBox(CTkBaseClass):
                                     fill=ThemeManager.single_color(self._button_hover_color, self._appearance_mode))
 
     def _on_leave(self, event=0):
-        if self._hover is True:
-            if sys.platform == "darwin" and len(self._values) > 0 and Settings.cursor_manipulation_enabled:
-                self._canvas.configure(cursor="arrow")
-            elif sys.platform.startswith("win") and len(self._values) > 0 and Settings.cursor_manipulation_enabled:
-                self._canvas.configure(cursor="arrow")
+        if sys.platform == "darwin" and len(self._values) > 0 and self._cursor_manipulation_enabled:
+            self._canvas.configure(cursor="arrow")
+        elif sys.platform.startswith("win") and len(self._values) > 0 and self._cursor_manipulation_enabled:
+            self._canvas.configure(cursor="arrow")
 
-            # set color of inner button parts
-            self._canvas.itemconfig("inner_parts_right",
-                                    outline=ThemeManager.single_color(self._button_color, self._appearance_mode),
-                                    fill=ThemeManager.single_color(self._button_color, self._appearance_mode))
-            self._canvas.itemconfig("border_parts_right",
-                                    outline=ThemeManager.single_color(self._button_color, self._appearance_mode),
-                                    fill=ThemeManager.single_color(self._button_color, self._appearance_mode))
+        # set color of inner button parts
+        self._canvas.itemconfig("inner_parts_right",
+                                outline=ThemeManager.single_color(self._button_color, self._appearance_mode),
+                                fill=ThemeManager.single_color(self._button_color, self._appearance_mode))
+        self._canvas.itemconfig("border_parts_right",
+                                outline=ThemeManager.single_color(self._button_color, self._appearance_mode),
+                                fill=ThemeManager.single_color(self._button_color, self._appearance_mode))
 
     def _dropdown_callback(self, value: str):
         if self._state == "readonly":

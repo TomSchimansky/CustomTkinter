@@ -4,7 +4,6 @@ from typing import Union, Tuple, Callable
 
 from .ctk_canvas import CTkCanvas
 from ..theme_manager import ThemeManager
-from ..settings import Settings
 from ..draw_engine import DrawEngine
 from .widget_base_class import CTkBaseClass
 
@@ -40,6 +39,7 @@ class CTkSwitch(CTkBaseClass):
                  onvalue: Union[int, str] = 1,
                  offvalue: Union[int, str] = 0,
                  variable: tkinter.Variable = None,
+                 hover: bool = True,
                  command: Callable = None,
                  state: str = tkinter.NORMAL,
                  **kwargs):
@@ -72,6 +72,7 @@ class CTkSwitch(CTkBaseClass):
         self._button_length = ThemeManager.theme["shape"]["switch_button_length"] if button_length == "default_theme" else button_length
         self._hover_state: bool = False
         self._check_state: bool = False  # True if switch is activated
+        self._hover = hover
         self._state = state
         self._onvalue = onvalue
         self._offvalue = offvalue
@@ -153,23 +154,23 @@ class CTkSwitch(CTkBaseClass):
         super().destroy()
 
     def _set_cursor(self):
-        if Settings.cursor_manipulation_enabled:
+        if self._cursor_manipulation_enabled:
             if self._state == tkinter.DISABLED:
-                if sys.platform == "darwin" and Settings.cursor_manipulation_enabled:
+                if sys.platform == "darwin":
                     self._canvas.configure(cursor="arrow")
                     if self._text_label is not None:
                         self._text_label.configure(cursor="arrow")
-                elif sys.platform.startswith("win") and Settings.cursor_manipulation_enabled:
+                elif sys.platform.startswith("win"):
                     self._canvas.configure(cursor="arrow")
                     if self._text_label is not None:
                         self._text_label.configure(cursor="arrow")
 
             elif self._state == tkinter.NORMAL:
-                if sys.platform == "darwin" and Settings.cursor_manipulation_enabled:
+                if sys.platform == "darwin":
                     self._canvas.configure(cursor="pointinghand")
                     if self._text_label is not None:
                         self._text_label.configure(cursor="pointinghand")
-                elif sys.platform.startswith("win") and Settings.cursor_manipulation_enabled:
+                elif sys.platform.startswith("win"):
                     self._canvas.configure(cursor="hand2")
                     if self._text_label is not None:
                         self._text_label.configure(cursor="hand2")
@@ -276,6 +277,9 @@ class CTkSwitch(CTkBaseClass):
             self._border_width = kwargs.pop("border_width")
             require_redraw = True
 
+        if "hover" in kwargs:
+            self._hover = kwargs.pop("hover")
+
         if "command" in kwargs:
             self._command = kwargs.pop("command")
 
@@ -335,6 +339,8 @@ class CTkSwitch(CTkBaseClass):
             return self._offvalue
         elif attribute_name == "variable":
             return self._variable
+        elif attribute_name == "hover":
+            return self._hover
         elif attribute_name == "command":
             return self._command
         elif attribute_name == "state":
@@ -386,9 +392,8 @@ class CTkSwitch(CTkBaseClass):
         return self._onvalue if self._check_state is True else self._offvalue
 
     def _on_enter(self, event=0):
-        self._hover_state = True
-
-        if self._state is not tkinter.DISABLED:
+        if self._hover is True and self._state == "normal":
+            self._hover_state = True
             self._canvas.itemconfig("slider_parts",
                                     fill=ThemeManager.single_color(self._button_hover_color, self._appearance_mode),
                                     outline=ThemeManager.single_color(self._button_hover_color, self._appearance_mode))

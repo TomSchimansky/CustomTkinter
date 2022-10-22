@@ -8,6 +8,7 @@ ToDo:
  - enforce font size in pixel and enforce CTkFont class
  - complete other theme files
  - auto scaling of images
+ - change font attribute in wiki
 
 ## Unreleased - 2022-10-2
 ### Added
@@ -16,9 +17,10 @@ ToDo:
  - Added CTkTabview
  - Added .cget() method to all widgets and windows
  - Added .bind() and .focus() methods to almost all widgets
+ - Added 'anchor' option to CTkOptionMenu and 'justify' option to CTkComboBox
 
 ### Changed
- - Changed 'text_font' attribute to 'font' in all widgets
+ - Changed 'text_font' attribute to 'font' in all widgets, changed 'dropdown_text_font' to 'dropdown_font'
  - Changed 'dropdown_color' attribute to 'dropdown_fg_color' for combobox, optionmenu
  - Changed 'orient' attribute of CTkProgressBar and CTkSlider to 'orientation'
  - Width and height attributes of CTkCheckBox, CTkRadioButton, CTkSwitch now describe the outer dimensions of the whole widget. The button/switch size is described by separate attributes like checkbox_width, checkbox_height
@@ -26,6 +28,7 @@ ToDo:
 ### Removed
  - Removed setter and getter functions like set_text in CTkButton
  - Removed bg and background attribute from CTk and CTkToplevel, always use fg_color
+ - Removed Settings class and moved settings to widget and window classes
 
 ### Fixed
 

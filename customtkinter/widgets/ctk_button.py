@@ -4,7 +4,6 @@ from typing import Union, Tuple, Callable
 
 from .ctk_canvas import CTkCanvas
 from ..theme_manager import ThemeManager
-from ..settings import Settings
 from ..draw_engine import DrawEngine
 from .widget_base_class import CTkBaseClass
 from ..utility.ctk_font import CTkFont
@@ -334,6 +333,9 @@ class CTkButton(CTkBaseClass):
             self._text_color = kwargs.pop("text_color")
             require_redraw = True
 
+        if "hover" in kwargs:
+            self._hover = kwargs.pop("hover")
+
         if "command" in kwargs:
             self._command = kwargs.pop("command")
 
@@ -387,21 +389,21 @@ class CTkButton(CTkBaseClass):
             return super().cget(attribute_name)
 
     def _set_cursor(self):
-        if Settings.cursor_manipulation_enabled:
+        if self._cursor_manipulation_enabled:
             if self._state == tkinter.DISABLED:
-                if sys.platform == "darwin" and self._command is not None and Settings.cursor_manipulation_enabled:
+                if sys.platform == "darwin" and self._command is not None:
                     self.configure(cursor="arrow")
-                elif sys.platform.startswith("win") and self._command is not None and Settings.cursor_manipulation_enabled:
+                elif sys.platform.startswith("win") and self._command is not None:
                     self.configure(cursor="arrow")
 
             elif self._state == tkinter.NORMAL:
-                if sys.platform == "darwin" and self._command is not None and Settings.cursor_manipulation_enabled:
+                if sys.platform == "darwin" and self._command is not None:
                     self.configure(cursor="pointinghand")
-                elif sys.platform.startswith("win") and self._command is not None and Settings.cursor_manipulation_enabled:
+                elif sys.platform.startswith("win") and self._command is not None:
                     self.configure(cursor="hand2")
 
     def _on_enter(self, event=None):
-        if self._hover is True and self._state == tkinter.NORMAL:
+        if self._hover is True and self._state == "normal":
             if self._hover_color is None:
                 inner_parts_color = self._fg_color
             else:
@@ -423,24 +425,23 @@ class CTkButton(CTkBaseClass):
     def _on_leave(self, event=None):
         self._click_animation_running = False
 
-        if self._hover is True:
-            if self._fg_color is None:
-                inner_parts_color = self._bg_color
-            else:
-                inner_parts_color = self._fg_color
+        if self._fg_color is None:
+            inner_parts_color = self._bg_color
+        else:
+            inner_parts_color = self._fg_color
 
-            # set color of inner button parts
-            self._canvas.itemconfig("inner_parts",
-                                    outline=ThemeManager.single_color(inner_parts_color, self._appearance_mode),
-                                    fill=ThemeManager.single_color(inner_parts_color, self._appearance_mode))
+        # set color of inner button parts
+        self._canvas.itemconfig("inner_parts",
+                                outline=ThemeManager.single_color(inner_parts_color, self._appearance_mode),
+                                fill=ThemeManager.single_color(inner_parts_color, self._appearance_mode))
 
-            # set text_label bg color (label color)
-            if self._text_label is not None:
-                self._text_label.configure(bg=ThemeManager.single_color(inner_parts_color, self._appearance_mode))
+        # set text_label bg color (label color)
+        if self._text_label is not None:
+            self._text_label.configure(bg=ThemeManager.single_color(inner_parts_color, self._appearance_mode))
 
-            # set image_label bg color (image bg color)
-            if self._image_label is not None:
-                self._image_label.configure(bg=ThemeManager.single_color(inner_parts_color, self._appearance_mode))
+        # set image_label bg color (image bg color)
+        if self._image_label is not None:
+            self._image_label.configure(bg=ThemeManager.single_color(inner_parts_color, self._appearance_mode))
 
     def _click_animation(self):
         if self._click_animation_running:

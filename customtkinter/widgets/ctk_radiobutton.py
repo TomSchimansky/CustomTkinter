@@ -4,7 +4,6 @@ from typing import Union, Tuple, Callable
 
 from .ctk_canvas import CTkCanvas
 from ..theme_manager import ThemeManager
-from ..settings import Settings
 from ..draw_engine import DrawEngine
 from .widget_base_class import CTkBaseClass
 
@@ -220,6 +219,9 @@ class CTkRadioButton(CTkBaseClass):
             self._border_width = kwargs.pop("border_width")
             require_redraw = True
 
+        if "hover" in kwargs:
+            self._hover = kwargs.pop("hover")
+
         if "command" in kwargs:
             self._command = kwargs.pop("command")
 
@@ -284,23 +286,23 @@ class CTkRadioButton(CTkBaseClass):
             return super().cget(attribute_name)
 
     def _set_cursor(self):
-        if Settings.cursor_manipulation_enabled:
+        if self._cursor_manipulation_enabled:
             if self._state == tkinter.DISABLED:
-                if sys.platform == "darwin" and Settings.cursor_manipulation_enabled:
+                if sys.platform == "darwin":
                     self._canvas.configure(cursor="arrow")
                     if self._text_label is not None:
                         self._text_label.configure(cursor="arrow")
-                elif sys.platform.startswith("win") and Settings.cursor_manipulation_enabled:
+                elif sys.platform.startswith("win"):
                     self._canvas.configure(cursor="arrow")
                     if self._text_label is not None:
                         self._text_label.configure(cursor="arrow")
 
             elif self._state == tkinter.NORMAL:
-                if sys.platform == "darwin" and Settings.cursor_manipulation_enabled:
+                if sys.platform == "darwin":
                     self._canvas.configure(cursor="pointinghand")
                     if self._text_label is not None:
                         self._text_label.configure(cursor="pointinghand")
-                elif sys.platform.startswith("win") and Settings.cursor_manipulation_enabled:
+                elif sys.platform.startswith("win"):
                     self._canvas.configure(cursor="hand2")
                     if self._text_label is not None:
                         self._text_label.configure(cursor="hand2")
@@ -312,15 +314,14 @@ class CTkRadioButton(CTkBaseClass):
                                     outline=ThemeManager.single_color(self._hover_color, self._appearance_mode))
 
     def _on_leave(self, event=0):
-        if self._hover is True:
-            if self._check_state is True:
-                self._canvas.itemconfig("border_parts",
-                                        fill=ThemeManager.single_color(self._fg_color, self._appearance_mode),
-                                        outline=ThemeManager.single_color(self._fg_color, self._appearance_mode))
-            else:
-                self._canvas.itemconfig("border_parts",
-                                        fill=ThemeManager.single_color(self._border_color, self._appearance_mode),
-                                        outline=ThemeManager.single_color(self._border_color, self._appearance_mode))
+        if self._check_state is True:
+            self._canvas.itemconfig("border_parts",
+                                    fill=ThemeManager.single_color(self._fg_color, self._appearance_mode),
+                                    outline=ThemeManager.single_color(self._fg_color, self._appearance_mode))
+        else:
+            self._canvas.itemconfig("border_parts",
+                                    fill=ThemeManager.single_color(self._border_color, self._appearance_mode),
+                                    outline=ThemeManager.single_color(self._border_color, self._appearance_mode))
 
     def _variable_callback(self, var_name, index, mode):
         if not self._variable_callback_blocked:

@@ -10,7 +10,6 @@ from typing import Union, Tuple
 from ..appearance_mode_tracker import AppearanceModeTracker
 from ..theme_manager import ThemeManager
 from ..scaling_tracker import ScalingTracker
-from ..settings import Settings
 
 from ..utility.utility_functions import pop_from_dict_by_set, check_kwargs_empty
 
@@ -26,6 +25,9 @@ class CTk(tkinter.Tk):
     _valid_tk_configure_arguments = {'bd', 'borderwidth', 'class', 'menu', 'relief', 'screen',
                                      'use', 'container', 'cursor', 'height',
                                      'highlightthickness', 'padx', 'pady', 'takefocus', 'visual', 'width'}
+
+    _deactivate_macos_window_header_manipulation = False
+    _deactivate_windows_window_header_manipulation = False
 
     def __init__(self,
                  fg_color: Union[str, Tuple[str, str]] = "default_theme",
@@ -262,17 +264,17 @@ class CTk(tkinter.Tk):
         else:
             return super().cget(attribute_name)
 
-    @staticmethod
-    def _enable_macos_dark_title_bar():
-        if sys.platform == "darwin" and not Settings.deactivate_macos_window_header_manipulation:  # macOS
+    @classmethod
+    def _enable_macos_dark_title_bar(cls):
+        if sys.platform == "darwin" and not cls._deactivate_macos_window_header_manipulation:  # macOS
             if Version(platform.python_version()) < Version("3.10"):
                 if Version(tkinter.Tcl().call("info", "patchlevel")) >= Version("8.6.9"):  # Tcl/Tk >= 8.6.9
                     os.system("defaults write -g NSRequiresAquaSystemAppearance -bool No")
                     # This command allows dark-mode for all programs
 
-    @staticmethod
-    def _disable_macos_dark_title_bar():
-        if sys.platform == "darwin" and not Settings.deactivate_macos_window_header_manipulation:  # macOS
+    @classmethod
+    def _disable_macos_dark_title_bar(cls):
+        if sys.platform == "darwin" and not cls._deactivate_macos_window_header_manipulation:  # macOS
             if Version(platform.python_version()) < Version("3.10"):
                 if Version(tkinter.Tcl().call("info", "patchlevel")) >= Version("8.6.9"):  # Tcl/Tk >= 8.6.9
                     os.system("defaults delete -g NSRequiresAquaSystemAppearance")
@@ -289,7 +291,7 @@ class CTk(tkinter.Tk):
         https://docs.microsoft.com/en-us/windows/win32/api/dwmapi/ne-dwmapi-dwmwindowattribute
         """
 
-        if sys.platform.startswith("win") and not Settings.deactivate_windows_window_header_manipulation:
+        if sys.platform.startswith("win") and not self._deactivate_windows_window_header_manipulation:
 
             if self._window_exists:
                 self._state_before_windows_set_titlebar_color = self.state()
