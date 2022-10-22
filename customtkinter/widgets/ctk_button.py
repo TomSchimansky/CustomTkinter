@@ -279,6 +279,38 @@ class CTkButton(CTkBaseClass):
                                       pady=(self._apply_widget_scaling(self._border_width), 2))
 
     def configure(self, require_redraw=False, **kwargs):
+        if "corner_radius" in kwargs:
+            self._corner_radius = kwargs.pop("corner_radius")
+            require_redraw = True
+
+        if "border_width" in kwargs:
+            self._border_width = kwargs.pop("border_width")
+            require_redraw = True
+
+        if "fg_color" in kwargs:
+            self._fg_color = kwargs.pop("fg_color")
+            require_redraw = True
+
+        if "hover_color" in kwargs:
+            self._hover_color = kwargs.pop("hover_color")
+            require_redraw = True
+
+        if "border_color" in kwargs:
+            self._border_color = kwargs.pop("border_color")
+            require_redraw = True
+
+        if "text_color" in kwargs:
+            self._text_color = kwargs.pop("text_color")
+            require_redraw = True
+
+        if "text_color_disabled" in kwargs:
+            self._text_color_disabled = kwargs.pop("text_color_disabled")
+            require_redraw = True
+
+        if "background_corner_colors" in kwargs:
+            self._background_corner_colors = kwargs.pop("background_corner_colors")
+            require_redraw = True
+
         if "text" in kwargs:
             self._text = kwargs.pop("text")
             if self._text_label is None:
@@ -295,41 +327,18 @@ class CTkButton(CTkBaseClass):
 
             self._update_font()
 
-        if "state" in kwargs:
-            self._state = kwargs.pop("state")
-            self._set_cursor()
-            require_redraw = True
+        if "textvariable" in kwargs:
+            self._textvariable = kwargs.pop("textvariable")
+            if self._text_label is not None:
+                self._text_label.configure(textvariable=self._textvariable)
 
         if "image" in kwargs:
             self._image = kwargs.pop("image")
             require_redraw = True
 
-        if "corner_radius" in kwargs:
-            self._corner_radius = kwargs.pop("corner_radius")
-            require_redraw = True
-
-        if "border_width" in kwargs:
-            self._border_width = kwargs.pop("border_width")
-            require_redraw = True
-
-        if "compound" in kwargs:
-            self._compound = kwargs.pop("compound")
-            require_redraw = True
-
-        if "fg_color" in kwargs:
-            self._fg_color = kwargs.pop("fg_color")
-            require_redraw = True
-
-        if "border_color" in kwargs:
-            self._border_color = kwargs.pop("border_color")
-            require_redraw = True
-
-        if "hover_color" in kwargs:
-            self._hover_color = kwargs.pop("hover_color")
-            require_redraw = True
-
-        if "text_color" in kwargs:
-            self._text_color = kwargs.pop("text_color")
+        if "state" in kwargs:
+            self._state = kwargs.pop("state")
+            self._set_cursor()
             require_redraw = True
 
         if "hover" in kwargs:
@@ -338,13 +347,8 @@ class CTkButton(CTkBaseClass):
         if "command" in kwargs:
             self._command = kwargs.pop("command")
 
-        if "textvariable" in kwargs:
-            self._textvariable = kwargs.pop("textvariable")
-            if self._text_label is not None:
-                self._text_label.configure(textvariable=self._textvariable)
-
-        if "background_corner_colors" in kwargs:
-            self._background_corner_colors = kwargs.pop("background_corner_colors")
+        if "compound" in kwargs:
+            self._compound = kwargs.pop("compound")
             require_redraw = True
 
         super().configure(require_redraw=require_redraw, **kwargs)
