@@ -5,7 +5,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ToDo:
- - combine widget and spacing scaling to ui scaling
  - complete other theme files
  - auto-scaling of images
  - image tuple for light/dark mode
@@ -32,6 +31,7 @@ ToDo:
  - Removed setter and getter functions like set_text in CTkButton
  - Removed bg and background attribute from CTk and CTkToplevel, always use fg_color
  - Removed Settings class and moved settings to widget and window classes
+ - removed customtkinter.set_spacing_scaling(), now set_widget_scaling() is used for spacing too
 
 ### Fixed
 

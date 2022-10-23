@@ -104,7 +104,7 @@ class CTkSwitch(CTkBaseClass):
                                  highlightthickness=0,
                                  width=self._apply_widget_scaling(self._switch_width),
                                  height=self._apply_widget_scaling(self._switch_height))
-        self._canvas.grid(row=0, column=0, sticky="nswe")
+        self._canvas.grid(row=0, column=0, sticky="")
         self._draw_engine = DrawEngine(self._canvas)
 
         self._canvas.bind("<Enter>", self._on_enter)

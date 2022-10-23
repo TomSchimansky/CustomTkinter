@@ -223,13 +223,12 @@ class CTkComboBox(CTkBaseClass):
             self._create_grid()
             require_redraw = True
 
-        if "state" in kwargs:
-            self._state = kwargs.pop("state")
-            self._entry.configure(state=self._state)
-            require_redraw = True
-
         if "fg_color" in kwargs:
             self._fg_color = kwargs.pop("fg_color")
+            require_redraw = True
+
+        if "border_color" in kwargs:
+            self._border_color = kwargs.pop("border_color")
             require_redraw = True
 
         if "button_color" in kwargs:
@@ -240,8 +239,21 @@ class CTkComboBox(CTkBaseClass):
             self._button_hover_color = kwargs.pop("button_hover_color")
             require_redraw = True
 
+        if "dropdown_fg_color" in kwargs:
+            self._dropdown_menu.configure(fg_color=kwargs.pop("dropdown_fg_color"))
+
+        if "dropdown_hover_color" in kwargs:
+            self._dropdown_menu.configure(hover_color=kwargs.pop("dropdown_hover_color"))
+
+        if "dropdown_text_color" in kwargs:
+            self._dropdown_menu.configure(text_color=kwargs.pop("dropdown_text_color"))
+
         if "text_color" in kwargs:
             self._text_color = kwargs.pop("text_color")
+            require_redraw = True
+
+        if "text_color_disabled" in kwargs:
+            self._text_color_disabled = kwargs.pop("text_color_disabled")
             require_redraw = True
 
         if "font" in kwargs:
@@ -253,31 +265,27 @@ class CTkComboBox(CTkBaseClass):
 
             self._update_font()
 
-        if "hover" in kwargs:
-            self._hover = kwargs.pop("hover")
-
-        if "command" in kwargs:
-            self._command = kwargs.pop("command")
-
-        if "variable" in kwargs:
-            self._variable = kwargs.pop("variable")
-            self._entry.configure(textvariable=self._variable)
+        if "dropdown_font" in kwargs:
+            self._dropdown_menu.configure(font=kwargs.pop("dropdown_font"))
 
         if "values" in kwargs:
             self._values = kwargs.pop("values")
             self._dropdown_menu.configure(values=self._values)
 
-        if "dropdown_fg_color" in kwargs:
-            self._dropdown_menu.configure(fg_color=kwargs.pop("dropdown_fg_color"))
+        if "state" in kwargs:
+            self._state = kwargs.pop("state")
+            self._entry.configure(state=self._state)
+            require_redraw = True
 
-        if "dropdown_hover_color" in kwargs:
-            self._dropdown_menu.configure(hover_color=kwargs.pop("dropdown_hover_color"))
+        if "hover" in kwargs:
+            self._hover = kwargs.pop("hover")
 
-        if "dropdown_text_color" in kwargs:
-            self._dropdown_menu.configure(text_color=kwargs.pop("dropdown_text_color"))
+        if "variable" in kwargs:
+            self._variable = kwargs.pop("variable")
+            self._entry.configure(textvariable=self._variable)
 
-        if "dropdown_font" in kwargs:
-            self._dropdown_menu.configure(font=kwargs.pop("dropdown_font"))
+        if "command" in kwargs:
+            self._command = kwargs.pop("command")
 
         if "justify" in kwargs:
             self._entry.configure(justify=kwargs.pop("justify"))

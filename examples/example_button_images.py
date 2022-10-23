@@ -1,4 +1,5 @@
 import customtkinter
+import tkinter
 from PIL import Image, ImageTk
 import os
 
@@ -54,8 +55,12 @@ class App(customtkinter.CTk):
                                                 hover_color="#C77C78", command=self.button_function)
         self.button_5.grid(row=0, column=1, padx=20, pady=20)
 
-        self.scaling_button = customtkinter.CTkSegmentedButton(self, values=[0.8, 0.9, 1.0, 1.1, 1.2, 1.5])
+        self.scaling_button = customtkinter.CTkSegmentedButton(self, values=[0.8, 0.9, 1.0, 1.1, 1.2, 1.5],
+                                                               command=lambda v: customtkinter.set_widget_scaling(v))
         self.scaling_button.grid(row=1, column=0, pady=(0, 20))
+        self.mode_switch = customtkinter.CTkSwitch(self, text="darkmode", onvalue="dark", offvalue="light",
+                                                   command=lambda: customtkinter.set_appearance_mode(self.mode_switch.get()))
+        self.mode_switch.grid(row=1, column=1, pady=(0, 20))
 
     def load_image(self, path, image_size):
         """ load rectangular image with path relative to PATH """
