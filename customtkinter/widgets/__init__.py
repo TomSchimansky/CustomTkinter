@@ -1,3 +1,3 @@
-from .ctk_canvas import CTkCanvas
+from customtkinter.widgets.core_rendering.ctk_canvas import CTkCanvas
 
 CTkCanvas.init_font_character_mapping()

@@ -2,16 +2,13 @@ __version__ = "4.6.3"
 
 import os
 import sys
-from tkinter.constants import *
-from tkinter import StringVar, IntVar, DoubleVar, BooleanVar
-from tkinter import filedialog
 
 # import manager classes
 from .appearance_mode_tracker import AppearanceModeTracker
 from .theme_manager import ThemeManager
 from .scaling_tracker import ScalingTracker
 from .font_manager import FontManager
-from .draw_engine import DrawEngine
+from .widgets.core_rendering.draw_engine import DrawEngine
 
 AppearanceModeTracker.init_appearance_mode()
 
@@ -45,7 +42,7 @@ if FontManager.load_font(os.path.join(script_directory, "assets", "fonts", "Cust
     if DrawEngine.preferred_drawing_method == "font_shapes":
         sys.stderr.write("customtkinter.__init__ warning: " +
                          "Preferred drawing method 'font_shapes' can not be used because the font file could not be loaded.\n" +
-                         "Using 'circle_shapes' instead. The rendering quality will be bad!")
+                         "Using 'circle_shapes' instead. The rendering quality will be bad!\n")
         DrawEngine.preferred_drawing_method = "circle_shapes"
 
 # import widgets
@@ -58,7 +55,7 @@ from .widgets.ctk_frame import CTkFrame
 from .widgets.ctk_progressbar import CTkProgressBar
 from .widgets.ctk_label import CTkLabel
 from .widgets.ctk_radiobutton import CTkRadioButton
-from .widgets.ctk_canvas import CTkCanvas
+from .widgets.core_rendering.ctk_canvas import CTkCanvas
 from .widgets.ctk_switch import CTkSwitch
 from .widgets.ctk_optionmenu import CTkOptionMenu
 from .widgets.ctk_combobox import CTkComboBox
@@ -66,6 +63,8 @@ from .widgets.ctk_scrollbar import CTkScrollbar
 from .widgets.ctk_textbox import CTkTextbox
 from .widgets.ctk_tabview import CTkTabview
 from .widgets.ctk_segmented_button import CTkSegmentedButton
+
+from .widgets.ctk_button_new_grid import CTkButtonNewGrid
 
 # import windows
 from .windows.ctk_tk import CTk

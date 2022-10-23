@@ -2,9 +2,9 @@ import tkinter
 import sys
 from typing import Union, Tuple, Callable
 
-from .ctk_canvas import CTkCanvas
+from .core_rendering.ctk_canvas import CTkCanvas
 from ..theme_manager import ThemeManager
-from ..draw_engine import DrawEngine
+from .core_rendering.draw_engine import DrawEngine
 from .widget_base_class import CTkBaseClass
 from ..utility.ctk_font import CTkFont
 
@@ -90,9 +90,9 @@ class CTkSwitch(CTkBaseClass):
         self._textvariable = textvariable
 
         # configure grid system (3x1)
-        self.grid_columnconfigure(0, weight=1)
+        self.grid_columnconfigure(0, weight=0)
         self.grid_columnconfigure(1, weight=0, minsize=self._apply_widget_scaling(6))
-        self.grid_columnconfigure(2, weight=0)
+        self.grid_columnconfigure(2, weight=1)
 
         self._bg_canvas = CTkCanvas(master=self,
                                     highlightthickness=0,

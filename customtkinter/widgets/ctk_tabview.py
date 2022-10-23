@@ -4,8 +4,8 @@ from ..theme_manager import ThemeManager
 from .ctk_frame import CTkFrame
 from .widget_base_class import CTkBaseClass
 from .ctk_segmented_button import CTkSegmentedButton
-from .ctk_canvas import CTkCanvas
-from ..draw_engine import DrawEngine
+from .core_rendering.ctk_canvas import CTkCanvas
+from .core_rendering.draw_engine import DrawEngine
 
 
 class CTkTabview(CTkBaseClass):

@@ -1,10 +1,7 @@
-import tkinter
-import time
 from typing import Union, Tuple
 
 from ..widgets.ctk_label import CTkLabel
 from ..widgets.ctk_entry import CTkEntry
-from ..widgets.ctk_frame import CTkFrame
 from ..windows.ctk_toplevel import CTkToplevel
 from ..widgets.ctk_button import CTkButton
 from ..appearance_mode_tracker import AppearanceModeTracker

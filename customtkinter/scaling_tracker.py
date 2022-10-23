@@ -1,6 +1,6 @@
 import tkinter
 import sys
-from typing import Callable, Dict
+from typing import Callable
 
 
 class ScalingTracker:

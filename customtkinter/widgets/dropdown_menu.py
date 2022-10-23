@@ -1,7 +1,5 @@
 import tkinter
 import sys
-import copy
-import re
 from typing import Union, Tuple, Callable, List
 
 from ..theme_manager import ThemeManager
