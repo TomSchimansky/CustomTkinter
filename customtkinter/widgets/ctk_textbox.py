@@ -142,6 +142,10 @@ class CTkTextbox(CTkBaseClass):
             for child in self.winfo_children():
                 if isinstance(child, CTkBaseClass):
                     child.configure(bg_color=self.fg_color)
+        
+        if "text_color" in kwargs:
+            self.text_color = kwargs.pop("text_color")
+            require_redraw = True
 
         if "border_color" in kwargs:
             self.border_color = kwargs.pop("border_color")
