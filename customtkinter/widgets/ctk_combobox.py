@@ -35,7 +35,7 @@ class CTkComboBox(CTkBaseClass):
                  text_color_disabled: Union[str, Tuple[str, str]] = "default_theme",
 
                  font: Union[tuple, CTkFont] = "default_theme",
-                 dropdown_font: any = "default_theme",
+                 dropdown_font: Union[tuple, CTkFont] = "default_theme",
                  values: List[str] = None,
                  state: str = tkinter.NORMAL,
                  hover: bool = True,
@@ -180,34 +180,34 @@ class CTkComboBox(CTkBaseClass):
 
         if no_color_updates is False or requires_recoloring or requires_recoloring_2:
 
-            self._canvas.configure(bg=ThemeManager.single_color(self._bg_color, self._appearance_mode))
+            self._canvas.configure(bg=self._apply_appearance_mode(self._bg_color))
 
             self._canvas.itemconfig("inner_parts_left",
-                                    outline=ThemeManager.single_color(self._fg_color, self._appearance_mode),
-                                    fill=ThemeManager.single_color(self._fg_color, self._appearance_mode))
+                                    outline=self._apply_appearance_mode(self._fg_color),
+                                    fill=self._apply_appearance_mode(self._fg_color))
             self._canvas.itemconfig("border_parts_left",
-                                    outline=ThemeManager.single_color(self._border_color, self._appearance_mode),
-                                    fill=ThemeManager.single_color(self._border_color, self._appearance_mode))
+                                    outline=self._apply_appearance_mode(self._border_color),
+                                    fill=self._apply_appearance_mode(self._border_color))
             self._canvas.itemconfig("inner_parts_right",
-                                    outline=ThemeManager.single_color(self._border_color, self._appearance_mode),
-                                    fill=ThemeManager.single_color(self._border_color, self._appearance_mode))
+                                    outline=self._apply_appearance_mode(self._border_color),
+                                    fill=self._apply_appearance_mode(self._border_color))
             self._canvas.itemconfig("border_parts_right",
-                                    outline=ThemeManager.single_color(self._border_color, self._appearance_mode),
-                                    fill=ThemeManager.single_color(self._border_color, self._appearance_mode))
+                                    outline=self._apply_appearance_mode(self._border_color),
+                                    fill=self._apply_appearance_mode(self._border_color))
 
-            self._entry.configure(bg=ThemeManager.single_color(self._fg_color, self._appearance_mode),
-                                  fg=ThemeManager.single_color(self._text_color, self._appearance_mode),
-                                  disabledbackground=ThemeManager.single_color(self._fg_color, self._appearance_mode),
-                                  disabledforeground=ThemeManager.single_color(self._text_color_disabled, self._appearance_mode),
-                                  highlightcolor=ThemeManager.single_color(self._fg_color, self._appearance_mode),
-                                  insertbackground=ThemeManager.single_color(self._text_color, self._appearance_mode))
+            self._entry.configure(bg=self._apply_appearance_mode(self._fg_color),
+                                  fg=self._apply_appearance_mode(self._text_color),
+                                  disabledbackground=self._apply_appearance_mode(self._fg_color),
+                                  disabledforeground=self._apply_appearance_mode(self._text_color_disabled),
+                                  highlightcolor=self._apply_appearance_mode(self._fg_color),
+                                  insertbackground=self._apply_appearance_mode(self._text_color))
 
             if self._state == tkinter.DISABLED:
                 self._canvas.itemconfig("dropdown_arrow",
-                                        fill=ThemeManager.single_color(self._text_color_disabled, self._appearance_mode))
+                                        fill=self._apply_appearance_mode(self._text_color_disabled))
             else:
                 self._canvas.itemconfig("dropdown_arrow",
-                                        fill=ThemeManager.single_color(self._text_color, self._appearance_mode))
+                                        fill=self._apply_appearance_mode(self._text_color))
 
     def _open_dropdown_menu(self):
         self._dropdown_menu.open(self.winfo_rootx(),
@@ -345,11 +345,11 @@ class CTkComboBox(CTkBaseClass):
 
             # set color of inner button parts to hover color
             self._canvas.itemconfig("inner_parts_right",
-                                    outline=ThemeManager.single_color(self._button_hover_color, self._appearance_mode),
-                                    fill=ThemeManager.single_color(self._button_hover_color, self._appearance_mode))
+                                    outline=self._apply_appearance_mode(self._button_hover_color),
+                                    fill=self._apply_appearance_mode(self._button_hover_color))
             self._canvas.itemconfig("border_parts_right",
-                                    outline=ThemeManager.single_color(self._button_hover_color, self._appearance_mode),
-                                    fill=ThemeManager.single_color(self._button_hover_color, self._appearance_mode))
+                                    outline=self._apply_appearance_mode(self._button_hover_color),
+                                    fill=self._apply_appearance_mode(self._button_hover_color))
 
     def _on_leave(self, event=0):
         if sys.platform == "darwin" and len(self._values) > 0 and self._cursor_manipulation_enabled:
@@ -359,11 +359,11 @@ class CTkComboBox(CTkBaseClass):
 
         # set color of inner button parts
         self._canvas.itemconfig("inner_parts_right",
-                                outline=ThemeManager.single_color(self._button_color, self._appearance_mode),
-                                fill=ThemeManager.single_color(self._button_color, self._appearance_mode))
+                                outline=self._apply_appearance_mode(self._button_color),
+                                fill=self._apply_appearance_mode(self._button_color))
         self._canvas.itemconfig("border_parts_right",
-                                outline=ThemeManager.single_color(self._button_color, self._appearance_mode),
-                                fill=ThemeManager.single_color(self._button_color, self._appearance_mode))
+                                outline=self._apply_appearance_mode(self._button_color),
+                                fill=self._apply_appearance_mode(self._button_color))
 
     def _dropdown_callback(self, value: str):
         if self._state == "readonly":

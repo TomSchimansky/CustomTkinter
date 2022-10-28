@@ -212,35 +212,35 @@ class CTkSwitch(CTkBaseClass):
                                                                                                0, "w")
 
         if no_color_updates is False or requires_recoloring:
-            self._bg_canvas.configure(bg=ThemeManager.single_color(self._bg_color, self._appearance_mode))
-            self._canvas.configure(bg=ThemeManager.single_color(self._bg_color, self._appearance_mode))
+            self._bg_canvas.configure(bg=self._apply_appearance_mode(self._bg_color))
+            self._canvas.configure(bg=self._apply_appearance_mode(self._bg_color))
 
             if self._border_color is None:
-                self._canvas.itemconfig("border_parts", fill=ThemeManager.single_color(self._bg_color, self._appearance_mode),
-                                        outline=ThemeManager.single_color(self._bg_color, self._appearance_mode))
+                self._canvas.itemconfig("border_parts", fill=self._apply_appearance_mode(self._bg_color),
+                                        outline=self._apply_appearance_mode(self._bg_color))
             else:
-                self._canvas.itemconfig("border_parts", fill=ThemeManager.single_color(self._border_color, self._appearance_mode),
-                                        outline=ThemeManager.single_color(self._border_color, self._appearance_mode))
+                self._canvas.itemconfig("border_parts", fill=self._apply_appearance_mode(self._border_color),
+                                        outline=self._apply_appearance_mode(self._border_color))
 
-            self._canvas.itemconfig("inner_parts", fill=ThemeManager.single_color(self._fg_color, self._appearance_mode),
-                                    outline=ThemeManager.single_color(self._fg_color, self._appearance_mode))
+            self._canvas.itemconfig("inner_parts", fill=self._apply_appearance_mode(self._fg_color),
+                                    outline=self._apply_appearance_mode(self._fg_color))
 
             if self._progress_color is None:
-                self._canvas.itemconfig("progress_parts", fill=ThemeManager.single_color(self._fg_color, self._appearance_mode),
-                                        outline=ThemeManager.single_color(self._fg_color, self._appearance_mode))
+                self._canvas.itemconfig("progress_parts", fill=self._apply_appearance_mode(self._fg_color),
+                                        outline=self._apply_appearance_mode(self._fg_color))
             else:
-                self._canvas.itemconfig("progress_parts", fill=ThemeManager.single_color(self._progress_color, self._appearance_mode),
-                                        outline=ThemeManager.single_color(self._progress_color, self._appearance_mode))
+                self._canvas.itemconfig("progress_parts", fill=self._apply_appearance_mode(self._progress_color),
+                                        outline=self._apply_appearance_mode(self._progress_color))
 
-            self._canvas.itemconfig("slider_parts", fill=ThemeManager.single_color(self._button_color, self._appearance_mode),
-                                    outline=ThemeManager.single_color(self._button_color, self._appearance_mode))
+            self._canvas.itemconfig("slider_parts", fill=self._apply_appearance_mode(self._button_color),
+                                    outline=self._apply_appearance_mode(self._button_color))
 
             if self._state == tkinter.DISABLED:
-                self._text_label.configure(fg=(ThemeManager.single_color(self._text_color_disabled, self._appearance_mode)))
+                self._text_label.configure(fg=(self._apply_appearance_mode(self._text_color_disabled)))
             else:
-                self._text_label.configure(fg=ThemeManager.single_color(self._text_color, self._appearance_mode))
+                self._text_label.configure(fg=self._apply_appearance_mode(self._text_color))
 
-            self._text_label.configure(bg=ThemeManager.single_color(self._bg_color, self._appearance_mode))
+            self._text_label.configure(bg=self._apply_appearance_mode(self._bg_color))
 
     def configure(self, require_redraw=False, **kwargs):
         if "switch_width" in kwargs:
@@ -417,14 +417,14 @@ class CTkSwitch(CTkBaseClass):
         if self._hover is True and self._state == "normal":
             self._hover_state = True
             self._canvas.itemconfig("slider_parts",
-                                    fill=ThemeManager.single_color(self._button_hover_color, self._appearance_mode),
-                                    outline=ThemeManager.single_color(self._button_hover_color, self._appearance_mode))
+                                    fill=self._apply_appearance_mode(self._button_hover_color),
+                                    outline=self._apply_appearance_mode(self._button_hover_color))
 
     def _on_leave(self, event=0):
         self._hover_state = False
         self._canvas.itemconfig("slider_parts",
-                                fill=ThemeManager.single_color(self._button_color, self._appearance_mode),
-                                outline=ThemeManager.single_color(self._button_color, self._appearance_mode))
+                                fill=self._apply_appearance_mode(self._button_color),
+                                outline=self._apply_appearance_mode(self._button_color))
 
     def _variable_callback(self, var_name, index, mode):
         if not self._variable_callback_blocked:

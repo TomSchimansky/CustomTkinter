@@ -193,27 +193,27 @@ class CTkOptionMenu(CTkBaseClass):
 
         if no_color_updates is False or requires_recoloring or requires_recoloring_2:
 
-            self._canvas.configure(bg=ThemeManager.single_color(self._bg_color, self._appearance_mode))
+            self._canvas.configure(bg=self._apply_appearance_mode(self._bg_color))
 
             self._canvas.itemconfig("inner_parts_left",
-                                    outline=ThemeManager.single_color(self._fg_color, self._appearance_mode),
-                                    fill=ThemeManager.single_color(self._fg_color, self._appearance_mode))
+                                    outline=self._apply_appearance_mode(self._fg_color),
+                                    fill=self._apply_appearance_mode(self._fg_color))
             self._canvas.itemconfig("inner_parts_right",
-                                    outline=ThemeManager.single_color(self._button_color, self._appearance_mode),
-                                    fill=ThemeManager.single_color(self._button_color, self._appearance_mode))
+                                    outline=self._apply_appearance_mode(self._button_color),
+                                    fill=self._apply_appearance_mode(self._button_color))
 
-            self._text_label.configure(fg=ThemeManager.single_color(self._text_color, self._appearance_mode))
+            self._text_label.configure(fg=self._apply_appearance_mode(self._text_color))
 
             if self._state == tkinter.DISABLED:
-                self._text_label.configure(fg=(ThemeManager.single_color(self._text_color_disabled, self._appearance_mode)))
+                self._text_label.configure(fg=(self._apply_appearance_mode(self._text_color_disabled)))
                 self._canvas.itemconfig("dropdown_arrow",
-                                        fill=ThemeManager.single_color(self._text_color_disabled, self._appearance_mode))
+                                        fill=self._apply_appearance_mode(self._text_color_disabled))
             else:
-                self._text_label.configure(fg=ThemeManager.single_color(self._text_color, self._appearance_mode))
+                self._text_label.configure(fg=self._apply_appearance_mode(self._text_color))
                 self._canvas.itemconfig("dropdown_arrow",
-                                        fill=ThemeManager.single_color(self._text_color, self._appearance_mode))
+                                        fill=self._apply_appearance_mode(self._text_color))
 
-            self._text_label.configure(bg=ThemeManager.single_color(self._fg_color, self._appearance_mode))
+            self._text_label.configure(bg=self._apply_appearance_mode(self._fg_color))
 
         self._canvas.update_idletasks()
 
@@ -350,14 +350,14 @@ class CTkOptionMenu(CTkBaseClass):
         if self._hover is True and self._state == tkinter.NORMAL and len(self._values) > 0:
             # set color of inner button parts to hover color
             self._canvas.itemconfig("inner_parts_right",
-                                    outline=ThemeManager.single_color(self._button_hover_color, self._appearance_mode),
-                                    fill=ThemeManager.single_color(self._button_hover_color, self._appearance_mode))
+                                    outline=self._apply_appearance_mode(self._button_hover_color),
+                                    fill=self._apply_appearance_mode(self._button_hover_color))
 
     def _on_leave(self, event=0):
         # set color of inner button parts
         self._canvas.itemconfig("inner_parts_right",
-                                outline=ThemeManager.single_color(self._button_color, self._appearance_mode),
-                                fill=ThemeManager.single_color(self._button_color, self._appearance_mode))
+                                outline=self._apply_appearance_mode(self._button_color),
+                                fill=self._apply_appearance_mode(self._button_color))
 
     def _variable_callback(self, var_name, index, mode):
         if not self._variable_callback_blocked:

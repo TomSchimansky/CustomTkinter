@@ -2,7 +2,8 @@ import sys
 import tkinter
 import tkinter.ttk as ttk
 import copy
-from typing import Union, Callable, Tuple
+from typing import Union, Callable, Tuple, List
+from abc import ABC, abstractmethod
 
 try:
     from typing import TypedDict
@@ -15,12 +16,11 @@ from ...appearance_mode_tracker import AppearanceModeTracker
 from ...scaling_tracker import ScalingTracker
 from ...theme_manager import ThemeManager
 from ..font.ctk_font import CTkFont
-from ..image.ctk_image import CTkImage
 
 from ...utility.utility_functions import pop_from_dict_by_set, check_kwargs_empty
 
 
-class CTkBaseClass(tkinter.Frame):
+class CTkBaseClass(tkinter.Frame, ABC):
     """ Base class of every CTk widget, handles the dimensions, _bg_color,
         appearance_mode changes, scaling, bg changes of master if master is not a CTk widget """
 
@@ -69,7 +69,7 @@ class CTkBaseClass(tkinter.Frame):
         # background color
         self._bg_color:  Union[str, Tuple[str, str]] = self._detect_color_of_master() if bg_color is None else bg_color
 
-        super().configure(bg=ThemeManager.single_color(self._bg_color, self._appearance_mode))
+        super().configure(bg=self._apply_appearance_mode(self._bg_color))
         super().bind('<Configure>', self._update_dimensions_event)
 
         # overwrite configure methods of master when master is tkinter widget, so that bg changes get applied on child CTk widget as well
@@ -93,9 +93,9 @@ class CTkBaseClass(tkinter.Frame):
             self.master.config = new_configure
             self.master.configure = new_configure
 
+    @abstractmethod
     def _draw(self, no_color_updates: bool = False):
-        """ abstract of draw method to be overridden """
-        pass
+        return
 
     def config(self, *args, **kwargs):
         raise AttributeError("'config' is not implemented for CTk widgets. For consistency, always use 'configure' instead.")
@@ -200,7 +200,7 @@ class CTkBaseClass(tkinter.Frame):
         elif mode_string.lower() == "light":
             self._appearance_mode = 0
 
-        super().configure(bg=ThemeManager.single_color(self._bg_color, self._appearance_mode))
+        super().configure(bg=self._apply_appearance_mode(self._bg_color))
         self._draw()
 
     def _set_scaling(self, new_widget_scaling, new_window_scaling):
@@ -264,6 +264,16 @@ class CTkBaseClass(tkinter.Frame):
             scaled_kwargs["y"] = self._apply_widget_scaling(scaled_kwargs["y"])
 
         return scaled_kwargs
+
+    def _apply_appearance_mode(self, color: Union[str, Tuple[str, str], List[str]]) -> str:
+        """ color can be either a single hex color string or a color name or it can be a
+            tuple color with (light_color, dark_color). The functions returns
+            always a single color string """
+
+        if type(color) == tuple or type(color) == list:
+            return color[self._appearance_mode]
+        else:
+            return color
 
     def destroy(self):
         """ Destroy this and all descendants widgets. """

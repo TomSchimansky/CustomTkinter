@@ -183,35 +183,35 @@ class CTkCheckBox(CTkBaseClass):
             self._canvas.delete("checkmark")
 
         if no_color_updates is False or requires_recoloring_1 or requires_recoloring_2:
-            self._bg_canvas.configure(bg=ThemeManager.single_color(self._bg_color, self._appearance_mode))
-            self._canvas.configure(bg=ThemeManager.single_color(self._bg_color, self._appearance_mode))
+            self._bg_canvas.configure(bg=self._apply_appearance_mode(self._bg_color))
+            self._canvas.configure(bg=self._apply_appearance_mode(self._bg_color))
 
             if self._check_state is True:
                 self._canvas.itemconfig("inner_parts",
-                                        outline=ThemeManager.single_color(self._fg_color, self._appearance_mode),
-                                        fill=ThemeManager.single_color(self._fg_color, self._appearance_mode))
+                                        outline=self._apply_appearance_mode(self._fg_color),
+                                        fill=self._apply_appearance_mode(self._fg_color))
                 self._canvas.itemconfig("border_parts",
-                                        outline=ThemeManager.single_color(self._fg_color, self._appearance_mode),
-                                        fill=ThemeManager.single_color(self._fg_color, self._appearance_mode))
+                                        outline=self._apply_appearance_mode(self._fg_color),
+                                        fill=self._apply_appearance_mode(self._fg_color))
 
                 if "create_line" in self._canvas.gettags("checkmark"):
-                    self._canvas.itemconfig("checkmark", fill=ThemeManager.single_color(self._checkmark_color, self._appearance_mode))
+                    self._canvas.itemconfig("checkmark", fill=self._apply_appearance_mode(self._checkmark_color))
                 else:
-                    self._canvas.itemconfig("checkmark", fill=ThemeManager.single_color(self._checkmark_color, self._appearance_mode))
+                    self._canvas.itemconfig("checkmark", fill=self._apply_appearance_mode(self._checkmark_color))
             else:
                 self._canvas.itemconfig("inner_parts",
-                                        outline=ThemeManager.single_color(self._bg_color, self._appearance_mode),
-                                        fill=ThemeManager.single_color(self._bg_color, self._appearance_mode))
+                                        outline=self._apply_appearance_mode(self._bg_color),
+                                        fill=self._apply_appearance_mode(self._bg_color))
                 self._canvas.itemconfig("border_parts",
-                                        outline=ThemeManager.single_color(self._border_color, self._appearance_mode),
-                                        fill=ThemeManager.single_color(self._border_color, self._appearance_mode))
+                                        outline=self._apply_appearance_mode(self._border_color),
+                                        fill=self._apply_appearance_mode(self._border_color))
 
             if self._state == tkinter.DISABLED:
-                self._text_label.configure(fg=(ThemeManager.single_color(self._text_color_disabled, self._appearance_mode)))
+                self._text_label.configure(fg=(self._apply_appearance_mode(self._text_color_disabled)))
             else:
-                self._text_label.configure(fg=ThemeManager.single_color(self._text_color, self._appearance_mode))
+                self._text_label.configure(fg=self._apply_appearance_mode(self._text_color))
 
-            self._text_label.configure(bg=ThemeManager.single_color(self._bg_color, self._appearance_mode))
+            self._text_label.configure(bg=self._apply_appearance_mode(self._bg_color))
 
     def configure(self, require_redraw=False, **kwargs):
         if "checkbox_width" in kwargs:
@@ -349,31 +349,31 @@ class CTkCheckBox(CTkBaseClass):
         if self._hover is True and self._state == tkinter.NORMAL:
             if self._check_state is True:
                 self._canvas.itemconfig("inner_parts",
-                                        fill=ThemeManager.single_color(self._hover_color, self._appearance_mode),
-                                        outline=ThemeManager.single_color(self._hover_color, self._appearance_mode))
+                                        fill=self._apply_appearance_mode(self._hover_color),
+                                        outline=self._apply_appearance_mode(self._hover_color))
                 self._canvas.itemconfig("border_parts",
-                                        fill=ThemeManager.single_color(self._hover_color, self._appearance_mode),
-                                        outline=ThemeManager.single_color(self._hover_color, self._appearance_mode))
+                                        fill=self._apply_appearance_mode(self._hover_color),
+                                        outline=self._apply_appearance_mode(self._hover_color))
             else:
                 self._canvas.itemconfig("inner_parts",
-                                        fill=ThemeManager.single_color(self._hover_color, self._appearance_mode),
-                                        outline=ThemeManager.single_color(self._hover_color, self._appearance_mode))
+                                        fill=self._apply_appearance_mode(self._hover_color),
+                                        outline=self._apply_appearance_mode(self._hover_color))
 
     def _on_leave(self, event=0):
         if self._check_state is True:
             self._canvas.itemconfig("inner_parts",
-                                    fill=ThemeManager.single_color(self._fg_color, self._appearance_mode),
-                                    outline=ThemeManager.single_color(self._fg_color, self._appearance_mode))
+                                    fill=self._apply_appearance_mode(self._fg_color),
+                                    outline=self._apply_appearance_mode(self._fg_color))
             self._canvas.itemconfig("border_parts",
-                                    fill=ThemeManager.single_color(self._fg_color, self._appearance_mode),
-                                    outline=ThemeManager.single_color(self._fg_color, self._appearance_mode))
+                                    fill=self._apply_appearance_mode(self._fg_color),
+                                    outline=self._apply_appearance_mode(self._fg_color))
         else:
             self._canvas.itemconfig("inner_parts",
-                                    fill=ThemeManager.single_color(self._bg_color, self._appearance_mode),
-                                    outline=ThemeManager.single_color(self._bg_color, self._appearance_mode))
+                                    fill=self._apply_appearance_mode(self._bg_color),
+                                    outline=self._apply_appearance_mode(self._bg_color))
             self._canvas.itemconfig("border_parts",
-                                    fill=ThemeManager.single_color(self._border_color, self._appearance_mode),
-                                    outline=ThemeManager.single_color(self._border_color, self._appearance_mode))
+                                    fill=self._apply_appearance_mode(self._border_color),
+                                    outline=self._apply_appearance_mode(self._border_color))
 
     def _variable_callback(self, var_name, index, mode):
         if not self._variable_callback_blocked:

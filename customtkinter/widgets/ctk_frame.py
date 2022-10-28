@@ -58,7 +58,7 @@ class CTkFrame(CTkBaseClass):
                                  width=self._apply_widget_scaling(self._current_width),
                                  height=self._apply_widget_scaling(self._current_height))
         self._canvas.place(x=0, y=0, relwidth=1, relheight=1)
-        self._canvas.configure(bg=ThemeManager.single_color(self._bg_color, self._appearance_mode))
+        self._canvas.configure(bg=self._apply_appearance_mode(self._bg_color))
         self._draw_engine = DrawEngine(self._canvas)
         self._overwrite_preferred_drawing_method = overwrite_preferred_drawing_method
 
@@ -97,10 +97,10 @@ class CTkFrame(CTkBaseClass):
         if self._background_corner_colors is not None:
             self._draw_engine.draw_background_corners(self._apply_widget_scaling(self._current_width),
                                                       self._apply_widget_scaling(self._current_height))
-            self._canvas.itemconfig("background_corner_top_left", fill=ThemeManager.single_color(self._background_corner_colors[0], self._appearance_mode))
-            self._canvas.itemconfig("background_corner_top_right", fill=ThemeManager.single_color(self._background_corner_colors[1], self._appearance_mode))
-            self._canvas.itemconfig("background_corner_bottom_right", fill=ThemeManager.single_color(self._background_corner_colors[2], self._appearance_mode))
-            self._canvas.itemconfig("background_corner_bottom_left", fill=ThemeManager.single_color(self._background_corner_colors[3], self._appearance_mode))
+            self._canvas.itemconfig("background_corner_top_left", fill=self._apply_appearance_mode(self._background_corner_colors[0]))
+            self._canvas.itemconfig("background_corner_top_right", fill=self._apply_appearance_mode(self._background_corner_colors[1]))
+            self._canvas.itemconfig("background_corner_bottom_right", fill=self._apply_appearance_mode(self._background_corner_colors[2]))
+            self._canvas.itemconfig("background_corner_bottom_left", fill=self._apply_appearance_mode(self._background_corner_colors[3]))
         else:
             self._canvas.delete("background_parts")
 
@@ -113,17 +113,17 @@ class CTkFrame(CTkBaseClass):
         if no_color_updates is False or requires_recoloring:
             if self._fg_color is None:
                 self._canvas.itemconfig("inner_parts",
-                                        fill=ThemeManager.single_color(self._bg_color, self._appearance_mode),
-                                        outline=ThemeManager.single_color(self._bg_color, self._appearance_mode))
+                                        fill=self._apply_appearance_mode(self._bg_color),
+                                        outline=self._apply_appearance_mode(self._bg_color))
             else:
                 self._canvas.itemconfig("inner_parts",
-                                        fill=ThemeManager.single_color(self._fg_color, self._appearance_mode),
-                                        outline=ThemeManager.single_color(self._fg_color, self._appearance_mode))
+                                        fill=self._apply_appearance_mode(self._fg_color),
+                                        outline=self._apply_appearance_mode(self._fg_color))
 
             self._canvas.itemconfig("border_parts",
-                                    fill=ThemeManager.single_color(self._border_color, self._appearance_mode),
-                                    outline=ThemeManager.single_color(self._border_color, self._appearance_mode))
-            self._canvas.configure(bg=ThemeManager.single_color(self._bg_color, self._appearance_mode))
+                                    fill=self._apply_appearance_mode(self._border_color),
+                                    outline=self._apply_appearance_mode(self._border_color))
+            self._canvas.configure(bg=self._apply_appearance_mode(self._bg_color))
 
         # self._canvas.tag_lower("inner_parts")  # maybe unnecessary, I don't know ???
         # self._canvas.tag_lower("border_parts")

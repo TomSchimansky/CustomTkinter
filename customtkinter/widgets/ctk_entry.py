@@ -148,7 +148,7 @@ class CTkEntry(CTkBaseClass):
         super().destroy()
 
     def _draw(self, no_color_updates=False):
-        self._canvas.configure(bg=ThemeManager.single_color(self._bg_color, self._appearance_mode))
+        self._canvas.configure(bg=self._apply_appearance_mode(self._bg_color))
 
         requires_recoloring = self._draw_engine.draw_rounded_rect_with_border(self._apply_widget_scaling(self._current_width),
                                                                               self._apply_widget_scaling(self._current_height),
@@ -156,33 +156,33 @@ class CTkEntry(CTkBaseClass):
                                                                               self._apply_widget_scaling(self._border_width))
 
         if requires_recoloring or no_color_updates is False:
-            if ThemeManager.single_color(self._fg_color, self._appearance_mode) is not None:
+            if self._apply_appearance_mode(self._fg_color) is not None:
                 self._canvas.itemconfig("inner_parts",
-                                        fill=ThemeManager.single_color(self._fg_color, self._appearance_mode),
-                                        outline=ThemeManager.single_color(self._fg_color, self._appearance_mode))
-                self._entry.configure(bg=ThemeManager.single_color(self._fg_color, self._appearance_mode),
-                                      fg=ThemeManager.single_color(self._text_color, self._appearance_mode),
-                                      disabledbackground=ThemeManager.single_color(self._fg_color, self._appearance_mode),
-                                      disabledforeground=ThemeManager.single_color(self._text_color, self._appearance_mode),
-                                      highlightcolor=ThemeManager.single_color(self._fg_color, self._appearance_mode),
-                                      insertbackground=ThemeManager.single_color(self._text_color, self._appearance_mode))
+                                        fill=self._apply_appearance_mode(self._fg_color),
+                                        outline=self._apply_appearance_mode(self._fg_color))
+                self._entry.configure(bg=self._apply_appearance_mode(self._fg_color),
+                                      fg=self._apply_appearance_mode(self._text_color),
+                                      disabledbackground=self._apply_appearance_mode(self._fg_color),
+                                      disabledforeground=self._apply_appearance_mode(self._text_color),
+                                      highlightcolor=self._apply_appearance_mode(self._fg_color),
+                                      insertbackground=self._apply_appearance_mode(self._text_color))
             else:
                 self._canvas.itemconfig("inner_parts",
-                                        fill=ThemeManager.single_color(self._bg_color, self._appearance_mode),
-                                        outline=ThemeManager.single_color(self._bg_color, self._appearance_mode))
-                self._entry.configure(bg=ThemeManager.single_color(self._bg_color, self._appearance_mode),
-                                      fg=ThemeManager.single_color(self._text_color, self._appearance_mode),
-                                      disabledbackground=ThemeManager.single_color(self._bg_color, self._appearance_mode),
-                                      disabledforeground=ThemeManager.single_color(self._text_color, self._appearance_mode),
-                                      highlightcolor=ThemeManager.single_color(self._bg_color, self._appearance_mode),
-                                      insertbackground=ThemeManager.single_color(self._text_color, self._appearance_mode))
+                                        fill=self._apply_appearance_mode(self._bg_color),
+                                        outline=self._apply_appearance_mode(self._bg_color))
+                self._entry.configure(bg=self._apply_appearance_mode(self._bg_color),
+                                      fg=self._apply_appearance_mode(self._text_color),
+                                      disabledbackground=self._apply_appearance_mode(self._bg_color),
+                                      disabledforeground=self._apply_appearance_mode(self._text_color),
+                                      highlightcolor=self._apply_appearance_mode(self._bg_color),
+                                      insertbackground=self._apply_appearance_mode(self._text_color))
 
             self._canvas.itemconfig("border_parts",
-                                    fill=ThemeManager.single_color(self._border_color, self._appearance_mode),
-                                    outline=ThemeManager.single_color(self._border_color, self._appearance_mode))
+                                    fill=self._apply_appearance_mode(self._border_color),
+                                    outline=self._apply_appearance_mode(self._border_color))
 
             if self._placeholder_text_active:
-                self._entry.config(fg=ThemeManager.single_color(self._placeholder_text_color, self._appearance_mode))
+                self._entry.config(fg=self._apply_appearance_mode(self._placeholder_text_color))
 
     def configure(self, require_redraw=False, **kwargs):
         if "state" in kwargs:
@@ -287,7 +287,7 @@ class CTkEntry(CTkBaseClass):
             self._placeholder_text_active = True
 
             self._pre_placeholder_arguments = {"show": self._entry.cget("show")}
-            self._entry.config(fg=ThemeManager.single_color(self._placeholder_text_color, self._appearance_mode), show="")
+            self._entry.config(fg=self._apply_appearance_mode(self._placeholder_text_color), show="")
             self._entry.delete(0, tkinter.END)
             self._entry.insert(0, self._placeholder_text)
 
@@ -295,7 +295,7 @@ class CTkEntry(CTkBaseClass):
         if self._placeholder_text_active:
             self._placeholder_text_active = False
 
-            self._entry.config(fg=ThemeManager.single_color(self._text_color, self._appearance_mode))
+            self._entry.config(fg=self._apply_appearance_mode(self._text_color))
             self._entry.delete(0, tkinter.END)
             for argument, value in self._pre_placeholder_arguments.items():
                 self._entry[argument] = value

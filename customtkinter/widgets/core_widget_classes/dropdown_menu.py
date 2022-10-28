@@ -65,24 +65,24 @@ class DropdownMenu(tkinter.Menu):
         elif sys.platform.startswith("win"):
             super().configure(tearoff=False,
                               relief="flat",
-                              activebackground=ThemeManager.single_color(self._hover_color, self._appearance_mode),
+                              activebackground=ThemeManager._apply_appearance_mode(self._hover_color, self._appearance_mode),
                               borderwidth=self._apply_widget_scaling(4),
                               activeborderwidth=self._apply_widget_scaling(4),
-                              bg=ThemeManager.single_color(self._fg_color, self._appearance_mode),
-                              fg=ThemeManager.single_color(self._text_color, self._appearance_mode),
-                              activeforeground=ThemeManager.single_color(self._text_color, self._appearance_mode),
+                              bg=ThemeManager._apply_appearance_mode(self._fg_color, self._appearance_mode),
+                              fg=ThemeManager._apply_appearance_mode(self._text_color, self._appearance_mode),
+                              activeforeground=ThemeManager._apply_appearance_mode(self._text_color, self._appearance_mode),
                               font=self._apply_font_scaling(self._font),
                               cursor="hand2")
 
         else:
             super().configure(tearoff=False,
                               relief="flat",
-                              activebackground=ThemeManager.single_color(self._hover_color, self._appearance_mode),
+                              activebackground=ThemeManager._apply_appearance_mode(self._hover_color, self._appearance_mode),
                               borderwidth=0,
                               activeborderwidth=0,
-                              bg=ThemeManager.single_color(self._fg_color, self._appearance_mode),
-                              fg=ThemeManager.single_color(self._text_color, self._appearance_mode),
-                              activeforeground=ThemeManager.single_color(self._text_color, self._appearance_mode),
+                              bg=ThemeManager._apply_appearance_mode(self._fg_color, self._appearance_mode),
+                              fg=ThemeManager._apply_appearance_mode(self._text_color, self._appearance_mode),
+                              activeforeground=ThemeManager._apply_appearance_mode(self._text_color, self._appearance_mode),
                               font=self._apply_font_scaling(self._font))
 
     def _add_menu_commands(self):
@@ -120,15 +120,15 @@ class DropdownMenu(tkinter.Menu):
     def configure(self, **kwargs):
         if "fg_color" in kwargs:
             self._fg_color = kwargs.pop("fg_color")
-            super().configure(bg=ThemeManager.single_color(self._fg_color, self._appearance_mode))
+            super().configure(bg=ThemeManager._apply_appearance_mode(self._fg_color, self._appearance_mode))
 
         if "hover_color" in kwargs:
             self._hover_color = kwargs.pop("hover_color")
-            super().configure(activebackground=ThemeManager.single_color(self._hover_color, self._appearance_mode))
+            super().configure(activebackground=ThemeManager._apply_appearance_mode(self._hover_color, self._appearance_mode))
 
         if "text_color" in kwargs:
             self._text_color = kwargs.pop("text_color")
-            super().configure(fg=ThemeManager.single_color(self._text_color, self._appearance_mode))
+            super().configure(fg=ThemeManager._apply_appearance_mode(self._text_color, self._appearance_mode))
 
         if "font" in kwargs:
             if isinstance(self._font, CTkFont):

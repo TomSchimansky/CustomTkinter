@@ -123,22 +123,22 @@ class CTkLabel(CTkBaseClass):
                                                                               0)
 
         if no_color_updates is False or requires_recoloring:
-            if ThemeManager.single_color(self._fg_color, self._appearance_mode) is not None:
+            if self._apply_appearance_mode(self._fg_color) is not None:
                 self._canvas.itemconfig("inner_parts",
-                                        fill=ThemeManager.single_color(self._fg_color, self._appearance_mode),
-                                        outline=ThemeManager.single_color(self._fg_color, self._appearance_mode))
+                                        fill=self._apply_appearance_mode(self._fg_color),
+                                        outline=self._apply_appearance_mode(self._fg_color))
 
-                self._text_label.configure(fg=ThemeManager.single_color(self._text_color, self._appearance_mode),
-                                           bg=ThemeManager.single_color(self._fg_color, self._appearance_mode))
+                self._text_label.configure(fg=self._apply_appearance_mode(self._text_color),
+                                           bg=self._apply_appearance_mode(self._fg_color))
             else:
                 self._canvas.itemconfig("inner_parts",
-                                        fill=ThemeManager.single_color(self._bg_color, self._appearance_mode),
-                                        outline=ThemeManager.single_color(self._bg_color, self._appearance_mode))
+                                        fill=self._apply_appearance_mode(self._bg_color),
+                                        outline=self._apply_appearance_mode(self._bg_color))
 
-                self._text_label.configure(fg=ThemeManager.single_color(self._text_color, self._appearance_mode),
-                                           bg=ThemeManager.single_color(self._bg_color, self._appearance_mode))
+                self._text_label.configure(fg=self._apply_appearance_mode(self._text_color),
+                                           bg=self._apply_appearance_mode(self._bg_color))
 
-            self._canvas.configure(bg=ThemeManager.single_color(self._bg_color, self._appearance_mode))
+            self._canvas.configure(bg=self._apply_appearance_mode(self._bg_color))
 
     def configure(self, require_redraw=False, **kwargs):
         if "anchor" in kwargs:

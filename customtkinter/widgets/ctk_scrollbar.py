@@ -130,23 +130,23 @@ class CTkScrollbar(CTkBaseClass):
         if no_color_updates is False or requires_recoloring:
             if self._hover_state is True:
                 self._canvas.itemconfig("scrollbar_parts",
-                                        fill=ThemeManager.single_color(self._scrollbar_hover_color, self._appearance_mode),
-                                        outline=ThemeManager.single_color(self._scrollbar_hover_color, self._appearance_mode))
+                                        fill=self._apply_appearance_mode(self._scrollbar_hover_color),
+                                        outline=self._apply_appearance_mode(self._scrollbar_hover_color))
             else:
                 self._canvas.itemconfig("scrollbar_parts",
-                                        fill=ThemeManager.single_color(self._scrollbar_color, self._appearance_mode),
-                                        outline=ThemeManager.single_color(self._scrollbar_color, self._appearance_mode))
+                                        fill=self._apply_appearance_mode(self._scrollbar_color),
+                                        outline=self._apply_appearance_mode(self._scrollbar_color))
 
             if self._fg_color is None:
-                self._canvas.configure(bg=ThemeManager.single_color(self._bg_color, self._appearance_mode))
+                self._canvas.configure(bg=self._apply_appearance_mode(self._bg_color))
                 self._canvas.itemconfig("border_parts",
-                                        fill=ThemeManager.single_color(self._bg_color, self._appearance_mode),
-                                        outline=ThemeManager.single_color(self._bg_color, self._appearance_mode))
+                                        fill=self._apply_appearance_mode(self._bg_color),
+                                        outline=self._apply_appearance_mode(self._bg_color))
             else:
-                self._canvas.configure(bg=ThemeManager.single_color(self._fg_color, self._appearance_mode))
+                self._canvas.configure(bg=self._apply_appearance_mode(self._fg_color))
                 self._canvas.itemconfig("border_parts",
-                                        fill=ThemeManager.single_color(self._fg_color, self._appearance_mode),
-                                        outline=ThemeManager.single_color(self._fg_color, self._appearance_mode))
+                                        fill=self._apply_appearance_mode(self._fg_color),
+                                        outline=self._apply_appearance_mode(self._fg_color))
 
         self._canvas.update_idletasks()
 
@@ -208,14 +208,14 @@ class CTkScrollbar(CTkBaseClass):
         if self._hover is True:
             self._hover_state = True
             self._canvas.itemconfig("scrollbar_parts",
-                                    outline=ThemeManager.single_color(self._scrollbar_hover_color, self._appearance_mode),
-                                    fill=ThemeManager.single_color(self._scrollbar_hover_color, self._appearance_mode))
+                                    outline=self._apply_appearance_mode(self._scrollbar_hover_color),
+                                    fill=self._apply_appearance_mode(self._scrollbar_hover_color))
 
     def _on_leave(self, event=0):
         self._hover_state = False
         self._canvas.itemconfig("scrollbar_parts",
-                                outline=ThemeManager.single_color(self._scrollbar_color, self._appearance_mode),
-                                fill=ThemeManager.single_color(self._scrollbar_color, self._appearance_mode))
+                                outline=self._apply_appearance_mode(self._scrollbar_color),
+                                fill=self._apply_appearance_mode(self._scrollbar_color))
 
     def _clicked(self, event):
         if self._orientation == "vertical":

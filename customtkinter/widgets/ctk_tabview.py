@@ -65,7 +65,7 @@ class CTkTabview(CTkBaseClass):
         self._border_width = ThemeManager.theme["shape"]["frame_border_width"] if border_width == "default_theme" else border_width
 
         self._canvas = CTkCanvas(master=self,
-                                 bg=ThemeManager.single_color(self._bg_color, self._appearance_mode),
+                                 bg=self._apply_appearance_mode(self._bg_color),
                                  highlightthickness=0,
                                  width=self._apply_widget_scaling(self._current_width - self._top_spacing - self._top_button_overhang),
                                  height=self._apply_widget_scaling(self._current_height))
@@ -199,17 +199,17 @@ class CTkTabview(CTkBaseClass):
         if no_color_updates is False or requires_recoloring:
             if self._fg_color is None:
                 self._canvas.itemconfig("inner_parts",
-                                        fill=ThemeManager.single_color(self._bg_color, self._appearance_mode),
-                                        outline=ThemeManager.single_color(self._bg_color, self._appearance_mode))
+                                        fill=self._apply_appearance_mode(self._bg_color),
+                                        outline=self._apply_appearance_mode(self._bg_color))
             else:
                 self._canvas.itemconfig("inner_parts",
-                                        fill=ThemeManager.single_color(self._fg_color, self._appearance_mode),
-                                        outline=ThemeManager.single_color(self._fg_color, self._appearance_mode))
+                                        fill=self._apply_appearance_mode(self._fg_color),
+                                        outline=self._apply_appearance_mode(self._fg_color))
 
             self._canvas.itemconfig("border_parts",
-                                    fill=ThemeManager.single_color(self._border_color, self._appearance_mode),
-                                    outline=ThemeManager.single_color(self._border_color, self._appearance_mode))
-            self._canvas.configure(bg=ThemeManager.single_color(self._bg_color, self._appearance_mode))
+                                    fill=self._apply_appearance_mode(self._border_color),
+                                    outline=self._apply_appearance_mode(self._border_color))
+            self._canvas.configure(bg=self._apply_appearance_mode(self._bg_color))
 
     def configure(self, require_redraw=False, **kwargs):
         if "corner_radius" in kwargs:

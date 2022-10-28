@@ -5,7 +5,7 @@ import os
 import platform
 import ctypes
 import re
-from typing import Union, Tuple
+from typing import Union, Tuple, List
 
 from ..appearance_mode_tracker import AppearanceModeTracker
 from ..theme_manager import ThemeManager
@@ -57,7 +57,7 @@ class CTk(tkinter.Tk):
 
         self._fg_color = ThemeManager.theme["color"]["window_bg_color"] if fg_color == "default_theme" else fg_color
 
-        super().configure(bg=ThemeManager.single_color(self._fg_color, self._appearance_mode))
+        super().configure(bg=self._apply_appearance_mode(self._fg_color))
         super().title("CTk")
         self.geometry(f"{self._current_width}x{self._current_height}")
 
@@ -244,10 +244,20 @@ class CTk(tkinter.Tk):
         else:
             return value
 
+    def _apply_appearance_mode(self, color: Union[str, Tuple[str, str], List[str]]) -> str:
+        """ color can be either a single hex color string or a color name or it can be a
+            tuple color with (light_color, dark_color). The functions returns
+            always a single color string """
+
+        if type(color) == tuple or type(color) == list:
+            return color[self._appearance_mode]
+        else:
+            return color
+
     def configure(self, **kwargs):
         if "fg_color" in kwargs:
             self._fg_color = kwargs.pop("fg_color")
-            super().configure(bg=ThemeManager.single_color(self._fg_color, self._appearance_mode))
+            super().configure(bg=self._apply_appearance_mode(self._fg_color))
 
             for child in self.winfo_children():
                 try:
@@ -354,4 +364,4 @@ class CTk(tkinter.Tk):
             else:
                 self._windows_set_titlebar_color("light")
 
-        super().configure(bg=ThemeManager.single_color(self._fg_color, self._appearance_mode))
+        super().configure(bg=self._apply_appearance_mode(self._fg_color))

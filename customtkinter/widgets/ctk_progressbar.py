@@ -139,16 +139,16 @@ class CTkProgressBar(CTkBaseClass):
                                                                                           orientation)
 
         if no_color_updates is False or requires_recoloring:
-            self._canvas.configure(bg=ThemeManager.single_color(self._bg_color, self._appearance_mode))
+            self._canvas.configure(bg=self._apply_appearance_mode(self._bg_color))
             self._canvas.itemconfig("border_parts",
-                                    fill=ThemeManager.single_color(self._border_color, self._appearance_mode),
-                                    outline=ThemeManager.single_color(self._border_color, self._appearance_mode))
+                                    fill=self._apply_appearance_mode(self._border_color),
+                                    outline=self._apply_appearance_mode(self._border_color))
             self._canvas.itemconfig("inner_parts",
-                                    fill=ThemeManager.single_color(self._fg_color, self._appearance_mode),
-                                    outline=ThemeManager.single_color(self._fg_color, self._appearance_mode))
+                                    fill=self._apply_appearance_mode(self._fg_color),
+                                    outline=self._apply_appearance_mode(self._fg_color))
             self._canvas.itemconfig("progress_parts",
-                                    fill=ThemeManager.single_color(self._progress_color, self._appearance_mode),
-                                    outline=ThemeManager.single_color(self._progress_color, self._appearance_mode))
+                                    fill=self._apply_appearance_mode(self._progress_color),
+                                    outline=self._apply_appearance_mode(self._progress_color))
 
     def configure(self, require_redraw=False, **kwargs):
         if "fg_color" in kwargs:

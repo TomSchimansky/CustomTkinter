@@ -76,18 +76,18 @@ class CTkTextbox(CTkBaseClass):
                                  width=self._apply_widget_scaling(self._current_width),
                                  height=self._apply_widget_scaling(self._current_height))
         self._canvas.grid(row=0, column=0, rowspan=2, columnspan=2, sticky="nsew")
-        self._canvas.configure(bg=ThemeManager.single_color(self._bg_color, self._appearance_mode))
+        self._canvas.configure(bg=self._apply_appearance_mode(self._bg_color))
         self._draw_engine = DrawEngine(self._canvas)
 
         self._textbox = tkinter.Text(self,
-                                     fg=ThemeManager.single_color(self._text_color, self._appearance_mode),
+                                     fg=self._apply_appearance_mode(self._text_color),
                                      width=0,
                                      height=0,
                                      font=self._apply_font_scaling(self._font),
                                      highlightthickness=0,
                                      relief="flat",
-                                     insertbackground=ThemeManager.single_color(self._text_color, self._appearance_mode),
-                                     bg=ThemeManager.single_color(self._fg_color, self._appearance_mode),
+                                     insertbackground=self._apply_appearance_mode(self._text_color),
+                                     bg=self._apply_appearance_mode(self._fg_color),
                                      **pop_from_dict_by_set(kwargs, self._valid_tk_text_attributes))
 
         check_kwargs_empty(kwargs, raise_error=True)
@@ -222,31 +222,31 @@ class CTkTextbox(CTkBaseClass):
         if no_color_updates is False or requires_recoloring:
             if self._fg_color is None:
                 self._canvas.itemconfig("inner_parts",
-                                        fill=ThemeManager.single_color(self._bg_color, self._appearance_mode),
-                                        outline=ThemeManager.single_color(self._bg_color, self._appearance_mode))
-                self._textbox.configure(fg=ThemeManager.single_color(self._text_color, self._appearance_mode),
-                                        bg=ThemeManager.single_color(self._bg_color, self._appearance_mode),
-                                        insertbackground=ThemeManager.single_color(self._text_color, self._appearance_mode))
+                                        fill=self._apply_appearance_mode(self._bg_color),
+                                        outline=self._apply_appearance_mode(self._bg_color))
+                self._textbox.configure(fg=self._apply_appearance_mode(self._text_color),
+                                        bg=self._apply_appearance_mode(self._bg_color),
+                                        insertbackground=self._apply_appearance_mode(self._text_color))
                 self._x_scrollbar.configure(fg_color=self._bg_color, scrollbar_color=self._scrollbar_color,
                                             scrollbar_hover_color=self._scrollbar_hover_color)
                 self._y_scrollbar.configure(fg_color=self._bg_color, scrollbar_color=self._scrollbar_color,
                                             scrollbar_hover_color=self._scrollbar_hover_color)
             else:
                 self._canvas.itemconfig("inner_parts",
-                                        fill=ThemeManager.single_color(self._fg_color, self._appearance_mode),
-                                        outline=ThemeManager.single_color(self._fg_color, self._appearance_mode))
-                self._textbox.configure(fg=ThemeManager.single_color(self._text_color, self._appearance_mode),
-                                        bg=ThemeManager.single_color(self._fg_color, self._appearance_mode),
-                                        insertbackground=ThemeManager.single_color(self._text_color, self._appearance_mode))
+                                        fill=self._apply_appearance_mode(self._fg_color),
+                                        outline=self._apply_appearance_mode(self._fg_color))
+                self._textbox.configure(fg=self._apply_appearance_mode(self._text_color),
+                                        bg=self._apply_appearance_mode(self._fg_color),
+                                        insertbackground=self._apply_appearance_mode(self._text_color))
                 self._x_scrollbar.configure(fg_color=self._fg_color, scrollbar_color=self._scrollbar_color,
                                             scrollbar_hover_color=self._scrollbar_hover_color)
                 self._y_scrollbar.configure(fg_color=self._fg_color, scrollbar_color=self._scrollbar_color,
                                             scrollbar_hover_color=self._scrollbar_hover_color)
 
             self._canvas.itemconfig("border_parts",
-                                    fill=ThemeManager.single_color(self._border_color, self._appearance_mode),
-                                    outline=ThemeManager.single_color(self._border_color, self._appearance_mode))
-            self._canvas.configure(bg=ThemeManager.single_color(self._bg_color, self._appearance_mode))
+                                    fill=self._apply_appearance_mode(self._border_color),
+                                    outline=self._apply_appearance_mode(self._border_color))
+            self._canvas.configure(bg=self._apply_appearance_mode(self._bg_color))
 
         self._canvas.tag_lower("inner_parts")
         self._canvas.tag_lower("border_parts")
