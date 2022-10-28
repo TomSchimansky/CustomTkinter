@@ -4,7 +4,7 @@ from typing import Union, Tuple, Callable
 from .core_rendering.ctk_canvas import CTkCanvas
 from ..theme_manager import ThemeManager
 from .core_rendering.draw_engine import DrawEngine
-from .widget_base_class import CTkBaseClass
+from .core_widget_classes.widget_base_class import CTkBaseClass
 
 
 class CTkScrollbar(CTkBaseClass):

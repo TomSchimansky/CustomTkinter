@@ -33,77 +33,7 @@ class App(customtkinter.CTk):
         self.chat_image = self.load_image("/test_images/chat.png", 20)
         self.home_image = self.load_image("/test_images/home.png", 20)
 
-        def _pyimagingtkcall(command, photo, id):
-            tk = photo.tk
-            try:
-                tk.call(command, photo, id)
-            except tkinter.TclError:
-                print("_pyimagingtkcall error")
-
-        class PhotoImage:
-            def __init__(self, image=None, size=None, **kw):
-                if hasattr(image, "mode") and hasattr(image, "size"):
-                    # got an image instead of a mode
-                    mode = image.mode
-                    if mode == "P":
-                        # palette mapped data
-                        image.apply_transparency()
-                        image.load()
-                        try:
-                            mode = image.palette.mode
-                        except AttributeError:
-                            mode = "RGB"  # default
-                    size = image.size
-                    kw["width"], kw["height"] = size
-                else:
-                    mode = image
-                    image = None
-
-                if mode not in ["1", "L", "RGB", "RGBA"]:
-                    mode = Image.getmodebase(mode)
-
-                self.__mode = mode
-                self.__size = size
-                self.__photo = tkinter.PhotoImage(**kw)
-                self.tk = self.__photo.tk
-                if image:
-                    self.paste(image)
-
-            def __del__(self):
-                name = self.__photo.name
-                self.__photo.name = None
-                try:
-                    self.__photo.tk.call("image", "delete", name)
-                except Exception:
-                    pass  # ignore internal errors
-
-            def __str__(self):
-                return str(self.__photo)
-
-            def width(self):
-                return self.__size[0]
-
-            def height(self):
-                return self.__size[1]
-
-            def paste(self, im, box=None):
-                if box is not None:
-                    deprecate("The box parameter", 10, None)
-
-                # convert to blittable
-                im.load()
-                image = im.im
-                if image.isblock() and im.mode == self.__mode:
-                    block = image
-                else:
-                    block = image.new_block(self.__mode, im.size)
-                    image.convert2(block, image)  # convert directly between buffers
-                _pyimagingtkcall("PyImagingPhoto", self.__photo, block.id)
-
-        pil_img = Image.open(PATH + "/test_images/add-folder.png").resize((10, 10))
-        image = PhotoImage(pil_img)
-
-        self.button_1 = customtkinter.CTkButton(master=self.frame_1, image=image, text="Add Folder", height=32,
+        self.button_1 = customtkinter.CTkButton(master=self.frame_1, image=self.settings_image, text="Add Folder", height=32,
                                                 compound="right", command=self.button_function)
         self.button_1.grid(row=1, column=0, columnspan=2, padx=20, pady=(20, 10), sticky="ew")
 

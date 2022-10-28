@@ -44,7 +44,7 @@ class FontManager:
 
         flags = (FR_PRIVATE if private else 0) | (FR_NOT_ENUM if not enumerable else 0)
         num_fonts_added = add_font_resource_ex(byref(path_buffer), flags, 0)
-        return bool(num_fonts_added)
+        return bool(min(num_fonts_added, 1))
 
     @classmethod
     def load_font(cls, font_path: str) -> bool:

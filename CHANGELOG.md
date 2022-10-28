@@ -9,6 +9,7 @@ ToDo:
  - auto-scaling of images
  - image tuple for light/dark mode
  - change font attribute in wiki
+ - add new button attributes to wiki
 
 ## Unreleased - 2022-10-2
 ### Added

@@ -5,9 +5,9 @@ import sys
 
 # import manager classes
 from .appearance_mode_tracker import AppearanceModeTracker
-from .theme_manager import ThemeManager
+from .widgets.font.font_manager import FontManager
 from .scaling_tracker import ScalingTracker
-from .font_manager import FontManager
+from .theme_manager import ThemeManager
 from .widgets.core_rendering.draw_engine import DrawEngine
 
 AppearanceModeTracker.init_appearance_mode()
@@ -46,7 +46,7 @@ if FontManager.load_font(os.path.join(script_directory, "assets", "fonts", "Cust
         DrawEngine.preferred_drawing_method = "circle_shapes"
 
 # import widgets
-from .widgets.widget_base_class import CTkBaseClass
+from customtkinter.widgets.core_widget_classes.widget_base_class import CTkBaseClass
 from .widgets.ctk_button import CTkButton
 from .widgets.ctk_checkbox import CTkCheckBox
 from .widgets.ctk_entry import CTkEntry
@@ -64,15 +64,13 @@ from .widgets.ctk_textbox import CTkTextbox
 from .widgets.ctk_tabview import CTkTabview
 from .widgets.ctk_segmented_button import CTkSegmentedButton
 
-from .widgets.ctk_button_new_grid import CTkButtonNewGrid
-
 # import windows
 from .windows.ctk_tk import CTk
 from .windows.ctk_toplevel import CTkToplevel
 from .windows.ctk_input_dialog import CTkInputDialog
 
-# util classes
-from .utility.ctk_font import CTkFont
+# font classes
+from .widgets.font.ctk_font import CTkFont
 
 
 def set_appearance_mode(mode_string: str):

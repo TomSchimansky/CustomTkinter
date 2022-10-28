@@ -2,12 +2,12 @@ import tkinter
 import sys
 from typing import Union, Tuple, Callable, List
 
-from .dropdown_menu import DropdownMenu
+from .core_widget_classes.dropdown_menu import DropdownMenu
 from .core_rendering.ctk_canvas import CTkCanvas
 from ..theme_manager import ThemeManager
 from .core_rendering.draw_engine import DrawEngine
-from .widget_base_class import CTkBaseClass
-from ..utility.ctk_font import CTkFont
+from .core_widget_classes.widget_base_class import CTkBaseClass
+from .font.ctk_font import CTkFont
 
 
 class CTkComboBox(CTkBaseClass):

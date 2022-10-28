@@ -84,10 +84,4 @@ class ThemeManager:
                               min(255, rgb_color[2] * factor))
             return ThemeManager.rgb2hex(dark_rgb_color)
         except Exception as err:
-            # sys.stderr.write("ERROR (CTkColorManager): failed to darken the following color: " + str(hex_color) + " " + str(err))
             return hex_color
-
-    @classmethod
-    def set_main_color(cls, main_color, main_color_hover):
-        cls.MAIN_COLOR = main_color
-        cls.MAIN_HOVER_COLOR = main_color_hover

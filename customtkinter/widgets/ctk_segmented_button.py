@@ -4,6 +4,7 @@ from typing import Union, Tuple, List, Dict, Callable
 from ..theme_manager import ThemeManager
 from .ctk_button import CTkButton
 from .ctk_frame import CTkFrame
+from .font.ctk_font import CTkFont
 
 
 class CTkSegmentedButton(CTkFrame):
@@ -29,7 +30,7 @@ class CTkSegmentedButton(CTkFrame):
                  text_color_disabled: Union[str, Tuple[str, str]] = "default_theme",
                  background_corner_colors: Tuple[Union[str, Tuple[str, str]]] = None,
 
-                 font: any = "default_theme",
+                 font: Union[tuple, CTkFont] = "default_theme",
                  values: list = None,
                  variable: tkinter.Variable = None,
                  dynamic_resizing: bool = True,

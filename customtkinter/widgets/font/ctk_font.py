@@ -2,7 +2,7 @@ from tkinter.font import Font
 import copy
 from typing import List, Callable, Tuple
 
-from ..theme_manager import ThemeManager
+from customtkinter.theme_manager import ThemeManager
 
 
 class CTkFont(Font):

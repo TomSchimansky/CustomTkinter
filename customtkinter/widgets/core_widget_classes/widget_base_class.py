@@ -9,15 +9,15 @@ try:
 except ImportError:
     from typing_extensions import TypedDict
 
-from ..windows.ctk_tk import CTk
-from ..windows.ctk_toplevel import CTkToplevel
-from ..appearance_mode_tracker import AppearanceModeTracker
-from ..scaling_tracker import ScalingTracker
-from ..theme_manager import ThemeManager
+from ...windows.ctk_tk import CTk
+from ...windows.ctk_toplevel import CTkToplevel
+from ...appearance_mode_tracker import AppearanceModeTracker
+from ...scaling_tracker import ScalingTracker
+from ...theme_manager import ThemeManager
+from ..font.ctk_font import CTkFont
+from ..image.ctk_image import CTkImage
 
-from ..utility.ctk_font import CTkFont
-
-from ..utility.utility_functions import pop_from_dict_by_set, check_kwargs_empty
+from ...utility.utility_functions import pop_from_dict_by_set, check_kwargs_empty
 
 
 class CTkBaseClass(tkinter.Frame):

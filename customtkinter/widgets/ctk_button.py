@@ -5,8 +5,9 @@ from typing import Union, Tuple, Callable
 from .core_rendering.ctk_canvas import CTkCanvas
 from ..theme_manager import ThemeManager
 from .core_rendering.draw_engine import DrawEngine
-from .widget_base_class import CTkBaseClass
-from ..utility.ctk_font import CTkFont
+from .core_widget_classes.widget_base_class import CTkBaseClass
+from .font.ctk_font import CTkFont
+from .image.ctk_image import CTkImage
 
 
 class CTkButton(CTkBaseClass):
@@ -15,12 +16,15 @@ class CTkButton(CTkBaseClass):
     For detailed information check out the documentation.
     """
 
+    _image_label_spacing = 6
+
     def __init__(self,
                  master: any = None,
                  width: int = 140,
                  height: int = 28,
                  corner_radius: Union[int, str] = "default_theme",
                  border_width: Union[int, str] = "default_theme",
+                 border_spacing: int = 2,
 
                  bg_color: Union[str, Tuple[str, str], None] = None,
                  fg_color: Union[str, Tuple[str, str], None] = "default_theme",
@@ -36,11 +40,12 @@ class CTkButton(CTkBaseClass):
                  text: str = "CTkButton",
                  font: Union[tuple, CTkFont] = "default_theme",
                  textvariable: tkinter.Variable = None,
-                 image: tkinter.PhotoImage = None,
+                 image: Union[tkinter.PhotoImage, CTkImage] = None,
                  state: str = "normal",
                  hover: bool = True,
                  command: Callable = None,
                  compound: str = "left",
+                 anchor: str = "center",
                  **kwargs):
 
         # transfer basic functionality (_bg_color, size, _appearance_mode, scaling) to CTkBaseClass
@@ -59,8 +64,10 @@ class CTkButton(CTkBaseClass):
         self._border_width = ThemeManager.theme["shape"]["button_border_width"] if border_width == "default_theme" else border_width
         self._round_width_to_even_numbers = round_width_to_even_numbers  # rendering options for DrawEngine
         self._round_height_to_even_numbers = round_height_to_even_numbers  # rendering options for DrawEngine
-
         self._corner_radius = min(self._corner_radius, round(self._current_height/2))
+        self._compound = compound
+        self._anchor = anchor
+        self._border_spacing = border_spacing
 
         # text, image
         self._image = image
@@ -78,21 +85,14 @@ class CTkButton(CTkBaseClass):
         self._textvariable = textvariable
         self._state = state
         self._hover = hover
-        self._compound = compound
         self._click_animation_running: bool = False
-
-        # configure grid system (2x2)
-        self.grid_rowconfigure(0, weight=1)
-        self.grid_columnconfigure(0, weight=1)
-        self.grid_rowconfigure(1, weight=1)
-        self.grid_columnconfigure(1, weight=1)
 
         # canvas
         self._canvas = CTkCanvas(master=self,
                                  highlightthickness=0,
                                  width=self._apply_widget_scaling(self._desired_width),
                                  height=self._apply_widget_scaling(self._desired_height))
-        self._canvas.grid(row=0, column=0, rowspan=2, columnspan=2, sticky="nsew")
+        self._canvas.grid(row=0, column=0, rowspan=5, columnspan=5, sticky="nsew")
         self._draw_engine = DrawEngine(self._canvas)
         self._draw_engine.set_round_to_even_numbers(self._round_width_to_even_numbers, self._round_height_to_even_numbers)  # rendering options
 
@@ -108,6 +108,8 @@ class CTkButton(CTkBaseClass):
 
     def _set_scaling(self, *args, **kwargs):
         super()._set_scaling(*args, **kwargs)
+
+        self._create_grid()
 
         if self._text_label is not None:
             self._text_label.configure(font=self._apply_font_scaling(self._font))
@@ -131,7 +133,7 @@ class CTkButton(CTkBaseClass):
             # Workaround to force grid to be resized when text changes size.
             # Otherwise grid will lag and only resizes if other mouse action occurs.
             self._canvas.grid_forget()
-            self._canvas.grid(row=0, column=0, rowspan=2, columnspan=2, sticky="nsew")
+            self._canvas.grid(row=0, column=0, rowspan=5, columnspan=5, sticky="nsew")
 
     def destroy(self):
         if isinstance(self._font, CTkFont):
@@ -184,6 +186,7 @@ class CTkButton(CTkBaseClass):
                                                  pady=0,
                                                  borderwidth=1,
                                                  textvariable=self._textvariable)
+                self._create_grid()
 
                 self._text_label.bind("<Enter>", self._on_enter)
                 self._text_label.bind("<Leave>", self._on_leave)
@@ -209,12 +212,14 @@ class CTkButton(CTkBaseClass):
             if self._text_label is not None:
                 self._text_label.destroy()
                 self._text_label = None
+                self._create_grid()
 
         # create image label if image given
         if self._image is not None:
 
             if self._image_label is None:
                 self._image_label = tkinter.Label(master=self)
+                self._create_grid()
 
                 self._image_label.bind("<Enter>", self._on_enter)
                 self._image_label.bind("<Leave>", self._on_leave)
@@ -235,56 +240,88 @@ class CTkButton(CTkBaseClass):
             if self._image_label is not None:
                 self._image_label.destroy()
                 self._image_label = None
+                self._create_grid()
 
-        # create grid layout with just an image given
-        if self._image_label is not None and self._text_label is None:
-            self._image_label.grid(row=0, column=0, rowspan=2, columnspan=2, sticky="",
-                                   pady=(self._apply_widget_scaling(self._border_width), self._apply_widget_scaling(self._border_width) + 1))  # bottom pady with +1 for rounding to even
+    def _create_grid(self):
+        """ configure grid system (5x5) """
 
-        # create grid layout with just text given
-        if self._image_label is None and self._text_label is not None:
-            self._text_label.grid(row=0, column=0, rowspan=2, columnspan=2, sticky="",
-                                  padx=self._apply_widget_scaling(self._corner_radius),
-                                  pady=(self._apply_widget_scaling(self._border_width), self._apply_widget_scaling(self._border_width) + 1))  # bottom pady with +1 for rounding to even
+        # Outer rows and columns have weight of 1000 to overpower the rows and columns of the label and image with weight 1.
+        # Rows and columns of image and label need weight of 1 to collapse in case of missing space on the button,
+        # so image and label need sticky option to stick together in the center, and therefore outer rows and columns
+        # need weight of 100 in case of other anchor than center.
+        n_padding_weight, s_padding_weight, e_padding_weight, w_padding_weight = 1000, 1000, 1000, 1000
+        if self._anchor != "center":
+            if "n" in self._anchor:
+                n_padding_weight, s_padding_weight = 0, 1000
+            if "s" in self._anchor:
+                n_padding_weight, s_padding_weight = 1000, 0
+            if "e" in self._anchor:
+                e_padding_weight, w_padding_weight = 1000, 0
+            if "w" in self._anchor:
+                e_padding_weight, w_padding_weight = 0, 1000
 
-        # create grid layout of image and text label in 2x2 grid system with given compound
-        if self._image_label is not None and self._text_label is not None:
-            if self._compound == tkinter.LEFT or self._compound == "left":
-                self._image_label.grid(row=0, column=0, sticky="e", rowspan=2, columnspan=1,
-                                       padx=(max(self._apply_widget_scaling(self._corner_radius), self._apply_widget_scaling(self._border_width)), 2),
-                                       pady=(self._apply_widget_scaling(self._border_width), self._apply_widget_scaling(self._border_width) + 1))
-                self._text_label.grid(row=0, column=1, sticky="w", rowspan=2, columnspan=1,
-                                      padx=(2, max(self._apply_widget_scaling(self._corner_radius), self._apply_widget_scaling(self._border_width))),
-                                      pady=(self._apply_widget_scaling(self._border_width), self._apply_widget_scaling(self._border_width) + 1))
-            elif self._compound == tkinter.TOP or self._compound == "top":
-                self._image_label.grid(row=0, column=0, sticky="s", columnspan=2, rowspan=1,
-                                       padx=max(self._apply_widget_scaling(self._corner_radius), self._apply_widget_scaling(self._border_width)),
-                                       pady=(self._apply_widget_scaling(self._border_width), 2))
-                self._text_label.grid(row=1, column=0, sticky="n", columnspan=2, rowspan=1,
-                                      padx=max(self._apply_widget_scaling(self._corner_radius), self._apply_widget_scaling(self._border_width)),
-                                      pady=(2, self._apply_widget_scaling(self._border_width)))
-            elif self._compound == tkinter.RIGHT or self._compound == "right":
-                self._image_label.grid(row=0, column=1, sticky="w", rowspan=2, columnspan=1,
-                                       padx=(2, max(self._apply_widget_scaling(self._corner_radius), self._apply_widget_scaling(self._border_width))),
-                                       pady=(self._apply_widget_scaling(self._border_width), self._apply_widget_scaling(self._border_width) + 1))
-                self._text_label.grid(row=0, column=0, sticky="e", rowspan=2, columnspan=1,
-                                      padx=(max(self._apply_widget_scaling(self._corner_radius), self._apply_widget_scaling(self._border_width)), 2),
-                                      pady=(self._apply_widget_scaling(self._border_width), self._apply_widget_scaling(self._border_width) + 1))
-            elif self._compound == tkinter.BOTTOM or self._compound == "bottom":
-                self._image_label.grid(row=1, column=0, sticky="n", columnspan=2, rowspan=1,
-                                       padx=max(self._apply_widget_scaling(self._corner_radius), self._apply_widget_scaling(self._border_width)),
-                                       pady=(2, self._apply_widget_scaling(self._border_width)))
-                self._text_label.grid(row=0, column=0, sticky="s", columnspan=2, rowspan=1,
-                                      padx=max(self._apply_widget_scaling(self._corner_radius), self._apply_widget_scaling(self._border_width)),
-                                      pady=(self._apply_widget_scaling(self._border_width), 2))
+        scaled_minsize_rows = self._apply_widget_scaling(max(self._border_width + 1, self._border_spacing))
+        scaled_minsize_columns = self._apply_widget_scaling(max(self._corner_radius, self._border_width + 1, self._border_spacing))
+
+        self.grid_rowconfigure(0, weight=n_padding_weight, minsize=scaled_minsize_rows)
+        self.grid_rowconfigure(4, weight=s_padding_weight, minsize=scaled_minsize_rows)
+        self.grid_columnconfigure(0, weight=e_padding_weight, minsize=scaled_minsize_columns)
+        self.grid_columnconfigure(4, weight=w_padding_weight, minsize=scaled_minsize_columns)
+
+        if self._compound in ("right", "left"):
+            self.grid_rowconfigure(2, weight=1)
+            if self._image_label is not None and self._text_label is not None:
+                self.grid_columnconfigure(2, weight=0, minsize=self._apply_widget_scaling(self._image_label_spacing))
+            else:
+                self.grid_columnconfigure(2, weight=0)
+
+            self.grid_rowconfigure((1, 3), weight=0)
+            self.grid_columnconfigure((1, 3), weight=1)
+        else:
+            self.grid_columnconfigure(2, weight=1)
+            if self._image_label is not None and self._text_label is not None:
+                self.grid_rowconfigure(2, weight=0, minsize=self._apply_widget_scaling(self._image_label_spacing))
+            else:
+                self.grid_rowconfigure(2, weight=0)
+
+            self.grid_columnconfigure((1, 3), weight=0)
+            self.grid_rowconfigure((1, 3), weight=1)
+
+        if self._compound == "right":
+            if self._image_label is not None:
+                self._image_label.grid(row=2, column=3, sticky="w")
+            if self._text_label is not None:
+                self._text_label.grid(row=2, column=1, sticky="e")
+        elif self._compound == "left":
+            if self._image_label is not None:
+                self._image_label.grid(row=2, column=1, sticky="e")
+            if self._text_label is not None:
+                self._text_label.grid(row=2, column=3, sticky="w")
+        elif self._compound == "top":
+            if self._image_label is not None:
+                self._image_label.grid(row=1, column=2, sticky="s")
+            if self._text_label is not None:
+                self._text_label.grid(row=3, column=2, sticky="n")
+        elif self._compound == "bottom":
+            if self._image_label is not None:
+                self._image_label.grid(row=3, column=2, sticky="n")
+            if self._text_label is not None:
+                self._text_label.grid(row=1, column=2, sticky="s")
 
     def configure(self, require_redraw=False, **kwargs):
         if "corner_radius" in kwargs:
             self._corner_radius = kwargs.pop("corner_radius")
+            self._create_grid()
             require_redraw = True
 
         if "border_width" in kwargs:
             self._border_width = kwargs.pop("border_width")
+            self._create_grid()
+            require_redraw = True
+
+        if "border_spacing" in kwargs:
+            self._border_spacing = kwargs.pop("border_spacing")
+            self._create_grid()
             require_redraw = True
 
         if "fg_color" in kwargs:
@@ -317,6 +354,7 @@ class CTkButton(CTkBaseClass):
                 require_redraw = True  # text_label will be created in .draw()
             else:
                 self._text_label.configure(text=self._text)
+            self._create_grid()
 
         if "font" in kwargs:
             if isinstance(self._font, CTkFont):
@@ -334,6 +372,7 @@ class CTkButton(CTkBaseClass):
 
         if "image" in kwargs:
             self._image = kwargs.pop("image")
+            self._create_grid()
             require_redraw = True
 
         if "state" in kwargs:
@@ -351,6 +390,10 @@ class CTkButton(CTkBaseClass):
             self._compound = kwargs.pop("compound")
             require_redraw = True
 
+        if "anchor" in kwargs:
+            self._anchor = kwargs.pop("anchor")
+            require_redraw = True
+
         super().configure(require_redraw=require_redraw, **kwargs)
 
     def cget(self, attribute_name: str) -> any:
@@ -358,6 +401,8 @@ class CTkButton(CTkBaseClass):
             return self._corner_radius
         elif attribute_name == "border_width":
             return self._border_width
+        elif attribute_name == "border_spacing":
+            return self._border_spacing
 
         elif attribute_name == "fg_color":
             return self._fg_color
@@ -388,6 +433,8 @@ class CTkButton(CTkBaseClass):
             return self._command
         elif attribute_name == "compound":
             return self._compound
+        elif attribute_name == "anchor":
+            return self._anchor
         else:
             return super().cget(attribute_name)
 
