@@ -21,7 +21,7 @@ class AppearanceModeTracker:
     callback_list = []
     app_list = []
     update_loop_running = False
-    update_loop_interval = 500  # milliseconds
+    update_loop_interval = 30  # milliseconds
 
     appearance_mode_set_by = "system"
     appearance_mode = 0  # Light (standard)

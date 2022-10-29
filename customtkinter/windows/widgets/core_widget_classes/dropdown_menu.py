@@ -71,12 +71,12 @@ class DropdownMenu(tkinter.Menu, CTkAppearanceModeBaseClass):
         elif sys.platform.startswith("win"):
             super().configure(tearoff=False,
                               relief="flat",
-                              activebackground=ThemeManager._apply_appearance_mode(self._hover_color, self._appearance_mode),
+                              activebackground=self._apply_appearance_mode(self._hover_color),
                               borderwidth=self._apply_widget_scaling(4),
                               activeborderwidth=self._apply_widget_scaling(4),
-                              bg=ThemeManager._apply_appearance_mode(self._fg_color, self._appearance_mode),
-                              fg=ThemeManager._apply_appearance_mode(self._text_color, self._appearance_mode),
-                              activeforeground=ThemeManager._apply_appearance_mode(self._text_color, self._appearance_mode),
+                              bg=self._apply_appearance_mode(self._fg_color),
+                              fg=self._apply_appearance_mode(self._text_color),
+                              activeforeground=self._apply_appearance_mode(self._text_color),
                               font=self._apply_font_scaling(self._font),
                               cursor="hand2")
 

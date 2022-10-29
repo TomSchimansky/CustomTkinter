@@ -48,7 +48,7 @@ class CTk(tkinter.Tk, CTkAppearanceModeBaseClass, CTkScalingBaseClass):
         self._max_height: int = 1_000_000
         self._last_resizable_args: Union[Tuple[list, dict], None] = None  # (args, kwargs)
 
-        self._fg_color = ThemeManager.theme["color"]["window_bg_color"] if fg_color == "default_theme" else fg_color
+        self._fg_color = ThemeManager.theme["color"]["window"] if fg_color == "default_theme" else fg_color
 
         # set bg of tkinter.Tk
         super().configure(bg=self._apply_appearance_mode(self._fg_color))

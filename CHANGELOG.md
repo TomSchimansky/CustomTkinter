@@ -29,6 +29,7 @@ ToDo:
  - Changed 'orient' attribute of CTkProgressBar and CTkSlider to 'orientation'
  - Width and height attributes of CTkCheckBox, CTkRadioButton, CTkSwitch now describe the outer dimensions of the whole widget. The button/switch size is described by separate attributes like checkbox_width, checkbox_height
  - font attribute must be tuple or CTkFont now, all size values are measured in pixel now
+ - Changed dictionary key 'window_bg_color' to 'window' in theme files
 
 ### Removed
  - Removed setter and getter functions like set_text in CTkButton

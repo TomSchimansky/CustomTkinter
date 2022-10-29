@@ -32,7 +32,7 @@ class CTkToplevel(tkinter.Toplevel, CTkAppearanceModeBaseClass, CTkScalingBaseCl
 
         self._enable_macos_dark_title_bar()
 
-        # call init methods of super classees
+        # call init methods of super classes
         super().__init__(*args, **pop_from_dict_by_set(kwargs, self._valid_tk_toplevel_arguments))
         CTkAppearanceModeBaseClass.__init__(self)
         CTkScalingBaseClass.__init__(self, scaling_type="window")
@@ -46,7 +46,7 @@ class CTkToplevel(tkinter.Toplevel, CTkAppearanceModeBaseClass, CTkScalingBaseCl
         self._max_height: int = 1_000_000
         self._last_resizable_args: Union[Tuple[list, dict], None] = None  # (args, kwargs)
 
-        self._fg_color = ThemeManager.theme["color"]["window_bg_color"] if fg_color == "default_theme" else fg_color
+        self._fg_color = ThemeManager.theme["color"]["window"] if fg_color == "default_theme" else fg_color
 
         # set bg color of tkinter.Toplevel
         super().configure(bg=self._apply_appearance_mode(self._fg_color))
