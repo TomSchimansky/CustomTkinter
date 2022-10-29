@@ -3,7 +3,7 @@ from typing import Union, Tuple
 
 from .core_rendering.ctk_canvas import CTkCanvas
 from .ctk_scrollbar import CTkScrollbar
-from ..theme_manager import ThemeManager
+from .theme.theme_manager import ThemeManager
 from .core_rendering.draw_engine import DrawEngine
 from .core_widget_classes.widget_base_class import CTkBaseClass
 from .font.ctk_font import CTkFont

@@ -10,6 +10,8 @@ ToDo:
  - image tuple for light/dark mode
  - change font attribute in wiki
  - add new button attributes to wiki
+ - cursor configuring
+ - overwrite winfo methods
 
 ## Unreleased - 2022-10-2
 ### Added

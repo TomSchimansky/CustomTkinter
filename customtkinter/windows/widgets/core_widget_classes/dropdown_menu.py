@@ -2,13 +2,14 @@ import tkinter
 import sys
 from typing import Union, Tuple, Callable, List
 
-from ...theme_manager import ThemeManager
-from ...appearance_mode_tracker import AppearanceModeTracker
-from ...scaling_tracker import ScalingTracker
+from ..theme.theme_manager import ThemeManager
+from ..scaling.scaling_tracker import ScalingTracker
 from ..font.ctk_font import CTkFont
+from ..appearance_mode.appearance_mode_tracker import AppearanceModeTracker
+from ..appearance_mode.appearance_mode_base_class import CTkAppearanceModeBaseClass
 
 
-class DropdownMenu(tkinter.Menu):
+class DropdownMenu(tkinter.Menu, CTkAppearanceModeBaseClass):
     def __init__(self, *args,
                  min_character_width: int = 18,
 
@@ -21,7 +22,9 @@ class DropdownMenu(tkinter.Menu):
                  values: List[str] = None,
                  **kwargs):
 
-        super().__init__(*args, **kwargs)
+        # call init methods of super classes
+        tkinter.Menu.__init__(self, *args, **kwargs)
+        CTkAppearanceModeBaseClass.__init__(self)
 
         ScalingTracker.add_widget(self._set_scaling, self)
         self._widget_scaling = ScalingTracker.get_widget_scaling(self)
@@ -46,14 +49,17 @@ class DropdownMenu(tkinter.Menu):
 
         self._add_menu_commands()
 
-    def _update_font(self):
-        """ pass font to tkinter widgets with applied font scaling """
-        super().configure(font=self._apply_font_scaling(self._font))
-
     def destroy(self):
         if isinstance(self._font, CTkFont):
             self._font.remove_size_configure_callback(self._update_font)
-        super().destroy()
+
+        # call destroy methods of super classes
+        tkinter.Menu.destroy(self)
+        CTkAppearanceModeBaseClass.destroy(self)
+
+    def _update_font(self):
+        """ pass font to tkinter widgets with applied font scaling """
+        super().configure(font=self._apply_font_scaling(self._font))
 
     def _configure_menu_for_platforms(self):
         """ apply platform specific appearance attributes, configure all colors """

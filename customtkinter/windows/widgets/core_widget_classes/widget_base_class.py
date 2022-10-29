@@ -1,26 +1,24 @@
 import sys
 import tkinter
 import tkinter.ttk as ttk
-import copy
-from typing import Union, Callable, Tuple, List
-from abc import ABC, abstractmethod
+from typing import Union, Callable, Tuple
 
 try:
     from typing import TypedDict
 except ImportError:
     from typing_extensions import TypedDict
 
-from ...windows.ctk_tk import CTk
-from ...windows.ctk_toplevel import CTkToplevel
-from ...appearance_mode_tracker import AppearanceModeTracker
-from ...scaling_tracker import ScalingTracker
-from ...theme_manager import ThemeManager
+from ...ctk_tk import CTk
+from ...ctk_toplevel import CTkToplevel
+from ..theme.theme_manager import ThemeManager
 from ..font.ctk_font import CTkFont
+from ..appearance_mode.appearance_mode_base_class import CTkAppearanceModeBaseClass
+from ..scaling.scaling_base_class import CTkScalingBaseClass
 
-from ...utility.utility_functions import pop_from_dict_by_set, check_kwargs_empty
+from ....utility.utility_functions import pop_from_dict_by_set, check_kwargs_empty
 
 
-class CTkBaseClass(tkinter.Frame, ABC):
+class CTkBaseClass(tkinter.Frame, CTkAppearanceModeBaseClass, CTkScalingBaseClass):
     """ Base class of every CTk widget, handles the dimensions, _bg_color,
         appearance_mode changes, scaling, bg changes of master if master is not a CTk widget """
 
@@ -37,21 +35,21 @@ class CTkBaseClass(tkinter.Frame, ABC):
                  bg_color: Union[str, Tuple[str, str], None] = None,
                  **kwargs):
 
-        super().__init__(master=master, width=width, height=height, **pop_from_dict_by_set(kwargs, self._valid_tk_frame_attributes))
+        # call init methods of super classes
+        tkinter.Frame.__init__(self, master=master, width=width, height=height, **pop_from_dict_by_set(kwargs, self._valid_tk_frame_attributes))
+        CTkAppearanceModeBaseClass.__init__(self)
+        CTkScalingBaseClass.__init__(self, scaling_type="widget")
 
         # check if kwargs is empty, if not raise error for unsupported arguments
         check_kwargs_empty(kwargs, raise_error=True)
 
-        # dimensions
+        # dimensions independent of scaling
         self._current_width = width  # _current_width and _current_height in pixel, represent current size of the widget
         self._current_height = height  # _current_width and _current_height are independent of the scale
         self._desired_width = width  # _desired_width and _desired_height, represent desired size set by width and height
         self._desired_height = height
 
-        # scaling
-        ScalingTracker.add_widget(self._set_scaling, self)  # add callback for automatic scaling changes
-        self._widget_scaling = ScalingTracker.get_widget_scaling(self)
-
+        # set width and height of tkinter.Frame
         super().configure(width=self._apply_widget_scaling(self._desired_width),
                           height=self._apply_widget_scaling(self._desired_height))
 
@@ -59,17 +57,15 @@ class CTkBaseClass(tkinter.Frame, ABC):
         class GeometryCallDict(TypedDict):
             function: Callable
             kwargs: dict
-
         self._last_geometry_manager_call: Union[GeometryCallDict, None] = None
-
-        # add set_appearance_mode method to callback list of AppearanceModeTracker for appearance mode changes
-        AppearanceModeTracker.add(self._set_appearance_mode, self)
-        self._appearance_mode = AppearanceModeTracker.get_mode()  # 0: "Light" 1: "Dark"
 
         # background color
         self._bg_color:  Union[str, Tuple[str, str]] = self._detect_color_of_master() if bg_color is None else bg_color
 
+        # set bg color of tkinter.Frame
         super().configure(bg=self._apply_appearance_mode(self._bg_color))
+
+        # add configure callback to tkinter.Frame
         super().bind('<Configure>', self._update_dimensions_event)
 
         # overwrite configure methods of master when master is tkinter widget, so that bg changes get applied on child CTk widget as well
@@ -93,7 +89,14 @@ class CTkBaseClass(tkinter.Frame, ABC):
             self.master.config = new_configure
             self.master.configure = new_configure
 
-    @abstractmethod
+    def destroy(self):
+        """ Destroy this and all descendants widgets. """
+
+        # call destroy methods of super classes
+        tkinter.Frame.destroy(self)
+        CTkAppearanceModeBaseClass.destroy(self)
+        CTkScalingBaseClass.destroy(self)
+
     def _draw(self, no_color_updates: bool = False):
         return
 
@@ -220,66 +223,6 @@ class CTkBaseClass(tkinter.Frame, ABC):
 
         super().configure(width=self._apply_widget_scaling(self._desired_width),
                           height=self._apply_widget_scaling(self._desired_height))
-
-    def _apply_widget_scaling(self, value: Union[int, float, str]) -> Union[float, str]:
-        if isinstance(value, (int, float)):
-            return value * self._widget_scaling
-        else:
-            return value
-
-    def _apply_font_scaling(self, font: Union[Tuple, CTkFont]) -> tuple:
-        """ Takes CTkFont object and returns tuple font with scaled size, has to be called again for every change of font object """
-        if type(font) == tuple:
-            if len(font) == 1:
-                return font
-            elif len(font) == 2:
-                return font[0], -abs(round(font[1] * self._widget_scaling))
-            elif len(font) == 3:
-                return font[0], -abs(round(font[1] * self._widget_scaling)), font[2]
-            else:
-                raise ValueError(f"Can not scale font {font}. font needs to be tuple of len 1, 2 or 3")
-
-        elif isinstance(font, CTkFont):
-            return font.create_scaled_tuple(self._widget_scaling)
-        else:
-            raise ValueError(f"Can not scale font '{font}' of type {type(font)}. font needs to be tuple or instance of CTkFont")
-
-    def _apply_argument_scaling(self, kwargs: dict) -> dict:
-        scaled_kwargs = copy.copy(kwargs)
-
-        if "pady" in scaled_kwargs:
-            if isinstance(scaled_kwargs["pady"], (int, float, str)):
-                scaled_kwargs["pady"] = self._apply_widget_scaling(scaled_kwargs["pady"])
-            elif isinstance(scaled_kwargs["pady"], tuple):
-                scaled_kwargs["pady"] = tuple([self._apply_widget_scaling(v) for v in scaled_kwargs["pady"]])
-        if "padx" in kwargs:
-            if isinstance(scaled_kwargs["padx"], (int, float, str)):
-                scaled_kwargs["padx"] = self._apply_widget_scaling(scaled_kwargs["padx"])
-            elif isinstance(scaled_kwargs["padx"], tuple):
-                scaled_kwargs["padx"] = tuple([self._apply_widget_scaling(v) for v in scaled_kwargs["padx"]])
-
-        if "x" in scaled_kwargs:
-            scaled_kwargs["x"] = self._apply_widget_scaling(scaled_kwargs["x"])
-        if "y" in scaled_kwargs:
-            scaled_kwargs["y"] = self._apply_widget_scaling(scaled_kwargs["y"])
-
-        return scaled_kwargs
-
-    def _apply_appearance_mode(self, color: Union[str, Tuple[str, str], List[str]]) -> str:
-        """ color can be either a single hex color string or a color name or it can be a
-            tuple color with (light_color, dark_color). The functions returns
-            always a single color string """
-
-        if type(color) == tuple or type(color) == list:
-            return color[self._appearance_mode]
-        else:
-            return color
-
-    def destroy(self):
-        """ Destroy this and all descendants widgets. """
-        AppearanceModeTracker.remove(self._set_appearance_mode)
-        ScalingTracker.remove_widget(self._set_scaling, self)
-        super().destroy()
 
     def place(self, **kwargs):
         """

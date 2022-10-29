@@ -4,11 +4,11 @@ import os
 import sys
 
 # import manager classes
-from .appearance_mode_tracker import AppearanceModeTracker
-from .widgets.font.font_manager import FontManager
-from .scaling_tracker import ScalingTracker
-from .theme_manager import ThemeManager
-from .widgets.core_rendering.draw_engine import DrawEngine
+from .windows.widgets.appearance_mode.appearance_mode_tracker import AppearanceModeTracker
+from .windows.widgets.font.font_manager import FontManager
+from .windows.widgets.scaling.scaling_tracker import ScalingTracker
+from .windows.widgets.theme.theme_manager import ThemeManager
+from .windows.widgets.core_rendering.draw_engine import DrawEngine
 
 AppearanceModeTracker.init_appearance_mode()
 
@@ -46,23 +46,21 @@ if FontManager.load_font(os.path.join(script_directory, "assets", "fonts", "Cust
         DrawEngine.preferred_drawing_method = "circle_shapes"
 
 # import widgets
-from customtkinter.widgets.core_widget_classes.widget_base_class import CTkBaseClass
-from .widgets.ctk_button import CTkButton
-from .widgets.ctk_checkbox import CTkCheckBox
-from .widgets.ctk_entry import CTkEntry
-from .widgets.ctk_slider import CTkSlider
-from .widgets.ctk_frame import CTkFrame
-from .widgets.ctk_progressbar import CTkProgressBar
-from .widgets.ctk_label import CTkLabel
-from .widgets.ctk_radiobutton import CTkRadioButton
-from .widgets.core_rendering.ctk_canvas import CTkCanvas
-from .widgets.ctk_switch import CTkSwitch
-from .widgets.ctk_optionmenu import CTkOptionMenu
-from .widgets.ctk_combobox import CTkComboBox
-from .widgets.ctk_scrollbar import CTkScrollbar
-from .widgets.ctk_textbox import CTkTextbox
-from .widgets.ctk_tabview import CTkTabview
-from .widgets.ctk_segmented_button import CTkSegmentedButton
+from .windows.widgets.ctk_button import CTkButton
+from .windows.widgets.ctk_checkbox import CTkCheckBox
+from .windows.widgets.ctk_combobox import CTkComboBox
+from .windows.widgets.ctk_entry import CTkEntry
+from .windows.widgets.ctk_frame import CTkFrame
+from .windows.widgets.ctk_label import CTkLabel
+from .windows.widgets.ctk_optionmenu import CTkOptionMenu
+from .windows.widgets.ctk_progressbar import CTkProgressBar
+from .windows.widgets.ctk_radiobutton import CTkRadioButton
+from .windows.widgets.ctk_scrollbar import CTkScrollbar
+from .windows.widgets.ctk_segmented_button import CTkSegmentedButton
+from .windows.widgets.ctk_slider import CTkSlider
+from .windows.widgets.ctk_switch import CTkSwitch
+from .windows.widgets.ctk_tabview import CTkTabview
+from .windows.widgets.ctk_textbox import CTkTextbox
 
 # import windows
 from .windows.ctk_tk import CTk
@@ -70,7 +68,7 @@ from .windows.ctk_toplevel import CTkToplevel
 from .windows.ctk_input_dialog import CTkInputDialog
 
 # font classes
-from .widgets.font.ctk_font import CTkFont
+from .windows.widgets.font.ctk_font import CTkFont
 
 
 def set_appearance_mode(mode_string: str):

@@ -13,7 +13,7 @@ class ThemeManager:
         script_directory = os.path.dirname(os.path.abspath(__file__))
 
         if theme_name_or_path in cls.built_in_themes:
-            with open(os.path.join(script_directory, "assets", "themes", f"{theme_name_or_path}.json"), "r") as f:
+            with open(os.path.join(script_directory, "../../../assets", "themes", f"{theme_name_or_path}.json"), "r") as f:
                 cls.theme = json.load(f)
         else:
             with open(theme_name_or_path, "r") as f:

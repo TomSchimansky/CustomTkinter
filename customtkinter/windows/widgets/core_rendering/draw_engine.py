@@ -5,7 +5,7 @@ import tkinter
 from typing import Union, TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from customtkinter.widgets.core_rendering.ctk_canvas import CTkCanvas
+    from customtkinter.windows.widgets.core_rendering.ctk_canvas import CTkCanvas
 
 
 class DrawEngine:

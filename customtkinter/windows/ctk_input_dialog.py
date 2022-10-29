@@ -1,11 +1,11 @@
 from typing import Union, Tuple
 
-from ..widgets.ctk_label import CTkLabel
-from ..widgets.ctk_entry import CTkEntry
-from ..windows.ctk_toplevel import CTkToplevel
-from ..widgets.ctk_button import CTkButton
-from ..appearance_mode_tracker import AppearanceModeTracker
-from ..theme_manager import ThemeManager
+from .widgets.ctk_label import CTkLabel
+from .widgets.ctk_entry import CTkEntry
+from .ctk_toplevel import CTkToplevel
+from .widgets.ctk_button import CTkButton
+from .widgets.appearance_mode.appearance_mode_tracker import AppearanceModeTracker
+from .widgets.theme.theme_manager import ThemeManager
 
 
 class CTkInputDialog:

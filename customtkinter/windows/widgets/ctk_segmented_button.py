@@ -1,7 +1,7 @@
 import tkinter
 from typing import Union, Tuple, List, Dict, Callable
 
-from ..theme_manager import ThemeManager
+from .theme.theme_manager import ThemeManager
 from .ctk_button import CTkButton
 from .ctk_frame import CTkFrame
 from .font.ctk_font import CTkFont

@@ -4,17 +4,16 @@ import sys
 import os
 import platform
 import ctypes
-import re
-from typing import Union, Tuple, List
+from typing import Union, Tuple
 
-from ..appearance_mode_tracker import AppearanceModeTracker
-from ..theme_manager import ThemeManager
-from ..scaling_tracker import ScalingTracker
+from .widgets.theme.theme_manager import ThemeManager
+from .widgets.scaling.scaling_base_class import CTkScalingBaseClass
+from .widgets.appearance_mode.appearance_mode_base_class import CTkAppearanceModeBaseClass
 
 from ..utility.utility_functions import pop_from_dict_by_set, check_kwargs_empty
 
 
-class CTkToplevel(tkinter.Toplevel):
+class CTkToplevel(tkinter.Toplevel, CTkAppearanceModeBaseClass, CTkScalingBaseClass):
     """
     Toplevel window with dark titlebar on Windows and macOS.
     For detailed information check out the documentation.
@@ -33,16 +32,11 @@ class CTkToplevel(tkinter.Toplevel):
 
         self._enable_macos_dark_title_bar()
 
+        # call init methods of super classees
         super().__init__(*args, **pop_from_dict_by_set(kwargs, self._valid_tk_toplevel_arguments))
+        CTkAppearanceModeBaseClass.__init__(self)
+        CTkScalingBaseClass.__init__(self, scaling_type="window")
         check_kwargs_empty(kwargs, raise_error=True)
-
-        # add set_appearance_mode method to callback list of AppearanceModeTracker for appearance mode changes
-        AppearanceModeTracker.add(self._set_appearance_mode, self)
-        self._appearance_mode = AppearanceModeTracker.get_mode()  # 0: "Light" 1: "Dark"
-
-        # add set_scaling method to callback list of ScalingTracker for automatic scaling changes
-        ScalingTracker.add_widget(self._set_scaling, self)
-        self._window_scaling = ScalingTracker.get_window_scaling(self)
 
         self._current_width = 200  # initial window size, always without scaling
         self._current_height = 200
@@ -54,7 +48,10 @@ class CTkToplevel(tkinter.Toplevel):
 
         self._fg_color = ThemeManager.theme["color"]["window_bg_color"] if fg_color == "default_theme" else fg_color
 
+        # set bg color of tkinter.Toplevel
         super().configure(bg=self._apply_appearance_mode(self._fg_color))
+
+        # set title of tkinter.Toplevel
         super().title("CTkToplevel")
 
         self._state_before_windows_set_titlebar_color = None
@@ -70,6 +67,14 @@ class CTkToplevel(tkinter.Toplevel):
 
         self.bind('<Configure>', self._update_dimensions_event)
         self.bind('<FocusIn>', self._focus_in_event)
+
+    def destroy(self):
+        self._disable_macos_dark_title_bar()
+
+        # call destroy methods of super classes
+        tkinter.Toplevel.destroy(self)
+        CTkAppearanceModeBaseClass.destroy(self)
+        CTkScalingBaseClass.destroy(self)
 
     def _focus_in_event(self, event):
         # sometimes window looses jumps back on macOS if window is selected from Mission Control, so has to be lifted again
@@ -113,65 +118,6 @@ class CTkToplevel(tkinter.Toplevel):
                 self._current_height = max(self._min_height, min(height, self._max_height))
         else:
             return self._reverse_geometry_scaling(super().geometry())
-
-    @staticmethod
-    def _parse_geometry_string(geometry_string: str) -> tuple:
-        #                 index:   1                   2           3          4             5       6
-        # regex group structure: ('<width>x<height>', '<width>', '<height>', '+-<x>+-<y>', '-<x>', '-<y>')
-        result = re.search(r"((\d+)x(\d+)){0,1}(\+{0,1}([+-]{0,1}\d+)\+{0,1}([+-]{0,1}\d+)){0,1}", geometry_string)
-
-        width = int(result.group(2)) if result.group(2) is not None else None
-        height = int(result.group(3)) if result.group(3) is not None else None
-        x = int(result.group(5)) if result.group(5) is not None else None
-        y = int(result.group(6)) if result.group(6) is not None else None
-
-        return width, height, x, y
-
-    def _apply_geometry_scaling(self, geometry_string: str) -> str:
-        width, height, x, y = self._parse_geometry_string(geometry_string)
-
-        if x is None and y is None:  # no <x> and <y> in geometry_string
-            return f"{round(width * self._window_scaling)}x{round(height * self._window_scaling)}"
-
-        elif width is None and height is None:  # no <width> and <height> in geometry_string
-            return f"+{x}+{y}"
-
-        else:
-            return f"{round(width * self._window_scaling)}x{round(height * self._window_scaling)}+{x}+{y}"
-
-    def _reverse_geometry_scaling(self, scaled_geometry_string: str) -> str:
-        width, height, x, y = self._parse_geometry_string(scaled_geometry_string)
-
-        if x is None and y is None:  # no <x> and <y> in geometry_string
-            return f"{round(width / self._window_scaling)}x{round(height / self._window_scaling)}"
-
-        elif width is None and height is None:  # no <width> and <height> in geometry_string
-            return f"+{x}+{y}"
-
-        else:
-            return f"{round(width / self._window_scaling)}x{round(height / self._window_scaling)}+{x}+{y}"
-
-    def _apply_window_scaling(self, value):
-        if isinstance(value, (int, float)):
-            return int(value * self._window_scaling)
-        else:
-            return value
-
-    def _apply_appearance_mode(self, color: Union[str, Tuple[str, str], List[str]]) -> str:
-        """ color can be either a single hex color string or a color name or it can be a
-            tuple color with (light_color, dark_color). The functions returns
-            always a single color string """
-
-        if type(color) == tuple or type(color) == list:
-            return color[self._appearance_mode]
-        else:
-            return color
-
-    def destroy(self):
-        AppearanceModeTracker.remove(self._set_appearance_mode)
-        ScalingTracker.remove_window(self._set_scaling, self)
-        self._disable_macos_dark_title_bar()
-        super().destroy()
 
     def withdraw(self):
         if self._windows_set_titlebar_color_called:
