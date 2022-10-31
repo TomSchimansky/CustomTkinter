@@ -188,6 +188,8 @@ class CTkTabview(CTkBaseClass):
         return new_tab
 
     def _draw(self, no_color_updates: bool = False):
+        super()._draw(no_color_updates)
+
         if not self._canvas.winfo_exists():
             return
 

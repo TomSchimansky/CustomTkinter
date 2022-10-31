@@ -45,7 +45,7 @@ class CTkSwitch(CTkBaseClass):
                  state: str = tkinter.NORMAL,
                  **kwargs):
 
-        # transfer basic functionality (_bg_color, size, _appearance_mode, scaling) to CTkBaseClass
+        # transfer basic functionality (_bg_color, size, __appearance_mode, scaling) to CTkBaseClass
         super().__init__(master=master, bg_color=bg_color, width=width, height=height, **kwargs)
 
         # dimensions
@@ -193,6 +193,7 @@ class CTkSwitch(CTkBaseClass):
                         self._text_label.configure(cursor="hand2")
 
     def _draw(self, no_color_updates=False):
+        super()._draw(no_color_updates)
 
         if self._check_state is True:
             requires_recoloring = self._draw_engine.draw_rounded_slider_with_border_and_button(self._apply_widget_scaling(self._switch_width),

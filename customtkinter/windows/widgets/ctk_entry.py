@@ -148,6 +148,8 @@ class CTkEntry(CTkBaseClass):
         super().destroy()
 
     def _draw(self, no_color_updates=False):
+        super()._draw(no_color_updates)
+
         self._canvas.configure(bg=self._apply_appearance_mode(self._bg_color))
 
         requires_recoloring = self._draw_engine.draw_rounded_rect_with_border(self._apply_widget_scaling(self._current_width),

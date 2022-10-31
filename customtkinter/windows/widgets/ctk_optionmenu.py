@@ -43,7 +43,7 @@ class CTkOptionMenu(CTkBaseClass):
                  anchor: str = "w",
                  **kwargs):
 
-        # transfer basic functionality (_bg_color, size, _appearance_mode, scaling) to CTkBaseClass
+        # transfer basic functionality (_bg_color, size, __appearance_mode, scaling) to CTkBaseClass
         super().__init__(master=master, bg_color=bg_color, width=width, height=height, **kwargs)
 
         # color variables
@@ -180,6 +180,8 @@ class CTkOptionMenu(CTkBaseClass):
         super().destroy()
 
     def _draw(self, no_color_updates=False):
+        super()._draw(no_color_updates)
+
         left_section_width = self._current_width - self._current_height
         requires_recoloring = self._draw_engine.draw_rounded_rect_with_border_vertical_split(self._apply_widget_scaling(self._current_width),
                                                                                              self._apply_widget_scaling(self._current_height),

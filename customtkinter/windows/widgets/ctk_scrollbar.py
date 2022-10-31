@@ -44,7 +44,7 @@ class CTkScrollbar(CTkBaseClass):
             else:
                 height = 200
 
-        # transfer basic functionality (_bg_color, size, _appearance_mode, scaling) to CTkBaseClass
+        # transfer basic functionality (_bg_color, size, __appearance_mode, scaling) to CTkBaseClass
         super().__init__(master=master, bg_color=bg_color, width=width, height=height, **kwargs)
 
         # color
@@ -118,6 +118,8 @@ class CTkScrollbar(CTkBaseClass):
                 return self._start_value, self._end_value
 
     def _draw(self, no_color_updates=False):
+        super()._draw(no_color_updates)
+
         corrected_start_value, corrected_end_value = self._get_scrollbar_values_for_minimum_pixel_size()
         requires_recoloring = self._draw_engine.draw_rounded_scrollbar(self._apply_widget_scaling(self._current_width),
                                                                        self._apply_widget_scaling(self._current_height),
@@ -219,9 +221,9 @@ class CTkScrollbar(CTkBaseClass):
 
     def _clicked(self, event):
         if self._orientation == "vertical":
-            value = ((event.y - self._border_spacing) / (self._current_height - 2 * self._border_spacing)) / self._widget_scaling
+            value = self._reverse_widget_scaling(((event.y - self._border_spacing) / (self._current_height - 2 * self._border_spacing)))
         else:
-            value = ((event.x - self._border_spacing) / (self._current_width - 2 * self._border_spacing)) / self._widget_scaling
+            value = self._reverse_widget_scaling(((event.x - self._border_spacing) / (self._current_width - 2 * self._border_spacing)))
 
         current_scrollbar_length = self._end_value - self._start_value
         value = max(current_scrollbar_length / 2, min(value, 1 - (current_scrollbar_length / 2)))

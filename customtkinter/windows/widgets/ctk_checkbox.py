@@ -43,7 +43,7 @@ class CTkCheckBox(CTkBaseClass):
                  variable: tkinter.Variable = None,
                  **kwargs):
 
-        # transfer basic functionality (_bg_color, size, _appearance_mode, scaling) to CTkBaseClass
+        # transfer basic functionality (_bg_color, size, __appearance_mode, scaling) to CTkBaseClass
         super().__init__(master=master, bg_color=bg_color, width=width, height=height, **kwargs)
 
         # dimensions
@@ -169,6 +169,8 @@ class CTkCheckBox(CTkBaseClass):
         super().destroy()
 
     def _draw(self, no_color_updates=False):
+        super()._draw(no_color_updates)
+
         requires_recoloring_1 = self._draw_engine.draw_rounded_rect_with_border(self._apply_widget_scaling(self._checkbox_width),
                                                                                 self._apply_widget_scaling(self._checkbox_height),
                                                                                 self._apply_widget_scaling(self._corner_radius),

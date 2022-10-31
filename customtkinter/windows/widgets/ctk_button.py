@@ -48,7 +48,7 @@ class CTkButton(CTkBaseClass):
                  anchor: str = "center",
                  **kwargs):
 
-        # transfer basic functionality (_bg_color, size, _appearance_mode, scaling) to CTkBaseClass
+        # transfer basic functionality (_bg_color, size, __appearance_mode, scaling) to CTkBaseClass
         super().__init__(master=master, bg_color=bg_color, width=width, height=height, **kwargs)
 
         # color
@@ -74,6 +74,8 @@ class CTkButton(CTkBaseClass):
         self._image_label: Union[tkinter.Label, None] = None
         self._text = text
         self._text_label: Union[tkinter.Label, None] = None
+        if isinstance(self._image, CTkImage):
+            self._image.add_configure_callback(self._update_image)
 
         # font
         self._font = CTkFont() if font == "default_theme" else self._check_font_type(font)
@@ -135,12 +137,19 @@ class CTkButton(CTkBaseClass):
             self._canvas.grid_forget()
             self._canvas.grid(row=0, column=0, rowspan=5, columnspan=5, sticky="nsew")
 
+    def _update_image(self):
+        if self._image_label is not None:
+            self._image_label.configure(image=self._image.create_scaled_photo_image(self._get_widget_scaling(),
+                                                                                    self._get_appearance_mode()))
+
     def destroy(self):
         if isinstance(self._font, CTkFont):
             self._font.remove_size_configure_callback(self._update_font)
         super().destroy()
 
     def _draw(self, no_color_updates=False):
+        super()._draw(no_color_updates)
+
         if self._background_corner_colors is not None:
             self._draw_engine.draw_background_corners(self._apply_widget_scaling(self._current_width),
                                                       self._apply_widget_scaling(self._current_height))
@@ -233,7 +242,7 @@ class CTkButton(CTkBaseClass):
                 else:
                     self._image_label.configure(bg=self._apply_appearance_mode(self._fg_color))
 
-            self._image_label.configure(image=self._image)  # set image
+            self._update_image()  # set image
 
         else:
             # delete text_label if no text given
@@ -354,7 +363,6 @@ class CTkButton(CTkBaseClass):
                 require_redraw = True  # text_label will be created in .draw()
             else:
                 self._text_label.configure(text=self._text)
-            self._create_grid()
 
         if "font" in kwargs:
             if isinstance(self._font, CTkFont):
@@ -371,8 +379,11 @@ class CTkButton(CTkBaseClass):
                 self._text_label.configure(textvariable=self._textvariable)
 
         if "image" in kwargs:
+            if isinstance(self._image, CTkImage):
+                self._image.remove_configure_callback(self._update_image)
             self._image = kwargs.pop("image")
-            self._create_grid()
+            if isinstance(self._image, CTkImage):
+                self._image.add_configure_callback(self._update_image)
             require_redraw = True
 
         if "state" in kwargs:

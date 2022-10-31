@@ -29,7 +29,7 @@ class CTkFrame(CTkBaseClass):
                  overwrite_preferred_drawing_method: str = None,
                  **kwargs):
 
-        # transfer basic functionality (_bg_color, size, _appearance_mode, scaling) to CTkBaseClass
+        # transfer basic functionality (_bg_color, size, __appearance_mode, scaling) to CTkBaseClass
         super().__init__(master=master, bg_color=bg_color, width=width, height=height, **kwargs)
 
         # color
@@ -91,6 +91,8 @@ class CTkFrame(CTkBaseClass):
         self._draw()
 
     def _draw(self, no_color_updates=False):
+        super()._draw(no_color_updates)
+
         if not self._canvas.winfo_exists():
             return
 

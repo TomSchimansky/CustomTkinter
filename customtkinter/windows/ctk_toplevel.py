@@ -60,10 +60,7 @@ class CTkToplevel(tkinter.Toplevel, CTkAppearanceModeBaseClass, CTkScalingBaseCl
         self._iconify_called_after_windows_set_titlebar_color = False  # indicates if iconify() was called after windows_set_titlebar_color
 
         if sys.platform.startswith("win"):
-            if self._appearance_mode == 1:
-                self._windows_set_titlebar_color("dark")
-            else:
-                self._windows_set_titlebar_color("light")
+            self._windows_set_titlebar_color(self._get_appearance_mode())
 
         self.bind('<Configure>', self._update_dimensions_event)
         self.bind('<FocusIn>', self._focus_in_event)
@@ -85,12 +82,12 @@ class CTkToplevel(tkinter.Toplevel, CTkAppearanceModeBaseClass, CTkScalingBaseCl
         detected_width = self.winfo_width()  # detect current window size
         detected_height = self.winfo_height()
 
-        if self._current_width != round(detected_width / self._window_scaling) or self._current_height != round(detected_height / self._window_scaling):
-            self._current_width = round(detected_width / self._window_scaling)  # adjust current size according to new size given by event
-            self._current_height = round(detected_height / self._window_scaling)  # _current_width and _current_height are independent of the scale
+        if self._current_width != self._reverse_window_scaling(detected_width) or self._current_height != self._reverse_window_scaling(detected_height):
+            self._current_width = self._reverse_window_scaling(detected_width)  # adjust current size according to new size given by event
+            self._current_height = self._reverse_window_scaling(detected_height)  # _current_width and _current_height are independent of the scale
 
     def _set_scaling(self, new_widget_scaling, new_window_scaling):
-        self._window_scaling = new_window_scaling
+        super()._set_scaling(new_widget_scaling, new_window_scaling)
 
         # force new dimensions on window by using min, max, and geometry
         super().minsize(self._apply_window_scaling(self._current_width), self._apply_window_scaling(self._current_height))
@@ -134,10 +131,7 @@ class CTkToplevel(tkinter.Toplevel, CTkAppearanceModeBaseClass, CTkScalingBaseCl
         self._last_resizable_args = ([], {"width": width, "height": height})
 
         if sys.platform.startswith("win"):
-            if self._appearance_mode == 1:
-                self.after(10, lambda: self._windows_set_titlebar_color("dark"))
-            else:
-                self.after(10, lambda: self._windows_set_titlebar_color("light"))
+            self.after(10, lambda: self._windows_set_titlebar_color(self._get_appearance_mode()))
 
     def minsize(self, width=None, height=None):
         self._min_width = width
@@ -259,15 +253,9 @@ class CTkToplevel(tkinter.Toplevel, CTkAppearanceModeBaseClass, CTkScalingBaseCl
             self._iconify_called_after_windows_set_titlebar_color = False
 
     def _set_appearance_mode(self, mode_string):
-        if mode_string.lower() == "dark":
-            self._appearance_mode = 1
-        elif mode_string.lower() == "light":
-            self._appearance_mode = 0
+        super()._set_appearance_mode(mode_string)
 
         if sys.platform.startswith("win"):
-            if self._appearance_mode == 1:
-                self._windows_set_titlebar_color("dark")
-            else:
-                self._windows_set_titlebar_color("light")
+            self._windows_set_titlebar_color(mode_string)
 
         super().configure(bg=self._apply_appearance_mode(self._fg_color))

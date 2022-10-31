@@ -42,7 +42,7 @@ class CTkRadioButton(CTkBaseClass):
                  command: Callable = None,
                  **kwargs):
 
-        # transfer basic functionality (_bg_color, size, _appearance_mode, scaling) to CTkBaseClass
+        # transfer basic functionality (_bg_color, size, __appearance_mode, scaling) to CTkBaseClass
         super().__init__(master=master, bg_color=bg_color, width=width, height=height, **kwargs)
 
         # dimensions
@@ -163,6 +163,8 @@ class CTkRadioButton(CTkBaseClass):
         super().destroy()
 
     def _draw(self, no_color_updates=False):
+        super()._draw(no_color_updates)
+
         requires_recoloring = self._draw_engine.draw_rounded_rect_with_border(self._apply_widget_scaling(self._radiobutton_width),
                                                                               self._apply_widget_scaling(self._radiobutton_height),
                                                                               self._apply_widget_scaling(self._corner_radius),

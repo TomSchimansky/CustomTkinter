@@ -98,7 +98,9 @@ class CTkBaseClass(tkinter.Frame, CTkAppearanceModeBaseClass, CTkScalingBaseClas
         CTkScalingBaseClass.destroy(self)
 
     def _draw(self, no_color_updates: bool = False):
-        return
+        """ can be overridden but super method must be called """
+        if no_color_updates is False:
+            super().configure(bg=self._apply_appearance_mode(self._bg_color))
 
     def config(self, *args, **kwargs):
         raise AttributeError("'config' is not implemented for CTk widgets. For consistency, always use 'configure' instead.")
@@ -164,9 +166,9 @@ class CTkBaseClass(tkinter.Frame, CTkAppearanceModeBaseClass, CTkScalingBaseClas
 
     def _update_dimensions_event(self, event):
         # only redraw if dimensions changed (for performance), independent of scaling
-        if round(self._current_width) != round(event.width / self._widget_scaling) or round(self._current_height) != round(event.height / self._widget_scaling):
-            self._current_width = (event.width / self._widget_scaling)  # adjust current size according to new size given by event
-            self._current_height = (event.height / self._widget_scaling)  # _current_width and _current_height are independent of the scale
+        if round(self._current_width) != round(self._reverse_widget_scaling(event.width)) or round(self._current_height) != round(self._reverse_widget_scaling(event.height)):
+            self._current_width = self._reverse_widget_scaling(event.width)  # adjust current size according to new size given by event
+            self._current_height = self._reverse_widget_scaling(event.height)  # _current_width and _current_height are independent of the scale
 
             self._draw(no_color_updates=True)  # faster drawing without color changes
 
@@ -198,16 +200,11 @@ class CTkBaseClass(tkinter.Frame, CTkAppearanceModeBaseClass, CTkScalingBaseClas
                 return "#FFFFFF", "#000000"
 
     def _set_appearance_mode(self, mode_string):
-        if mode_string.lower() == "dark":
-            self._appearance_mode = 1
-        elif mode_string.lower() == "light":
-            self._appearance_mode = 0
-
-        super().configure(bg=self._apply_appearance_mode(self._bg_color))
+        super()._set_appearance_mode(mode_string)
         self._draw()
 
     def _set_scaling(self, new_widget_scaling, new_window_scaling):
-        self._widget_scaling = new_widget_scaling
+        super()._set_scaling(new_widget_scaling, new_window_scaling)
 
         super().configure(width=self._apply_widget_scaling(self._desired_width),
                           height=self._apply_widget_scaling(self._desired_height))
