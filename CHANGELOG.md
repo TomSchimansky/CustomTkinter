@@ -6,8 +6,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ToDo:
  - complete other theme files
- - auto-scaling of images
- - image tuple for light/dark mode
  - change font attribute in wiki
  - add new button attributes to wiki
  - cursor configuring

@@ -27,7 +27,6 @@ class CTkImage:
             self._check_pil_import()
 
         self._light_image = light_image
-        print(self._light_image)
         self._dark_image = dark_image
         self._check_images()
         self._size = size
@@ -109,7 +108,6 @@ class CTkImage:
 
     def create_scaled_photo_image(self, widget_scaling: float, appearance_mode: str) -> ImageTk.PhotoImage:
         scaled_size = self._get_scaled_size(widget_scaling)
-        print(scaled_size)
 
         if appearance_mode == "light" and self._light_image is not None:
             return self._get_scaled_light_photo_image(scaled_size)
