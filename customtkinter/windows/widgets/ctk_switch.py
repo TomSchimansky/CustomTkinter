@@ -244,6 +244,18 @@ class CTkSwitch(CTkBaseClass):
             self._text_label.configure(bg=self._apply_appearance_mode(self._bg_color))
 
     def configure(self, require_redraw=False, **kwargs):
+        if "corner_radius" in kwargs:
+            self._corner_radius = kwargs.pop("corner_radius")
+            require_redraw = True
+
+        if "border_width" in kwargs:
+            self._border_width = kwargs.pop("border_width")
+            require_redraw = True
+
+        if "button_length" in kwargs:
+            self._button_length = kwargs.pop("button_length")
+            require_redraw = True
+
         if "switch_width" in kwargs:
             self._switch_width = kwargs.pop("switch_width")
             self._canvas.configure(width=self._apply_widget_scaling(self._switch_width))
@@ -294,10 +306,6 @@ class CTkSwitch(CTkBaseClass):
 
         if "border_color" in kwargs:
             self._border_color = kwargs.pop("border_color")
-            require_redraw = True
-
-        if "border_width" in kwargs:
-            self._border_width = kwargs.pop("border_width")
             require_redraw = True
 
         if "hover" in kwargs:
