@@ -58,7 +58,6 @@ class CTkRadioButton(CTkBaseClass):
         self._corner_radius = ThemeManager.theme["shape"]["radiobutton_corner_radius"] if corner_radius == "default_theme" else corner_radius
         self._border_width_unchecked = ThemeManager.theme["shape"]["radiobutton_border_width_unchecked"] if border_width_unchecked == "default_theme" else border_width_unchecked
         self._border_width_checked = ThemeManager.theme["shape"]["radiobutton_border_width_checked"] if border_width_checked == "default_theme" else border_width_checked
-        self._border_width = self._border_width_unchecked
 
         # text
         self._text = text
@@ -165,10 +164,16 @@ class CTkRadioButton(CTkBaseClass):
     def _draw(self, no_color_updates=False):
         super()._draw(no_color_updates)
 
-        requires_recoloring = self._draw_engine.draw_rounded_rect_with_border(self._apply_widget_scaling(self._radiobutton_width),
-                                                                              self._apply_widget_scaling(self._radiobutton_height),
-                                                                              self._apply_widget_scaling(self._corner_radius),
-                                                                              self._apply_widget_scaling(self._border_width))
+        if self._check_state is True:
+            requires_recoloring = self._draw_engine.draw_rounded_rect_with_border(self._apply_widget_scaling(self._radiobutton_width),
+                                                                                  self._apply_widget_scaling(self._radiobutton_height),
+                                                                                  self._apply_widget_scaling(self._corner_radius),
+                                                                                  self._apply_widget_scaling(self._border_width_checked))
+        else:
+            requires_recoloring = self._draw_engine.draw_rounded_rect_with_border(self._apply_widget_scaling(self._radiobutton_width),
+                                                                                  self._apply_widget_scaling(self._radiobutton_height),
+                                                                                  self._apply_widget_scaling(self._corner_radius),
+                                                                                  self._apply_widget_scaling(self._border_width_unchecked))
 
         if no_color_updates is False or requires_recoloring:
             self._bg_canvas.configure(bg=self._apply_appearance_mode(self._bg_color))
@@ -195,6 +200,18 @@ class CTkRadioButton(CTkBaseClass):
             self._text_label.configure(bg=self._apply_appearance_mode(self._bg_color))
 
     def configure(self, require_redraw=False, **kwargs):
+        if "corner_radius" in kwargs:
+            self._corner_radius = kwargs.pop("corner_radius")
+            require_redraw = True
+
+        if "border_width_unchecked" in kwargs:
+            self._border_width_unchecked = kwargs.pop("border_width_unchecked")
+            require_redraw = True
+
+        if "border_width_checked" in kwargs:
+            self._border_width_checked = kwargs.pop("border_width_checked")
+            require_redraw = True
+
         if "radiobutton_width" in kwargs:
             self._radiobutton_width = kwargs.pop("radiobutton_width")
             self._canvas.configure(width=self._apply_widget_scaling(self._radiobutton_width))
@@ -237,10 +254,6 @@ class CTkRadioButton(CTkBaseClass):
 
         if "border_color" in kwargs:
             self._border_color = kwargs.pop("border_color")
-            require_redraw = True
-
-        if "border_width" in kwargs:
-            self._border_width = kwargs.pop("border_width")
             require_redraw = True
 
         if "hover" in kwargs:
@@ -365,7 +378,6 @@ class CTkRadioButton(CTkBaseClass):
 
     def select(self, from_variable_callback=False):
         self._check_state = True
-        self._border_width = self._border_width_checked
         self._draw()
 
         if self._variable is not None and not from_variable_callback:
@@ -375,7 +387,6 @@ class CTkRadioButton(CTkBaseClass):
 
     def deselect(self, from_variable_callback=False):
         self._check_state = False
-        self._border_width = self._border_width_unchecked
         self._draw()
 
         if self._variable is not None and not from_variable_callback:

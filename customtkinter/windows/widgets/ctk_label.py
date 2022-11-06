@@ -23,7 +23,7 @@ class CTkLabel(CTkBaseClass):
 
     def __init__(self,
                  master: any = None,
-                 width: int = 140,
+                 width: int = 0,
                  height: int = 28,
                  corner_radius: Union[int, str] = "default_theme",
 
@@ -53,7 +53,7 @@ class CTkLabel(CTkBaseClass):
         self._text = text
 
         # image
-        self._image = image
+        self._image = self._check_image_type(image)
         self._compound = compound
         if isinstance(self._image, CTkImage):
             self._image.add_configure_callback(self._update_image)
@@ -85,12 +85,9 @@ class CTkLabel(CTkBaseClass):
                                     font=self._apply_font_scaling(self._font))
         self._label.configure(**pop_from_dict_by_set(kwargs, self._valid_tk_label_attributes))
 
-        text_label_grid_sticky = self._anchor if self._anchor != "center" else ""
-        self._label.grid(row=0, column=0, sticky=text_label_grid_sticky,
-                         padx=self._apply_widget_scaling(min(self._corner_radius, round(self._current_height/2))))
-
         check_kwargs_empty(kwargs, raise_error=True)
 
+        self._create_grid()
         self._update_image()
         self._draw()
 
@@ -100,10 +97,7 @@ class CTkLabel(CTkBaseClass):
         self._canvas.configure(width=self._apply_widget_scaling(self._desired_width), height=self._apply_widget_scaling(self._desired_height))
         self._label.configure(font=self._apply_font_scaling(self._font))
 
-        text_label_grid_sticky = self._anchor if self._anchor != "center" else ""
-        self._label.grid(row=0, column=0, sticky=text_label_grid_sticky,
-                         padx=self._apply_widget_scaling(min(self._corner_radius, round(self._current_height/2))))
-
+        self._create_grid()
         self._draw(no_color_updates=True)
 
     def _set_dimensions(self, width=None, height=None):
@@ -111,6 +105,7 @@ class CTkLabel(CTkBaseClass):
 
         self._canvas.configure(width=self._apply_widget_scaling(self._desired_width),
                                height=self._apply_widget_scaling(self._desired_height))
+        self._create_grid()
         self._draw()
 
     def _update_font(self):
@@ -133,6 +128,13 @@ class CTkLabel(CTkBaseClass):
         if isinstance(self._font, CTkFont):
             self._font.remove_size_configure_callback(self._update_font)
         super().destroy()
+
+    def _create_grid(self):
+        """ configure grid system (1x1) """
+
+        text_label_grid_sticky = self._anchor if self._anchor != "center" else ""
+        self._label.grid(row=0, column=0, sticky=text_label_grid_sticky,
+                         padx=self._apply_widget_scaling(min(self._corner_radius, round(self._current_height / 2))))
 
     def _draw(self, no_color_updates=False):
         super()._draw(no_color_updates)
@@ -164,15 +166,18 @@ class CTkLabel(CTkBaseClass):
             self._update_image()
 
     def configure(self, require_redraw=False, **kwargs):
-        if "anchor" in kwargs:
-            self._anchor = kwargs.pop("anchor")
-            text_label_grid_sticky = self._anchor if self._anchor != "center" else ""
-            self._label.grid(row=0, column=0, sticky=text_label_grid_sticky,
-                             padx=self._apply_widget_scaling(min(self._corner_radius, round(self._current_height/2))))
+        if "corner_radius" in kwargs:
+            self._corner_radius = kwargs.pop("corner_radius")
+            self._create_grid()
+            require_redraw = True
 
-        if "compound" in kwargs:
-            self._compound = kwargs.pop("compound")
-            self._label.configure(compound=self._compound)
+        if "fg_color" in kwargs:
+            self._fg_color = kwargs.pop("fg_color")
+            require_redraw = True
+
+        if "text_color" in kwargs:
+            self._text_color = kwargs.pop("text_color")
+            require_redraw = True
 
         if "text" in kwargs:
             self._text = kwargs.pop("text")
@@ -189,25 +194,19 @@ class CTkLabel(CTkBaseClass):
         if "image" in kwargs:
             if isinstance(self._image, CTkImage):
                 self._image.remove_configure_callback(self._update_image)
-            self._image = kwargs.pop("image")
+            self._image = self._check_image_type(kwargs.pop("image"))
             if isinstance(self._image, CTkImage):
                 self._image.add_configure_callback(self._update_image)
             self._update_image()
 
-        if "fg_color" in kwargs:
-            self._fg_color = kwargs.pop("fg_color")
-            require_redraw = True
+        if "compound" in kwargs:
+            self._compound = kwargs.pop("compound")
+            self._label.configure(compound=self._compound)
 
-        if "text_color" in kwargs:
-            self._text_color = kwargs.pop("text_color")
-            require_redraw = True
-
-        if "corner_radius" in kwargs:
-            self._corner_radius = kwargs.pop("corner_radius")
-            text_label_grid_sticky = self._anchor if self._anchor != "center" else ""
-            self._label.grid(row=0, column=0, sticky=text_label_grid_sticky,
-                             padx=self._apply_widget_scaling(min(self._corner_radius, round(self._current_height/2))))
-            require_redraw = True
+        if "anchor" in kwargs:
+            self._anchor = kwargs.pop("anchor")
+            self._label.configure(anchor=self._anchor)
+            self._create_grid()
 
         self._label.configure(**pop_from_dict_by_set(kwargs, self._valid_tk_label_attributes))  # configure tkinter.Label
         super().configure(require_redraw=require_redraw, **kwargs)  # configure CTkBaseClass

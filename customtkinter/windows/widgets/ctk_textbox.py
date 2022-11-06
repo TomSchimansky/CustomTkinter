@@ -73,8 +73,8 @@ class CTkTextbox(CTkBaseClass):
 
         self._canvas = CTkCanvas(master=self,
                                  highlightthickness=0,
-                                 width=self._apply_widget_scaling(self._current_width),
-                                 height=self._apply_widget_scaling(self._current_height))
+                                 width=self._apply_widget_scaling(self._desired_width),
+                                 height=self._apply_widget_scaling(self._desired_height))
         self._canvas.grid(row=0, column=0, rowspan=2, columnspan=2, sticky="nsew")
         self._canvas.configure(bg=self._apply_appearance_mode(self._bg_color))
         self._draw_engine = DrawEngine(self._canvas)

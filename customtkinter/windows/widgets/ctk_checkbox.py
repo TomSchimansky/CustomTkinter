@@ -216,6 +216,14 @@ class CTkCheckBox(CTkBaseClass):
             self._text_label.configure(bg=self._apply_appearance_mode(self._bg_color))
 
     def configure(self, require_redraw=False, **kwargs):
+        if "corner_radius" in kwargs:
+            self._corner_radius = kwargs.pop("corner_radius")
+            require_redraw = True
+
+        if "border_width" in kwargs:
+            self._border_width = kwargs.pop("border_width")
+            require_redraw = True
+
         if "checkbox_width" in kwargs:
             self._checkbox_width = kwargs.pop("checkbox_width")
             self._canvas.configure(width=self._apply_widget_scaling(self._checkbox_width))

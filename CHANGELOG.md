@@ -20,6 +20,8 @@ ToDo:
  - Added .bind() and .focus() methods to almost all widgets
  - Added 'anchor' option to CTkOptionMenu and 'justify' option to CTkComboBox
  - Added CTkFont class
+ - Added CTkImage class to replace PIL.ImageTk.PhotoImage, supports scaling and two images for appearance mode, supports configuring
+
 
 ### Changed
  - Changed 'text_font' attribute to 'font' in all widgets, changed 'dropdown_text_font' to 'dropdown_font'

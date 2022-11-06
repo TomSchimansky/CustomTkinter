@@ -12,6 +12,7 @@ from ...ctk_tk import CTk
 from ...ctk_toplevel import CTkToplevel
 from ..theme.theme_manager import ThemeManager
 from ..font.ctk_font import CTkFont
+from ..image.ctk_image import CTkImage
 from ..appearance_mode.appearance_mode_base_class import CTkAppearanceModeBaseClass
 from ..scaling.scaling_base_class import CTkScalingBaseClass
 
@@ -145,13 +146,13 @@ class CTkBaseClass(tkinter.Frame, CTkAppearanceModeBaseClass, CTkScalingBaseClas
         else:
             raise ValueError(f"'{attribute_name}' is not a supported argument. Look at the documentation for supported arguments.")
 
-    @staticmethod
-    def _check_font_type(font: any):
+    def _check_font_type(self, font: any):
+        """ check font type when passed to widget """
         if isinstance(font, CTkFont):
             return font
 
         elif type(font) == tuple and len(font) == 1:
-            sys.stderr.write(f"Warning: font {font} given without size, will be extended with default text size of current theme\n")
+            sys.stderr.write(f"{type(self).__name__} Warning: font {font} given without size, will be extended with default text size of current theme\n")
             return font[0], ThemeManager.theme["text"]["size"]
 
         elif type(font) == tuple and 2 <= len(font) <= 3:
@@ -163,6 +164,17 @@ class CTkBaseClass(tkinter.Frame, CTkAppearanceModeBaseClass, CTkScalingBaseClas
                              f"\nUsage example:\n" +
                              f"font=customtkinter.CTkFont(family='<name>', size=<size in px>)\n" +
                              f"font=('<name>', <size in px>)\n")
+
+    def _check_image_type(self, image: any):
+        """ check image type when passed to widget """
+        if image is None:
+            return image
+        elif isinstance(image, CTkImage):
+            return image
+        else:
+            sys.stderr.write(f"{type(self).__name__} Warning: Given image is not CTkImage but {type(image)}. " +
+                             f"Image can not be scaled on HighDPI displays, use CTkImage instead.\n")
+            return image
 
     def _update_dimensions_event(self, event):
         # only redraw if dimensions changed (for performance), independent of scaling

@@ -17,6 +17,7 @@ class CTkTabview(CTkBaseClass):
     _top_spacing = 10  # px on top of the buttons
     _top_button_overhang = 8  # px
     _button_height = 26
+    _segmented_button_border_width = 3
 
     def __init__(self,
                  master: any = None,
@@ -67,8 +68,8 @@ class CTkTabview(CTkBaseClass):
         self._canvas = CTkCanvas(master=self,
                                  bg=self._apply_appearance_mode(self._bg_color),
                                  highlightthickness=0,
-                                 width=self._apply_widget_scaling(self._current_width - self._top_spacing - self._top_button_overhang),
-                                 height=self._apply_widget_scaling(self._current_height))
+                                 width=self._apply_widget_scaling(self._desired_width),
+                                 height=self._apply_widget_scaling(self._desired_height - self._top_spacing - self._top_button_overhang))
         self._draw_engine = DrawEngine(self._canvas)
 
         self._segmented_button = CTkSegmentedButton(self,
@@ -82,7 +83,7 @@ class CTkTabview(CTkBaseClass):
                                                     text_color=text_color,
                                                     text_color_disabled=text_color_disabled,
                                                     corner_radius=corner_radius,
-                                                    border_width=self._apply_widget_scaling(3),
+                                                    border_width=self._apply_widget_scaling(self._segmented_button_border_width),
                                                     command=self._segmented_button_callback,
                                                     state=state)
         self._configure_segmented_button_background_corners()
@@ -143,14 +144,6 @@ class CTkTabview(CTkBaseClass):
     def _configure_tab_background_corners_by_name(self, name: str):
         """ needs to be called for changes in fg_color, bg_color, border_width """
 
-        # if self._border_width == 0:
-        #     if self._fg_color is not None:
-        #         self._tab_dict[name].configure(background_corner_colors=(self._fg_color, self._fg_color, self._bg_color, self._bg_color))
-        #     else:
-        #         self._tab_dict[name].configure(background_corner_colors=(self._bg_color, self._bg_color, self._bg_color, self._bg_color))
-        # else:
-        #     self._tab_dict[name].configure(background_corner_colors=None)
-
         self._tab_dict[name].configure(background_corner_colors=None)
 
     def _configure_grid(self):
@@ -182,6 +175,8 @@ class CTkTabview(CTkBaseClass):
 
     def _create_tab(self) -> CTkFrame:
         new_tab = CTkFrame(self,
+                           height=0,
+                           width=0,
                            fg_color=self._fg_color,
                            border_width=0,
                            corner_radius=self._corner_radius)

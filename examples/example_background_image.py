@@ -1,13 +1,9 @@
-import tkinter
 import tkinter.messagebox
 import customtkinter
-from PIL import Image, ImageTk
+from PIL import Image
 import os
 
-customtkinter.set_appearance_mode("Dark")  # Modes: "System" (standard), "Dark", "Light"
-customtkinter.set_default_color_theme("blue")  # Themes: "blue" (standard), "green", "dark-blue"
-
-PATH = os.path.dirname(os.path.realpath(__file__))
+customtkinter.set_appearance_mode("dark")
 
 
 class App(customtkinter.CTk):
@@ -28,10 +24,11 @@ class App(customtkinter.CTk):
         self.protocol("WM_DELETE_WINDOW", self.on_closing)
 
         # load image with PIL and convert to PhotoImage
-        image = Image.open(PATH + "/test_images/bg_gradient.jpg").resize((self.WIDTH, self.HEIGHT))
-        self.bg_image = ImageTk.PhotoImage(image)
+        current_path = os.path.dirname(os.path.realpath(__file__))
+        self.bg_image = customtkinter.CTkImage(Image.open(current_path + "/test_images/bg_gradient.jpg"),
+                                               size=(self.WIDTH, self.HEIGHT))
 
-        self.image_label = tkinter.Label(master=self, image=self.bg_image)
+        self.image_label = customtkinter.CTkLabel(master=self, image=self.bg_image)
         self.image_label.place(relx=0.5, rely=0.5, anchor=tkinter.CENTER)
 
         self.frame = customtkinter.CTkFrame(master=self,
@@ -40,7 +37,7 @@ class App(customtkinter.CTk):
                                             corner_radius=0)
         self.frame.place(relx=0.5, rely=0.5, anchor=tkinter.CENTER)
 
-        self.label_1 = customtkinter.CTkLabel(master=self.frame, width=200, height=60,
+        self.label_1 = customtkinter.CTkLabel(master=self.frame, width=200, height=60, corner_radius=6,
                                               fg_color=("gray70", "gray25"), text="CustomTkinter\ninterface example")
         self.label_1.place(relx=0.5, rely=0.3, anchor=tkinter.CENTER)
 

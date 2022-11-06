@@ -70,7 +70,7 @@ class CTkButton(CTkBaseClass):
         self._border_spacing = border_spacing
 
         # text, image
-        self._image = image
+        self._image = self._check_image_type(image)
         self._image_label: Union[tkinter.Label, None] = None
         self._text = text
         self._text_label: Union[tkinter.Label, None] = None
@@ -381,7 +381,7 @@ class CTkButton(CTkBaseClass):
         if "image" in kwargs:
             if isinstance(self._image, CTkImage):
                 self._image.remove_configure_callback(self._update_image)
-            self._image = kwargs.pop("image")
+            self._image = self._check_image_type(kwargs.pop("image"))
             if isinstance(self._image, CTkImage):
                 self._image.add_configure_callback(self._update_image)
             require_redraw = True
