@@ -115,6 +115,12 @@ class CTkTextbox(CTkBaseClass):
     def xview(self, *args):
         return self.textbox.xview(*args)
 
+    def get(self, *args, **kwargs):
+        return self.textbox.get(*args, **kwargs)
+    
+    def delete(self, *args, **kwargs):
+        return self.textbox.delete(*args, **kwargs)
+    
     def insert(self, *args, **kwargs):
         return self.textbox.insert(*args, **kwargs)
 
