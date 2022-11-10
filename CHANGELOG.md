@@ -10,7 +10,6 @@ ToDo:
  - add new button attributes to wiki
  - cursor configuring
  - overwrite winfo methods
- - renew input dialog
 
 ## Unreleased - 2022-10-2
 ### Added
@@ -22,15 +21,17 @@ ToDo:
  - Added 'anchor' option to CTkOptionMenu and 'justify' option to CTkComboBox
  - Added CTkFont class
  - Added CTkImage class to replace PIL.ImageTk.PhotoImage, supports scaling and two images for appearance mode, supports configuring
-
+ - Added missing configure options for multiple widgets
 
 ### Changed
+ - Changed value for transparent colors (same as background) from None to 'transparent'
  - Changed 'text_font' attribute to 'font' in all widgets, changed 'dropdown_text_font' to 'dropdown_font'
  - Changed 'dropdown_color' attribute to 'dropdown_fg_color' for combobox, optionmenu
  - Changed 'orient' attribute of CTkProgressBar and CTkSlider to 'orientation'
  - Width and height attributes of CTkCheckBox, CTkRadioButton, CTkSwitch now describe the outer dimensions of the whole widget. The button/switch size is described by separate attributes like checkbox_width, checkbox_height
  - font attribute must be tuple or CTkFont now, all size values are measured in pixel now
  - Changed dictionary key 'window_bg_color' to 'window' in theme files
+ - CTkInputDialog attributes completely changed
 
 ### Removed
  - Removed setter and getter functions like set_text in CTkButton

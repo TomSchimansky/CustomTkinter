@@ -513,15 +513,21 @@ class CTkButton(CTkBaseClass):
             self._on_enter()
 
     def _clicked(self, event=None):
-        if self._command is not None:
-            if self._state != tkinter.DISABLED:
+        if self._state != tkinter.DISABLED:
 
-                # click animation: change color with .on_leave() and back to normal after 100ms with click_animation()
-                self._on_leave()
-                self._click_animation_running = True
-                self.after(100, self._click_animation)
+            # click animation: change color with .on_leave() and back to normal after 100ms with click_animation()
+            self._on_leave()
+            self._click_animation_running = True
+            self.after(100, self._click_animation)
 
+            if self._command is not None:
                 self._command()
+
+    def invoke(self):
+        """ calls command function if button is not disabled """
+        if self._state != tkinter.DISABLED:
+            if self._command is not None:
+                return self._command()
 
     def bind(self, sequence: str = None, command: Callable = None, add: str = None) -> str:
         """ called on the tkinter.Label and tkinter.Canvas """
