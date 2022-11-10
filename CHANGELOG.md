@@ -10,6 +10,7 @@ ToDo:
  - add new button attributes to wiki
  - cursor configuring
  - overwrite winfo methods
+ - renew input dialog
 
 ## Unreleased - 2022-10-2
 ### Added

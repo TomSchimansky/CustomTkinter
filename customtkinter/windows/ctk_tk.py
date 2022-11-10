@@ -4,7 +4,7 @@ import sys
 import os
 import platform
 import ctypes
-from typing import Union, Tuple
+from typing import Union, Tuple, Optional
 
 from .widgets.theme.theme_manager import ThemeManager
 from .widgets.scaling.scaling_base_class import CTkScalingBaseClass
@@ -19,17 +19,17 @@ class CTk(tkinter.Tk, CTkAppearanceModeBaseClass, CTkScalingBaseClass):
     For detailed information check out the documentation.
     """
 
-    _valid_tk_constructor_arguments = {"screenName", "baseName", "className", "useTk", "sync", "use"}
+    _valid_tk_constructor_arguments: set = {"screenName", "baseName", "className", "useTk", "sync", "use"}
 
-    _valid_tk_configure_arguments = {'bd', 'borderwidth', 'class', 'menu', 'relief', 'screen',
-                                     'use', 'container', 'cursor', 'height',
-                                     'highlightthickness', 'padx', 'pady', 'takefocus', 'visual', 'width'}
+    _valid_tk_configure_arguments: set = {'bd', 'borderwidth', 'class', 'menu', 'relief', 'screen',
+                                          'use', 'container', 'cursor', 'height',
+                                          'highlightthickness', 'padx', 'pady', 'takefocus', 'visual', 'width'}
 
-    _deactivate_macos_window_header_manipulation = False
-    _deactivate_windows_window_header_manipulation = False
+    _deactivate_macos_window_header_manipulation: bool = False
+    _deactivate_windows_window_header_manipulation: bool = False
 
     def __init__(self,
-                 fg_color: Union[str, Tuple[str, str]] = "default_theme",
+                 fg_color: Optional[Union[str, Tuple[str, str]]] = None,
                  **kwargs):
 
         self._enable_macos_dark_title_bar()
@@ -48,7 +48,7 @@ class CTk(tkinter.Tk, CTkAppearanceModeBaseClass, CTkScalingBaseClass):
         self._max_height: int = 1_000_000
         self._last_resizable_args: Union[Tuple[list, dict], None] = None  # (args, kwargs)
 
-        self._fg_color = ThemeManager.theme["color"]["window"] if fg_color == "default_theme" else fg_color
+        self._fg_color = ThemeManager.theme["color"]["window"] if fg_color is None else self._check_color_type(fg_color)
 
         # set bg of tkinter.Tk
         super().configure(bg=self._apply_appearance_mode(self._fg_color))
@@ -195,7 +195,7 @@ class CTk(tkinter.Tk, CTkAppearanceModeBaseClass, CTkScalingBaseClass):
 
     def configure(self, **kwargs):
         if "fg_color" in kwargs:
-            self._fg_color = kwargs.pop("fg_color")
+            self._fg_color = self._check_color_type(kwargs.pop("fg_color"))
             super().configure(bg=self._apply_appearance_mode(self._fg_color))
 
             for child in self.winfo_children():

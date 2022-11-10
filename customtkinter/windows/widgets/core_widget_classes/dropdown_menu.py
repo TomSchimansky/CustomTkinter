@@ -1,44 +1,38 @@
 import tkinter
 import sys
-from typing import Union, Tuple, Callable, List
+from typing import Union, Tuple, Callable, List, Optional
 
 from ..theme.theme_manager import ThemeManager
-from ..scaling.scaling_tracker import ScalingTracker
 from ..font.ctk_font import CTkFont
-from ..appearance_mode.appearance_mode_tracker import AppearanceModeTracker
 from ..appearance_mode.appearance_mode_base_class import CTkAppearanceModeBaseClass
+from ..scaling.scaling_base_class import CTkScalingBaseClass
 
 
-class DropdownMenu(tkinter.Menu, CTkAppearanceModeBaseClass):
+class DropdownMenu(tkinter.Menu, CTkAppearanceModeBaseClass, CTkScalingBaseClass):
     def __init__(self, *args,
                  min_character_width: int = 18,
 
-                 fg_color: Union[str, Tuple[str, str]] = "default_theme",
-                 hover_color: Union[str, Tuple[str, str]] = "default_theme",
-                 text_color: Union[str, Tuple[str, str]] = "default_theme",
+                 fg_color: Optional[Union[str, Tuple[str, str]]] = None,
+                 hover_color: Optional[Union[str, Tuple[str, str]]] = None,
+                 text_color: Optional[Union[str, Tuple[str, str]]] = None,
 
-                 font: Union[tuple, CTkFont] = "default_theme",
-                 command: Callable = None,
-                 values: List[str] = None,
+                 font: Optional[Union[tuple, CTkFont]] = None,
+                 command: Union[Callable, None] = None,
+                 values: Optional[List[str]] = None,
                  **kwargs):
 
         # call init methods of super classes
         tkinter.Menu.__init__(self, *args, **kwargs)
         CTkAppearanceModeBaseClass.__init__(self)
-
-        ScalingTracker.add_widget(self._set_scaling, self)
-        self._widget_scaling = ScalingTracker.get_widget_scaling(self)
-
-        AppearanceModeTracker.add(self._set_appearance_mode, self)
-        self._appearance_mode = AppearanceModeTracker.get_mode()  # 0: "Light" 1: "Dark"
+        CTkScalingBaseClass.__init__(self, scaling_type="widget")
 
         self._min_character_width = min_character_width
-        self._fg_color = ThemeManager.theme["color"]["dropdown_color"] if fg_color == "default_theme" else fg_color
-        self._hover_color = ThemeManager.theme["color"]["dropdown_hover"] if hover_color == "default_theme" else hover_color
-        self._text_color = ThemeManager.theme["color"]["text"] if text_color == "default_theme" else text_color
+        self._fg_color = ThemeManager.theme["color"]["dropdown_color"] if fg_color is None else self._check_color_type(fg_color)
+        self._hover_color = ThemeManager.theme["color"]["dropdown_hover"] if hover_color is None else self._check_color_type(hover_color)
+        self._text_color = ThemeManager.theme["color"]["text"] if text_color is None else self._check_color_type(text_color)
 
         # font
-        self._font = CTkFont() if font == "default_theme" else self._check_font_type(font)
+        self._font = CTkFont() if font is None else self._check_font_type(font)
         if isinstance(self._font, CTkFont):
             self._font.add_size_configure_callback(self._update_font)
 
@@ -125,16 +119,16 @@ class DropdownMenu(tkinter.Menu, CTkAppearanceModeBaseClass):
 
     def configure(self, **kwargs):
         if "fg_color" in kwargs:
-            self._fg_color = kwargs.pop("fg_color")
-            super().configure(bg=ThemeManager._apply_appearance_mode(self._fg_color, self._appearance_mode))
+            self._fg_color = self._check_color_type(kwargs.pop("fg_color"))
+            super().configure(bg=self._apply_appearance_mode(self._fg_color))
 
         if "hover_color" in kwargs:
-            self._hover_color = kwargs.pop("hover_color")
-            super().configure(activebackground=ThemeManager._apply_appearance_mode(self._hover_color, self._appearance_mode))
+            self._hover_color = self._check_color_type(kwargs.pop("hover_color"))
+            super().configure(activebackground=self._apply_appearance_mode(self._hover_color))
 
         if "text_color" in kwargs:
-            self._text_color = kwargs.pop("text_color")
-            super().configure(fg=ThemeManager._apply_appearance_mode(self._text_color, self._appearance_mode))
+            self._text_color = self._check_color_type(kwargs.pop("text_color"))
+            super().configure(fg=self._apply_appearance_mode(self._text_color))
 
         if "font" in kwargs:
             if isinstance(self._font, CTkFont):
@@ -175,29 +169,6 @@ class DropdownMenu(tkinter.Menu, CTkAppearanceModeBaseClass):
         else:
             return super().cget(attribute_name)
 
-    def _apply_widget_scaling(self, value: Union[int, float, str]) -> Union[float, str]:
-        if isinstance(value, (int, float)):
-            return value * self._widget_scaling
-        else:
-            return value
-
-    def _apply_font_scaling(self, font: Union[Tuple, CTkFont]) -> tuple:
-        """ Takes CTkFont object and returns tuple font with scaled size, has to be called again for every change of font object """
-        if type(font) == tuple:
-            if len(font) == 1:
-                return font
-            elif len(font) == 2:
-                return font[0], -abs(round(font[1] * self._widget_scaling))
-            elif len(font) == 3:
-                return font[0], -abs(round(font[1] * self._widget_scaling)), font[2]
-            else:
-                raise ValueError(f"Can not scale font {font}. font needs to be tuple of len 1, 2 or 3")
-
-        elif isinstance(font, CTkFont):
-            return font.create_scaled_tuple(self._widget_scaling)
-        else:
-            raise ValueError(f"Can not scale font '{font}' of type {type(font)}. font needs to be tuple or instance of CTkFont")
-
     @staticmethod
     def _check_font_type(font: any):
         if isinstance(font, CTkFont):
@@ -211,23 +182,17 @@ class DropdownMenu(tkinter.Menu, CTkAppearanceModeBaseClass):
             return font
 
         else:
-            raise ValueError(f"Wrong font type {type(font)}\n" +
+            raise ValueError(f"Wrong font type {type(font)} for font '{font}'\n" +
                              f"For consistency, Customtkinter requires the font argument to be a tuple of len 2 or 3 or an instance of CTkFont.\n" +
                              f"\nUsage example:\n" +
                              f"font=customtkinter.CTkFont(family='<name>', size=<size in px>)\n" +
                              f"font=('<name>', <size in px>)\n")
 
     def _set_scaling(self, new_widget_scaling, new_window_scaling):
-        self._widget_scaling = new_widget_scaling
-
+        super()._set_scaling(new_widget_scaling, new_window_scaling)
         self._configure_menu_for_platforms()
 
     def _set_appearance_mode(self, mode_string):
         """ colors won't update on appearance mode change when dropdown is open, because it's not necessary """
-
-        if mode_string.lower() == "dark":
-            self._appearance_mode = 1
-        elif mode_string.lower() == "light":
-            self._appearance_mode = 0
-
+        super()._set_appearance_mode(mode_string)
         self._configure_menu_for_platforms()

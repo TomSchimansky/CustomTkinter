@@ -1,6 +1,6 @@
 import tkinter
 import math
-from typing import Union, Tuple
+from typing import Union, Tuple, Optional
 
 from .core_rendering.ctk_canvas import CTkCanvas
 from .theme.theme_manager import ThemeManager
@@ -16,18 +16,18 @@ class CTkProgressBar(CTkBaseClass):
     """
 
     def __init__(self,
-                 master: any = None,
-                 width: Union[int, str] = "default_init",
-                 height: Union[int, str] = "default_init",
-                 corner_radius: Union[str, Tuple[str, str]] = "default_theme",
-                 border_width: Union[int, str] = "default_theme",
+                 master: any,
+                 width: Optional[int] = None,
+                 height: Optional[int] = None,
+                 corner_radius: Optional[int] = None,
+                 border_width: Optional[int] = None,
 
-                 bg_color: Union[str, Tuple[str, str], None] = None,
-                 fg_color: Union[str, Tuple[str, str]] = "default_theme",
-                 border_color: Union[str, Tuple[str, str]] = "default_theme",
-                 progress_color: Union[str, Tuple[str, str]] = "default_theme",
+                 bg_color: Union[str, Tuple[str, str]] = "transparent",
+                 fg_color: Optional[Union[str, Tuple[str, str]]] = None,
+                 border_color: Optional[Union[str, Tuple[str, str]]] = None,
+                 progress_color: Optional[Union[str, Tuple[str, str]]] = None,
 
-                 variable: tkinter.Variable = None,
+                 variable: Union[tkinter.Variable, None] = None,
                  orientation: str = "horizontal",
                  mode: str = "determinate",
                  determinate_speed: float = 1,
@@ -35,12 +35,12 @@ class CTkProgressBar(CTkBaseClass):
                  **kwargs):
 
         # set default dimensions according to orientation
-        if width == "default_init":
+        if width is None:
             if orientation.lower() == "vertical":
                 width = 8
             else:
                 width = 200
-        if height == "default_init":
+        if height is None:
             if orientation.lower() == "vertical":
                 height = 200
             else:
@@ -50,9 +50,9 @@ class CTkProgressBar(CTkBaseClass):
         super().__init__(master=master, bg_color=bg_color, width=width, height=height, **kwargs)
 
         # color
-        self._border_color = ThemeManager.theme["color"]["progressbar_border"] if border_color == "default_theme" else border_color
-        self._fg_color = ThemeManager.theme["color"]["progressbar"] if fg_color == "default_theme" else fg_color
-        self._progress_color = ThemeManager.theme["color"]["progressbar_progress"] if progress_color == "default_theme" else progress_color
+        self._border_color = ThemeManager.theme["color"]["progressbar_border"] if border_color is None else self._check_color_type(border_color)
+        self._fg_color = ThemeManager.theme["color"]["progressbar"] if fg_color is None else self._check_color_type(fg_color)
+        self._progress_color = ThemeManager.theme["color"]["progressbar_progress"] if progress_color is None else self._check_color_type(progress_color)
 
         # control variable
         self._variable = variable
@@ -60,8 +60,8 @@ class CTkProgressBar(CTkBaseClass):
         self._variable_callback_name = None
 
         # shape
-        self._corner_radius = ThemeManager.theme["shape"]["progressbar_corner_radius"] if corner_radius == "default_theme" else corner_radius
-        self._border_width = ThemeManager.theme["shape"]["progressbar_border_width"] if border_width == "default_theme" else border_width
+        self._corner_radius = ThemeManager.theme["shape"]["progressbar_corner_radius"] if corner_radius is None else corner_radius
+        self._border_width = ThemeManager.theme["shape"]["progressbar_border_width"] if border_width is None else border_width
         self._determinate_value: float = 0.5  # range 0-1
         self._determinate_speed = determinate_speed  # range 0-1
         self._indeterminate_value: float = 0  # range 0-inf
@@ -162,15 +162,15 @@ class CTkProgressBar(CTkBaseClass):
             require_redraw = True
 
         if "fg_color" in kwargs:
-            self._fg_color = kwargs.pop("fg_color")
+            self._fg_color = self._check_color_type(kwargs.pop("fg_color"))
             require_redraw = True
 
         if "border_color" in kwargs:
-            self._border_color = kwargs.pop("border_color")
+            self._border_color = self._check_color_type(kwargs.pop("border_color"))
             require_redraw = True
 
         if "progress_color" in kwargs:
-            self._progress_color = kwargs.pop("progress_color")
+            self._progress_color = self._check_color_type(kwargs.pop("progress_color"))
             require_redraw = True
 
         if "variable" in kwargs:

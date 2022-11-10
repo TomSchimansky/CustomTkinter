@@ -1,6 +1,6 @@
 import tkinter
 import sys
-from typing import Union, Tuple, Callable
+from typing import Union, Tuple, Callable, Optional
 
 from .core_rendering.ctk_canvas import CTkCanvas
 from .theme.theme_manager import ThemeManager
@@ -17,28 +17,28 @@ class CTkOptionMenu(CTkBaseClass):
     """
 
     def __init__(self,
-                 master: any = None,
+                 master: any,
                  width: int = 140,
                  height: int = 28,
-                 corner_radius: Union[int, str] = "default_theme",
+                 corner_radius: Optional[Union[int]] = None,
 
-                 bg_color: Union[str, Tuple[str, str], None] = None,
-                 fg_color: Union[str, Tuple[str, str]] = "default_theme",
-                 button_color: Union[str, Tuple[str, str]] = "default_theme",
-                 button_hover_color: Union[str, Tuple[str, str]] = "default_theme",
-                 text_color: Union[str, Tuple[str, str]] = "default_theme",
-                 text_color_disabled: Union[str, Tuple[str, str]] = "default_theme",
-                 dropdown_fg_color: Union[str, Tuple[str, str]] = "default_theme",
-                 dropdown_hover_color: Union[str, Tuple[str, str]] = "default_theme",
-                 dropdown_text_color: Union[str, Tuple[str, str]] = "default_theme",
+                 bg_color: Union[str, Tuple[str, str]] = "transparent",
+                 fg_color: Optional[Union[str, Tuple[str, str]]] = None,
+                 button_color: Optional[Union[str, Tuple[str, str]]] = None,
+                 button_hover_color: Optional[Union[str, Tuple[str, str]]] = None,
+                 text_color: Optional[Union[str, Tuple[str, str]]] = None,
+                 text_color_disabled: Optional[Union[str, Tuple[str, str]]] = None,
+                 dropdown_fg_color: Optional[Union[str, Tuple[str, str]]] = None,
+                 dropdown_hover_color: Optional[Union[str, Tuple[str, str]]] = None,
+                 dropdown_text_color: Optional[Union[str, Tuple[str, str]]] = None,
 
-                 font: Union[tuple, CTkFont] = "default_theme",
-                 dropdown_font: Union[tuple, CTkFont] = "default_theme",
-                 values: list = None,
-                 variable: tkinter.Variable = None,
+                 font: Optional[Union[tuple, CTkFont]] = None,
+                 dropdown_font: Optional[Union[tuple, CTkFont]] = None,
+                 values: Optional[list] = None,
+                 variable: Union[tkinter.Variable, None] = None,
                  state: str = tkinter.NORMAL,
                  hover: bool = True,
-                 command: Callable[[str], None] = None,
+                 command: Union[Callable[[str], None], None] = None,
                  dynamic_resizing: bool = True,
                  anchor: str = "w",
                  **kwargs):
@@ -47,19 +47,19 @@ class CTkOptionMenu(CTkBaseClass):
         super().__init__(master=master, bg_color=bg_color, width=width, height=height, **kwargs)
 
         # color variables
-        self._fg_color = ThemeManager.theme["color"]["button"] if fg_color == "default_theme" else fg_color
-        self._button_color = ThemeManager.theme["color"]["optionmenu_button"] if button_color == "default_theme" else button_color
-        self._button_hover_color = ThemeManager.theme["color"]["optionmenu_button_hover"] if button_hover_color == "default_theme" else button_hover_color
+        self._fg_color = ThemeManager.theme["color"]["button"] if fg_color is None else self._check_color_type(fg_color)
+        self._button_color = ThemeManager.theme["color"]["optionmenu_button"] if button_color is None else self._check_color_type(button_color)
+        self._button_hover_color = ThemeManager.theme["color"]["optionmenu_button_hover"] if button_hover_color is None else self._check_color_type(button_hover_color)
 
         # shape
-        self._corner_radius = ThemeManager.theme["shape"]["button_corner_radius"] if corner_radius == "default_theme" else corner_radius
+        self._corner_radius = ThemeManager.theme["shape"]["button_corner_radius"] if corner_radius is None else corner_radius
 
         # text and font
-        self._text_color = ThemeManager.theme["color"]["text_button"] if text_color == "default_theme" else text_color
-        self._text_color_disabled = ThemeManager.theme["color"]["text_button_disabled"] if text_color_disabled == "default_theme" else text_color_disabled
+        self._text_color = ThemeManager.theme["color"]["text_button"] if text_color is None else self._check_color_type(text_color)
+        self._text_color_disabled = ThemeManager.theme["color"]["text_button_disabled"] if text_color_disabled is None else self._check_color_type(text_color_disabled)
 
         # font
-        self._font = CTkFont() if font == "default_theme" else self._check_font_type(font)
+        self._font = CTkFont() if font is None else self._check_font_type(font)
         if isinstance(self._font, CTkFont):
             self._font.add_size_configure_callback(self._update_font)
 
@@ -194,7 +194,6 @@ class CTkOptionMenu(CTkBaseClass):
                                                                       self._apply_widget_scaling(self._current_height / 3))
 
         if no_color_updates is False or requires_recoloring or requires_recoloring_2:
-
             self._canvas.configure(bg=self._apply_appearance_mode(self._bg_color))
 
             self._canvas.itemconfig("inner_parts_left",
@@ -226,19 +225,19 @@ class CTkOptionMenu(CTkBaseClass):
             require_redraw = True
 
         if "fg_color" in kwargs:
-            self._fg_color = kwargs.pop("fg_color")
+            self._fg_color = self._check_color_type(kwargs.pop("fg_color"))
             require_redraw = True
 
         if "button_color" in kwargs:
-            self._button_color = kwargs.pop("button_color")
+            self._button_color = self._check_color_type(kwargs.pop("button_color"))
             require_redraw = True
 
         if "button_hover_color" in kwargs:
-            self._button_hover_color = kwargs.pop("button_hover_color")
+            self._button_hover_color = self._check_color_type(kwargs.pop("button_hover_color"))
             require_redraw = True
 
         if "text_color" in kwargs:
-            self._text_color = kwargs.pop("text_color")
+            self._text_color = self._check_color_type(kwargs.pop("text_color"))
             require_redraw = True
 
         if "dropdown_color" in kwargs:

@@ -1,6 +1,6 @@
 import tkinter
 import sys
-from typing import Union, Tuple, Callable
+from typing import Union, Tuple, Callable, Optional
 
 from .core_rendering.ctk_canvas import CTkCanvas
 from .theme.theme_manager import ThemeManager
@@ -16,32 +16,32 @@ class CTkSwitch(CTkBaseClass):
     """
 
     def __init__(self,
-                 master: any = None,
+                 master: any,
                  width: int = 100,
                  height: int = 24,
                  switch_width: int = 36,
                  switch_height: int = 18,
-                 corner_radius: Union[int, str] = "default_theme",
-                 border_width: Union[int, str] = "default_theme",
-                 button_length: Union[int, str] = "default_theme",
+                 corner_radius: Optional[int] = None,
+                 border_width: Optional[int] = None,
+                 button_length: Optional[int] = None,
 
-                 bg_color: Union[str, Tuple[str, str], None] = None,
-                 fg_color: Union[str, Tuple[str, str]] = "default_theme",
-                 border_color: Union[str, Tuple[str, str], None] = None,
-                 progress_color: Union[str, Tuple[str, str]] = "default_theme",
-                 button_color: Union[str, Tuple[str, str]] = "default_theme",
-                 button_hover_color: Union[str, Tuple[str, str]] = "default_theme",
-                 text_color: Union[str, Tuple[str, str]] = "default_theme",
-                 text_color_disabled: Union[str, Tuple[str, str]] = "default_theme",
+                 bg_color: Union[str, Tuple[str, str]] = "transparent",
+                 fg_color: Optional[Union[str, Tuple[str, str]]] = None,
+                 border_color: Union[str, Tuple[str, str]] = "transparent",
+                 progress_color: Optional[Union[str, Tuple[str, str]]] = None,
+                 button_color: Optional[Union[str, Tuple[str, str]]] = None,
+                 button_hover_color: Optional[Union[str, Tuple[str, str]]] = None,
+                 text_color: Optional[Union[str, Tuple[str, str]]] = None,
+                 text_color_disabled: Optional[Union[str, Tuple[str, str]]] = None,
 
                  text: str = "CTkSwitch",
-                 font: Union[tuple, CTkFont] = "default_theme",
-                 textvariable: tkinter.Variable = None,
+                 font: Optional[Union[tuple, CTkFont]] = None,
+                 textvariable: Union[tkinter.Variable, None] = None,
                  onvalue: Union[int, str] = 1,
                  offvalue: Union[int, str] = 0,
-                 variable: tkinter.Variable = None,
+                 variable: Union[tkinter.Variable, None] = None,
                  hover: bool = True,
-                 command: Callable = None,
+                 command: Union[Callable, None] = None,
                  state: str = tkinter.NORMAL,
                  **kwargs):
 
@@ -53,28 +53,27 @@ class CTkSwitch(CTkBaseClass):
         self._switch_height = switch_height
 
         # color
-        self._border_color = border_color
-        self._fg_color = ThemeManager.theme["color"]["switch"] if fg_color == "default_theme" else fg_color
-        self._progress_color = ThemeManager.theme["color"]["switch_progress"] if progress_color == "default_theme" else progress_color
-        self._button_color = ThemeManager.theme["color"]["switch_button"] if button_color == "default_theme" else button_color
-        self._button_hover_color = ThemeManager.theme["color"]["switch_button_hover"] if button_hover_color == "default_theme" else button_hover_color
-        self._text_color = ThemeManager.theme["color"]["text"] if text_color == "default_theme" else text_color
-        self._text_color_disabled = ThemeManager.theme["color"]["text_disabled"] if text_color_disabled == "default_theme" else text_color_disabled
+        self._border_color = self._check_color_type(border_color, transparency=True)
+        self._fg_color = ThemeManager.theme["color"]["switch"] if fg_color is None else self._check_color_type(fg_color)
+        self._progress_color = ThemeManager.theme["color"]["switch_progress"] if progress_color is None else self._check_color_type(progress_color, transparency=True)
+        self._button_color = ThemeManager.theme["color"]["switch_button"] if button_color is None else self._check_color_type(button_color)
+        self._button_hover_color = ThemeManager.theme["color"]["switch_button_hover"] if button_hover_color is None else self._check_color_type(button_hover_color)
+        self._text_color = ThemeManager.theme["color"]["text"] if text_color is None else self._check_color_type(text_color)
+        self._text_color_disabled = ThemeManager.theme["color"]["text_disabled"] if text_color_disabled is None else self._check_color_type(text_color_disabled)
 
         # text
         self._text = text
         self._text_label = None
 
         # font
-        self._font = CTkFont() if font == "default_theme" else self._check_font_type(font)
+        self._font = CTkFont() if font is None else self._check_font_type(font)
         if isinstance(self._font, CTkFont):
             self._font.add_size_configure_callback(self._update_font)
 
         # shape
-        self._corner_radius = ThemeManager.theme["shape"]["switch_corner_radius"] if corner_radius == "default_theme" else corner_radius
-        # self.button_corner_radius = ThemeManager.theme["shape"]["switch_button_corner_radius"] if button_corner_radius == "default_theme" else button_corner_radius
-        self._border_width = ThemeManager.theme["shape"]["switch_border_width"] if border_width == "default_theme" else border_width
-        self._button_length = ThemeManager.theme["shape"]["switch_button_length"] if button_length == "default_theme" else button_length
+        self._corner_radius = ThemeManager.theme["shape"]["switch_corner_radius"] if corner_radius is None else corner_radius
+        self._border_width = ThemeManager.theme["shape"]["switch_border_width"] if border_width is None else border_width
+        self._button_length = ThemeManager.theme["shape"]["switch_button_length"] if button_length is None else button_length
         self._hover_state: bool = False
         self._check_state: bool = False  # True if switch is activated
         self._hover = hover
@@ -84,7 +83,7 @@ class CTkSwitch(CTkBaseClass):
 
         # callback and control variables
         self._command = command
-        self._variable: tkinter.Variable = variable
+        self._variable = variable
         self._variable_callback_blocked = False
         self._variable_callback_name = None
         self._textvariable = textvariable
@@ -216,7 +215,7 @@ class CTkSwitch(CTkBaseClass):
             self._bg_canvas.configure(bg=self._apply_appearance_mode(self._bg_color))
             self._canvas.configure(bg=self._apply_appearance_mode(self._bg_color))
 
-            if self._border_color is None:
+            if self._border_color == "transparent":
                 self._canvas.itemconfig("border_parts", fill=self._apply_appearance_mode(self._bg_color),
                                         outline=self._apply_appearance_mode(self._bg_color))
             else:
@@ -226,7 +225,7 @@ class CTkSwitch(CTkBaseClass):
             self._canvas.itemconfig("inner_parts", fill=self._apply_appearance_mode(self._fg_color),
                                     outline=self._apply_appearance_mode(self._fg_color))
 
-            if self._progress_color is None:
+            if self._progress_color == "transparent":
                 self._canvas.itemconfig("progress_parts", fill=self._apply_appearance_mode(self._fg_color),
                                         outline=self._apply_appearance_mode(self._fg_color))
             else:
@@ -285,27 +284,23 @@ class CTkSwitch(CTkBaseClass):
             require_redraw = True
 
         if "fg_color" in kwargs:
-            self._fg_color = kwargs.pop("fg_color")
+            self._fg_color = self._check_color_type(kwargs.pop("fg_color"))
             require_redraw = True
 
         if "progress_color" in kwargs:
-            new_progress_color = kwargs.pop("progress_color")
-            if new_progress_color is None:
-                self._progress_color = self._fg_color
-            else:
-                self._progress_color = new_progress_color
+            self._progress_color = self._check_color_type(kwargs.pop("progress_color"), transparency=True)
             require_redraw = True
 
         if "button_color" in kwargs:
-            self._button_color = kwargs.pop("button_color")
+            self._button_color = self._check_color_type(kwargs.pop("button_color"))
             require_redraw = True
 
         if "button_hover_color" in kwargs:
-            self._button_hover_color = kwargs.pop("button_hover_color")
+            self._button_hover_color = self._check_color_type(kwargs.pop("button_hover_color"))
             require_redraw = True
 
         if "border_color" in kwargs:
-            self._border_color = kwargs.pop("border_color")
+            self._border_color = self._check_color_type(kwargs.pop("border_color"), transparency=True)
             require_redraw = True
 
         if "hover" in kwargs:

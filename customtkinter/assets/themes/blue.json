@@ -12,7 +12,7 @@
     "frame_border": ["#979DA2", "#565B5E"],
     "frame_low": ["#D1D5D8", "#2A2D2E"],
     "frame_high": ["#C0C2C5", "#343638"],
-    "label": [null, null],
+    "label": "transparent",
     "text": ["gray10", "#DCE4EE"],
     "text_disabled": ["gray60", "gray45"],
     "text_button": ["#DCE4EE", "#DCE4EE"],
@@ -78,7 +78,6 @@
     "slider_button_corner_radius": 1000,
     "switch_border_width": 3,
     "switch_corner_radius": 1000,
-    "switch_button_corner_radius": 1000,
     "switch_button_length": 0,
     "scrollbar_corner_radius": 1000,
     "scrollbar_border_spacing": 4

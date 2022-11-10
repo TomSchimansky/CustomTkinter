@@ -1,5 +1,5 @@
 import tkinter
-from typing import Union, Tuple, Callable
+from typing import Union, Tuple, Callable, Optional
 
 from .core_rendering.ctk_canvas import CTkCanvas
 from .theme.theme_manager import ThemeManager
@@ -22,18 +22,18 @@ class CTkLabel(CTkBaseClass):
                                   "textvariable", "state", "takefocus", "underline", "wraplength"}
 
     def __init__(self,
-                 master: any = None,
+                 master: any,
                  width: int = 0,
                  height: int = 28,
-                 corner_radius: Union[int, str] = "default_theme",
+                 corner_radius: Optional[int] = None,
 
-                 bg_color: Union[str, Tuple[str, str], None] = None,
-                 fg_color: Union[str, Tuple[str, str], None] = "default_theme",
-                 text_color: Union[str, Tuple[str, str]] = "default_theme",
+                 bg_color: Union[str, Tuple[str, str]] = "transparent",
+                 fg_color: Optional[Union[str, Tuple[str, str]]] = None,
+                 text_color: Optional[Union[str, Tuple[str, str]]] = None,
 
                  text: str = "CTkLabel",
-                 font: Union[tuple, CTkFont] = "default_theme",
-                 image: Union[tkinter.PhotoImage, CTkImage] = None,
+                 font: Optional[Union[tuple, CTkFont]] = None,
+                 image: Union[tkinter.PhotoImage, CTkImage, None] = None,
                  compound: str = "center",
                  anchor: str = "center",  # label anchor: center, n, e, s, w
                  **kwargs):
@@ -42,11 +42,11 @@ class CTkLabel(CTkBaseClass):
         super().__init__(master=master, bg_color=bg_color, width=width, height=height)
 
         # color
-        self._fg_color = ThemeManager.theme["color"]["label"] if fg_color == "default_theme" else fg_color
-        self._text_color = ThemeManager.theme["color"]["text"] if text_color == "default_theme" else text_color
+        self._fg_color = ThemeManager.theme["color"]["label"] if fg_color is None else self._check_color_type(fg_color, transparency=True)
+        self._text_color = ThemeManager.theme["color"]["text"] if text_color is None else self._check_color_type(text_color)
 
         # shape
-        self._corner_radius = ThemeManager.theme["shape"]["label_corner_radius"] if corner_radius == "default_theme" else corner_radius
+        self._corner_radius = ThemeManager.theme["shape"]["label_corner_radius"] if corner_radius is None else corner_radius
 
         # text
         self._anchor = anchor
@@ -59,7 +59,7 @@ class CTkLabel(CTkBaseClass):
             self._image.add_configure_callback(self._update_image)
 
         # font
-        self._font = CTkFont() if font == "default_theme" else self._check_font_type(font)
+        self._font = CTkFont() if font is None else self._check_font_type(font)
         if isinstance(self._font, CTkFont):
             self._font.add_size_configure_callback(self._update_font)
 
@@ -145,20 +145,20 @@ class CTkLabel(CTkBaseClass):
                                                                               0)
 
         if no_color_updates is False or requires_recoloring:
-            if self._apply_appearance_mode(self._fg_color) is not None:
-                self._canvas.itemconfig("inner_parts",
-                                        fill=self._apply_appearance_mode(self._fg_color),
-                                        outline=self._apply_appearance_mode(self._fg_color))
-
-                self._label.configure(fg=self._apply_appearance_mode(self._text_color),
-                                      bg=self._apply_appearance_mode(self._fg_color))
-            else:
+            if self._apply_appearance_mode(self._fg_color) == "transparent":
                 self._canvas.itemconfig("inner_parts",
                                         fill=self._apply_appearance_mode(self._bg_color),
                                         outline=self._apply_appearance_mode(self._bg_color))
 
                 self._label.configure(fg=self._apply_appearance_mode(self._text_color),
                                       bg=self._apply_appearance_mode(self._bg_color))
+            else:
+                self._canvas.itemconfig("inner_parts",
+                                        fill=self._apply_appearance_mode(self._fg_color),
+                                        outline=self._apply_appearance_mode(self._fg_color))
+
+                self._label.configure(fg=self._apply_appearance_mode(self._text_color),
+                                      bg=self._apply_appearance_mode(self._fg_color))
 
             self._canvas.configure(bg=self._apply_appearance_mode(self._bg_color))
 
@@ -172,11 +172,11 @@ class CTkLabel(CTkBaseClass):
             require_redraw = True
 
         if "fg_color" in kwargs:
-            self._fg_color = kwargs.pop("fg_color")
+            self._fg_color = self._check_color_type(kwargs.pop("fg_color"), transparency=True)
             require_redraw = True
 
         if "text_color" in kwargs:
-            self._text_color = kwargs.pop("text_color")
+            self._text_color = self._check_color_type(kwargs.pop("text_color"))
             require_redraw = True
 
         if "text" in kwargs:

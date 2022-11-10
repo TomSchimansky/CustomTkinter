@@ -21,8 +21,8 @@ class CTkFont(Font):
     """
 
     def __init__(self,
-                 family: str = "default_theme",
-                 size: int = "default_theme",
+                 family: str = "default",
+                 size: int = "default",
                  weight: str = "normal",
                  slant: str = "roman",
                  underline: bool = False,
@@ -31,10 +31,10 @@ class CTkFont(Font):
         self._size_configure_callback_list: List[Callable] = []
 
         self._family = family
-        self._size = ThemeManager.theme["text"]["size"] if size == "default_theme" else size
+        self._size = ThemeManager.theme["text"]["size"] if size == "default" else size
         self._tuple_style_string = f"{weight} {slant} {'underline' if underline else ''} {'overstrike' if overstrike else ''}"
 
-        super().__init__(family=ThemeManager.theme["text"]["font"] if family == "default_theme" else family,
+        super().__init__(family=ThemeManager.theme["text"]["font"] if family == "default" else family,
                          size=-abs(self._size),
                          weight=weight,
                          slant=slant,

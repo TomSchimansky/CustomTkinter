@@ -1,4 +1,4 @@
-from typing import Union, Tuple, Dict, List, Callable
+from typing import Union, Tuple, Dict, List, Callable, Optional
 
 from .theme.theme_manager import ThemeManager
 from .ctk_frame import CTkFrame
@@ -14,32 +14,32 @@ class CTkTabview(CTkBaseClass):
     For detailed information check out the documentation.
     """
 
-    _top_spacing = 10  # px on top of the buttons
-    _top_button_overhang = 8  # px
-    _button_height = 26
-    _segmented_button_border_width = 3
+    _top_spacing: int = 10  # px on top of the buttons
+    _top_button_overhang: int = 8  # px
+    _button_height: int = 26
+    _segmented_button_border_width: int = 3
 
     def __init__(self,
-                 master: any = None,
+                 master: any,
                  width: int = 300,
                  height: int = 250,
-                 corner_radius: Union[int, str] = "default_theme",
-                 border_width: Union[int, str] = "default_theme",
+                 corner_radius: Optional[int] = None,
+                 border_width: Optional[int] = None,
 
-                 bg_color: Union[str, Tuple[str, str], None] = None,
-                 fg_color: Union[str, Tuple[str, str], None] = "default_theme",
-                 border_color: Union[str, Tuple[str, str]] = "default_theme",
+                 bg_color: Union[str, Tuple[str, str]] = "transparent",
+                 fg_color: Optional[Union[str, Tuple[str, str]]] = None,
+                 border_color: Optional[Union[str, Tuple[str, str]]] = None,
 
-                 segmented_button_fg_color: Union[str, Tuple[str, str], None] = "default_theme",
-                 segmented_button_selected_color: Union[str, Tuple[str, str]] = "default_theme",
-                 segmented_button_selected_hover_color: Union[str, Tuple[str, str]] = "default_theme",
-                 segmented_button_unselected_color: Union[str, Tuple[str, str]] = "default_theme",
-                 segmented_button_unselected_hover_color: Union[str, Tuple[str, str]] = "default_theme",
+                 segmented_button_fg_color: Optional[Union[str, Tuple[str, str]]] = None,
+                 segmented_button_selected_color: Optional[Union[str, Tuple[str, str]]] = None,
+                 segmented_button_selected_hover_color: Optional[Union[str, Tuple[str, str]]] = None,
+                 segmented_button_unselected_color: Optional[Union[str, Tuple[str, str]]] = None,
+                 segmented_button_unselected_hover_color: Optional[Union[str, Tuple[str, str]]] = None,
 
-                 text_color: Union[str, Tuple[str, str]] = "default_theme",
-                 text_color_disabled: Union[str, Tuple[str, str]] = "default_theme",
+                 text_color: Optional[Union[str, Tuple[str, str]]] = None,
+                 text_color_disabled: Optional[Union[str, Tuple[str, str]]] = None,
 
-                 command: Callable = None,
+                 command: Union[Callable, None] = None,
                  state: str = "normal",
                  **kwargs):
 
@@ -47,10 +47,10 @@ class CTkTabview(CTkBaseClass):
         super().__init__(master=master, bg_color=bg_color, width=width, height=height, **kwargs)
 
         # color
-        self._border_color = ThemeManager.theme["color"]["frame_border"] if border_color == "default_theme" else border_color
+        self._border_color = ThemeManager.theme["color"]["frame_border"] if border_color is None else self._check_color_type(border_color)
 
         # determine fg_color of frame
-        if fg_color == "default_theme":
+        if fg_color is None:
             if isinstance(self.master, (CTkFrame, CTkTabview)):
                 if self.master.cget("fg_color") == ThemeManager.theme["color"]["frame_low"]:
                     self._fg_color = ThemeManager.theme["color"]["frame_high"]
@@ -59,11 +59,11 @@ class CTkTabview(CTkBaseClass):
             else:
                 self._fg_color = ThemeManager.theme["color"]["frame_low"]
         else:
-            self._fg_color = fg_color
+            self._fg_color = self._check_color_type(fg_color, transparency=True)
 
         # shape
-        self._corner_radius = ThemeManager.theme["shape"]["frame_corner_radius"] if corner_radius == "default_theme" else corner_radius
-        self._border_width = ThemeManager.theme["shape"]["frame_border_width"] if border_width == "default_theme" else border_width
+        self._corner_radius = ThemeManager.theme["shape"]["frame_corner_radius"] if corner_radius is None else corner_radius
+        self._border_width = ThemeManager.theme["shape"]["frame_border_width"] if border_width is None else border_width
 
         self._canvas = CTkCanvas(master=self,
                                  bg=self._apply_appearance_mode(self._bg_color),
@@ -83,7 +83,7 @@ class CTkTabview(CTkBaseClass):
                                                     text_color=text_color,
                                                     text_color_disabled=text_color_disabled,
                                                     corner_radius=corner_radius,
-                                                    border_width=self._apply_widget_scaling(self._segmented_button_border_width),
+                                                    border_width=self._segmented_button_border_width,
                                                     command=self._segmented_button_callback,
                                                     state=state)
         self._configure_segmented_button_background_corners()
@@ -124,6 +124,7 @@ class CTkTabview(CTkBaseClass):
 
         self._canvas.configure(width=self._apply_widget_scaling(self._desired_width),
                                height=self._apply_widget_scaling(self._desired_height - self._top_spacing - self._top_button_overhang))
+        self._configure_grid()
         self._draw(no_color_updates=True)
 
     def _set_dimensions(self, width=None, height=None):
@@ -194,7 +195,7 @@ class CTkTabview(CTkBaseClass):
                                                                               self._apply_widget_scaling(self._border_width))
 
         if no_color_updates is False or requires_recoloring:
-            if self._fg_color is None:
+            if self._fg_color == "transparent":
                 self._canvas.itemconfig("inner_parts",
                                         fill=self._apply_appearance_mode(self._bg_color),
                                         outline=self._apply_appearance_mode(self._bg_color))
@@ -217,10 +218,10 @@ class CTkTabview(CTkBaseClass):
             require_redraw = True
 
         if "fg_color" in kwargs:
-            self._fg_color = kwargs.pop("fg_color")
+            self._fg_color = self._check_color_type(kwargs.pop("fg_color"), transparency=True)
             require_redraw = True
         if "border_color" in kwargs:
-            self._border_color = kwargs.pop("border_color")
+            self._border_color = self._check_color_type(kwargs.pop("border_color"))
             require_redraw = True
         if "segmented_button_fg_color" in kwargs:
             self._segmented_button.configure(fg_color=kwargs.pop("segmented_button_fg_color"))

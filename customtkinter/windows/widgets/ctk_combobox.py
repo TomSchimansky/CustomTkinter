@@ -1,6 +1,6 @@
 import tkinter
 import sys
-from typing import Union, Tuple, Callable, List
+from typing import Union, Tuple, Callable, List, Optional
 
 from .core_widget_classes.dropdown_menu import DropdownMenu
 from .core_rendering.ctk_canvas import CTkCanvas
@@ -17,52 +17,50 @@ class CTkComboBox(CTkBaseClass):
     """
 
     def __init__(self,
-                 master: any = None,
+                 master: any,
                  width: int = 140,
                  height: int = 28,
-                 corner_radius: Union[int, str] = "default_theme",
-                 border_width: Union[int, str] = "default_theme",
+                 corner_radius: Optional[int] = None,
+                 border_width: Optional[int] = None,
 
-                 bg_color: Union[str, Tuple[str, str], None] = None,
-                 fg_color: Union[str, Tuple[str, str]] = "default_theme",
-                 border_color: Union[str, Tuple[str, str]] = "default_theme",
-                 button_color: Union[str, Tuple[str, str]] = "default_theme",
-                 button_hover_color: Union[str, Tuple[str, str]] = "default_theme",
-                 dropdown_fg_color: Union[str, Tuple[str, str]] = "default_theme",
-                 dropdown_hover_color: Union[str, Tuple[str, str]] = "default_theme",
-                 dropdown_text_color: Union[str, Tuple[str, str]] = "default_theme",
-                 text_color: Union[str, Tuple[str, str]] = "default_theme",
-                 text_color_disabled: Union[str, Tuple[str, str]] = "default_theme",
+                 bg_color: Union[str, Tuple[str, str]] = "transparent",
+                 fg_color: Optional[Union[str, Tuple[str, str]]] = None,
+                 border_color: Optional[Union[str, Tuple[str, str]]] = None,
+                 button_color: Optional[Union[str, Tuple[str, str]]] = None,
+                 button_hover_color: Optional[Union[str, Tuple[str, str]]] = None,
+                 dropdown_fg_color: Optional[Union[str, Tuple[str, str]]] = None,
+                 dropdown_hover_color: Optional[Union[str, Tuple[str, str]]] = None,
+                 dropdown_text_color: Optional[Union[str, Tuple[str, str]]] = None,
+                 text_color: Optional[Union[str, Tuple[str, str]]] = None,
+                 text_color_disabled: Optional[Union[str, Tuple[str, str]]] = None,
 
-                 font: Union[tuple, CTkFont] = "default_theme",
-                 dropdown_font: Union[tuple, CTkFont] = "default_theme",
-                 values: List[str] = None,
+                 font: Optional[Union[tuple, CTkFont]] = None,
+                 dropdown_font: Optional[Union[tuple, CTkFont]] = None,
+                 values: Optional[List[str]] = None,
                  state: str = tkinter.NORMAL,
                  hover: bool = True,
-                 variable: tkinter.Variable = None,
-                 command: Callable = None,
+                 variable: Union[tkinter.Variable, None] = None,
+                 command: Union[Callable[[str], None], None] = None,
                  justify: str = "left",
                  **kwargs):
 
         # transfer basic functionality (_bg_color, size, __appearance_mode, scaling) to CTkBaseClass
         super().__init__(master=master, bg_color=bg_color, width=width, height=height, **kwargs)
 
-        # color variables
-        self._fg_color = ThemeManager.theme["color"]["entry"] if fg_color == "default_theme" else fg_color
-        self._border_color = ThemeManager.theme["color"]["combobox_border"] if border_color == "default_theme" else border_color
-        self._button_color = ThemeManager.theme["color"]["combobox_border"] if button_color == "default_theme" else button_color
-        self._button_hover_color = ThemeManager.theme["color"]["combobox_button_hover"] if button_hover_color == "default_theme" else button_hover_color
-
         # shape
-        self._corner_radius = ThemeManager.theme["shape"]["button_corner_radius"] if corner_radius == "default_theme" else corner_radius
-        self._border_width = ThemeManager.theme["shape"]["entry_border_width"] if border_width == "default_theme" else border_width
+        self._corner_radius = ThemeManager.theme["shape"]["button_corner_radius"] if corner_radius is None else corner_radius
+        self._border_width = ThemeManager.theme["shape"]["entry_border_width"] if border_width is None else border_width
 
-        # text and font
-        self._text_color = ThemeManager.theme["color"]["text"] if text_color == "default_theme" else text_color
-        self._text_color_disabled = ThemeManager.theme["color"]["text_disabled"] if text_color_disabled == "default_theme" else text_color_disabled
+        # color
+        self._fg_color = ThemeManager.theme["color"]["entry"] if fg_color is None else self._check_color_type(fg_color)
+        self._border_color = ThemeManager.theme["color"]["combobox_border"] if border_color is None else self._check_color_type(border_color)
+        self._button_color = ThemeManager.theme["color"]["combobox_border"] if button_color is None else self._check_color_type(button_color)
+        self._button_hover_color = ThemeManager.theme["color"]["combobox_button_hover"] if button_hover_color is None else self._check_color_type(button_hover_color)
+        self._text_color = ThemeManager.theme["color"]["text"] if text_color is None else self._check_color_type(text_color)
+        self._text_color_disabled = ThemeManager.theme["color"]["text_disabled"] if text_color_disabled is None else self._check_color_type(text_color_disabled)
 
         # font
-        self._font = CTkFont() if font == "default_theme" else self._check_font_type(font)
+        self._font = CTkFont() if font is None else self._check_font_type(font)
         if isinstance(self._font, CTkFont):
             self._font.add_size_configure_callback(self._update_font)
 
@@ -226,19 +224,19 @@ class CTkComboBox(CTkBaseClass):
             require_redraw = True
 
         if "fg_color" in kwargs:
-            self._fg_color = kwargs.pop("fg_color")
+            self._fg_color = self._check_color_type(kwargs.pop("fg_color"))
             require_redraw = True
 
         if "border_color" in kwargs:
-            self._border_color = kwargs.pop("border_color")
+            self._border_color = self._check_color_type(kwargs.pop("border_color"))
             require_redraw = True
 
         if "button_color" in kwargs:
-            self._button_color = kwargs.pop("button_color")
+            self._button_color = self._check_color_type(kwargs.pop("button_color"))
             require_redraw = True
 
         if "button_hover_color" in kwargs:
-            self._button_hover_color = kwargs.pop("button_hover_color")
+            self._button_hover_color = self._check_color_type(kwargs.pop("button_hover_color"))
             require_redraw = True
 
         if "dropdown_fg_color" in kwargs:
@@ -251,11 +249,11 @@ class CTkComboBox(CTkBaseClass):
             self._dropdown_menu.configure(text_color=kwargs.pop("dropdown_text_color"))
 
         if "text_color" in kwargs:
-            self._text_color = kwargs.pop("text_color")
+            self._text_color = self._check_color_type(kwargs.pop("text_color"))
             require_redraw = True
 
         if "text_color_disabled" in kwargs:
-            self._text_color_disabled = kwargs.pop("text_color_disabled")
+            self._text_color_disabled = self._check_color_type(kwargs.pop("text_color_disabled"))
             require_redraw = True
 
         if "font" in kwargs:

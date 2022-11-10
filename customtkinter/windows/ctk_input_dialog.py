@@ -15,20 +15,20 @@ class CTkInputDialog(CTkToplevel):
 
     def __init__(self,
                  master: any = None,
-                 fg_color: Union[str, Tuple[str, str]] = "default_theme",
-                 button_fg_color: Union[str, Tuple[str, str]] = "default_theme",
-                 button_hover_color: Union[str, Tuple[str, str]] = "default_theme",
-                 text_color: Union[str, Tuple[str, str]] = "default_theme",
+                 fg_color: Union[str, Tuple[str, str]] = "default",
+                 button_fg_color: Union[str, Tuple[str, str]] = "default",
+                 button_hover_color: Union[str, Tuple[str, str]] = "default",
+                 text_color: Union[str, Tuple[str, str]] = "default",
 
                  title: str = "CTkDialog",
                  text: str = "CTkDialog"):
 
         super().__init__(master=master, fg_color=fg_color)
 
-        self._fg_color = ThemeManager.theme["color"]["window"] if fg_color == "default_theme" else fg_color
-        self._button_fg_color = ThemeManager.theme["color"]["button"] if button_fg_color == "default_theme" else button_fg_color
-        self._button_hover_color = ThemeManager.theme["color"]["button_hover"] if button_hover_color == "default_theme" else button_hover_color
-        self._text_color = ThemeManager.theme["color"]["text"] if button_hover_color == "default_theme" else button_hover_color
+        self._fg_color = ThemeManager.theme["color"]["window"] if fg_color == "default" else fg_color
+        self._button_fg_color = ThemeManager.theme["color"]["button"] if button_fg_color == "default" else button_fg_color
+        self._button_hover_color = ThemeManager.theme["color"]["button_hover"] if button_hover_color == "default" else button_hover_color
+        self._text_color = ThemeManager.theme["color"]["text"] if button_hover_color == "default" else button_hover_color
         self._user_input: Union[str, None] = None
         self._running: bool = False
         self._height: int = len(text.split("\n")) * 20 + 150

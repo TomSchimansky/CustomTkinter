@@ -1,7 +1,7 @@
 import sys
 import tkinter
 import tkinter.ttk as ttk
-from typing import Union, Callable, Tuple
+from typing import Union, Callable, Tuple, Optional
 
 try:
     from typing import TypedDict
@@ -20,7 +20,7 @@ from ....utility.utility_functions import pop_from_dict_by_set, check_kwargs_emp
 
 
 class CTkBaseClass(tkinter.Frame, CTkAppearanceModeBaseClass, CTkScalingBaseClass):
-    """ Base class of every CTk widget, handles the dimensions, _bg_color,
+    """ Base class of every CTk widget, handles the dimensions, bg_color,
         appearance_mode changes, scaling, bg changes of master if master is not a CTk widget """
 
     # attributes that are passed to and managed by the tkinter frame only:
@@ -29,11 +29,11 @@ class CTkBaseClass(tkinter.Frame, CTkAppearanceModeBaseClass, CTkScalingBaseClas
     _cursor_manipulation_enabled: bool = True
 
     def __init__(self,
-                 master: any = None,
+                 master: any,
                  width: int = 0,
                  height: int = 0,
 
-                 bg_color: Union[str, Tuple[str, str], None] = None,
+                 bg_color: Union[str, Tuple[str, str]] = "transparent",
                  **kwargs):
 
         # call init methods of super classes
@@ -61,7 +61,7 @@ class CTkBaseClass(tkinter.Frame, CTkAppearanceModeBaseClass, CTkScalingBaseClas
         self._last_geometry_manager_call: Union[GeometryCallDict, None] = None
 
         # background color
-        self._bg_color:  Union[str, Tuple[str, str]] = self._detect_color_of_master() if bg_color is None else bg_color
+        self._bg_color: Union[str, Tuple[str, str]] = self._detect_color_of_master() if bg_color == "transparent" else self._check_color_type(bg_color, transparency=True)
 
         # set bg color of tkinter.Frame
         super().configure(bg=self._apply_appearance_mode(self._bg_color))
@@ -116,11 +116,11 @@ class CTkBaseClass(tkinter.Frame, CTkAppearanceModeBaseClass, CTkScalingBaseClas
             self._set_dimensions(height=kwargs.pop("height"))
 
         if "bg_color" in kwargs:
-            new_bg_color = kwargs.pop("bg_color")
-            if new_bg_color is None:
+            new_bg_color = self._check_color_type(kwargs.pop("bg_color"), transparency=True)
+            if new_bg_color == "transparent":
                 self._bg_color = self._detect_color_of_master()
             else:
-                self._bg_color = new_bg_color
+                self._bg_color = self._check_color_type(new_bg_color)
             require_redraw = True
 
         super().configure(**pop_from_dict_by_set(kwargs, self._valid_tk_frame_attributes))  # configure tkinter.Frame
@@ -185,13 +185,13 @@ class CTkBaseClass(tkinter.Frame, CTkAppearanceModeBaseClass, CTkScalingBaseClas
             self._draw(no_color_updates=True)  # faster drawing without color changes
 
     def _detect_color_of_master(self, master_widget=None) -> Union[str, Tuple[str, str]]:
-        """ detect color of self.master widget to set correct _bg_color """
+        """ detect foreground color of master widget for bg_color and transparent color """
 
         if master_widget is None:
             master_widget = self.master
 
-        if isinstance(master_widget, (CTkBaseClass, CTk, CTkToplevel)) and hasattr(master_widget, "_fg_color"):
-            if master_widget.cget("fg_color") is not None:
+        if isinstance(master_widget, (CTkBaseClass, CTk, CTkToplevel)):
+            if master_widget.cget("fg_color") is not None and master_widget.cget("fg_color") != "transparent":
                 return master_widget.cget("fg_color")
 
             # if fg_color of master is None, try to retrieve fg_color from master of master

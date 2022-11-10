@@ -1,5 +1,5 @@
 import sys
-from typing import Union, Tuple, Callable
+from typing import Union, Tuple, Callable, Optional
 
 from .core_rendering.ctk_canvas import CTkCanvas
 from .theme.theme_manager import ThemeManager
@@ -15,30 +15,30 @@ class CTkScrollbar(CTkBaseClass):
     """
 
     def __init__(self,
-                 master: any = None,
-                 width: Union[int, str] = "default_init",
-                 height: Union[int, str] = "default_init",
-                 corner_radius: Union[int, str] = "default_theme",
-                 border_spacing: Union[int, str] = "default_theme",
+                 master: any,
+                 width: Optional[Union[int, str]] = None,
+                 height: Optional[Union[int, str]] = None,
+                 corner_radius: Optional[int] = None,
+                 border_spacing: Optional[int] = None,
                  minimum_pixel_length: int = 20,
 
-                 bg_color: Union[str, Tuple[str, str], None] = None,
-                 fg_color: Union[str, Tuple[str, str], None] = "default_theme",
-                 scrollbar_color: Union[str, Tuple[str, str]] = "default_theme",
-                 scrollbar_hover_color: Union[str, Tuple[str, str]] = "default_theme",
+                 bg_color: Union[str, Tuple[str, str]] = "transparent",
+                 fg_color: Optional[Union[str, Tuple[str, str]]] = None,
+                 scrollbar_color: Optional[Union[str, Tuple[str, str]]] = None,
+                 scrollbar_hover_color: Optional[Union[str, Tuple[str, str]]] = None,
 
                  hover: bool = True,
-                 command: Callable = None,
+                 command: Union[Callable, None] = None,
                  orientation: str = "vertical",
                  **kwargs):
 
         # set default dimensions according to orientation
-        if width == "default_init":
+        if width is None:
             if orientation.lower() == "vertical":
                 width = 16
             else:
                 width = 200
-        if height == "default_init":
+        if height is None:
             if orientation.lower() == "horizontal":
                 height = 16
             else:
@@ -48,13 +48,13 @@ class CTkScrollbar(CTkBaseClass):
         super().__init__(master=master, bg_color=bg_color, width=width, height=height, **kwargs)
 
         # color
-        self._fg_color = ThemeManager.theme["color"]["frame_high"] if fg_color == "default_theme" else fg_color
-        self._scrollbar_color = ThemeManager.theme["color"]["scrollbar_button"] if scrollbar_color == "default_theme" else scrollbar_color
-        self._scrollbar_hover_color = ThemeManager.theme["color"]["scrollbar_button_hover"] if scrollbar_hover_color == "default_theme" else scrollbar_hover_color
+        self._fg_color = ThemeManager.theme["color"]["frame_high"] if fg_color is None else self._check_color_type(fg_color, transparency=True)
+        self._scrollbar_color = ThemeManager.theme["color"]["scrollbar_button"] if scrollbar_color is None else self._check_color_type(scrollbar_color)
+        self._scrollbar_hover_color = ThemeManager.theme["color"]["scrollbar_button_hover"] if scrollbar_hover_color is None else self._check_color_type(scrollbar_hover_color)
 
         # shape
-        self._corner_radius = ThemeManager.theme["shape"]["scrollbar_corner_radius"] if corner_radius == "default_theme" else corner_radius
-        self._border_spacing = ThemeManager.theme["shape"]["scrollbar_border_spacing"] if border_spacing == "default_theme" else border_spacing
+        self._corner_radius = ThemeManager.theme["shape"]["scrollbar_corner_radius"] if corner_radius is None else corner_radius
+        self._border_spacing = ThemeManager.theme["shape"]["scrollbar_border_spacing"] if border_spacing is None else border_spacing
 
         self._hover = hover
         self._hover_state: bool = False
@@ -139,7 +139,7 @@ class CTkScrollbar(CTkBaseClass):
                                         fill=self._apply_appearance_mode(self._scrollbar_color),
                                         outline=self._apply_appearance_mode(self._scrollbar_color))
 
-            if self._fg_color is None:
+            if self._fg_color == "transparent":
                 self._canvas.configure(bg=self._apply_appearance_mode(self._bg_color))
                 self._canvas.itemconfig("border_parts",
                                         fill=self._apply_appearance_mode(self._bg_color),
@@ -154,15 +154,15 @@ class CTkScrollbar(CTkBaseClass):
 
     def configure(self, require_redraw=False, **kwargs):
         if "fg_color" in kwargs:
-            self._fg_color = kwargs.pop("fg_color")
+            self._fg_color = self._check_color_type(kwargs.pop("fg_color"), transparency=True)
             require_redraw = True
 
         if "scrollbar_color" in kwargs:
-            self._scrollbar_color = kwargs.pop("scrollbar_color")
+            self._scrollbar_color = self._check_color_type(kwargs.pop("scrollbar_color"))
             require_redraw = True
 
         if "scrollbar_hover_color" in kwargs:
-            self._scrollbar_hover_color = kwargs.pop("scrollbar_hover_color")
+            self._scrollbar_hover_color = self._check_color_type(kwargs.pop("scrollbar_hover_color"))
             require_redraw = True
 
         if "hover" in kwargs:

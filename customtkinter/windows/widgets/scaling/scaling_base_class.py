@@ -1,4 +1,3 @@
-import tkinter
 from typing import Union, Tuple
 import copy
 import re
@@ -9,7 +8,6 @@ except ImportError:
 
 from .scaling_tracker import ScalingTracker
 from ..font.ctk_font import CTkFont
-from ..image.ctk_image import CTkImage
 
 
 class CTkScalingBaseClass():

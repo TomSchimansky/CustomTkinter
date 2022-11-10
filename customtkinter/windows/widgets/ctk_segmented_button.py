@@ -1,5 +1,5 @@
 import tkinter
-from typing import Union, Tuple, List, Dict, Callable
+from typing import Union, Tuple, List, Dict, Callable, Optional, Literal
 
 from .theme.theme_manager import ThemeManager
 from .ctk_button import CTkButton
@@ -14,50 +14,50 @@ class CTkSegmentedButton(CTkFrame):
     """
 
     def __init__(self,
-                 master: any = None,
+                 master: any,
                  width: int = 140,
                  height: int = 28,
-                 corner_radius: Union[int, str] = "default_theme",
-                 border_width: Union[int, str] = 3,
+                 corner_radius: Optional[int] = None,
+                 border_width: int = 3,
 
-                 bg_color: Union[str, Tuple[str, str], None] = None,
-                 fg_color: Union[str, Tuple[str, str], None] = "default_theme",
-                 selected_color: Union[str, Tuple[str, str]] = "default_theme",
-                 selected_hover_color: Union[str, Tuple[str, str]] = "default_theme",
-                 unselected_color: Union[str, Tuple[str, str]] = "default_theme",
-                 unselected_hover_color: Union[str, Tuple[str, str]] = "default_theme",
-                 text_color: Union[str, Tuple[str, str]] = "default_theme",
-                 text_color_disabled: Union[str, Tuple[str, str]] = "default_theme",
-                 background_corner_colors: Tuple[Union[str, Tuple[str, str]]] = None,
+                 bg_color: Union[str, Tuple[str, str]] = "transparent",
+                 fg_color: Optional[Union[str, Tuple[str, str]]] = None,
+                 selected_color: Optional[Union[str, Tuple[str, str]]] = None,
+                 selected_hover_color: Optional[Union[str, Tuple[str, str]]] = None,
+                 unselected_color: Optional[Union[str, Tuple[str, str]]] = None,
+                 unselected_hover_color: Optional[Union[str, Tuple[str, str]]] = None,
+                 text_color: Optional[Union[str, Tuple[str, str]]] = None,
+                 text_color_disabled: Optional[Union[str, Tuple[str, str]]] = None,
+                 background_corner_colors: Union[Tuple[Union[str, Tuple[str, str]]], None] = None,
 
-                 font: Union[tuple, CTkFont] = "default_theme",
-                 values: list = None,
-                 variable: tkinter.Variable = None,
+                 font: Optional[Union[tuple, CTkFont]] = None,
+                 values: Optional[list] = None,
+                 variable: Union[tkinter.Variable, None] = None,
                  dynamic_resizing: bool = True,
-                 command: Callable[[str], None] = None,
+                 command: Union[Callable[[str], None], None] = None,
                  state: str = "normal",
                  **kwargs):
 
         super().__init__(master=master, bg_color=bg_color, width=width, height=height, **kwargs)
 
-        self._sb_fg_color = ThemeManager.theme["color"]["segmented_button"] if fg_color == "default_theme" else fg_color
+        self._sb_fg_color = ThemeManager.theme["color"]["segmented_button"] if fg_color is None else self._check_color_type(fg_color)
 
-        self._sb_selected_color = ThemeManager.theme["color"]["button"] if selected_color == "default_theme" else selected_color
-        self._sb_selected_hover_color = ThemeManager.theme["color"]["button_hover"] if selected_hover_color == "default_theme" else selected_hover_color
+        self._sb_selected_color = ThemeManager.theme["color"]["button"] if selected_color is None else self._check_color_type(selected_color)
+        self._sb_selected_hover_color = ThemeManager.theme["color"]["button_hover"] if selected_hover_color is None else self._check_color_type(selected_hover_color)
 
-        self._sb_unselected_color = ThemeManager.theme["color"]["segmented_button_unselected"] if unselected_color == "default_theme" else unselected_color
-        self._sb_unselected_hover_color = ThemeManager.theme["color"]["segmented_button_unselected_hover"] if unselected_hover_color == "default_theme" else unselected_hover_color
+        self._sb_unselected_color = ThemeManager.theme["color"]["segmented_button_unselected"] if unselected_color is None else self._check_color_type(unselected_color)
+        self._sb_unselected_hover_color = ThemeManager.theme["color"]["segmented_button_unselected_hover"] if unselected_hover_color is None else self._check_color_type(unselected_hover_color)
 
-        self._sb_text_color = ThemeManager.theme["color"]["text_button"] if text_color == "default_theme" else text_color
-        self._sb_text_color_disabled = ThemeManager.theme["color"]["text_button_disabled"] if text_color_disabled == "default_theme" else text_color_disabled
+        self._sb_text_color = ThemeManager.theme["color"]["text_button"] if text_color is None else self._check_color_type(text_color)
+        self._sb_text_color_disabled = ThemeManager.theme["color"]["text_button_disabled"] if text_color_disabled is None else self._check_color_type(text_color_disabled)
 
-        self._sb_corner_radius = ThemeManager.theme["shape"]["button_corner_radius"] if corner_radius == "default_theme" else corner_radius
-        self._sb_border_width = ThemeManager.theme["shape"]["button_border_width"] if border_width == "default_theme" else border_width
+        self._sb_corner_radius = ThemeManager.theme["shape"]["button_corner_radius"] if corner_radius is None else corner_radius
+        self._sb_border_width = ThemeManager.theme["shape"]["button_border_width"] if border_width is None else border_width
 
         self._background_corner_colors = background_corner_colors  # rendering options for DrawEngine
 
         self._command: Callable[[str], None] = command
-        self._font = (ThemeManager.theme["text"]["font"], ThemeManager.theme["text"]["size"]) if font == "default_theme" else font
+        self._font = (ThemeManager.theme["text"]["font"], ThemeManager.theme["text"]["size"]) if font is None else font
         self._state = state
 
         self._buttons_dict: Dict[str, CTkButton] = {}  # mapped from value to button object
@@ -84,7 +84,7 @@ class CTkSegmentedButton(CTkFrame):
             self._variable_callback_name = self._variable.trace_add("write", self._variable_callback)
             self.set(self._variable.get(), from_variable_callback=True)
 
-        super().configure(corner_radius=self._sb_corner_radius, fg_color=None)
+        super().configure(corner_radius=self._sb_corner_radius, fg_color="red")
 
     def destroy(self):
         if self._variable is not None:  # remove old callback
@@ -147,21 +147,22 @@ class CTkSegmentedButton(CTkFrame):
 
     def _create_button(self, index: int, value: str) -> CTkButton:
         new_button = CTkButton(self,
-                               height=self._current_height,
                                width=0,
+                               height=self._current_height,
                                corner_radius=self._sb_corner_radius,
-                               text=value,
                                border_width=self._sb_border_width,
-                               border_color=self._sb_fg_color,
                                fg_color=self._sb_unselected_color,
+                               border_color=self._sb_fg_color,
                                hover_color=self._sb_unselected_hover_color,
                                text_color=self._sb_text_color,
                                text_color_disabled=self._sb_text_color_disabled,
+                               text=value,
                                font=self._font,
                                state=self._state,
                                command=lambda v=value: self.set(v, from_button_callback=True),
                                background_corner_colors=None,
-                               round_width_to_even_numbers=False)  # DrawEngine rendering option (so that theres no gap between buttons)
+                               round_width_to_even_numbers=False,
+                               round_height_to_even_numbers=False)  # DrawEngine rendering option (so that theres no gap between buttons)
 
         return new_button
 
@@ -201,40 +202,40 @@ class CTkSegmentedButton(CTkFrame):
                 self._configure_button_corners_for_index(max_index)
 
         if "fg_color" in kwargs:
-            self._sb_fg_color = kwargs.pop("fg_color")
+            self._sb_fg_color = self._check_color_type(kwargs.pop("fg_color"))
             for index, button in enumerate(self._buttons_dict.values()):
                 button.configure(border_color=self._sb_fg_color)
                 self._configure_button_corners_for_index(index)
 
         if "selected_color" in kwargs:
-            self._sb_selected_color = kwargs.pop("selected_color")
+            self._sb_selected_color = self._check_color_type(kwargs.pop("selected_color"))
             if self._current_value in self._buttons_dict:
                 self._buttons_dict[self._current_value].configure(fg_color=self._sb_selected_color)
 
         if "selected_hover_color" in kwargs:
-            self._sb_selected_hover_color = kwargs.pop("selected_hover_color")
+            self._sb_selected_hover_color = self._check_color_type(kwargs.pop("selected_hover_color"))
             if self._current_value in self._buttons_dict:
                 self._buttons_dict[self._current_value].configure(hover_color=self._sb_selected_hover_color)
 
         if "unselected_color" in kwargs:
-            self._sb_unselected_color = kwargs.pop("unselected_color")
+            self._sb_unselected_color = self._check_color_type(kwargs.pop("unselected_color"))
             for value, button in self._buttons_dict.items():
                 if value != self._current_value:
                     button.configure(fg_color=self._sb_unselected_color)
 
         if "unselected_hover_color" in kwargs:
-            self._sb_unselected_hover_color = kwargs.pop("unselected_hover_color")
+            self._sb_unselected_hover_color = self._check_color_type(kwargs.pop("unselected_hover_color"))
             for value, button in self._buttons_dict.items():
                 if value != self._current_value:
                     button.configure(hover_color=self._sb_unselected_hover_color)
 
         if "text_color" in kwargs:
-            self._sb_text_color = kwargs.pop("text_color")
+            self._sb_text_color = self._check_color_type(kwargs.pop("text_color"))
             for button in self._buttons_dict.values():
                 button.configure(text_color=self._sb_text_color)
 
         if "text_color_disabled" in kwargs:
-            self._sb_text_color_disabled = kwargs.pop("text_color_disabled")
+            self._sb_text_color_disabled = self._check_color_type(kwargs.pop("text_color_disabled"))
             for button in self._buttons_dict.values():
                 button.configure(text_color_disabled=self._sb_text_color_disabled)
 
