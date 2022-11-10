@@ -19,7 +19,7 @@ class CTkLabel(CTkBaseClass):
 
     # attributes that are passed to and managed by the tkinter entry only:
     _valid_tk_label_attributes = {"cursor", "justify", "padx", "pady",
-                                  "textvariable", "state", "takefocus", "underline", "wraplength"}
+                                  "textvariable", "state", "takefocus", "underline"}
 
     def __init__(self,
                  master: any,
@@ -36,6 +36,7 @@ class CTkLabel(CTkBaseClass):
                  image: Union[tkinter.PhotoImage, CTkImage, None] = None,
                  compound: str = "center",
                  anchor: str = "center",  # label anchor: center, n, e, s, w
+                 wraplength: int = 0,
                  **kwargs):
 
         # transfer basic functionality (_bg_color, size, __appearance_mode, scaling) to CTkBaseClass
@@ -51,6 +52,7 @@ class CTkLabel(CTkBaseClass):
         # text
         self._anchor = anchor
         self._text = text
+        self._wraplength = wraplength
 
         # image
         self._image = self._check_image_type(image)
@@ -81,6 +83,7 @@ class CTkLabel(CTkBaseClass):
                                     borderwidth=0,
                                     anchor=self._anchor,
                                     compound=self._compound,
+                                    wraplength=self._apply_widget_scaling(self._wraplength),
                                     text=self._text,
                                     font=self._apply_font_scaling(self._font))
         self._label.configure(**pop_from_dict_by_set(kwargs, self._valid_tk_label_attributes))
@@ -96,6 +99,7 @@ class CTkLabel(CTkBaseClass):
 
         self._canvas.configure(width=self._apply_widget_scaling(self._desired_width), height=self._apply_widget_scaling(self._desired_height))
         self._label.configure(font=self._apply_font_scaling(self._font))
+        self._label.configure(wraplength=self._apply_widget_scaling(self._wraplength))
 
         self._create_grid()
         self._draw(no_color_updates=True)
@@ -208,6 +212,10 @@ class CTkLabel(CTkBaseClass):
             self._label.configure(anchor=self._anchor)
             self._create_grid()
 
+        if "wraplength" in kwargs:
+            self._wraplength = kwargs.pop("wraplength")
+            self._label.configure(wraplength=self._apply_widget_scaling(self._wraplength))
+
         self._label.configure(**pop_from_dict_by_set(kwargs, self._valid_tk_label_attributes))  # configure tkinter.Label
         super().configure(require_redraw=require_redraw, **kwargs)  # configure CTkBaseClass
 
@@ -230,6 +238,8 @@ class CTkLabel(CTkBaseClass):
             return self._compound
         elif attribute_name == "anchor":
             return self._anchor
+        elif attribute_name == "wraplength":
+            return self._wraplength
 
         elif attribute_name in self._valid_tk_label_attributes:
             return self._label.cget(attribute_name)  # cget of tkinter.Label

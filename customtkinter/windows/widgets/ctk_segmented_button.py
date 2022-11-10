@@ -84,7 +84,7 @@ class CTkSegmentedButton(CTkFrame):
             self._variable_callback_name = self._variable.trace_add("write", self._variable_callback)
             self.set(self._variable.get(), from_variable_callback=True)
 
-        super().configure(corner_radius=self._sb_corner_radius, fg_color="red")
+        super().configure(corner_radius=self._sb_corner_radius, fg_color="transparent")
 
     def destroy(self):
         if self._variable is not None:  # remove old callback
