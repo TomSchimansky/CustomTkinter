@@ -357,19 +357,22 @@ class CTkSegmentedButton(CTkFrame):
 
     def insert(self, index: int, value: str):
         if value not in self._buttons_dict:
-            self._value_list.insert(index, value)
-            self._buttons_dict[value] = self._create_button(index, value)
+            if value != "":
+                self._value_list.insert(index, value)
+                self._buttons_dict[value] = self._create_button(index, value)
 
-            self._configure_button_corners_for_index(index)
-            if index > 0:
-                self._configure_button_corners_for_index(index - 1)
-            if index < len(self._buttons_dict) - 1:
-                self._configure_button_corners_for_index(index + 1)
+                self._configure_button_corners_for_index(index)
+                if index > 0:
+                    self._configure_button_corners_for_index(index - 1)
+                if index < len(self._buttons_dict) - 1:
+                    self._configure_button_corners_for_index(index + 1)
 
-            self._create_button_grid()
+                self._create_button_grid()
 
-            if value == self._current_value:
-                self._select_button_by_value(self._current_value)
+                if value == self._current_value:
+                    self._select_button_by_value(self._current_value)
+            else:
+                raise ValueError(f"CTkSegmentedButton can not insert value ''")
         else:
             raise ValueError(f"CTkSegmentedButton can not insert value '{value}', already part of the values")
 
