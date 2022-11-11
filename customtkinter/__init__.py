@@ -2,6 +2,11 @@ __version__ = "4.6.3"
 
 import os
 import sys
+import tkinter.filedialog as filedialog
+from tkinter import Variable, StringVar, IntVar, DoubleVar, BooleanVar
+from tkinter.constants import *
+
+_ = filedialog, Variable, StringVar, IntVar, DoubleVar, BooleanVar, CENTER  # prevent IDE from removing unused imports
 
 # import manager classes
 from .windows.widgets.appearance_mode.appearance_mode_tracker import AppearanceModeTracker

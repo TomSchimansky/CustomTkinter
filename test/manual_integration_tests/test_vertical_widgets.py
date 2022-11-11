@@ -7,17 +7,17 @@ app.title("test_vertical_widgets")
 app.grid_columnconfigure(0, weight=1)
 app.grid_rowconfigure((0, 1, 2, 3), weight=1)
 
-progressbar_1 = customtkinter.CTkProgressBar(app, orient="horizontal")
+progressbar_1 = customtkinter.CTkProgressBar(app, orientation="horizontal")
 progressbar_1.grid(row=0, column=0, pady=20, padx=20)
 
-progressbar_2 = customtkinter.CTkProgressBar(app, orient="vertical")
+progressbar_2 = customtkinter.CTkProgressBar(app, orientation="vertical")
 progressbar_2.grid(row=1, column=0, pady=20, padx=20)
 
-slider_1 = customtkinter.CTkSlider(app, orient="horizontal", command=progressbar_1.set,
+slider_1 = customtkinter.CTkSlider(app, orientation="horizontal", command=progressbar_1.set,
                                    button_corner_radius=3, button_length=20)
 slider_1.grid(row=2, column=0, pady=20, padx=20)
 
-slider_2 = customtkinter.CTkSlider(app, orient="vertical", command=progressbar_2.set,
+slider_2 = customtkinter.CTkSlider(app, orientation="vertical", command=progressbar_2.set,
                                    button_corner_radius=3, button_length=20)
 slider_2.grid(row=3, column=0, pady=20, padx=20)
 

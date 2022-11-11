@@ -6,8 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ToDo:
  - complete other theme files
+ - create grayscale theme file
  - change font attribute in wiki
  - add new button attributes to wiki
+
  - cursor configuring
  - overwrite winfo methods
 
@@ -18,6 +20,7 @@ ToDo:
  - Added CTkTabview
  - Added .cget() method to all widgets and windows
  - Added .bind() and .focus() methods to almost all widgets
+ - Added 'anchor' option to CTkButton to position image and text inside the button
  - Added 'anchor' option to CTkOptionMenu and 'justify' option to CTkComboBox
  - Added CTkFont class
  - Added CTkImage class to replace PIL.ImageTk.PhotoImage, supports scaling and two images for appearance mode, supports configuring

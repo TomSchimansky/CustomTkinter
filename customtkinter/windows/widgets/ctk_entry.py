@@ -163,28 +163,28 @@ class CTkEntry(CTkBaseClass):
                                         fill=self._apply_appearance_mode(self._bg_color),
                                         outline=self._apply_appearance_mode(self._bg_color))
                 self._entry.configure(bg=self._apply_appearance_mode(self._bg_color),
-                                      fg=self._apply_appearance_mode(self._text_color),
                                       disabledbackground=self._apply_appearance_mode(self._bg_color),
-                                      disabledforeground=self._apply_appearance_mode(self._text_color),
-                                      highlightcolor=self._apply_appearance_mode(self._bg_color),
-                                      insertbackground=self._apply_appearance_mode(self._text_color))
+                                      highlightcolor=self._apply_appearance_mode(self._bg_color))
             else:
                 self._canvas.itemconfig("inner_parts",
                                         fill=self._apply_appearance_mode(self._fg_color),
                                         outline=self._apply_appearance_mode(self._fg_color))
                 self._entry.configure(bg=self._apply_appearance_mode(self._fg_color),
-                                      fg=self._apply_appearance_mode(self._text_color),
                                       disabledbackground=self._apply_appearance_mode(self._fg_color),
-                                      disabledforeground=self._apply_appearance_mode(self._text_color),
-                                      highlightcolor=self._apply_appearance_mode(self._fg_color),
-                                      insertbackground=self._apply_appearance_mode(self._text_color))
+                                      highlightcolor=self._apply_appearance_mode(self._fg_color))
 
             self._canvas.itemconfig("border_parts",
                                     fill=self._apply_appearance_mode(self._border_color),
                                     outline=self._apply_appearance_mode(self._border_color))
 
             if self._placeholder_text_active:
-                self._entry.config(fg=self._apply_appearance_mode(self._placeholder_text_color))
+                self._entry.config(fg=self._apply_appearance_mode(self._placeholder_text_color),
+                                   disabledforeground=self._apply_appearance_mode(self._placeholder_text_color),
+                                   insertbackground=self._apply_appearance_mode(self._placeholder_text_color))
+            else:
+                self._entry.config(fg=self._apply_appearance_mode(self._text_color),
+                                   disabledforeground=self._apply_appearance_mode(self._text_color),
+                                   insertbackground=self._apply_appearance_mode(self._text_color))
 
     def configure(self, require_redraw=False, **kwargs):
         if "state" in kwargs:
@@ -289,7 +289,9 @@ class CTkEntry(CTkBaseClass):
             self._placeholder_text_active = True
 
             self._pre_placeholder_arguments = {"show": self._entry.cget("show")}
-            self._entry.config(fg=self._apply_appearance_mode(self._placeholder_text_color), show="")
+            self._entry.config(fg=self._apply_appearance_mode(self._placeholder_text_color),
+                               disabledforeground=self._apply_appearance_mode(self._placeholder_text_color),
+                               show="")
             self._entry.delete(0, tkinter.END)
             self._entry.insert(0, self._placeholder_text)
 
@@ -297,7 +299,8 @@ class CTkEntry(CTkBaseClass):
         if self._placeholder_text_active:
             self._placeholder_text_active = False
 
-            self._entry.config(fg=self._apply_appearance_mode(self._text_color))
+            self._entry.config(fg=self._apply_appearance_mode(self._text_color),
+                               disabledforeground=self._apply_appearance_mode(self._text_color),)
             self._entry.delete(0, tkinter.END)
             for argument, value in self._pre_placeholder_arguments.items():
                 self._entry[argument] = value

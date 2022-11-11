@@ -110,11 +110,11 @@ class TestApp(customtkinter.CTk):
         self.frame_3.place(relx=0.5, y=y + 80, anchor=tkinter.CENTER)
         self.frame_3.configure(fg_color=("#EBECF3", "#4B577E"))
 
-        self.button_3 = customtkinter.CTkButton(master=self.ctk_frame_customized, command=lambda: x, border_width=3,
+        self.button_3 = customtkinter.CTkButton(master=self.ctk_frame_customized, command=lambda: None, border_width=3,
                                                 corner_radius=20, font=("times", 16))
         self.button_3.place(relx=0.5, y=y + 160, anchor=tkinter.CENTER)
         self.button_3.configure(border_color=("#4F90F8", "#6FADF9"), hover_color=("#3A65E8", "#4376EE"))
-        self.button_3.configure(fg_color=None)
+        self.button_3.configure(fg_color="transparent")
 
         self.entry_3 = customtkinter.CTkEntry(master=self.ctk_frame_customized, font=("times", 16))
         self.entry_3.place(relx=0.5, y=y + 240, anchor=tkinter.CENTER)
@@ -152,7 +152,7 @@ class TestApp(customtkinter.CTk):
         self.button_4 = customtkinter.CTkButton(master=self.tk_frame_customized, command=lambda: x, border_width=3)
         self.button_4.place(relx=0.5, y=y + 160, anchor=tkinter.CENTER)
         self.button_4.configure(border_color=("#4F90F8", "#6FADF9"), hover_color=("#3A65E8", "#4376EE"))
-        self.button_4.configure(fg_color=None)
+        self.button_4.configure(fg_color="transparent")
 
         self.entry_4 = customtkinter.CTkEntry(master=self.tk_frame_customized)
         self.entry_4.place(relx=0.5, y=y + 240, anchor=tkinter.CENTER)
