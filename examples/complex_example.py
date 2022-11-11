@@ -138,7 +138,7 @@ class App(customtkinter.CTk):
         self.seg_button_1.set("Value 2")
 
     def open_input_dialog(self):
-        dialog = customtkinter.CTkInputDialog(text="Type in a number:"*500, title="CTkInputDialog")
+        dialog = customtkinter.CTkInputDialog(text="Type in a number:"*50, title="CTkInputDialog")
         print("CTkInputDialog:", dialog.get_input())
 
     def change_appearance_mode(self, new_appearance_mode: str):

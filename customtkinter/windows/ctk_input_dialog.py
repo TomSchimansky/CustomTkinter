@@ -43,12 +43,12 @@ class CTkInputDialog(CTkToplevel):
 
         self.title(title)
         self.focus_force()
-        self.grab_set()  # make other windows not clickable
         self.lift()  # lift window on top
         self.attributes("-topmost", True)  # stay on top
         self.protocol("WM_DELETE_WINDOW", self._on_closing)
         self.after(0, self._create_widgets)  # create widgets with slight delay, to avoid white flickering of background
         self.after(500, lambda: self.resizable(False, False))
+        self.grab_set()  # make other windows not clickable
 
     def _create_widgets(self):
 
