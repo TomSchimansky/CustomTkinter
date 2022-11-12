@@ -4,9 +4,9 @@ import os
 import sys
 from tkinter import Variable, StringVar, IntVar, DoubleVar, BooleanVar
 from tkinter.constants import *
-import tkinter.filedialog as CTkFiledialog
+import tkinter.filedialog as filedialog
 
-_ = Variable, StringVar, IntVar, DoubleVar, BooleanVar, CENTER, CTkFiledialog  # prevent IDE from removing unused imports
+_ = Variable, StringVar, IntVar, DoubleVar, BooleanVar, CENTER, filedialog  # prevent IDE from removing unused imports
 
 # import manager classes
 from .windows.widgets.appearance_mode.appearance_mode_tracker import AppearanceModeTracker

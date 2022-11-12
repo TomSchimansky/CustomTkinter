@@ -1,3 +1,4 @@
+import tkinter
 from typing import Union, Tuple, Dict, List, Callable, Optional
 
 from .theme.theme_manager import ThemeManager
@@ -208,6 +209,7 @@ class CTkTabview(CTkBaseClass):
                                     fill=self._apply_appearance_mode(self._border_color),
                                     outline=self._apply_appearance_mode(self._border_color))
             self._canvas.configure(bg=self._apply_appearance_mode(self._bg_color))
+            tkinter.Frame.configure(self, bg=self._apply_appearance_mode(self._bg_color))  # configure bg color of tkinter.Frame, cuase canvas does not fill frame
 
     def configure(self, require_redraw=False, **kwargs):
         if "corner_radius" in kwargs:
