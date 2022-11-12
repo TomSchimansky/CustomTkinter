@@ -42,12 +42,11 @@ class CTkInputDialog(CTkToplevel):
         self._text = text
 
         self.title(title)
-        self.focus_force()
         self.lift()  # lift window on top
         self.attributes("-topmost", True)  # stay on top
         self.protocol("WM_DELETE_WINDOW", self._on_closing)
-        self.after(0, self._create_widgets)  # create widgets with slight delay, to avoid white flickering of background
-        self.after(500, lambda: self.resizable(False, False))
+        self.after(10, self._create_widgets)  # create widgets with slight delay, to avoid white flickering of background
+        self.resizable(False, False)
         self.grab_set()  # make other windows not clickable
 
     def _create_widgets(self):
@@ -90,7 +89,7 @@ class CTkInputDialog(CTkToplevel):
                                         command=self._ok_event)
         self._cancel_button.grid(row=2, column=1, columnspan=1, padx=(10, 20), pady=(0, 20), sticky="ew")
 
-        self._entry.focus_force()
+        self.after(150, lambda: self._entry.focus())  # set focus to entry with slight delay, otherwise it won't work
         self._entry.bind("<Return>", self._ok_event)
 
     def _ok_event(self, event=None):

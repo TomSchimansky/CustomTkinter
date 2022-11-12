@@ -1,3 +1,4 @@
+import ctypes.wintypes
 import tkinter
 import sys
 from typing import Callable
@@ -118,7 +119,7 @@ class ScalingTracker:
                 pass  # high DPI scaling works automatically on macOS
 
             elif sys.platform.startswith("win"):
-                from ctypes import windll
+                from ctypes import windll, wintypes
                 windll.shcore.SetProcessDpiAwareness(2)
                 # Microsoft Docs: https://docs.microsoft.com/en-us/windows/win32/api/shellscalingapi/ne-shellscalingapi-process_dpi_awareness
             else:
@@ -154,6 +155,7 @@ class ScalingTracker:
         for window in cls.window_widgets_dict:
             if window.winfo_exists() and not window.state() == "iconic":
                 current_dpi_scaling_value = cls.get_window_dpi_scaling(window)
+                print("current dpi:", current_dpi_scaling_value)
                 if current_dpi_scaling_value != cls.window_dpi_scaling_dict[window]:
                     cls.window_dpi_scaling_dict[window] = current_dpi_scaling_value
 

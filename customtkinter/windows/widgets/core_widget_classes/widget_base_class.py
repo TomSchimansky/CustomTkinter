@@ -101,7 +101,10 @@ class CTkBaseClass(tkinter.Frame, CTkAppearanceModeBaseClass, CTkScalingBaseClas
     def _draw(self, no_color_updates: bool = False):
         """ can be overridden but super method must be called """
         if no_color_updates is False:
-            super().configure(bg=self._apply_appearance_mode(self._bg_color))
+            # Configuring color of tkinter.Frame not necessary at the moment?
+            # Causes flickering on Windows and Linux for segmented button for some reason!
+            # super().configure(bg=self._apply_appearance_mode(self._bg_color))
+            pass
 
     def config(self, *args, **kwargs):
         raise AttributeError("'config' is not implemented for CTk widgets. For consistency, always use 'configure' instead.")
