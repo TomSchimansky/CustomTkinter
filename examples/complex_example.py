@@ -14,6 +14,7 @@ class App(customtkinter.CTk):
         # configure window
         self.title("CustomTkinter complex_example.py")
         self.geometry(f"{1100}x{580}")
+        #self.resizable(False, False)
 
         # configure grid layout (4x4)
         self.grid_columnconfigure(1, weight=1)

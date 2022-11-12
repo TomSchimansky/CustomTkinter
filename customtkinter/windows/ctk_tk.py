@@ -86,10 +86,8 @@ class CTk(tkinter.Tk, CTkAppearanceModeBaseClass, CTkScalingBaseClass):
     def _update_dimensions_event(self, event=None):
         if not self._block_update_dimensions_event:
 
-            # removed this because of python stackoverflow error with many label widgets
-            # self.update_idletasks()
-            detected_width = self.winfo_width()  # detect current window size
-            detected_height = self.winfo_height()
+            detected_width = super().winfo_width()  # detect current window size
+            detected_height = super().winfo_height()
 
             # detected_width = event.width
             # detected_height = event.height
@@ -101,22 +99,20 @@ class CTk(tkinter.Tk, CTkAppearanceModeBaseClass, CTkScalingBaseClass):
     def _set_scaling(self, new_widget_scaling, new_window_scaling):
         super()._set_scaling(new_widget_scaling, new_window_scaling)
 
-        # block update_dimensions_event to prevent current_width and current_height to get updated
-        self._block_update_dimensions_event = True
-
-        # force new dimensions on window by using min, max, and geometry
+        # Force new dimensions on window by using min, max, and geometry. Without min, max it won't work.
         super().minsize(self._apply_window_scaling(self._current_width), self._apply_window_scaling(self._current_height))
         super().maxsize(self._apply_window_scaling(self._current_width), self._apply_window_scaling(self._current_height))
 
         super().geometry(f"{self._apply_window_scaling(self._current_width)}x{self._apply_window_scaling(self._current_height)}")
 
-        # set new scaled min and max with 400ms delay (otherwise it won't work for some reason)
-        self.after(400, self._set_scaled_min_max)
+        # set new scaled min and max with delay (delay prevents weird bug where window dimensions snap to unscaled dimensions when mouse releases window)
+        self.after(1000, self._set_scaled_min_max)  # Why 1000ms delay? Experience! (Everything tested on Windows 11)
 
-        # release the blocking of update_dimensions_event after a small amount of time (slight delay is necessary)
-        def set_block_update_dimensions_event_false():
-            self._block_update_dimensions_event = False
-        self.after(100, lambda: set_block_update_dimensions_event_false())
+    def block_update_dimensions_event(self):
+        self._block_update_dimensions_event = False
+
+    def unblock_update_dimensions_event(self):
+        self._block_update_dimensions_event = False
 
     def _set_scaled_min_max(self):
         if self._min_width is not None or self._min_height is not None:
@@ -157,11 +153,13 @@ class CTk(tkinter.Tk, CTkAppearanceModeBaseClass, CTkScalingBaseClass):
         super().mainloop(*args, **kwargs)
 
     def resizable(self, width: bool = None, height: bool = None):
-        super().resizable(width, height)
+        current_resizable_values = super().resizable(width, height)
         self._last_resizable_args = ([], {"width": width, "height": height})
 
         if sys.platform.startswith("win"):
             self._windows_set_titlebar_color(self._get_appearance_mode())
+
+        return current_resizable_values
 
     def minsize(self, width: int = None, height: int = None):
         self._min_width = width

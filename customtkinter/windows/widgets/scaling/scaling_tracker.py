@@ -1,4 +1,3 @@
-import ctypes.wintypes
 import tkinter
 import sys
 from typing import Callable
@@ -14,8 +13,8 @@ class ScalingTracker:
     window_scaling = 1
 
     update_loop_running = False
-    update_loop_interval = 600  # ms
-    loop_pause_after_new_scaling = 1000  # ms
+    update_loop_interval = 100  # ms
+    loop_pause_after_new_scaling = 1500  # ms
 
     @classmethod
     def get_widget_scaling(cls, widget) -> float:
@@ -119,9 +118,32 @@ class ScalingTracker:
                 pass  # high DPI scaling works automatically on macOS
 
             elif sys.platform.startswith("win"):
-                from ctypes import windll, wintypes
-                windll.shcore.SetProcessDpiAwareness(2)
-                # Microsoft Docs: https://docs.microsoft.com/en-us/windows/win32/api/shellscalingapi/ne-shellscalingapi-process_dpi_awareness
+                import ctypes
+
+                # Values for SetProcessDpiAwareness and SetProcessDpiAwarenessContext:
+                # internal enum PROCESS_DPI_AWARENESS
+                # {
+                #     Process_DPI_Unaware = 0,
+                #     Process_System_DPI_Aware = 1,
+                #     Process_Per_Monitor_DPI_Aware = 2
+                # }
+                #
+                # internal enum DPI_AWARENESS_CONTEXT
+                # {
+                #     DPI_AWARENESS_CONTEXT_UNAWARE = 16,
+                #     DPI_AWARENESS_CONTEXT_SYSTEM_AWARE = 17,
+                #     DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE = 18,
+                #     DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2 = 34
+                # }
+
+                # ctypes.windll.user32.SetProcessDpiAwarenessContext(34)  # Non client area scaling at runtime (titlebar)
+                # does not work with resizable(False, False), window starts growing on monitor with different scaling (weird tkinter bug...)
+                # ctypes.windll.user32.EnableNonClientDpiScaling(hwnd) does not work for some reason (tested on Windows 11)
+
+                # It's too bad, that these Windows API methods don't work properly with tkinter. But I tested days with multiple monitor setups,
+                # and I don't think there is anything left to do. So this is the best option at the moment:
+
+                ctypes.windll.shcore.SetProcessDpiAwareness(2)  # Titlebar does not scale at runtime
             else:
                 pass  # DPI awareness on Linux not implemented
 
@@ -161,10 +183,12 @@ class ScalingTracker:
                     if sys.platform.startswith("win"):
                         window.attributes("-alpha", 0.15)
 
+                    window.block_update_dimensions_event()
                     cls.update_scaling_callbacks_for_window(window)
+                    window.unblock_update_dimensions_event()
 
                     if sys.platform.startswith("win"):
-                        window.after(200, lambda: window.attributes("-alpha", 1))
+                        window.attributes("-alpha", 1)
 
                     new_scaling_detected = True
 

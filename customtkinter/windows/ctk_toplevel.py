@@ -65,6 +65,8 @@ class CTkToplevel(tkinter.Toplevel, CTkAppearanceModeBaseClass, CTkScalingBaseCl
         self.bind('<Configure>', self._update_dimensions_event)
         self.bind('<FocusIn>', self._focus_in_event)
 
+        self._block_update_dimensions_event = False
+
     def destroy(self):
         self._disable_macos_dark_title_bar()
 
@@ -79,24 +81,31 @@ class CTkToplevel(tkinter.Toplevel, CTkAppearanceModeBaseClass, CTkScalingBaseCl
             self.lift()
 
     def _update_dimensions_event(self, event=None):
-        detected_width = self.winfo_width()  # detect current window size
-        detected_height = self.winfo_height()
+        if not self._block_update_dimensions_event:
+            detected_width = self.winfo_width()  # detect current window size
+            detected_height = self.winfo_height()
 
-        if self._current_width != self._reverse_window_scaling(detected_width) or self._current_height != self._reverse_window_scaling(detected_height):
-            self._current_width = self._reverse_window_scaling(detected_width)  # adjust current size according to new size given by event
-            self._current_height = self._reverse_window_scaling(detected_height)  # _current_width and _current_height are independent of the scale
+            if self._current_width != self._reverse_window_scaling(detected_width) or self._current_height != self._reverse_window_scaling(detected_height):
+                self._current_width = self._reverse_window_scaling(detected_width)  # adjust current size according to new size given by event
+                self._current_height = self._reverse_window_scaling(detected_height)  # _current_width and _current_height are independent of the scale
 
     def _set_scaling(self, new_widget_scaling, new_window_scaling):
         super()._set_scaling(new_widget_scaling, new_window_scaling)
 
-        # force new dimensions on window by using min, max, and geometry
+        # Force new dimensions on window by using min, max, and geometry. Without min, max it won't work.
         super().minsize(self._apply_window_scaling(self._current_width), self._apply_window_scaling(self._current_height))
         super().maxsize(self._apply_window_scaling(self._current_width), self._apply_window_scaling(self._current_height))
-        super().geometry(
-            f"{self._apply_window_scaling(self._current_width)}x" + f"{self._apply_window_scaling(self._current_height)}")
 
-        # set new scaled min and max with 400ms delay (otherwise it won't work for some reason)
-        self.after(400, self._set_scaled_min_max)
+        super().geometry(f"{self._apply_window_scaling(self._current_width)}x{self._apply_window_scaling(self._current_height)}")
+
+        # set new scaled min and max with delay (delay prevents weird bug where window dimensions snap to unscaled dimensions when mouse releases window)
+        self.after(1000, self._set_scaled_min_max)  # Why 1000ms delay? Experience! (Everything tested on Windows 11)
+
+    def block_update_dimensions_event(self):
+        self._block_update_dimensions_event = False
+
+    def unblock_update_dimensions_event(self):
+        self._block_update_dimensions_event = False
 
     def _set_scaled_min_max(self):
         if self._min_width is not None or self._min_height is not None:
@@ -127,11 +136,13 @@ class CTkToplevel(tkinter.Toplevel, CTkAppearanceModeBaseClass, CTkScalingBaseCl
         super().iconify()
 
     def resizable(self, width: bool = None, height: bool = None):
-        super().resizable(width, height)
+        current_resizable_values = super().resizable(width, height)
         self._last_resizable_args = ([], {"width": width, "height": height})
 
         if sys.platform.startswith("win"):
             self.after(10, lambda: self._windows_set_titlebar_color(self._get_appearance_mode()))
+
+        return current_resizable_values
 
     def minsize(self, width=None, height=None):
         self._min_width = width
