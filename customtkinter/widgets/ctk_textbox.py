@@ -132,6 +132,13 @@ class CTkTextbox(CTkBaseClass):
 
     def tag_remove(self, *args, **kwargs):
         return self.textbox.tag_remove(*args, **kwargs)
+    
+    def delete(self, *args, **kwargs):
+        self.textbox.delete(*args, **kwargs)
+
+    def get(self, index1, index2=None):
+        """Return the text from INDEX1 to INDEX2 (not included)."""
+        return self.tk.call(self.textbox, 'get', index1, index2)
 
     def configure(self, require_redraw=False, **kwargs):
         if "fg_color" in kwargs:
