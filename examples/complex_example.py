@@ -14,7 +14,6 @@ class App(customtkinter.CTk):
         # configure window
         self.title("CustomTkinter complex_example.py")
         self.geometry(f"{1100}x{580}")
-        #self.resizable(False, False)
 
         # configure grid layout (4x4)
         self.grid_columnconfigure(1, weight=1)
@@ -48,7 +47,7 @@ class App(customtkinter.CTk):
         self.entry = customtkinter.CTkEntry(self, placeholder_text="CTkEntry")
         self.entry.grid(row=3, column=1, columnspan=2, padx=(20, 0), pady=(20, 20), sticky="nsew")
 
-        self.main_button_1 = customtkinter.CTkButton(master=self, fg_color="transparent", border_width=2)
+        self.main_button_1 = customtkinter.CTkButton(master=self, fg_color="transparent", border_width=2, text_color=("gray10", "#DCE4EE"))
         self.main_button_1.grid(row=3, column=3, padx=(20, 20), pady=(20, 20), sticky="nsew")
 
         # create textbox
@@ -139,7 +138,7 @@ class App(customtkinter.CTk):
         self.seg_button_1.set("Value 2")
 
     def open_input_dialog(self):
-        dialog = customtkinter.CTkInputDialog(text="Type in a number:"*50, title="CTkInputDialog")
+        dialog = customtkinter.CTkInputDialog(text="Type in a number:", title="CTkInputDialog")
         print("CTkInputDialog:", dialog.get_input())
 
     def change_appearance_mode(self, new_appearance_mode: str):
