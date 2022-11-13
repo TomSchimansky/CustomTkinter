@@ -6,14 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ToDo:
  - complete other theme files
- - create grayscale theme file
  - change font attribute in wiki
  - add new button attributes to wiki
 
+ - create grayscale theme file
  - cursor configuring
  - overwrite winfo methods
 
-## Unreleased - 2022-10-2
+## [5.0.0] - 2022-11-13
 ### Added
  - Added CTkTextbox with automatic x and y scrollbars, corner_radius, border_width, border_spacing
  - Added CTkSegmentedButton
@@ -41,9 +41,6 @@ ToDo:
  - Removed bg and background attribute from CTk and CTkToplevel, always use fg_color
  - Removed Settings class and moved settings to widget and window classes
  - removed customtkinter.set_spacing_scaling(), now set_widget_scaling() is used for spacing too
-
-### Fixed
-
 
 ## [4.6.0] - 2022-09-17
 ### Added

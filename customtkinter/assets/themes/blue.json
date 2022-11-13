@@ -39,10 +39,7 @@
     "scrollbar_button_hover": ["gray40", "gray53"],
     "segmented_button": ["#979DA2", "#4A4D50"],
     "segmented_button_unselected": ["#979DA2", "#4A4D50"],
-    "segmented_button_unselected_hover": ["gray70", "gray41"],
-    "tabview_button_frame": ["gray70", "gray35"],
-    "tabview_button": ["gray60", "gray45"],
-    "tabview_button_hover": ["gray50", "gray55"]
+    "segmented_button_unselected_hover": ["gray70", "gray41"]
   },
   "text": {
     "macOS": {

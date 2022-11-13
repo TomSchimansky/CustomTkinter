@@ -1,7 +1,7 @@
 import sys
 import tkinter
 import tkinter.ttk as ttk
-from typing import Union, Callable, Tuple, Optional
+from typing import Union, Callable, Tuple
 
 try:
     from typing import TypedDict
