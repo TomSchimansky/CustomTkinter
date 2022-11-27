@@ -16,7 +16,7 @@ def create_all_widgets(master, state="normal"):
     progressbar_1 = customtkinter.CTkProgressBar(master=master)
     progressbar_1.pack(pady=10, padx=10)
 
-    button_1 = customtkinter.CTkButton(master=master, state=state)
+    button_1 = customtkinter.CTkButton(master=master, state=state, border_width=0)
     button_1.pack(pady=10, padx=10)
 
     slider_1 = customtkinter.CTkSlider(master=master, from_=0, to=1, state=state)
@@ -55,7 +55,7 @@ def create_all_widgets(master, state="normal"):
     segmented_button_1 = customtkinter.CTkSegmentedButton(master=master, values=["CTkSegmentedButton", "Value 2"], state=state)
     segmented_button_1.pack(pady=10, padx=10)
 
-    tabview_1 = customtkinter.CTkTabview(master=master, width=200, height=100, state=state)
+    tabview_1 = customtkinter.CTkTabview(master=master, width=200, height=100, state=state, border_width=2)
     tabview_1.pack(pady=10, padx=10)
     tabview_1.add("CTkTabview")
     tabview_1.add("Tab 2")
