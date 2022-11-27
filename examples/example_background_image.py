@@ -21,8 +21,6 @@ class App(customtkinter.CTk):
         self.maxsize(App.WIDTH, App.HEIGHT)
         self.resizable(False, False)
 
-        self.protocol("WM_DELETE_WINDOW", self.on_closing)
-
         # load image with PIL and convert to PhotoImage
         current_path = os.path.dirname(os.path.realpath(__file__))
         self.bg_image = customtkinter.CTkImage(Image.open(current_path + "/test_images/bg_gradient.jpg"),
@@ -54,13 +52,7 @@ class App(customtkinter.CTk):
     def button_event(self):
         print("Login pressed - username:", self.entry_1.get(), "password:", self.entry_2.get())
 
-    def on_closing(self, event=0):
-        self.destroy()
-
-    def start(self):
-        self.mainloop()
-
 
 if __name__ == "__main__":
     app = App()
-    app.start()
+    app.mainloop()
