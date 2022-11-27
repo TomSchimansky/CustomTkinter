@@ -12,6 +12,7 @@ ToDo:
  - cursor configuring
  - overwrite winfo methods
 
+
 ## [5.0.0] - 2022-11-13
 ### Added
  - Added CTkTextbox with automatic x and y scrollbars, corner_radius, border_width, border_spacing
