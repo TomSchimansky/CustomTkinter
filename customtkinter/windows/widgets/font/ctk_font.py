@@ -1,6 +1,6 @@
 from tkinter.font import Font
 import copy
-from typing import List, Callable, Tuple
+from typing import List, Callable, Tuple, Optional
 
 from ..theme.theme_manager import ThemeManager
 
@@ -21,25 +21,26 @@ class CTkFont(Font):
     """
 
     def __init__(self,
-                 family: str = "default",
-                 size: int = "default",
-                 weight: str = "normal",
+                 family: Optional[str] = None,
+                 size: Optional[int] = None,
+                 weight: str = None,
                  slant: str = "roman",
                  underline: bool = False,
                  overstrike: bool = False):
 
         self._size_configure_callback_list: List[Callable] = []
 
-        self._family = family
-        self._size = ThemeManager.theme["text"]["size"] if size == "default" else size
-        self._tuple_style_string = f"{weight} {slant} {'underline' if underline else ''} {'overstrike' if overstrike else ''}"
+        self._size = ThemeManager.theme["CTkFont"]["size"] if size is None else size
 
-        super().__init__(family=ThemeManager.theme["text"]["font"] if family == "default" else family,
+        super().__init__(family=ThemeManager.theme["CTkFont"]["family"] if family is None else family,
                          size=-abs(self._size),
-                         weight=weight,
+                         weight=ThemeManager.theme["CTkFont"]["weight"] if weight is None else weight,
                          slant=slant,
                          underline=underline,
                          overstrike=overstrike)
+
+        self._family = super().cget("family")
+        self._tuple_style_string = f"{super().cget('weight')} {slant} {'underline' if underline else ''} {'overstrike' if overstrike else ''}"
 
     def add_size_configure_callback(self, callback: Callable):
         """ add function, that gets called when font got configured """
@@ -61,6 +62,10 @@ class CTkFont(Font):
             self._size = kwargs.pop("size")
             super().configure(size=-abs(self._size))
 
+        if "family" in kwargs:
+            super().configure(family=kwargs.pop("family"))
+            self._family = super().cget("family")
+
         super().configure(**kwargs)
 
         # update style string for create_scaled_tuple() method
@@ -73,6 +78,8 @@ class CTkFont(Font):
     def cget(self, attribute_name: str) -> any:
         if attribute_name == "size":
             return self._size
+        if attribute_name == "family":
+            return self._family
         else:
             return super().cget(attribute_name)
 

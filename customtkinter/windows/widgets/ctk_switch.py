@@ -54,12 +54,12 @@ class CTkSwitch(CTkBaseClass):
 
         # color
         self._border_color = self._check_color_type(border_color, transparency=True)
-        self._fg_color = ThemeManager.theme["color"]["switch"] if fg_color is None else self._check_color_type(fg_color)
-        self._progress_color = ThemeManager.theme["color"]["switch_progress"] if progress_color is None else self._check_color_type(progress_color, transparency=True)
-        self._button_color = ThemeManager.theme["color"]["switch_button"] if button_color is None else self._check_color_type(button_color)
-        self._button_hover_color = ThemeManager.theme["color"]["switch_button_hover"] if button_hover_color is None else self._check_color_type(button_hover_color)
-        self._text_color = ThemeManager.theme["color"]["text"] if text_color is None else self._check_color_type(text_color)
-        self._text_color_disabled = ThemeManager.theme["color"]["text_disabled"] if text_color_disabled is None else self._check_color_type(text_color_disabled)
+        self._fg_color = ThemeManager.theme["CTkSwitch"]["fg_Color"] if fg_color is None else self._check_color_type(fg_color)
+        self._progress_color = ThemeManager.theme["CTkSwitch"]["progress_color"] if progress_color is None else self._check_color_type(progress_color, transparency=True)
+        self._button_color = ThemeManager.theme["CTkSwitch"]["button_color"] if button_color is None else self._check_color_type(button_color)
+        self._button_hover_color = ThemeManager.theme["CTkSwitch"]["button_hover_color"] if button_hover_color is None else self._check_color_type(button_hover_color)
+        self._text_color = ThemeManager.theme["CTkSwitch"]["text_color"] if text_color is None else self._check_color_type(text_color)
+        self._text_color_disabled = ThemeManager.theme["CTkSwitch"]["text_color_disabled"] if text_color_disabled is None else self._check_color_type(text_color_disabled)
 
         # text
         self._text = text
@@ -71,9 +71,9 @@ class CTkSwitch(CTkBaseClass):
             self._font.add_size_configure_callback(self._update_font)
 
         # shape
-        self._corner_radius = ThemeManager.theme["shape"]["switch_corner_radius"] if corner_radius is None else corner_radius
-        self._border_width = ThemeManager.theme["shape"]["switch_border_width"] if border_width is None else border_width
-        self._button_length = ThemeManager.theme["shape"]["switch_button_length"] if button_length is None else button_length
+        self._corner_radius = ThemeManager.theme["CTkSwitch"]["corner_radius"] if corner_radius is None else corner_radius
+        self._border_width = ThemeManager.theme["CTkSwitch"]["border_width"] if border_width is None else border_width
+        self._button_length = ThemeManager.theme["CTkSwitch"]["button_length"] if button_length is None else button_length
         self._hover_state: bool = False
         self._check_state: bool = False  # True if switch is activated
         self._hover = hover

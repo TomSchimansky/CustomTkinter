@@ -19,9 +19,13 @@ class ThemeManager:
             with open(theme_name_or_path, "r") as f:
                 cls.theme = json.load(f)
 
-        if sys.platform == "darwin":
-            cls.theme["text"] = cls.theme["text"]["macOS"]
-        elif sys.platform.startswith("win"):
-            cls.theme["text"] = cls.theme["text"]["Windows"]
-        else:
-            cls.theme["text"] = cls.theme["text"]["Linux"]
+        # filter theme values for platform
+        for key in cls.theme.keys():
+            # check if values for key differ on platforms
+            if "macOS" in cls.theme[key].keys():
+                if sys.platform == "darwin":
+                    cls.theme[key] = cls.theme[key]["macOS"]
+                elif sys.platform.startswith("win"):
+                    cls.theme[key] = cls.theme[key]["Windows"]
+                else:
+                    cls.theme[key] = cls.theme[key]["Linux"]

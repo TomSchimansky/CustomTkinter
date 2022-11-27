@@ -48,16 +48,16 @@ class CTkComboBox(CTkBaseClass):
         super().__init__(master=master, bg_color=bg_color, width=width, height=height, **kwargs)
 
         # shape
-        self._corner_radius = ThemeManager.theme["shape"]["button_corner_radius"] if corner_radius is None else corner_radius
-        self._border_width = ThemeManager.theme["shape"]["entry_border_width"] if border_width is None else border_width
+        self._corner_radius = ThemeManager.theme["CTkComboBox"]["corner_radius"] if corner_radius is None else corner_radius
+        self._border_width = ThemeManager.theme["CTkComboBox"]["border_width"] if border_width is None else border_width
 
         # color
-        self._fg_color = ThemeManager.theme["color"]["entry"] if fg_color is None else self._check_color_type(fg_color)
-        self._border_color = ThemeManager.theme["color"]["combobox_border"] if border_color is None else self._check_color_type(border_color)
-        self._button_color = ThemeManager.theme["color"]["combobox_border"] if button_color is None else self._check_color_type(button_color)
-        self._button_hover_color = ThemeManager.theme["color"]["combobox_button_hover"] if button_hover_color is None else self._check_color_type(button_hover_color)
-        self._text_color = ThemeManager.theme["color"]["text"] if text_color is None else self._check_color_type(text_color)
-        self._text_color_disabled = ThemeManager.theme["color"]["text_disabled"] if text_color_disabled is None else self._check_color_type(text_color_disabled)
+        self._fg_color = ThemeManager.theme["CTkComboBox"]["fg_color"] if fg_color is None else self._check_color_type(fg_color)
+        self._border_color = ThemeManager.theme["CTkComboBox"]["border_color"] if border_color is None else self._check_color_type(border_color)
+        self._button_color = ThemeManager.theme["CTkComboBox"]["button_color"] if button_color is None else self._check_color_type(button_color)
+        self._button_hover_color = ThemeManager.theme["CTkComboBox"]["button_hover_color"] if button_hover_color is None else self._check_color_type(button_hover_color)
+        self._text_color = ThemeManager.theme["CTkComboBox"]["text_color"] if text_color is None else self._check_color_type(text_color)
+        self._text_color_disabled = ThemeManager.theme["CTkComboBox"]["text_color_disabled"] if text_color_disabled is None else self._check_color_type(text_color_disabled)
 
         # font
         self._font = CTkFont() if font is None else self._check_font_type(font)
@@ -189,11 +189,11 @@ class CTkComboBox(CTkBaseClass):
                                     outline=self._apply_appearance_mode(self._border_color),
                                     fill=self._apply_appearance_mode(self._border_color))
             self._canvas.itemconfig("inner_parts_right",
-                                    outline=self._apply_appearance_mode(self._border_color),
-                                    fill=self._apply_appearance_mode(self._border_color))
+                                    outline=self._apply_appearance_mode(self._button_color),
+                                    fill=self._apply_appearance_mode(self._button_color))
             self._canvas.itemconfig("border_parts_right",
-                                    outline=self._apply_appearance_mode(self._border_color),
-                                    fill=self._apply_appearance_mode(self._border_color))
+                                    outline=self._apply_appearance_mode(self._button_color),
+                                    fill=self._apply_appearance_mode(self._button_color))
 
             self._entry.configure(bg=self._apply_appearance_mode(self._fg_color),
                                   fg=self._apply_appearance_mode(self._text_color),

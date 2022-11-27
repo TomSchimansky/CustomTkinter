@@ -27,9 +27,9 @@ class DropdownMenu(tkinter.Menu, CTkAppearanceModeBaseClass, CTkScalingBaseClass
         CTkScalingBaseClass.__init__(self, scaling_type="widget")
 
         self._min_character_width = min_character_width
-        self._fg_color = ThemeManager.theme["color"]["dropdown_color"] if fg_color is None else self._check_color_type(fg_color)
-        self._hover_color = ThemeManager.theme["color"]["dropdown_hover"] if hover_color is None else self._check_color_type(hover_color)
-        self._text_color = ThemeManager.theme["color"]["text"] if text_color is None else self._check_color_type(text_color)
+        self._fg_color = ThemeManager.theme["DropdownMenu"]["fg_color"] if fg_color is None else self._check_color_type(fg_color)
+        self._hover_color = ThemeManager.theme["DropdownMenu"]["hover_color"] if hover_color is None else self._check_color_type(hover_color)
+        self._text_color = ThemeManager.theme["DropdownMenu"]["text_color"] if text_color is None else self._check_color_type(text_color)
 
         # font
         self._font = CTkFont() if font is None else self._check_font_type(font)

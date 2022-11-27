@@ -40,24 +40,24 @@ class CTkSegmentedButton(CTkFrame):
 
         super().__init__(master=master, bg_color=bg_color, width=width, height=height, **kwargs)
 
-        self._sb_fg_color = ThemeManager.theme["color"]["segmented_button"] if fg_color is None else self._check_color_type(fg_color)
+        self._sb_fg_color = ThemeManager.theme["CTkSegmentedButton"]["fg_color"] if fg_color is None else self._check_color_type(fg_color)
 
-        self._sb_selected_color = ThemeManager.theme["color"]["button"] if selected_color is None else self._check_color_type(selected_color)
-        self._sb_selected_hover_color = ThemeManager.theme["color"]["button_hover"] if selected_hover_color is None else self._check_color_type(selected_hover_color)
+        self._sb_selected_color = ThemeManager.theme["CTkSegmentedButton"]["selected_color"] if selected_color is None else self._check_color_type(selected_color)
+        self._sb_selected_hover_color = ThemeManager.theme["CTkSegmentedButton"]["selected_hover_color"] if selected_hover_color is None else self._check_color_type(selected_hover_color)
 
-        self._sb_unselected_color = ThemeManager.theme["color"]["segmented_button_unselected"] if unselected_color is None else self._check_color_type(unselected_color)
-        self._sb_unselected_hover_color = ThemeManager.theme["color"]["segmented_button_unselected_hover"] if unselected_hover_color is None else self._check_color_type(unselected_hover_color)
+        self._sb_unselected_color = ThemeManager.theme["CTkSegmentedButton"]["unselected_color"] if unselected_color is None else self._check_color_type(unselected_color)
+        self._sb_unselected_hover_color = ThemeManager.theme["CTkSegmentedButton"]["unselected_hover_color"] if unselected_hover_color is None else self._check_color_type(unselected_hover_color)
 
-        self._sb_text_color = ThemeManager.theme["color"]["text_button"] if text_color is None else self._check_color_type(text_color)
-        self._sb_text_color_disabled = ThemeManager.theme["color"]["text_button_disabled"] if text_color_disabled is None else self._check_color_type(text_color_disabled)
+        self._sb_text_color = ThemeManager.theme["CTkSegmentedButton"]["text_color"] if text_color is None else self._check_color_type(text_color)
+        self._sb_text_color_disabled = ThemeManager.theme["CTkSegmentedButton"]["text_color_disabled"] if text_color_disabled is None else self._check_color_type(text_color_disabled)
 
-        self._sb_corner_radius = ThemeManager.theme["shape"]["button_corner_radius"] if corner_radius is None else corner_radius
-        self._sb_border_width = ThemeManager.theme["shape"]["button_border_width"] if border_width is None else border_width
+        self._sb_corner_radius = ThemeManager.theme["CTkSegmentedButton"]["corner_radius"] if corner_radius is None else corner_radius
+        self._sb_border_width = ThemeManager.theme["CTkSegmentedButton"]["border_width"] if border_width is None else border_width
 
         self._background_corner_colors = background_corner_colors  # rendering options for DrawEngine
 
         self._command: Callable[[str], None] = command
-        self._font = (ThemeManager.theme["text"]["font"], ThemeManager.theme["text"]["size"]) if font is None else font
+        self._font = CTkFont() if font is None else font
         self._state = state
 
         self._buttons_dict: Dict[str, CTkButton] = {}  # mapped from value to button object

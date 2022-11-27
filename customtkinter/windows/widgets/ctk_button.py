@@ -52,17 +52,17 @@ class CTkButton(CTkBaseClass):
         super().__init__(master=master, bg_color=bg_color, width=width, height=height, **kwargs)
 
         # shape
-        self._corner_radius: int = ThemeManager.theme["shape"]["button_corner_radius"] if corner_radius is None else corner_radius
+        self._corner_radius: int = ThemeManager.theme["CTkButton"]["corner_radius"] if corner_radius is None else corner_radius
         self._corner_radius = min(self._corner_radius, round(self._current_height / 2))
-        self._border_width: int = ThemeManager.theme["shape"]["button_border_width"] if border_width is None else border_width
+        self._border_width: int = ThemeManager.theme["CTkButton"]["border_width"] if border_width is None else border_width
         self._border_spacing: int = border_spacing
 
         # color
-        self._fg_color: Union[str, Tuple[str, str]] = ThemeManager.theme["color"]["button"] if fg_color is None else self._check_color_type(fg_color, transparency=True)
-        self._hover_color: Union[str, Tuple[str, str]] = ThemeManager.theme["color"]["button_hover"] if hover_color is None else self._check_color_type(hover_color)
-        self._border_color: Union[str, Tuple[str, str]] = ThemeManager.theme["color"]["button_border"] if border_color is None else self._check_color_type(border_color)
-        self._text_color: Union[str, Tuple[str, str]] = ThemeManager.theme["color"]["text_button"] if text_color is None else self._check_color_type(text_color)
-        self._text_color_disabled: Union[str, Tuple[str, str]] = ThemeManager.theme["color"]["text_button_disabled"] if text_color_disabled is None else self._check_color_type(text_color_disabled)
+        self._fg_color: Union[str, Tuple[str, str]] = ThemeManager.theme["CTkButton"]["fg_color"] if fg_color is None else self._check_color_type(fg_color, transparency=True)
+        self._hover_color: Union[str, Tuple[str, str]] = ThemeManager.theme["CTkButton"]["hover_color"] if hover_color is None else self._check_color_type(hover_color)
+        self._border_color: Union[str, Tuple[str, str]] = ThemeManager.theme["CTkButton"]["border_color"] if border_color is None else self._check_color_type(border_color)
+        self._text_color: Union[str, Tuple[str, str]] = ThemeManager.theme["CTkButton"]["text_color"] if text_color is None else self._check_color_type(text_color)
+        self._text_color_disabled: Union[str, Tuple[str, str]] = ThemeManager.theme["CTkButton"]["text_color_disabled"] if text_color_disabled is None else self._check_color_type(text_color_disabled)
 
         # rendering options
         self._background_corner_colors: Union[Tuple[Union[str, Tuple[str, str]]], None] = background_corner_colors  # rendering options for DrawEngine

@@ -43,11 +43,11 @@ class CTkLabel(CTkBaseClass):
         super().__init__(master=master, bg_color=bg_color, width=width, height=height)
 
         # color
-        self._fg_color = ThemeManager.theme["color"]["label"] if fg_color is None else self._check_color_type(fg_color, transparency=True)
-        self._text_color = ThemeManager.theme["color"]["text"] if text_color is None else self._check_color_type(text_color)
+        self._fg_color = ThemeManager.theme["CTkLabel"]["fg_color"] if fg_color is None else self._check_color_type(fg_color, transparency=True)
+        self._text_color = ThemeManager.theme["CTkLabel"]["text_color"] if text_color is None else self._check_color_type(text_color)
 
         # shape
-        self._corner_radius = ThemeManager.theme["shape"]["label_corner_radius"] if corner_radius is None else corner_radius
+        self._corner_radius = ThemeManager.theme["CTkLabel"]["corner_radius"] if corner_radius is None else corner_radius
 
         # text
         self._anchor = anchor

@@ -35,6 +35,7 @@ ToDo:
  - font attribute must be tuple or CTkFont now, all size values are measured in pixel now
  - Changed dictionary key 'window_bg_color' to 'window' in theme files
  - CTkInputDialog attributes completely changed
+ - CTkScrollbar attributes scrollbar_color, scrollbar_hover_color changed to button_color, button_hover_color
 
 ### Removed
  - Removed setter and getter functions like set_text in CTkButton

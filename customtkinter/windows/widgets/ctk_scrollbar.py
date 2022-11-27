@@ -24,8 +24,8 @@ class CTkScrollbar(CTkBaseClass):
 
                  bg_color: Union[str, Tuple[str, str]] = "transparent",
                  fg_color: Optional[Union[str, Tuple[str, str]]] = None,
-                 scrollbar_color: Optional[Union[str, Tuple[str, str]]] = None,
-                 scrollbar_hover_color: Optional[Union[str, Tuple[str, str]]] = None,
+                 button_color: Optional[Union[str, Tuple[str, str]]] = None,
+                 button_hover_color: Optional[Union[str, Tuple[str, str]]] = None,
 
                  hover: bool = True,
                  command: Union[Callable, None] = None,
@@ -48,13 +48,13 @@ class CTkScrollbar(CTkBaseClass):
         super().__init__(master=master, bg_color=bg_color, width=width, height=height, **kwargs)
 
         # color
-        self._fg_color = ThemeManager.theme["color"]["frame_high"] if fg_color is None else self._check_color_type(fg_color, transparency=True)
-        self._scrollbar_color = ThemeManager.theme["color"]["scrollbar_button"] if scrollbar_color is None else self._check_color_type(scrollbar_color)
-        self._scrollbar_hover_color = ThemeManager.theme["color"]["scrollbar_button_hover"] if scrollbar_hover_color is None else self._check_color_type(scrollbar_hover_color)
+        self._fg_color = ThemeManager.theme["CTkScrollbar"]["fg_color"] if fg_color is None else self._check_color_type(fg_color, transparency=True)
+        self._button_color = ThemeManager.theme["CTkScrollbar"]["scrollbar_color"] if button_color is None else self._check_color_type(button_color)
+        self._button_hover_color = ThemeManager.theme["CTkScrollbar"]["scrollbar_hover_color"] if button_hover_color is None else self._check_color_type(button_hover_color)
 
         # shape
-        self._corner_radius = ThemeManager.theme["shape"]["scrollbar_corner_radius"] if corner_radius is None else corner_radius
-        self._border_spacing = ThemeManager.theme["shape"]["scrollbar_border_spacing"] if border_spacing is None else border_spacing
+        self._corner_radius = ThemeManager.theme["CTkScrollbar"]["corner_radius"] if corner_radius is None else corner_radius
+        self._border_spacing = ThemeManager.theme["CTkScrollbar"]["border_spacing"] if border_spacing is None else border_spacing
 
         self._hover = hover
         self._hover_state: bool = False
@@ -132,12 +132,12 @@ class CTkScrollbar(CTkBaseClass):
         if no_color_updates is False or requires_recoloring:
             if self._hover_state is True:
                 self._canvas.itemconfig("scrollbar_parts",
-                                        fill=self._apply_appearance_mode(self._scrollbar_hover_color),
-                                        outline=self._apply_appearance_mode(self._scrollbar_hover_color))
+                                        fill=self._apply_appearance_mode(self._button_hover_color),
+                                        outline=self._apply_appearance_mode(self._button_hover_color))
             else:
                 self._canvas.itemconfig("scrollbar_parts",
-                                        fill=self._apply_appearance_mode(self._scrollbar_color),
-                                        outline=self._apply_appearance_mode(self._scrollbar_color))
+                                        fill=self._apply_appearance_mode(self._button_color),
+                                        outline=self._apply_appearance_mode(self._button_color))
 
             if self._fg_color == "transparent":
                 self._canvas.configure(bg=self._apply_appearance_mode(self._bg_color))
@@ -157,12 +157,12 @@ class CTkScrollbar(CTkBaseClass):
             self._fg_color = self._check_color_type(kwargs.pop("fg_color"), transparency=True)
             require_redraw = True
 
-        if "scrollbar_color" in kwargs:
-            self._scrollbar_color = self._check_color_type(kwargs.pop("scrollbar_color"))
+        if "button_color" in kwargs:
+            self._button_color = self._check_color_type(kwargs.pop("button_color"))
             require_redraw = True
 
-        if "scrollbar_hover_color" in kwargs:
-            self._scrollbar_hover_color = self._check_color_type(kwargs.pop("scrollbar_hover_color"))
+        if "button_hover_color" in kwargs:
+            self._button_hover_color = self._check_color_type(kwargs.pop("button_hover_color"))
             require_redraw = True
 
         if "hover" in kwargs:
@@ -192,9 +192,9 @@ class CTkScrollbar(CTkBaseClass):
         elif attribute_name == "fg_color":
             return self._fg_color
         elif attribute_name == "scrollbar_color":
-            return self._scrollbar_color
+            return self._button_color
         elif attribute_name == "scrollbar_hover_color":
-            return self._scrollbar_hover_color
+            return self._button_hover_color
 
         elif attribute_name == "hover":
             return self._hover
@@ -210,14 +210,14 @@ class CTkScrollbar(CTkBaseClass):
         if self._hover is True:
             self._hover_state = True
             self._canvas.itemconfig("scrollbar_parts",
-                                    outline=self._apply_appearance_mode(self._scrollbar_hover_color),
-                                    fill=self._apply_appearance_mode(self._scrollbar_hover_color))
+                                    outline=self._apply_appearance_mode(self._button_hover_color),
+                                    fill=self._apply_appearance_mode(self._button_hover_color))
 
     def _on_leave(self, event=0):
         self._hover_state = False
         self._canvas.itemconfig("scrollbar_parts",
-                                outline=self._apply_appearance_mode(self._scrollbar_color),
-                                fill=self._apply_appearance_mode(self._scrollbar_color))
+                                outline=self._apply_appearance_mode(self._button_color),
+                                fill=self._apply_appearance_mode(self._button_color))
 
     def _clicked(self, event):
         if self._orientation == "vertical":

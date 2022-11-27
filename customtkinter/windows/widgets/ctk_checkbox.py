@@ -51,20 +51,20 @@ class CTkCheckBox(CTkBaseClass):
         self._checkbox_height = checkbox_height
 
         # color
-        self._fg_color = ThemeManager.theme["color"]["button"] if fg_color is None else self._check_color_type(fg_color)
-        self._hover_color = ThemeManager.theme["color"]["button_hover"] if hover_color is None else self._check_color_type(hover_color)
-        self._border_color = ThemeManager.theme["color"]["checkbox_border"] if border_color is None else self._check_color_type(border_color)
-        self._checkmark_color = ThemeManager.theme["color"]["checkmark"] if checkmark_color is None else self._check_color_type(checkmark_color)
+        self._fg_color = ThemeManager.theme["CTkCheckbox"]["fg_color"] if fg_color is None else self._check_color_type(fg_color)
+        self._hover_color = ThemeManager.theme["CTkCheckbox"]["hover_color"] if hover_color is None else self._check_color_type(hover_color)
+        self._border_color = ThemeManager.theme["CTkCheckbox"]["border_color"] if border_color is None else self._check_color_type(border_color)
+        self._checkmark_color = ThemeManager.theme["CTkCheckbox"]["checkmark_color"] if checkmark_color is None else self._check_color_type(checkmark_color)
 
         # shape
-        self._corner_radius = ThemeManager.theme["shape"]["checkbox_corner_radius"] if corner_radius is None else corner_radius
-        self._border_width = ThemeManager.theme["shape"]["checkbox_border_width"] if border_width is None else border_width
+        self._corner_radius = ThemeManager.theme["CTkCheckbox"]["corner_radius"] if corner_radius is None else corner_radius
+        self._border_width = ThemeManager.theme["CTkCheckbox"]["border_width"] if border_width is None else border_width
 
         # text
         self._text = text
         self._text_label: Union[tkinter.Label, None] = None
-        self._text_color = ThemeManager.theme["color"]["text"] if text_color is None else self._check_color_type(text_color)
-        self._text_color_disabled = ThemeManager.theme["color"]["text_disabled"] if text_color_disabled is None else self._check_color_type(text_color_disabled)
+        self._text_color = ThemeManager.theme["CTkCheckbox"]["text_color"] if text_color is None else self._check_color_type(text_color)
+        self._text_color_disabled = ThemeManager.theme["CTkCheckbox"]["text_color_disabled"] if text_color_disabled is None else self._check_color_type(text_color_disabled)
 
         # font
         self._font = CTkFont() if font is None else self._check_font_type(font)

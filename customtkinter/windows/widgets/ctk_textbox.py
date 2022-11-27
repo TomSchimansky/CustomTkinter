@@ -44,8 +44,8 @@ class CTkTextbox(CTkBaseClass):
                  fg_color: Optional[Union[str, Tuple[str, str]]] = None,
                  border_color: Optional[Union[str, Tuple[str, str]]] = None,
                  text_color: Optional[Union[str, str]] = None,
-                 scrollbar_color: Optional[Union[str, Tuple[str, str]]] = None,
-                 scrollbar_hover_color:  Optional[Union[str, Tuple[str, str]]] = None,
+                 scrollbar_button_color: Optional[Union[str, Tuple[str, str]]] = None,
+                 scrollbar_button_hover_color:  Optional[Union[str, Tuple[str, str]]] = None,
 
                  font: Optional[Union[tuple, CTkFont]] = None,
                  activate_scrollbars: bool = True,
@@ -55,15 +55,15 @@ class CTkTextbox(CTkBaseClass):
         super().__init__(master=master, bg_color=bg_color, width=width, height=height)
 
         # color
-        self._fg_color = ThemeManager.theme["color"]["entry"] if fg_color is None else self._check_color_type(fg_color, transparency=True)
-        self._border_color = ThemeManager.theme["color"]["frame_border"] if border_color is None else self._check_color_type(border_color)
-        self._text_color = ThemeManager.theme["color"]["text"] if text_color is None else self._check_color_type(text_color)
-        self._scrollbar_color = ThemeManager.theme["color"]["scrollbar_button"] if scrollbar_color is None else self._check_color_type(scrollbar_color)
-        self._scrollbar_hover_color = ThemeManager.theme["color"]["scrollbar_button_hover"] if scrollbar_hover_color is None else self._check_color_type(scrollbar_hover_color)
+        self._fg_color = ThemeManager.theme["CTkTextbox"]["fg_color"] if fg_color is None else self._check_color_type(fg_color, transparency=True)
+        self._border_color = ThemeManager.theme["CTkTextbox"]["border_color"] if border_color is None else self._check_color_type(border_color)
+        self._text_color = ThemeManager.theme["CTkTextbox"]["text_color"] if text_color is None else self._check_color_type(text_color)
+        self._scrollbar_button_color = ThemeManager.theme["CTkTextbox"]["scrollbar_button_color"] if scrollbar_button_color is None else self._check_color_type(scrollbar_button_color)
+        self._scrollbar_button_hover_color = ThemeManager.theme["CTkTextbox"]["scrollbar_button_hover_color"] if scrollbar_button_hover_color is None else self._check_color_type(scrollbar_button_hover_color)
 
         # shape
-        self._corner_radius = ThemeManager.theme["shape"]["frame_corner_radius"] if corner_radius is None else corner_radius
-        self._border_width = ThemeManager.theme["shape"]["frame_border_width"] if border_width is None else border_width
+        self._corner_radius = ThemeManager.theme["CTkTextbox"]["corner_radius"] if corner_radius is None else corner_radius
+        self._border_width = ThemeManager.theme["CTkTextbox"]["border_width"] if border_width is None else border_width
         self._border_spacing = border_spacing
 
         # font
@@ -102,8 +102,8 @@ class CTkTextbox(CTkBaseClass):
                                          height=0,
                                          border_spacing=0,
                                          fg_color=self._fg_color,
-                                         scrollbar_color=self._scrollbar_color,
-                                         scrollbar_hover_color=self._scrollbar_hover_color,
+                                         button_color=self._scrollbar_button_color,
+                                         button_hover_color=self._scrollbar_button_hover_color,
                                          orientation="vertical",
                                          command=self._textbox.yview)
         self._textbox.configure(yscrollcommand=self._y_scrollbar.set)
@@ -113,8 +113,8 @@ class CTkTextbox(CTkBaseClass):
                                          width=0,
                                          border_spacing=0,
                                          fg_color=self._fg_color,
-                                         scrollbar_color=self._scrollbar_color,
-                                         scrollbar_hover_color=self._scrollbar_hover_color,
+                                         button_color=self._scrollbar_button_color,
+                                         button_hover_color=self._scrollbar_button_hover_color,
                                          orientation="horizontal",
                                          command=self._textbox.xview)
         self._textbox.configure(xscrollcommand=self._x_scrollbar.set)
@@ -228,10 +228,10 @@ class CTkTextbox(CTkBaseClass):
                 self._textbox.configure(fg=self._apply_appearance_mode(self._text_color),
                                         bg=self._apply_appearance_mode(self._bg_color),
                                         insertbackground=self._apply_appearance_mode(self._text_color))
-                self._x_scrollbar.configure(fg_color=self._bg_color, scrollbar_color=self._scrollbar_color,
-                                            scrollbar_hover_color=self._scrollbar_hover_color)
-                self._y_scrollbar.configure(fg_color=self._bg_color, scrollbar_color=self._scrollbar_color,
-                                            scrollbar_hover_color=self._scrollbar_hover_color)
+                self._x_scrollbar.configure(fg_color=self._bg_color, scrollbar_color=self._scrollbar_button_color,
+                                            scrollbar_hover_color=self._scrollbar_button_hover_color)
+                self._y_scrollbar.configure(fg_color=self._bg_color, scrollbar_color=self._scrollbar_button_color,
+                                            scrollbar_hover_color=self._scrollbar_button_hover_color)
             else:
                 self._canvas.itemconfig("inner_parts",
                                         fill=self._apply_appearance_mode(self._fg_color),
@@ -239,10 +239,10 @@ class CTkTextbox(CTkBaseClass):
                 self._textbox.configure(fg=self._apply_appearance_mode(self._text_color),
                                         bg=self._apply_appearance_mode(self._fg_color),
                                         insertbackground=self._apply_appearance_mode(self._text_color))
-                self._x_scrollbar.configure(fg_color=self._fg_color, scrollbar_color=self._scrollbar_color,
-                                            scrollbar_hover_color=self._scrollbar_hover_color)
-                self._y_scrollbar.configure(fg_color=self._fg_color, scrollbar_color=self._scrollbar_color,
-                                            scrollbar_hover_color=self._scrollbar_hover_color)
+                self._x_scrollbar.configure(fg_color=self._fg_color, button_color=self._scrollbar_button_color,
+                                            button_hover_color=self._scrollbar_button_hover_color)
+                self._y_scrollbar.configure(fg_color=self._fg_color, button_color=self._scrollbar_button_color,
+                                            button_hover_color=self._scrollbar_button_hover_color)
 
             self._canvas.itemconfig("border_parts",
                                     fill=self._apply_appearance_mode(self._border_color),
@@ -270,15 +270,15 @@ class CTkTextbox(CTkBaseClass):
             self._text_color = self._check_color_type(kwargs.pop("text_color"))
             require_redraw = True
 
-        if "scrollbar_color" in kwargs:
-            self._scrollbar_color = self._check_color_type(kwargs.pop("scrollbar_color"))
-            self._x_scrollbar.configure(scrollbar_color=self._scrollbar_color)
-            self._y_scrollbar.configure(scrollbar_color=self._scrollbar_color)
+        if "scrollbar_button_color" in kwargs:
+            self._scrollbar_button_color = self._check_color_type(kwargs.pop("scrollbar_button_color"))
+            self._x_scrollbar.configure(button_color=self._scrollbar_button_color)
+            self._y_scrollbar.configure(button_color=self._scrollbar_button_color)
 
-        if "scrollbar_hover_color" in kwargs:
-            self._scrollbar_hover_color = self._check_color_type(kwargs.pop("scrollbar_hover_color"))
-            self._x_scrollbar.configure(scrollbar_hover_color=self._scrollbar_hover_color)
-            self._y_scrollbar.configure(scrollbar_hover_color=self._scrollbar_hover_color)
+        if "scrollbar_button_hover_color" in kwargs:
+            self._scrollbar_button_hover_color = self._check_color_type(kwargs.pop("scrollbar_button_hover_color"))
+            self._x_scrollbar.configure(button_hover_color=self._scrollbar_button_hover_color)
+            self._y_scrollbar.configure(button_hover_color=self._scrollbar_button_hover_color)
 
         if "corner_radius" in kwargs:
             self._corner_radius = kwargs.pop("corner_radius")

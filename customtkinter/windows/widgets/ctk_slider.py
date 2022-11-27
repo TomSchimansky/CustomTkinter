@@ -57,16 +57,16 @@ class CTkSlider(CTkBaseClass):
 
         # color
         self._border_color = self._check_color_type(border_color, transparency=True)
-        self._fg_color = ThemeManager.theme["color"]["slider"] if fg_color is None else self._check_color_type(fg_color)
-        self._progress_color = ThemeManager.theme["color"]["slider_progress"] if progress_color is None else self._check_color_type(progress_color, transparency=True)
-        self._button_color = ThemeManager.theme["color"]["slider_button"] if button_color is None else self._check_color_type(button_color)
-        self._button_hover_color = ThemeManager.theme["color"]["slider_button_hover"] if button_hover_color is None else self._check_color_type(button_hover_color)
+        self._fg_color = ThemeManager.theme["CTkSlider"]["fg_color"] if fg_color is None else self._check_color_type(fg_color)
+        self._progress_color = ThemeManager.theme["CTkSlider"]["progress_color"] if progress_color is None else self._check_color_type(progress_color, transparency=True)
+        self._button_color = ThemeManager.theme["CTkSlider"]["button_color"] if button_color is None else self._check_color_type(button_color)
+        self._button_hover_color = ThemeManager.theme["CTkSlider"]["button_hover_color"] if button_hover_color is None else self._check_color_type(button_hover_color)
 
         # shape
-        self._corner_radius = ThemeManager.theme["shape"]["slider_corner_radius"] if corner_radius is None else corner_radius
-        self._button_corner_radius = ThemeManager.theme["shape"]["slider_button_corner_radius"] if button_corner_radius is None else button_corner_radius
-        self._border_width = ThemeManager.theme["shape"]["slider_border_width"] if border_width is None else border_width
-        self._button_length = ThemeManager.theme["shape"]["slider_button_length"] if button_length is None else button_length
+        self._corner_radius = ThemeManager.theme["CTkSlider"]["corner_radius"] if corner_radius is None else corner_radius
+        self._button_corner_radius = ThemeManager.theme["CTkSlider"]["button_corner_radius"] if button_corner_radius is None else button_corner_radius
+        self._border_width = ThemeManager.theme["CTkSlider"]["border_width"] if border_width is None else border_width
+        self._button_length = ThemeManager.theme["CTkSlider"]["button_length"] if button_length is None else button_length
         self._value: float = 0.5  # initial value of slider in percent
         self._orientation = orientation
         self._hover_state: bool = False

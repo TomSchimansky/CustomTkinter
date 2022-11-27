@@ -50,9 +50,9 @@ class CTkProgressBar(CTkBaseClass):
         super().__init__(master=master, bg_color=bg_color, width=width, height=height, **kwargs)
 
         # color
-        self._border_color = ThemeManager.theme["color"]["progressbar_border"] if border_color is None else self._check_color_type(border_color)
-        self._fg_color = ThemeManager.theme["color"]["progressbar"] if fg_color is None else self._check_color_type(fg_color)
-        self._progress_color = ThemeManager.theme["color"]["progressbar_progress"] if progress_color is None else self._check_color_type(progress_color)
+        self._border_color = ThemeManager.theme["CTkProgressBar"]["border_color"] if border_color is None else self._check_color_type(border_color)
+        self._fg_color = ThemeManager.theme["CTkProgressBar"]["fg_color"] if fg_color is None else self._check_color_type(fg_color)
+        self._progress_color = ThemeManager.theme["CTkProgressBar"]["progress_color"] if progress_color is None else self._check_color_type(progress_color)
 
         # control variable
         self._variable = variable
@@ -60,8 +60,8 @@ class CTkProgressBar(CTkBaseClass):
         self._variable_callback_name = None
 
         # shape
-        self._corner_radius = ThemeManager.theme["shape"]["progressbar_corner_radius"] if corner_radius is None else corner_radius
-        self._border_width = ThemeManager.theme["shape"]["progressbar_border_width"] if border_width is None else border_width
+        self._corner_radius = ThemeManager.theme["CTkProgressBar"]["corner_radius"] if corner_radius is None else corner_radius
+        self._border_width = ThemeManager.theme["CTkProgressBar"]["border_width"] if border_width is None else border_width
         self._determinate_value: float = 0.5  # range 0-1
         self._determinate_speed = determinate_speed  # range 0-1
         self._indeterminate_value: float = 0  # range 0-inf
