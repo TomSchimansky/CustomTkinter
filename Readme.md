@@ -15,7 +15,7 @@
 
 </div>
 
-![](documentation_images/Windows_dark.png)
+![](documentation_images/complex_example_dark_Windows.png)
 | _`complex_example.py` on Windows 11 with dark mode and 'dark-blue' theme_
 
 ![](documentation_images/complex_example_light_macOS.png)
