@@ -1,10 +1,13 @@
+<p align="center">
+  <img width="460" height="300" src="./documentation_images/CustomTkinter_logo_dark.png">
+
+
 ![PyPI](https://img.shields.io/pypi/v/customtkinter)
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/customtkinter?color=green&label=downloads)
 ![Downloads](https://static.pepy.tech/personalized-badge/customtkinter?period=total&units=international_system&left_color=grey&right_color=green&left_text=downloads)
 ![PyPI - License](https://img.shields.io/pypi/l/customtkinter)
 ![Total lines](https://img.shields.io/tokei/lines/github.com/tomschimansky/customtkinter?color=green&label=total%20lines)
-
-# CustomTkinter UI-Library
+</p>
 
 ![](documentation_images/Windows_dark.png)
 | _`complex_example.py` on Windows 11 with dark mode and 'dark-blue' theme_
@@ -12,6 +15,8 @@
 ![](documentation_images/macOS_light.png)
 | _`complex_example.py` on macOS in light mode and standard 'blue' theme_
 ###
+
+## CustomTkinter UI-Library
 
 CustomTkinter is a python UI-library based on Tkinter, which provides new, modern and
 fully customizable widgets. They are created and used like normal Tkinter widgets and
