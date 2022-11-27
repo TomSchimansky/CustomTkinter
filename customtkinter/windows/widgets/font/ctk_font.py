@@ -1,6 +1,6 @@
 from tkinter.font import Font
 import copy
-from typing import List, Callable, Tuple, Optional
+from typing import List, Callable, Tuple, Optional, Literal
 
 from ..theme.theme_manager import ThemeManager
 
@@ -23,8 +23,8 @@ class CTkFont(Font):
     def __init__(self,
                  family: Optional[str] = None,
                  size: Optional[int] = None,
-                 weight: str = None,
-                 slant: str = "roman",
+                 weight: Literal["normal", "bold"] = None,
+                 slant: Literal["italic", "roman"] = "roman",
                  underline: bool = False,
                  overstrike: bool = False):
 
@@ -51,8 +51,9 @@ class CTkFont(Font):
         self._size_configure_callback_list.remove(callback)
 
     def create_scaled_tuple(self, font_scaling: float) -> Tuple[str, int, str]:
+
         """ return scaled tuple representation of font in the form (family: str, size: int, style: str)"""
-        return self._family, round(self._size * font_scaling), self._tuple_style_string
+        return self._family, round(-abs(self._size) * font_scaling), self._tuple_style_string
 
     def config(self, *args, **kwargs):
         raise AttributeError("'config' is not implemented for CTk widgets. For consistency, always use 'configure' instead.")
