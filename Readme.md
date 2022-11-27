@@ -1,6 +1,5 @@
 <p align="center">
-  <img width="460" height="300" src="./documentation_images/CustomTkinter_logo_dark.png">
-
+  <img width="1024" height="256" src="./documentation_images/CustomTkinter_logo_dark.png">
 
 ![PyPI](https://img.shields.io/pypi/v/customtkinter)
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/customtkinter?color=green&label=downloads)
