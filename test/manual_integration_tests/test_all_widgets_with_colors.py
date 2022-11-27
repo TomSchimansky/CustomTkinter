@@ -2,7 +2,6 @@ import tkinter
 import customtkinter
 
 customtkinter.set_appearance_mode("System")  # Other: "Dark", "Light"
-# customtkinter.set_default_color_theme("green")  # Themes: "blue" (standard), "green", "dark-blue"
 
 
 class TestApp(customtkinter.CTk):
