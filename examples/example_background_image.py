@@ -1,4 +1,3 @@
-import tkinter.messagebox
 import customtkinter
 from PIL import Image
 import os
@@ -7,7 +6,6 @@ customtkinter.set_appearance_mode("dark")
 
 
 class App(customtkinter.CTk):
-
     width = 900
     height = 600
 
