@@ -84,7 +84,8 @@ On Windows 10/11 you get a dark window header, which changes with set
 appearance mode or the system, when you use `customtkinter.CTk()`
 to create the window, and it works with all python versions:
 
-![](documentation_images/Windows_system_mode_change.gif)
+https://user-images.githubusercontent.com/66446067/204661492-0b236d7b-9f93-4aa6-9f7d-6eaa6d02098b.mp4
+
 | _`complex_example.py` on Windows 11 with system mode change and standard 'blue' theme_
 ###
 
