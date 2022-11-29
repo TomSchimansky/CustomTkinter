@@ -1,5 +1,5 @@
 
-def pop_from_dict_by_set(dictionary: dict, valid_keys: set):
+def pop_from_dict_by_set(dictionary: dict, valid_keys: set) -> dict:
     """ remove and create new dict with key value pairs of dictionary, where key is in valid_keys """
     new_dictionary = {}
 
