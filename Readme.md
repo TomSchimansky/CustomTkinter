@@ -78,22 +78,20 @@ you can find further information on the appearance mode, the themes and all widg
 
 ## More Examples and Showcase
 
-### Appearance mode change
+### Appearance mode change and scaling change
 
-On Windows 10/11 you get a dark window header, which changes with set
-appearance mode or the system, when you use `customtkinter.CTk()`
-to create the window, and it works with all python versions:
+https://user-images.githubusercontent.com/66446067/204672968-6584f360-4c52-434f-9c16-25761341368b.mp4
 
-https://user-images.githubusercontent.com/66446067/204661492-0b236d7b-9f93-4aa6-9f7d-6eaa6d02098b.mp4
-
-| _`complex_example.py` on Windows 11 with system mode change and standard 'blue' theme_
+| _`complex_example.py` on Windows 11 with system appearance mode change and standard 'blue' theme_
 ###
 
-On macOS however you either need python3.10 or higher or the anaconda python
-version to get a dark window header at all (Tcl/Tk >= 8.6.9 required).
+On macOS you either need python3.10 or higher or the anaconda python
+version to get a dark window header (Tcl/Tk >= 8.6.9 required):
 
-![](documentation_images/macOS_system_mode_change.gif)
-| _`complex_example.py` on macOS with system mode change and standard 'blue' theme_
+
+https://user-images.githubusercontent.com/66446067/204673854-b6cbcfda-d9a1-4425-92a3-5b57d7f2fd6b.mp4
+
+| _`complex_example.py` on macOS with system appearance mode change, user-scaling change and standard 'blue' theme_
 ###
 
 ### Button with images
