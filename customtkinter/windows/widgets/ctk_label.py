@@ -1,14 +1,13 @@
 import tkinter
 from typing import Union, Tuple, Callable, Optional
 
-from .core_rendering.ctk_canvas import CTkCanvas
-from .theme.theme_manager import ThemeManager
-from .core_rendering.draw_engine import DrawEngine
-from .core_widget_classes.widget_base_class import CTkBaseClass
-from .font.ctk_font import CTkFont
-from .image.ctk_image import CTkImage
-
-from customtkinter.utility.utility_functions import pop_from_dict_by_set, check_kwargs_empty
+from .core_rendering import CTkCanvas
+from .theme import ThemeManager
+from .core_rendering import DrawEngine
+from .core_widget_classes import CTkBaseClass
+from .font import CTkFont
+from .image import CTkImage
+from .utility import pop_from_dict_by_set, check_kwargs_empty
 
 
 class CTkLabel(CTkBaseClass):

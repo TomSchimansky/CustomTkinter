@@ -1,12 +1,12 @@
 import tkinter
 from typing import Union, Tuple, Dict, List, Callable, Optional
 
-from .theme.theme_manager import ThemeManager
+from .theme import ThemeManager
 from .ctk_frame import CTkFrame
-from .core_widget_classes.widget_base_class import CTkBaseClass
+from .core_rendering import CTkCanvas
+from .core_rendering import DrawEngine
+from .core_widget_classes import CTkBaseClass
 from .ctk_segmented_button import CTkSegmentedButton
-from .core_rendering.ctk_canvas import CTkCanvas
-from .core_rendering.draw_engine import DrawEngine
 
 
 class CTkTabview(CTkBaseClass):

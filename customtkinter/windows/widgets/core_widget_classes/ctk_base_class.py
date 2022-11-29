@@ -8,15 +8,18 @@ try:
 except ImportError:
     from typing_extensions import TypedDict
 
-from ...ctk_tk import CTk
-from ...ctk_toplevel import CTkToplevel
-from ..theme.theme_manager import ThemeManager
-from ..font.ctk_font import CTkFont
-from ..image.ctk_image import CTkImage
-from ..appearance_mode.appearance_mode_base_class import CTkAppearanceModeBaseClass
-from ..scaling.scaling_base_class import CTkScalingBaseClass
+# removed due to circular import
+# from ...ctk_tk import CTk
+# from ...ctk_toplevel import CTkToplevel
+from .... import windows  # import windows for isinstance checks
 
-from ....utility.utility_functions import pop_from_dict_by_set, check_kwargs_empty
+from ..theme import ThemeManager
+from ..font import CTkFont
+from ..image import CTkImage
+from ..appearance_mode import CTkAppearanceModeBaseClass
+from ..scaling import CTkScalingBaseClass
+
+from ..utility import pop_from_dict_by_set, check_kwargs_empty
 
 
 class CTkBaseClass(tkinter.Frame, CTkAppearanceModeBaseClass, CTkScalingBaseClass):
@@ -70,7 +73,7 @@ class CTkBaseClass(tkinter.Frame, CTkAppearanceModeBaseClass, CTkScalingBaseClas
         super().bind('<Configure>', self._update_dimensions_event)
 
         # overwrite configure methods of master when master is tkinter widget, so that bg changes get applied on child CTk widget as well
-        if isinstance(self.master, (tkinter.Tk, tkinter.Toplevel, tkinter.Frame)) and not isinstance(self.master, (CTkBaseClass, CTk, CTkToplevel)):
+        if isinstance(self.master, (tkinter.Tk, tkinter.Toplevel, tkinter.Frame, tkinter.LabelFrame, ttk.Frame, ttk.LabelFrame, ttk.Notebook)) and not isinstance(self.master, CTkBaseClass):
             master_old_configure = self.master.config
 
             def new_configure(*args, **kwargs):
@@ -193,7 +196,7 @@ class CTkBaseClass(tkinter.Frame, CTkAppearanceModeBaseClass, CTkScalingBaseClas
         if master_widget is None:
             master_widget = self.master
 
-        if isinstance(master_widget, (CTkBaseClass, CTk, CTkToplevel)):
+        if isinstance(master_widget, (windows.widgets.core_widget_classes.CTkBaseClass, windows.CTk, windows.CTkToplevel)):
             if master_widget.cget("fg_color") is not None and master_widget.cget("fg_color") != "transparent":
                 return master_widget.cget("fg_color")
 

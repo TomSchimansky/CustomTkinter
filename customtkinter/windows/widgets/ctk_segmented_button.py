@@ -1,10 +1,10 @@
 import tkinter
 from typing import Union, Tuple, List, Dict, Callable, Optional, Literal
 
-from .theme.theme_manager import ThemeManager
+from .theme import ThemeManager
+from .font import CTkFont
 from .ctk_button import CTkButton
 from .ctk_frame import CTkFrame
-from .font.ctk_font import CTkFont
 
 
 class CTkSegmentedButton(CTkFrame):

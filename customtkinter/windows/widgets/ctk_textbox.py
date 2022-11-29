@@ -1,14 +1,13 @@
 import tkinter
 from typing import Union, Tuple, Optional
 
-from .core_rendering.ctk_canvas import CTkCanvas
+from .core_rendering import CTkCanvas
 from .ctk_scrollbar import CTkScrollbar
-from .theme.theme_manager import ThemeManager
-from .core_rendering.draw_engine import DrawEngine
-from .core_widget_classes.widget_base_class import CTkBaseClass
-from .font.ctk_font import CTkFont
-
-from customtkinter.utility.utility_functions import pop_from_dict_by_set, check_kwargs_empty
+from .theme import ThemeManager
+from .core_rendering import DrawEngine
+from .core_widget_classes import CTkBaseClass
+from .font import CTkFont
+from .utility import pop_from_dict_by_set, check_kwargs_empty
 
 
 class CTkTextbox(CTkBaseClass):

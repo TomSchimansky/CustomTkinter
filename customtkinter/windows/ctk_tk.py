@@ -6,11 +6,11 @@ import platform
 import ctypes
 from typing import Union, Tuple, Optional
 
-from .widgets.theme.theme_manager import ThemeManager
-from .widgets.scaling.scaling_base_class import CTkScalingBaseClass
-from .widgets.appearance_mode.appearance_mode_base_class import CTkAppearanceModeBaseClass
+from .widgets.theme import ThemeManager
+from .widgets.scaling import CTkScalingBaseClass
+from .widgets.appearance_mode import CTkAppearanceModeBaseClass
 
-from ..utility.utility_functions import pop_from_dict_by_set, check_kwargs_empty
+from customtkinter.windows.widgets.utility.utility_functions import pop_from_dict_by_set, check_kwargs_empty
 
 
 class CTk(tkinter.Tk, CTkAppearanceModeBaseClass, CTkScalingBaseClass):

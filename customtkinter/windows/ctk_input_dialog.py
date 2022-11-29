@@ -1,9 +1,9 @@
 from typing import Union, Tuple, Optional
 
-from .widgets.ctk_label import CTkLabel
-from .widgets.ctk_entry import CTkEntry
-from .widgets.ctk_button import CTkButton
-from .widgets.theme.theme_manager import ThemeManager
+from .widgets import CTkLabel
+from .widgets import CTkEntry
+from .widgets import CTkButton
+from .widgets.theme import ThemeManager
 from .ctk_toplevel import CTkToplevel
 
 

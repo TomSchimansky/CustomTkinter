@@ -2,10 +2,10 @@ import tkinter
 import sys
 from typing import Union, Tuple, Callable, List, Optional
 
-from ..theme.theme_manager import ThemeManager
-from ..font.ctk_font import CTkFont
-from ..appearance_mode.appearance_mode_base_class import CTkAppearanceModeBaseClass
-from ..scaling.scaling_base_class import CTkScalingBaseClass
+from ..theme import ThemeManager
+from ..font import CTkFont
+from ..appearance_mode import CTkAppearanceModeBaseClass
+from ..scaling import CTkScalingBaseClass
 
 
 class DropdownMenu(tkinter.Menu, CTkAppearanceModeBaseClass, CTkScalingBaseClass):

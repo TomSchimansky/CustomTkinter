@@ -7,7 +7,7 @@ except ImportError:
     from typing_extensions import Literal
 
 from .scaling_tracker import ScalingTracker
-from ..font.ctk_font import CTkFont
+from ..font import CTkFont
 
 
 class CTkScalingBaseClass:
