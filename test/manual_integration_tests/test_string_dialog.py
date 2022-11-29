@@ -2,6 +2,8 @@ import customtkinter
 
 customtkinter.set_appearance_mode("dark")
 customtkinter.set_default_color_theme("blue")
+customtkinter.set_window_scaling(0.8)
+customtkinter.set_widget_scaling(0.8)
 
 app = customtkinter.CTk()
 app.geometry("400x300")

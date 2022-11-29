@@ -55,7 +55,7 @@ class CTk(tkinter.Tk, CTkAppearanceModeBaseClass, CTkScalingBaseClass):
 
         # set title and initial geometry
         self.title("CTk")
-        self.geometry(f"{self._current_width}x{self._current_height}")
+        # self.geometry(f"{self._current_width}x{self._current_height}")
 
         self._state_before_windows_set_titlebar_color = None
         self._window_exists = False  # indicates if the window is already shown through update() or mainloop() after init
