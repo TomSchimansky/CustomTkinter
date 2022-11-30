@@ -70,7 +70,7 @@ app.mainloop()
 ```
 which results in the following window on macOS:
 
-![](documentation_images/single_button_macOS.png)
+<img src="documentation_images/single_button_macOS.png" width="400"/>
 
 In the [examples folder](https://github.com/TomSchimansky/CustomTkinter/tree/master/examples), you
 can find more example programs and in the [Documentation](https://github.com/TomSchimansky/CustomTkinter/wiki)
@@ -101,8 +101,7 @@ pass a PhotoImage object to the CTkButton with the ``image`` argument.
 If you want no text at all you have to set ``text=""`` or you specify
 how to position the text and image at once with the ``compound`` option:
 
-<img src="documentation_images/macOS_button_images.png" width="400"/>
-
+![](documentation_images/macOS_button_images.png)
 | _`example_button_images.py` on macOS_
 ###
 
