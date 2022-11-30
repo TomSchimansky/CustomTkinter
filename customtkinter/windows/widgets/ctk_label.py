@@ -101,7 +101,12 @@ class CTkLabel(CTkBaseClass):
         self._label.configure(wraplength=self._apply_widget_scaling(self._wraplength))
 
         self._create_grid()
+        self._update_image()
         self._draw(no_color_updates=True)
+
+    def _set_appearance_mode(self, mode_string):
+        super()._set_appearance_mode(mode_string)
+        self._update_image()
 
     def _set_dimensions(self, width=None, height=None):
         super()._set_dimensions(width, height)
@@ -164,9 +169,6 @@ class CTkLabel(CTkBaseClass):
                                       bg=self._apply_appearance_mode(self._fg_color))
 
             self._canvas.configure(bg=self._apply_appearance_mode(self._bg_color))
-
-        if self._image is not None:
-            self._update_image()
 
     def configure(self, require_redraw=False, **kwargs):
         if "corner_radius" in kwargs:
