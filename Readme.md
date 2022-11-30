@@ -80,6 +80,8 @@ you can find further information on the appearance mode, the themes and all widg
 
 ### Appearance mode change and scaling change
 
+CustomTkinter can adapt to the Windows 10/11 light or dark mode:
+
 https://user-images.githubusercontent.com/66446067/204672968-6584f360-4c52-434f-9c16-25761341368b.mp4
 
 | _`complex_example.py` on Windows 11 with system appearance mode change and standard 'blue' theme_
@@ -87,7 +89,6 @@ https://user-images.githubusercontent.com/66446067/204672968-6584f360-4c52-434f-
 
 On macOS you either need python3.10 or higher or the anaconda python
 version to get a dark window header (Tcl/Tk >= 8.6.9 required):
-
 
 https://user-images.githubusercontent.com/66446067/204673854-b6cbcfda-d9a1-4425-92a3-5b57d7f2fd6b.mp4
 
@@ -109,8 +110,9 @@ In the following example I used a TkinterMapView which integrates
 well with a CustomTkinter program. It's a tile based map widget which displays
 OpenStreetMap or other tile based maps:
 
-![](documentation_images/tkintermapview_example.gif)
-| _`examples/map_with_customtkinter.py` from TkinterMapView repository on macOS_
+https://user-images.githubusercontent.com/66446067/204675835-1584a8da-5acc-4993-b4a9-e70f06fa14b0.mp4
+
+| _`examples/map_with_customtkinter.py` from TkinterMapView repository on Windows 11_
 
 You can find the TkinterMapView library and the example program here:
 https://github.com/TomSchimansky/TkinterMapView
