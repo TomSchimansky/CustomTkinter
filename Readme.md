@@ -101,7 +101,7 @@ pass a PhotoImage object to the CTkButton with the ``image`` argument.
 If you want no text at all you have to set ``text=""`` or you specify
 how to position the text and image at once with the ``compound`` option:
 
-![](documentation_images/macOS_button_images.png)
+![](documentation_images/image_example_dark_Windows.png)
 | _`example_button_images.py` on macOS_
 ###
 
