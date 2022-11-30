@@ -16,12 +16,12 @@ class App(customtkinter.CTk):
 
         # load images with light and dark mode image
         current_path = os.path.dirname(os.path.realpath(__file__))
-        self.home_image = customtkinter.CTkImage(light_image=Image.open(current_path + "/test_images/home_dark.png"),
-                                                 dark_image=Image.open(current_path + "/test_images/home_light.png"), size=(20, 20))
-        self.chat_image = customtkinter.CTkImage(light_image=Image.open(current_path + "/test_images/chat_dark.png"),
-                                                 dark_image=Image.open(current_path + "/test_images/chat_light.png"), size=(20, 20))
-        self.add_user_image = customtkinter.CTkImage(light_image=Image.open(current_path + "/test_images/add_user_dark.png"),
-                                                     dark_image=Image.open(current_path + "/test_images/add_user_light.png"), size=(20, 20))
+        self.home_image = customtkinter.CTkImage(light_image=Image.open(os.path.join(current_path, "test_images", "home_dark.png")),
+                                                 dark_image=Image.open(os.path.join(current_path, "test_images", "home_light.png")), size=(20, 20))
+        self.chat_image = customtkinter.CTkImage(light_image=Image.open(os.path.join(current_path, "test_images", "chat_dark.png")),
+                                                 dark_image=Image.open(os.path.join(current_path, "test_images", "chat_light.png")), size=(20, 20))
+        self.add_user_image = customtkinter.CTkImage(light_image=Image.open(os.path.join(current_path, "test_images", "add_user_dark.png")),
+                                                     dark_image=Image.open(os.path.join(current_path, "test_images", "add_user_light.png")), size=(20, 20))
 
         # create navigation frame
         self.navigation_frame = customtkinter.CTkFrame(self, corner_radius=0)
