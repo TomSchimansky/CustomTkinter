@@ -4,276 +4,230 @@ import sys
 import os
 import platform
 import ctypes
-import re
-from typing import Union, Tuple
+from typing import Union, Tuple, Optional
 
-from ..appearance_mode_tracker import AppearanceModeTracker
-from ..theme_manager import ThemeManager
-from ..scaling_tracker import ScalingTracker
-from ..settings import Settings
+from .widgets.theme import ThemeManager
+from .widgets.scaling import CTkScalingBaseClass
+from .widgets.appearance_mode import CTkAppearanceModeBaseClass
+
+from customtkinter.windows.widgets.utility.utility_functions import pop_from_dict_by_set, check_kwargs_empty
 
 
-class CTk(tkinter.Tk):
-    def __init__(self, *args,
-                 fg_color="default_theme",
+class CTk(tkinter.Tk, CTkAppearanceModeBaseClass, CTkScalingBaseClass):
+    """
+    Main app window with dark titlebar on Windows and macOS.
+    For detailed information check out the documentation.
+    """
+
+    _valid_tk_constructor_arguments: set = {"screenName", "baseName", "className", "useTk", "sync", "use"}
+
+    _valid_tk_configure_arguments: set = {'bd', 'borderwidth', 'class', 'menu', 'relief', 'screen',
+                                          'use', 'container', 'cursor', 'height',
+                                          'highlightthickness', 'padx', 'pady', 'takefocus', 'visual', 'width'}
+
+    _deactivate_macos_window_header_manipulation: bool = False
+    _deactivate_windows_window_header_manipulation: bool = False
+
+    def __init__(self,
+                 fg_color: Optional[Union[str, Tuple[str, str]]] = None,
                  **kwargs):
 
-        ScalingTracker.activate_high_dpi_awareness()  # make process DPI aware
-        self.enable_macos_dark_title_bar()
+        self._enable_macos_dark_title_bar()
 
-        super().__init__(*args, **kwargs)
+        # call init methods of super classes
+        tkinter.Tk.__init__(self, **pop_from_dict_by_set(kwargs, self._valid_tk_constructor_arguments))
+        CTkAppearanceModeBaseClass.__init__(self)
+        CTkScalingBaseClass.__init__(self, scaling_type="window")
+        check_kwargs_empty(kwargs, raise_error=True)
 
-        # add set_appearance_mode method to callback list of AppearanceModeTracker for appearance mode changes
-        AppearanceModeTracker.add(self.set_appearance_mode, self)
-        self.appearance_mode = AppearanceModeTracker.get_mode()  # 0: "Light" 1: "Dark"
+        self._current_width = 600  # initial window size, independent of scaling
+        self._current_height = 500
+        self._min_width: int = 0
+        self._min_height: int = 0
+        self._max_width: int = 1_000_000
+        self._max_height: int = 1_000_000
+        self._last_resizable_args: Union[Tuple[list, dict], None] = None  # (args, kwargs)
 
-        # add set_scaling method to callback list of ScalingTracker for automatic scaling changes
-        ScalingTracker.add_widget(self.set_scaling, self)
-        self.window_scaling = ScalingTracker.get_window_scaling(self)
+        self._fg_color = ThemeManager.theme["CTk"]["fg_color"] if fg_color is None else self._check_color_type(fg_color)
 
-        self.current_width = 600  # initial window size, always without scaling
-        self.current_height = 500
-        self.min_width: int = 0
-        self.min_height: int = 0
-        self.max_width: int = 1_000_000
-        self.max_height: int = 1_000_000
-        self.last_resizable_args: Union[Tuple[list, dict], None] = None  # (args, kwargs)
+        # set bg of tkinter.Tk
+        super().configure(bg=self._apply_appearance_mode(self._fg_color))
 
-        self.fg_color = ThemeManager.theme["color"]["window_bg_color"] if fg_color == "default_theme" else fg_color
+        # set title and initial geometry
+        self.title("CTk")
+        # self.geometry(f"{self._current_width}x{self._current_height}")
 
-        if "bg" in kwargs:
-            self.fg_color = kwargs["bg"]
-            del kwargs["bg"]
-        elif "background" in kwargs:
-            self.fg_color = kwargs["background"]
-            del kwargs["background"]
-
-        super().configure(bg=ThemeManager.single_color(self.fg_color, self.appearance_mode))
-        super().title("CTk")
-        self.geometry(f"{self.current_width}x{self.current_height}")
-
-        self.state_before_windows_set_titlebar_color = None
-        self.window_exists = False  # indicates if the window is already shown through update() or mainloop() after init
-        self.withdraw_called_before_window_exists = False  # indicates if withdraw() was called before window is first shown through update() or mainloop()
-        self.iconify_called_before_window_exists = False  # indicates if iconify() was called before window is first shown through update() or mainloop()
+        self._state_before_windows_set_titlebar_color = None
+        self._window_exists = False  # indicates if the window is already shown through update() or mainloop() after init
+        self._withdraw_called_before_window_exists = False  # indicates if withdraw() was called before window is first shown through update() or mainloop()
+        self._iconify_called_before_window_exists = False  # indicates if iconify() was called before window is first shown through update() or mainloop()
 
         if sys.platform.startswith("win"):
-            if self.appearance_mode == 1:
-                self.windows_set_titlebar_color("dark")
-            else:
-                self.windows_set_titlebar_color("light")
+            self._windows_set_titlebar_color(self._get_appearance_mode())
 
-        self.bind('<Configure>', self.update_dimensions_event)
+        self.bind('<Configure>', self._update_dimensions_event)
+        self.bind('<FocusIn>', self._focus_in_event)
 
-        self.block_update_dimensions_event = False
-
-    def update_dimensions_event(self, event=None):
-        if not self.block_update_dimensions_event:
-            detected_width = self.winfo_width()  # detect current window size
-            detected_height = self.winfo_height()
-
-            if self.current_width != round(detected_width / self.window_scaling) or self.current_height != round(detected_height / self.window_scaling):
-                self.current_width = round(detected_width / self.window_scaling)  # adjust current size according to new size given by event
-                self.current_height = round(detected_height / self.window_scaling)  # _current_width and _current_height are independent of the scale
-
-    def set_scaling(self, new_widget_scaling, new_spacing_scaling, new_window_scaling):
-        self.window_scaling = new_window_scaling
-
-        # block update_dimensions_event to prevent current_width and current_height to get updated
-        self.block_update_dimensions_event = True
-
-        # force new dimensions on window by using min, max, and geometry
-        super().minsize(self.apply_window_scaling(self.current_width), self.apply_window_scaling(self.current_height))
-        super().maxsize(self.apply_window_scaling(self.current_width), self.apply_window_scaling(self.current_height))
-        super().geometry(f"{self.apply_window_scaling(self.current_width)}x"+f"{self.apply_window_scaling(self.current_height)}")
-
-        # set new scaled min and max with 400ms delay (otherwise it won't work for some reason)
-        self.after(400, self.set_scaled_min_max)
-
-        # release the blocking of update_dimensions_event after a small amount of time (slight delay is necessary)
-        def set_block_update_dimensions_event_false():
-            self.block_update_dimensions_event = False
-        self.after(100, lambda: set_block_update_dimensions_event_false())
-
-    def set_scaled_min_max(self):
-        if self.min_width is not None or self.min_height is not None:
-            super().minsize(self.apply_window_scaling(self.min_width), self.apply_window_scaling(self.min_height))
-        if self.max_width is not None or self.max_height is not None:
-            super().maxsize(self.apply_window_scaling(self.max_width), self.apply_window_scaling(self.max_height))
+        self._block_update_dimensions_event = False
 
     def destroy(self):
-        AppearanceModeTracker.remove(self.set_appearance_mode)
-        ScalingTracker.remove_window(self.set_scaling, self)
-        self.disable_macos_dark_title_bar()
-        super().destroy()
+        self._disable_macos_dark_title_bar()
+
+        # call destroy methods of super classes
+        tkinter.Tk.destroy(self)
+        CTkAppearanceModeBaseClass.destroy(self)
+        CTkScalingBaseClass.destroy(self)
+
+    def _focus_in_event(self, event):
+        # sometimes window looses jumps back on macOS if window is selected from Mission Control, so has to be lifted again
+        if sys.platform == "darwin":
+            self.lift()
+
+    def _update_dimensions_event(self, event=None):
+        if not self._block_update_dimensions_event:
+
+            detected_width = super().winfo_width()  # detect current window size
+            detected_height = super().winfo_height()
+
+            # detected_width = event.width
+            # detected_height = event.height
+
+            if self._current_width != self._reverse_window_scaling(detected_width) or self._current_height != self._reverse_window_scaling(detected_height):
+                self._current_width = self._reverse_window_scaling(detected_width)  # adjust current size according to new size given by event
+                self._current_height = self._reverse_window_scaling(detected_height)  # _current_width and _current_height are independent of the scale
+
+    def _set_scaling(self, new_widget_scaling, new_window_scaling):
+        super()._set_scaling(new_widget_scaling, new_window_scaling)
+
+        # Force new dimensions on window by using min, max, and geometry. Without min, max it won't work.
+        super().minsize(self._apply_window_scaling(self._current_width), self._apply_window_scaling(self._current_height))
+        super().maxsize(self._apply_window_scaling(self._current_width), self._apply_window_scaling(self._current_height))
+
+        super().geometry(f"{self._apply_window_scaling(self._current_width)}x{self._apply_window_scaling(self._current_height)}")
+
+        # set new scaled min and max with delay (delay prevents weird bug where window dimensions snap to unscaled dimensions when mouse releases window)
+        self.after(1000, self._set_scaled_min_max)  # Why 1000ms delay? Experience! (Everything tested on Windows 11)
+
+    def block_update_dimensions_event(self):
+        self._block_update_dimensions_event = False
+
+    def unblock_update_dimensions_event(self):
+        self._block_update_dimensions_event = False
+
+    def _set_scaled_min_max(self):
+        if self._min_width is not None or self._min_height is not None:
+            super().minsize(self._apply_window_scaling(self._min_width), self._apply_window_scaling(self._min_height))
+        if self._max_width is not None or self._max_height is not None:
+            super().maxsize(self._apply_window_scaling(self._max_width), self._apply_window_scaling(self._max_height))
 
     def withdraw(self):
-        if self.window_exists is False:
-            self.withdraw_called_before_window_exists = True
+        if self._window_exists is False:
+            self._withdraw_called_before_window_exists = True
         super().withdraw()
 
     def iconify(self):
-        if self.window_exists is False:
-            self.iconify_called_before_window_exists = True
+        if self._window_exists is False:
+            self._iconify_called_before_window_exists = True
         super().iconify()
 
     def update(self):
-        if self.window_exists is False:
-            self.window_exists = True
+        if self._window_exists is False:
+            self._window_exists = True
 
             if sys.platform.startswith("win"):
-                if not self.withdraw_called_before_window_exists and not self.iconify_called_before_window_exists:
+                if not self._withdraw_called_before_window_exists and not self._iconify_called_before_window_exists:
                     # print("window dont exists -> deiconify in update")
                     self.deiconify()
 
         super().update()
 
     def mainloop(self, *args, **kwargs):
-        if not self.window_exists:
-            self.window_exists = True
+        if not self._window_exists:
+            self._window_exists = True
 
             if sys.platform.startswith("win"):
-                if not self.withdraw_called_before_window_exists and not self.iconify_called_before_window_exists:
+                if not self._withdraw_called_before_window_exists and not self._iconify_called_before_window_exists:
                     # print("window dont exists -> deiconify in mainloop")
                     self.deiconify()
 
         super().mainloop(*args, **kwargs)
 
-    def resizable(self, *args, **kwargs):
-        super().resizable(*args, **kwargs)
-        self.last_resizable_args = (args, kwargs)
+    def resizable(self, width: bool = None, height: bool = None):
+        current_resizable_values = super().resizable(width, height)
+        self._last_resizable_args = ([], {"width": width, "height": height})
 
         if sys.platform.startswith("win"):
-            if self.appearance_mode == 1:
-                self.windows_set_titlebar_color("dark")
-            else:
-                self.windows_set_titlebar_color("light")
+            self._windows_set_titlebar_color(self._get_appearance_mode())
 
-    def minsize(self, width=None, height=None):
-        self.min_width = width
-        self.min_height = height
-        if self.current_width < width: self.current_width = width
-        if self.current_height < height: self.current_height = height
-        super().minsize(self.apply_window_scaling(self.min_width), self.apply_window_scaling(self.min_height))
+        return current_resizable_values
 
-    def maxsize(self, width=None, height=None):
-        self.max_width = width
-        self.max_height = height
-        if self.current_width > width: self.current_width = width
-        if self.current_height > height: self.current_height = height
-        super().maxsize(self.apply_window_scaling(self.max_width), self.apply_window_scaling(self.max_height))
+    def minsize(self, width: int = None, height: int = None):
+        self._min_width = width
+        self._min_height = height
+        if self._current_width < width:
+            self._current_width = width
+        if self._current_height < height:
+            self._current_height = height
+        super().minsize(self._apply_window_scaling(self._min_width), self._apply_window_scaling(self._min_height))
+
+    def maxsize(self, width: int = None, height: int = None):
+        self._max_width = width
+        self._max_height = height
+        if self._current_width > width:
+            self._current_width = width
+        if self._current_height > height:
+            self._current_height = height
+        super().maxsize(self._apply_window_scaling(self._max_width), self._apply_window_scaling(self._max_height))
 
     def geometry(self, geometry_string: str = None):
         if geometry_string is not None:
-            super().geometry(self.apply_geometry_scaling(geometry_string))
+            super().geometry(self._apply_geometry_scaling(geometry_string))
 
             # update width and height attributes
-            width, height, x, y = self.parse_geometry_string(geometry_string)
+            width, height, x, y = self._parse_geometry_string(geometry_string)
             if width is not None and height is not None:
-                self.current_width = max(self.min_width, min(width, self.max_width))  # bound value between min and max
-                self.current_height = max(self.min_height, min(height, self.max_height))
+                self._current_width = max(self._min_width, min(width, self._max_width))  # bound value between min and max
+                self._current_height = max(self._min_height, min(height, self._max_height))
         else:
-            return self.reverse_geometry_scaling(super().geometry())
+            return self._reverse_geometry_scaling(super().geometry())
 
-    @staticmethod
-    def parse_geometry_string(geometry_string: str) -> tuple:
-        #                 index:   1                   2           3          4             5       6
-        # regex group structure: ('<width>x<height>', '<width>', '<height>', '+-<x>+-<y>', '-<x>', '-<y>')
-        result = re.search(r"((\d+)x(\d+)){0,1}(\+{0,1}([+-]{0,1}\d+)\+{0,1}([+-]{0,1}\d+)){0,1}", geometry_string)
-
-        width = int(result.group(2)) if result.group(2) is not None else None
-        height = int(result.group(3)) if result.group(3) is not None else None
-        x = int(result.group(5)) if result.group(5) is not None else None
-        y = int(result.group(6)) if result.group(6) is not None else None
-
-        return width, height, x, y
-
-    def apply_geometry_scaling(self, geometry_string: str) -> str:
-        width, height, x, y = self.parse_geometry_string(geometry_string)
-
-        if x is None and y is None:  # no <x> and <y> in geometry_string
-            return f"{round(width * self.window_scaling)}x{round(height * self.window_scaling)}"
-
-        elif width is None and height is None:  # no <width> and <height> in geometry_string
-            return f"+{x}+{y}"
-
-        else:
-            return f"{round(width * self.window_scaling)}x{round(height * self.window_scaling)}+{x}+{y}"
-
-    def reverse_geometry_scaling(self, scaled_geometry_string: str) -> str:
-        width, height, x, y = self.parse_geometry_string(scaled_geometry_string)
-
-        if x is None and y is None:  # no <x> and <y> in geometry_string
-            return f"{round(width / self.window_scaling)}x{round(height / self.window_scaling)}"
-
-        elif width is None and height is None:  # no <width> and <height> in geometry_string
-            return f"+{x}+{y}"
-
-        else:
-            return f"{round(width / self.window_scaling)}x{round(height / self.window_scaling)}+{x}+{y}"
-
-    def apply_window_scaling(self, value):
-        if isinstance(value, (int, float)):
-            return int(value * self.window_scaling)
-        else:
-            return value
-
-    def config(self, *args, **kwargs):
-        self.configure(*args, **kwargs)
-
-    def configure(self, *args, **kwargs):
-        bg_changed = False
-
-        if "bg" in kwargs:
-            self.fg_color = kwargs["bg"]
-            bg_changed = True
-            kwargs["bg"] = ThemeManager.single_color(self.fg_color, self.appearance_mode)
-        elif "background" in kwargs:
-            self.fg_color = kwargs["background"]
-            bg_changed = True
-            kwargs["background"] = ThemeManager.single_color(self.fg_color, self.appearance_mode)
-        elif "fg_color" in kwargs:
-            self.fg_color = kwargs["fg_color"]
-            kwargs["bg"] = ThemeManager.single_color(self.fg_color, self.appearance_mode)
-            del kwargs["fg_color"]
-            bg_changed = True
-
-        elif len(args) > 0 and type(args[0]) == dict:
-            if "bg" in args[0]:
-                self.fg_color=args[0]["bg"]
-                bg_changed = True
-                args[0]["bg"] = ThemeManager.single_color(self.fg_color, self.appearance_mode)
-            elif "background" in args[0]:
-                self.fg_color=args[0]["background"]
-                bg_changed = True
-                args[0]["background"] = ThemeManager.single_color(self.fg_color, self.appearance_mode)
-
-        if bg_changed:
-            from ..widgets.widget_base_class import CTkBaseClass
+    def configure(self, **kwargs):
+        if "fg_color" in kwargs:
+            self._fg_color = self._check_color_type(kwargs.pop("fg_color"))
+            super().configure(bg=self._apply_appearance_mode(self._fg_color))
 
             for child in self.winfo_children():
-                if isinstance(child, CTkBaseClass):
-                    child.configure(bg_color=self.fg_color)
+                try:
+                    child.configure(bg_color=self._fg_color)
+                except Exception:
+                    pass
 
-        super().configure(*args, **kwargs)
+        super().configure(**pop_from_dict_by_set(kwargs, self._valid_tk_configure_arguments))
+        check_kwargs_empty(kwargs)
 
-    @staticmethod
-    def enable_macos_dark_title_bar():
-        if sys.platform == "darwin" and not Settings.deactivate_macos_window_header_manipulation:  # macOS
+    def cget(self, attribute_name: str) -> any:
+        if attribute_name == "fg_color":
+            return self._fg_color
+        else:
+            return super().cget(attribute_name)
+
+    @classmethod
+    def _enable_macos_dark_title_bar(cls):
+        if sys.platform == "darwin" and not cls._deactivate_macos_window_header_manipulation:  # macOS
             if Version(platform.python_version()) < Version("3.10"):
                 if Version(tkinter.Tcl().call("info", "patchlevel")) >= Version("8.6.9"):  # Tcl/Tk >= 8.6.9
                     os.system("defaults write -g NSRequiresAquaSystemAppearance -bool No")
                     # This command allows dark-mode for all programs
 
-    @staticmethod
-    def disable_macos_dark_title_bar():
-        if sys.platform == "darwin" and not Settings.deactivate_macos_window_header_manipulation:  # macOS
+    @classmethod
+    def _disable_macos_dark_title_bar(cls):
+        if sys.platform == "darwin" and not cls._deactivate_macos_window_header_manipulation:  # macOS
             if Version(platform.python_version()) < Version("3.10"):
                 if Version(tkinter.Tcl().call("info", "patchlevel")) >= Version("8.6.9"):  # Tcl/Tk >= 8.6.9
                     os.system("defaults delete -g NSRequiresAquaSystemAppearance")
                     # This command reverts the dark-mode setting for all programs.
 
-    def windows_set_titlebar_color(self, color_mode: str):
+    def _windows_set_titlebar_color(self, color_mode: str):
         """
         Set the titlebar color of the window to light or dark theme on Microsoft Windows.
 
@@ -284,13 +238,13 @@ class CTk(tkinter.Tk):
         https://docs.microsoft.com/en-us/windows/win32/api/dwmapi/ne-dwmapi-dwmwindowattribute
         """
 
-        if sys.platform.startswith("win") and not Settings.deactivate_windows_window_header_manipulation:
+        if sys.platform.startswith("win") and not self._deactivate_windows_window_header_manipulation:
 
-            if self.window_exists:
-                self.state_before_windows_set_titlebar_color = self.state()
+            if self._window_exists:
+                self._state_before_windows_set_titlebar_color = self.state()
                 # print("window_exists -> state_before_windows_set_titlebar_color: ", self.state_before_windows_set_titlebar_color)
 
-                if self.state_before_windows_set_titlebar_color != "iconic" or self.state_before_windows_set_titlebar_color != "withdrawn":
+                if self._state_before_windows_set_titlebar_color != "iconic" or self._state_before_windows_set_titlebar_color != "withdrawn":
                     super().withdraw()  # hide window so that it can be redrawn after the titlebar change so that the color change is visible
             else:
                 # print("window dont exists -> withdraw and update")
@@ -322,29 +276,23 @@ class CTk(tkinter.Tk):
             except Exception as err:
                 print(err)
 
-            if self.window_exists:
+            if self._window_exists:
                 # print("window_exists -> return to original state: ", self.state_before_windows_set_titlebar_color)
-                if self.state_before_windows_set_titlebar_color == "normal":
+                if self._state_before_windows_set_titlebar_color == "normal":
                     self.deiconify()
-                elif self.state_before_windows_set_titlebar_color == "iconic":
+                elif self._state_before_windows_set_titlebar_color == "iconic":
                     self.iconify()
-                elif self.state_before_windows_set_titlebar_color == "zoomed":
+                elif self._state_before_windows_set_titlebar_color == "zoomed":
                     self.state("zoomed")
                 else:
-                    self.state(self.state_before_windows_set_titlebar_color)  # other states
+                    self.state(self._state_before_windows_set_titlebar_color)  # other states
             else:
                 pass  # wait for update or mainloop to be called
 
-    def set_appearance_mode(self, mode_string):
-        if mode_string.lower() == "dark":
-            self.appearance_mode = 1
-        elif mode_string.lower() == "light":
-            self.appearance_mode = 0
+    def _set_appearance_mode(self, mode_string: str):
+        super()._set_appearance_mode(mode_string)
 
         if sys.platform.startswith("win"):
-            if self.appearance_mode == 1:
-                self.windows_set_titlebar_color("dark")
-            else:
-                self.windows_set_titlebar_color("light")
+            self._windows_set_titlebar_color(mode_string)
 
-        super().configure(bg=ThemeManager.single_color(self.fg_color, self.appearance_mode))
+        super().configure(bg=self._apply_appearance_mode(self._fg_color))

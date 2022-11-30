@@ -20,12 +20,11 @@ top_tk.geometry("500x500")
 
 def button_function():
     app.geometry(f"{200}x{200}")
-    print("Button click", label_1.text_label.cget("text"))
+    print("Button click", label_1.cget("text"))
 
 
 def slider_function(value):
     customtkinter.set_widget_scaling(value * 2)
-    customtkinter.set_spacing_scaling(value * 2)
     customtkinter.set_window_scaling(value * 2)
     progressbar_1.set(value)
 

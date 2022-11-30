@@ -1,54 +1,102 @@
-import tkinter
 import customtkinter
 
-# test with scaling
-# customtkinter.set_widget_scaling(2)
-# customtkinter.set_window_scaling(2)
-# customtkinter.set_spacing_scaling(2)
+#customtkinter.set_widget_scaling(0.9)
+#customtkinter.set_window_scaling(0.9)
 
 customtkinter.set_appearance_mode("dark")
 
 app = customtkinter.CTk()
 app.title("test_scrollbar.py")
+app.geometry("800x1200")
 app.grid_rowconfigure(0, weight=1)
-app.grid_columnconfigure((0, 2), weight=1)
+app.grid_columnconfigure((0, 1, 2, 3, 4), weight=1)
 
-tk_textbox = customtkinter.CTkTextbox(app, highlightthickness=0, padx=5, pady=5)
-tk_textbox.grid(row=0, column=0, sticky="nsew")
-ctk_textbox_scrollbar = customtkinter.CTkScrollbar(app, command=tk_textbox.yview)
-ctk_textbox_scrollbar.grid(row=0, column=1, padx=0, sticky="ns")
-tk_textbox.configure(yscrollcommand=ctk_textbox_scrollbar.set)
+textbox_1 = customtkinter.CTkTextbox(app, fg_color=None, corner_radius=0, border_spacing=0)
+textbox_1.grid(row=0, column=0, sticky="nsew")
+textbox_1.insert("0.0", "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.\n\n" * 20)
 
-frame_1 = customtkinter.CTkFrame(app)
-frame_1.grid(row=0, column=2, padx=10, pady=10, sticky="nsew")
-frame_1.grid_rowconfigure((0, 1), weight=1)
-frame_1.grid_columnconfigure((0, ), weight=1)
-tk_textbox_1 = customtkinter.CTkTextbox(frame_1, highlightthickness=0, padx=5, pady=5)
-tk_textbox_1.grid(row=0, column=0, sticky="nsew", padx=(5, 0), pady=5)
-ctk_textbox_scrollbar_1 = customtkinter.CTkScrollbar(frame_1, command=tk_textbox_1.yview)
-ctk_textbox_scrollbar_1.grid(row=0, column=1, sticky="ns", padx=(0, 5), pady=5)
-tk_textbox_1.configure(yscrollcommand=ctk_textbox_scrollbar_1.set)
-ctk_textbox_scrollbar_1.configure(scrollbar_color="red", scrollbar_hover_color="darkred",
-                                  border_spacing=0, width=12, fg_color="green", corner_radius=4)
+frame_1 = customtkinter.CTkFrame(app, corner_radius=0)
+frame_1.grid(row=0, column=1, sticky="nsew")
+frame_1.grid_rowconfigure((0, 1, 2, 3, 4), weight=1)
+frame_1.grid_columnconfigure(0, weight=1)
 
-frame_2 = customtkinter.CTkFrame(frame_1)
-frame_2.grid(row=1, column=0, columnspan=2, padx=20, pady=20, sticky="nsew")
-frame_2.grid_rowconfigure((0, ), weight=1)
-frame_2.grid_columnconfigure((0, ), weight=1)
-tk_textbox_2 = customtkinter.CTkTextbox(frame_2, highlightthickness=0, padx=5, pady=5, wrap="none")
-tk_textbox_2.grid(row=0, column=0, sticky="nsew", padx=(5, 0), pady=5)
-ctk_textbox_scrollbar_2 = customtkinter.CTkScrollbar(frame_2, command=tk_textbox_2.yview)
-ctk_textbox_scrollbar_2.grid(row=0, column=1, sticky="ns", padx=(0, 5), pady=5)
-ctk_textbox_scrollbar_2_horizontal = customtkinter.CTkScrollbar(frame_2, command=tk_textbox_2.xview, orientation="horizontal")
-ctk_textbox_scrollbar_2_horizontal.grid(row=1, column=0, sticky="ew", padx=(5, 0), pady=(0, 5))
-tk_textbox_2.configure(yscrollcommand=ctk_textbox_scrollbar_2.set, xscrollcommand=ctk_textbox_scrollbar_2_horizontal.set)
+textbox_2 = customtkinter.CTkTextbox(frame_1, wrap="none")
+textbox_2.grid(row=0, column=0, sticky="nsew", padx=20, pady=20)
+textbox_2.insert("0.0", "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.\n\n" * 20)
 
-tk_textbox.configure(font=(customtkinter.ThemeManager.theme["text"]["font"], customtkinter.ThemeManager.theme["text"]["size"]))
-tk_textbox_1.configure(font=(customtkinter.ThemeManager.theme["text"]["font"], customtkinter.ThemeManager.theme["text"]["size"]))
-tk_textbox_2.configure(font=(customtkinter.ThemeManager.theme["text"]["font"], customtkinter.ThemeManager.theme["text"]["size"]))
+textbox_2 = customtkinter.CTkTextbox(frame_1, wrap="none", corner_radius=30)
+textbox_2.grid(row=1, column=0, sticky="nsew", padx=20, pady=20)
+textbox_2.insert("0.0", "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.\n\n" * 20)
 
-tk_textbox.insert("insert", "\n".join([str(i) for i in range(100)]))
-tk_textbox_1.insert("insert", "\n".join([str(i) for i in range(1000)]))
-tk_textbox_2.insert("insert", "\n".join([str(i) + " - "*30 for i in range(10000)]))
+textbox_2 = customtkinter.CTkTextbox(frame_1, wrap="none", corner_radius=0, border_width=30)
+textbox_2.grid(row=2, column=0, sticky="nsew", padx=20, pady=20)
+textbox_2.insert("0.0", "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.\n\n" * 20)
 
+textbox_2 = customtkinter.CTkTextbox(frame_1, wrap="none", corner_radius=60, border_width=15)
+                                     #fg_color="blue", scrollbar_color="yellow", text_color="red")
+textbox_2.grid(row=3, column=0, sticky="nsew", padx=20, pady=20)
+textbox_2.insert("0.0", "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.\n\n" * 20)
+
+textbox_2 = customtkinter.CTkTextbox(frame_1, wrap="none", corner_radius=0, border_width=0)
+textbox_2.grid(row=4, column=0, sticky="nsew", padx=20, pady=20)
+textbox_2.insert("0.0", "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.\n\n" * 20)
+
+frame_2 = customtkinter.CTkFrame(app, corner_radius=0, fg_color=None)
+frame_2.grid(row=0, column=2, sticky="nsew")
+frame_2.grid_rowconfigure((0, 1, 2, 3, 4), weight=1)
+frame_2.grid_columnconfigure(0, weight=1)
+
+textbox_3 = customtkinter.CTkTextbox(frame_2)
+textbox_3.grid(row=0, column=0, sticky="nsew", padx=20, pady=20)
+textbox_3.insert("0.0", "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.\n\n" * 20)
+
+textbox_3 = customtkinter.CTkTextbox(frame_2, corner_radius=30)
+textbox_3.grid(row=1, column=0, sticky="nsew", padx=20, pady=20)
+textbox_3.insert("0.0", "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.\n\n" * 20)
+
+textbox_3 = customtkinter.CTkTextbox(frame_2, corner_radius=0, border_width=30)
+textbox_3.grid(row=2, column=0, sticky="nsew", padx=20, pady=20)
+textbox_3.insert("0.0", "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.\n\n" * 20)
+
+textbox_3 = customtkinter.CTkTextbox(frame_2, corner_radius=60, border_width=15)
+textbox_3.grid(row=3, column=0, sticky="nsew", padx=20, pady=20)
+textbox_3.insert("0.0", "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.\n\n" * 20)
+
+textbox_3 = customtkinter.CTkTextbox(frame_2, corner_radius=0, border_width=0, border_spacing=20)
+textbox_3.grid(row=4, column=0, sticky="nsew", padx=20, pady=20)
+textbox_3.insert("0.0", "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.\n\n" * 20)
+
+frame_3 = customtkinter.CTkFrame(app, corner_radius=0, fg_color=None)
+frame_3.grid(row=0, column=3, sticky="nsew")
+frame_3.grid_rowconfigure((0, 1, 2, 3, 4), weight=1)
+frame_3.grid_columnconfigure(0, weight=1)
+
+textbox_3 = customtkinter.CTkTextbox(frame_3, activate_scrollbars=False)
+textbox_3.grid(row=0, column=0, sticky="nsew", padx=20, pady=20)
+textbox_3.insert("0.0", "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.\n\n" * 20)
+
+textbox_3 = customtkinter.CTkTextbox(frame_3, corner_radius=10, border_width=2, activate_scrollbars=False)
+textbox_3.grid(row=1, column=0, sticky="nsew", padx=20, pady=20)
+textbox_3.insert("0.0", "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.\n\n" * 20)
+
+textbox_3 = customtkinter.CTkTextbox(frame_3, corner_radius=0, border_width=2, activate_scrollbars=False)
+textbox_3.grid(row=2, column=0, sticky="nsew", padx=20, pady=20)
+textbox_3.insert("0.0", "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.\n\n" * 20)
+
+textbox_3 = customtkinter.CTkTextbox(frame_3, corner_radius=0, border_width=2, activate_scrollbars=False)
+textbox_3.grid(row=3, column=0, sticky="nsew", padx=20, pady=20)
+textbox_3.insert("0.0", "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.\n\n" * 20)
+
+textbox_3 = customtkinter.CTkTextbox(frame_3, corner_radius=0, border_width=0, activate_scrollbars=False, border_spacing=10)
+textbox_3.grid(row=4, column=0, sticky="nsew", padx=20, pady=20)
+textbox_3.insert("0.0", "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.\n\n" * 20)
+
+textbox_4 = customtkinter.CTkTextbox(app, fg_color=None, corner_radius=0)
+textbox_4.grid(row=0, column=4, sticky="nsew")
+textbox_4.insert("0.0", "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.\n\n" * 20)
+scrollbar4 = customtkinter.CTkScrollbar(app, command=textbox_4.yview)
+scrollbar4.grid(row=0, column=5, sticky="nsew")
+textbox_4.configure(yscrollcommand=scrollbar4.set)
+
+# app.after(3000, lambda: customtkinter.set_appearance_mode("light"))
 app.mainloop()

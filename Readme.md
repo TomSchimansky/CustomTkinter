@@ -1,16 +1,21 @@
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="./documentation_images/CustomTkinter_logo_dark.png">
+    <img src="./documentation_images/CustomTkinter_logo_light.png">
+  </picture>
+</p>
+
+<div align="center">
+
 ![PyPI](https://img.shields.io/pypi/v/customtkinter)
-![PyPI - Downloads](https://img.shields.io/pypi/dm/customtkinter?color=green&label=pip%20downloads)
+![PyPI - Downloads](https://img.shields.io/pypi/dm/customtkinter?color=green&label=downloads)
+![Downloads](https://static.pepy.tech/personalized-badge/customtkinter?period=total&units=international_system&left_color=grey&right_color=green&left_text=downloads)
 ![PyPI - License](https://img.shields.io/pypi/l/customtkinter)
 ![Total lines](https://img.shields.io/tokei/lines/github.com/tomschimansky/customtkinter?color=green&label=total%20lines)
 
-# CustomTkinter UI-Library
+</div>
 
-![](documentation_images/Windows_dark.png)
-| _`complex_example.py` on Windows 11 with dark mode and 'dark-blue' theme_
-
-![](documentation_images/macOS_light.png)
-| _`complex_example.py` on macOS in light mode and standard 'blue' theme_
-###
+---
 
 CustomTkinter is a python UI-library based on Tkinter, which provides new, modern and
 fully customizable widgets. They are created and used like normal Tkinter widgets and
@@ -19,6 +24,13 @@ and the window colors either adapt to the system appearance or the manually set 
 ('light', 'dark'), and all CustomTkinter widgets and windows support HighDPI scaling
 (Windows, macOS). With CustomTkinter you'll get a consistent and modern look across all
 desktop platforms (Windows, macOS, Linux).
+
+![](documentation_images/complex_example_dark_Windows.png)
+| _`complex_example.py` on Windows 11 with dark mode and 'blue' theme_
+
+![](documentation_images/complex_example_light_macOS.png)
+| _`complex_example.py` on macOS in light mode and standard 'blue' theme_
+###
 
 
 ## Installation
@@ -38,6 +50,7 @@ The **official** documentation can be found in the Wiki Tab here:
 ## Example Program
 To test customtkinter you can try this simple example with only a single button:
 ```python
+import tkinter
 import customtkinter
 
 customtkinter.set_appearance_mode("System")  # Modes: system (default), light, dark
@@ -51,34 +64,35 @@ def button_function():
 
 # Use CTkButton instead of tkinter Button
 button = customtkinter.CTkButton(master=app, text="CTkButton", command=button_function)
-button.place(relx=0.5, rely=0.5, anchor=customtkinter.CENTER)
+button.place(relx=0.5, rely=0.5, anchor=tkinter.CENTER)
 
 app.mainloop()
 ```
-which gives the following (macOS dark mode on):
+which results in the following window on macOS:
 
-![](documentation_images/macOS_button_dark.png)
+<img src="documentation_images/single_button_macOS.png" width="400"/>
 
 In the [examples folder](https://github.com/TomSchimansky/CustomTkinter/tree/master/examples), you
 can find more example programs and in the [Documentation](https://github.com/TomSchimansky/CustomTkinter/wiki)
-you can find further information on the appearance mode, the themes and all widgets.
+you can find further information on the appearance mode, scaling, themes and all widgets.
 
 ## More Examples and Showcase
 
-### Appearance mode change
+### Appearance mode change and scaling change
 
-On Windows 10/11 you get a dark window header, which changes with set
-appearance mode or the system, when you use `customtkinter.CTk()`
-to create the window, and it works with all python versions:
+CustomTkinter can adapt to the Windows 10/11 light or dark mode:
 
+https://user-images.githubusercontent.com/66446067/204672968-6584f360-4c52-434f-9c16-25761341368b.mp4
 
-| _`complex_example.py` on Windows 11 with system mode change and standard 'blue' theme_
+| _`complex_example.py` on Windows 11 with system appearance mode change and standard 'blue' theme_
 ###
 
-On macOS however you either need python3.10 or higher or the anaconda python
-version to get a dark window header at all (Tcl/Tk >= 8.6.9 required).
+On macOS you either need python3.10 or higher or the anaconda python
+version to get a dark window header (Tcl/Tk >= 8.6.9 required):
 
-| _`complex_example.py` on macOS with system mode change and standard 'blue' theme_
+https://user-images.githubusercontent.com/66446067/204673854-b6cbcfda-d9a1-4425-92a3-5b57d7f2fd6b.mp4
+
+| _`complex_example.py` on macOS with system appearance mode change, user-scaling change and standard 'blue' theme_
 ###
 
 ### Button with images
@@ -87,8 +101,8 @@ pass a PhotoImage object to the CTkButton with the ``image`` argument.
 If you want no text at all you have to set ``text=""`` or you specify
 how to position the text and image at once with the ``compound`` option:
 
-![](documentation_images/macOS_button_images.png)
-| _`example_button_images.py` on macOS_
+![](documentation_images/image_example_dark_Windows.png)
+| _`image_example.py` on Windows 11_
 ###
 
 ### Integration of TkinterMapView widget
@@ -96,8 +110,9 @@ In the following example I used a TkinterMapView which integrates
 well with a CustomTkinter program. It's a tile based map widget which displays
 OpenStreetMap or other tile based maps:
 
-![](documentation_images/tkintermapview_example.gif)
-| _`examples/map_with_customtkinter.py` from TkinterMapView repository on macOS_
+https://user-images.githubusercontent.com/66446067/204675835-1584a8da-5acc-4993-b4a9-e70f06fa14b0.mp4
 
-You can find the TkinterMapView library and the example program here:
+| _`examples/map_with_customtkinter.py` from TkinterMapView repository on Windows 11_
+
+You can find the TkinterMapView library and example program here:
 https://github.com/TomSchimansky/TkinterMapView

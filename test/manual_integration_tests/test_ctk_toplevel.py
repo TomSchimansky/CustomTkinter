@@ -8,6 +8,7 @@ class ToplevelWindow(customtkinter.CTkToplevel):
         super().__init__(*args, **kwargs)
         self.protocol("WM_DELETE_WINDOW", self.closing)
         self.geometry("500x300")
+        self.resizable(False, False)
         self.closing_event = closing_event
 
         self.label = customtkinter.CTkLabel(self, text="ToplevelWindow")
@@ -26,6 +27,7 @@ class App(customtkinter.CTk):
     def __init__(self):
         super().__init__()
         self.geometry("500x400")
+        self.resizable(False, False)
 
         self.button_1 = customtkinter.CTkButton(self, text="Open CTkToplevel", command=self.open_toplevel)
         self.button_1.pack(side="top", padx=40, pady=40)

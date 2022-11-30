@@ -2,7 +2,6 @@ import tkinter
 import customtkinter
 
 customtkinter.set_appearance_mode("System")  # Other: "Dark", "Light"
-customtkinter.set_default_color_theme("green")  # Themes: "blue" (standard), "green", "dark-blue"
 
 
 class TestApp(customtkinter.CTk):
@@ -20,13 +19,13 @@ class TestApp(customtkinter.CTk):
         """ gets called by self.slider_1 """
 
         if value == 0:
-            self.label_1.set_text("mode: Light")
+            self.label_1.configure(text="mode: Light")
             customtkinter.set_appearance_mode("Light")
         elif value == 1:
-            self.label_1.set_text("mode: Dark")
+            self.label_1.configure(text="mode: Dark")
             customtkinter.set_appearance_mode("Dark")
         else:
-            self.label_1.set_text("mode: System")
+            self.label_1.configure(text="mode: System")
             customtkinter.set_appearance_mode("System")
 
     def create_widgets_on_tk(self):
@@ -74,7 +73,7 @@ class TestApp(customtkinter.CTk):
         self.progress_bar_2 = customtkinter.CTkProgressBar(master=self.ctk_frame)
         self.progress_bar_2.place(relx=0.5, y=y + 320, anchor=tkinter.CENTER)
 
-        self.slider_2 = customtkinter.CTkSlider(master=self.ctk_frame, command=lambda v: self.label_2.set_text(str(round(v, 5))))
+        self.slider_2 = customtkinter.CTkSlider(master=self.ctk_frame, command=lambda v: self.label_2.configure(text=str(round(v, 5))))
         self.slider_2.place(relx=0.5, y=y + 400, anchor=tkinter.CENTER)
 
         self.check_box_2 = customtkinter.CTkCheckBox(master=self.ctk_frame)
@@ -102,7 +101,7 @@ class TestApp(customtkinter.CTk):
         self.ctk_frame_customized.configure(fg_color=("#F4F4FA", "#1E2742"))
 
         self.label_3 = customtkinter.CTkLabel(master=self.ctk_frame_customized, text="customized", corner_radius=60,
-                                              text_font=("times", 16))
+                                              font=("times", 16))
         self.label_3.place(relx=0.5, y=y, anchor=tkinter.CENTER)
         self.label_3.configure(fg_color=("#F4F4FA", "#333D5E"), text_color=("#373E57", "#7992C1"))
 
@@ -110,13 +109,13 @@ class TestApp(customtkinter.CTk):
         self.frame_3.place(relx=0.5, y=y + 80, anchor=tkinter.CENTER)
         self.frame_3.configure(fg_color=("#EBECF3", "#4B577E"))
 
-        self.button_3 = customtkinter.CTkButton(master=self.ctk_frame_customized, command=lambda: x, border_width=3,
-                                                corner_radius=20, text_font=("times", 16))
+        self.button_3 = customtkinter.CTkButton(master=self.ctk_frame_customized, command=lambda: None, border_width=3,
+                                                corner_radius=20, font=("times", 16))
         self.button_3.place(relx=0.5, y=y + 160, anchor=tkinter.CENTER)
         self.button_3.configure(border_color=("#4F90F8", "#6FADF9"), hover_color=("#3A65E8", "#4376EE"))
-        self.button_3.configure(fg_color=None)
+        self.button_3.configure(fg_color="transparent")
 
-        self.entry_3 = customtkinter.CTkEntry(master=self.ctk_frame_customized, text_font=("times", 16))
+        self.entry_3 = customtkinter.CTkEntry(master=self.ctk_frame_customized, font=("times", 16))
         self.entry_3.place(relx=0.5, y=y + 240, anchor=tkinter.CENTER)
         self.entry_3.configure(fg_color=("gray60", "gray5"), corner_radius=20)
         self.entry_3.insert(0, "1234567890")
@@ -131,7 +130,7 @@ class TestApp(customtkinter.CTk):
         self.slider_3.configure(button_color="#8AE0C3", fg_color=("#EBECF3", "#4B577E"), progress_color=("gray30", "gray10"))
         self.slider_3.configure(from_=0, to=1)
 
-        self.check_box_3 = customtkinter.CTkCheckBox(master=self.ctk_frame_customized, corner_radius=50, text_font=("times", 16))
+        self.check_box_3 = customtkinter.CTkCheckBox(master=self.ctk_frame_customized, corner_radius=50, font=("times", 16))
         self.check_box_3.place(relx=0.5, y=y + 480, anchor=tkinter.CENTER)
         self.check_box_3.configure(border_color="#8AE0C3")
 
@@ -152,7 +151,7 @@ class TestApp(customtkinter.CTk):
         self.button_4 = customtkinter.CTkButton(master=self.tk_frame_customized, command=lambda: x, border_width=3)
         self.button_4.place(relx=0.5, y=y + 160, anchor=tkinter.CENTER)
         self.button_4.configure(border_color=("#4F90F8", "#6FADF9"), hover_color=("#3A65E8", "#4376EE"))
-        self.button_4.configure(fg_color=None)
+        self.button_4.configure(fg_color="transparent")
 
         self.entry_4 = customtkinter.CTkEntry(master=self.tk_frame_customized)
         self.entry_4.place(relx=0.5, y=y + 240, anchor=tkinter.CENTER)
