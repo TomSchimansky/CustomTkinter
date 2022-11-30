@@ -94,8 +94,6 @@ class CTkFrame(CTkBaseClass):
     def _draw(self, no_color_updates=False):
         super()._draw(no_color_updates)
 
-        print("frame draw", no_color_updates)
-
         if not self._canvas.winfo_exists():
             return
 
