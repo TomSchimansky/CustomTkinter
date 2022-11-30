@@ -220,6 +220,7 @@ class CTkBaseClass(tkinter.Frame, CTkAppearanceModeBaseClass, CTkScalingBaseClas
     def _set_appearance_mode(self, mode_string):
         super()._set_appearance_mode(mode_string)
         self._draw()
+        super().update_idletasks()
 
     def _set_scaling(self, new_widget_scaling, new_window_scaling):
         super()._set_scaling(new_widget_scaling, new_window_scaling)

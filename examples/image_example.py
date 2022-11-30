@@ -15,13 +15,13 @@ class App(customtkinter.CTk):
         self.grid_columnconfigure(1, weight=1)
 
         # load images with light and dark mode image
-        current_path = os.path.dirname(os.path.realpath(__file__))
-        self.home_image = customtkinter.CTkImage(light_image=Image.open(os.path.join(current_path, "test_images", "home_dark.png")),
-                                                 dark_image=Image.open(os.path.join(current_path, "test_images", "home_light.png")), size=(20, 20))
-        self.chat_image = customtkinter.CTkImage(light_image=Image.open(os.path.join(current_path, "test_images", "chat_dark.png")),
-                                                 dark_image=Image.open(os.path.join(current_path, "test_images", "chat_light.png")), size=(20, 20))
-        self.add_user_image = customtkinter.CTkImage(light_image=Image.open(os.path.join(current_path, "test_images", "add_user_dark.png")),
-                                                     dark_image=Image.open(os.path.join(current_path, "test_images", "add_user_light.png")), size=(20, 20))
+        image_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_images")
+        self.home_image = customtkinter.CTkImage(light_image=Image.open(os.path.join(image_path, "home_dark.png")),
+                                                 dark_image=Image.open(os.path.join(image_path, "home_light.png")), size=(20, 20))
+        self.chat_image = customtkinter.CTkImage(light_image=Image.open(os.path.join(image_path, "chat_dark.png")),
+                                                 dark_image=Image.open(os.path.join(image_path, "chat_light.png")), size=(20, 20))
+        self.add_user_image = customtkinter.CTkImage(light_image=Image.open(os.path.join(image_path, "add_user_dark.png")),
+                                                     dark_image=Image.open(os.path.join(image_path, "add_user_light.png")), size=(20, 20))
 
         # create navigation frame
         self.navigation_frame = customtkinter.CTkFrame(self, corner_radius=0)
@@ -51,15 +51,15 @@ class App(customtkinter.CTk):
 
         # create home frame
         self.home_frame = customtkinter.CTkFrame(self, corner_radius=0, fg_color="transparent")
-        self.home_frame.grid(row=0, column=1, sticky="nsew")
 
         # create chat frame
         self.chat_frame = customtkinter.CTkFrame(self, corner_radius=0, fg_color="transparent")
-        self.chat_frame.grid(row=0, column=1, sticky="nsew")
 
         # create add user frame
         self.add_user_frame = customtkinter.CTkFrame(self, corner_radius=0, fg_color="transparent")
-        self.add_user_frame.grid(row=0, column=1, sticky="nsew")
+
+        # select default frame
+        self.select_frame_by_name("home")
 
     def select_frame_by_name(self, name):
         # set button color for selected button
@@ -80,8 +80,6 @@ class App(customtkinter.CTk):
             self.home_frame.grid(row=0, column=1, sticky="nsew")
         else:
             self.home_frame.grid_forget()
-        self.chat_button.configure(fg_color="transparent")
-        self.add_user_button.configure(fg_color="transparent")
 
     def home_button_event(self):
         self.select_frame_by_name("home")
