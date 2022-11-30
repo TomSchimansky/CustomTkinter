@@ -15,13 +15,6 @@
 
 </div>
 
-![](documentation_images/complex_example_dark_Windows.png)
-| _`complex_example.py` on Windows 11 with dark mode and 'blue' theme_
-
-![](documentation_images/complex_example_light_macOS.png)
-| _`complex_example.py` on macOS in light mode and standard 'blue' theme_
-###
-
 ## CustomTkinter UI-Library
 
 CustomTkinter is a python UI-library based on Tkinter, which provides new, modern and
@@ -31,6 +24,13 @@ and the window colors either adapt to the system appearance or the manually set 
 ('light', 'dark'), and all CustomTkinter widgets and windows support HighDPI scaling
 (Windows, macOS). With CustomTkinter you'll get a consistent and modern look across all
 desktop platforms (Windows, macOS, Linux).
+
+![](documentation_images/complex_example_dark_Windows.png)
+| _`complex_example.py` on Windows 11 with dark mode and 'blue' theme_
+
+![](documentation_images/complex_example_light_macOS.png)
+| _`complex_example.py` on macOS in light mode and standard 'blue' theme_
+###
 
 
 ## Installation
