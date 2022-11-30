@@ -68,13 +68,13 @@ button.place(relx=0.5, rely=0.5, anchor=tkinter.CENTER)
 
 app.mainloop()
 ```
-which gives the following (macOS dark mode on):
+which results in the following window on macOS:
 
-![](documentation_images/macOS_button_dark.png)
+![](documentation_images/single_button_macOS.png)
 
 In the [examples folder](https://github.com/TomSchimansky/CustomTkinter/tree/master/examples), you
 can find more example programs and in the [Documentation](https://github.com/TomSchimansky/CustomTkinter/wiki)
-you can find further information on the appearance mode, the themes and all widgets.
+you can find further information on the appearance mode, scaling, themes and all widgets.
 
 ## More Examples and Showcase
 
