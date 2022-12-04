@@ -4,7 +4,9 @@ import sys
 import os
 import platform
 import ctypes
+import pathlib
 from typing import Union, Tuple, Optional
+
 
 from .widgets.theme import ThemeManager
 from .widgets.scaling import CTkScalingBaseClass
@@ -64,6 +66,7 @@ class CTk(tkinter.Tk, CTkAppearanceModeBaseClass, CTkScalingBaseClass):
 
         if sys.platform.startswith("win"):
             self._windows_set_titlebar_color(self._get_appearance_mode())
+            self.iconbitmap(f"{pathlib.Path(__file__).parent.resolve()}\\ctk_logo.ico")
 
         self.bind('<Configure>', self._update_dimensions_event)
         self.bind('<FocusIn>', self._focus_in_event)
