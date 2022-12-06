@@ -1,5 +1,9 @@
 import tkinter
-from typing import Union, Tuple, List, Dict, Callable, Optional, Literal
+from typing import Union, Tuple, List, Dict, Callable, Optional
+try:
+    from typing import Literal
+except ImportError:
+    from typing_extensions import Literal
 
 from .theme import ThemeManager
 from .font import CTkFont

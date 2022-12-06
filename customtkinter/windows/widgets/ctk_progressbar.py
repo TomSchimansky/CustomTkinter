@@ -1,6 +1,10 @@
 import tkinter
 import math
-from typing import Union, Tuple, Optional, Literal, Callable
+from typing import Union, Tuple, Optional, Callable
+try:
+    from typing import Literal
+except ImportError:
+    from typing_extensions import Literal
 
 from .core_rendering import CTkCanvas
 from .theme import ThemeManager

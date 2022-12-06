@@ -1,6 +1,10 @@
 from tkinter.font import Font
 import copy
-from typing import List, Callable, Tuple, Optional, Literal
+from typing import List, Callable, Tuple, Optional
+try:
+    from typing import Literal
+except ImportError:
+    from typing_extensions import Literal
 
 from ..theme import ThemeManager
 
