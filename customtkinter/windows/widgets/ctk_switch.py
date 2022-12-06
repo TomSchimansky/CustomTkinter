@@ -444,7 +444,7 @@ class CTkSwitch(CTkBaseClass):
 
     def bind(self, sequence: str = None, command: Callable = None, add: Union[str, bool] = True):
         """ called on the tkinter.Canvas """
-        if add != "+" or add is not True:
+        if not (add == "+" or add is True):
             raise ValueError("'add' argument can only be '+' or True to preserve internal callbacks")
         self._canvas.bind(sequence, command, add=True)
         self._text_label.bind(sequence, command, add=True)

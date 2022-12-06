@@ -400,7 +400,7 @@ class CTkComboBox(CTkBaseClass):
 
     def bind(self, sequence=None, command=None, add=True):
         """ called on the tkinter.Entry """
-        if add != "+" or add is not True:
+        if not (add == "+" or add is True):
             raise ValueError("'add' argument can only be '+' or True to preserve internal callbacks")
         self._entry.bind(sequence, command, add=True)
 

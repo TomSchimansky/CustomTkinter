@@ -249,12 +249,12 @@ class CTkLabel(CTkBaseClass):
 
     def bind(self, sequence: str = None, command: Callable = None, add: str = True):
         """ called on the tkinter.Label and tkinter.Canvas """
-        if add != "+" or add is not True:
+        if not (add == "+" or add is True):
             raise ValueError("'add' argument can only be '+' or True to preserve internal callbacks")
         self._canvas.bind(sequence, command, add=True)
         self._label.bind(sequence, command, add=True)
 
-    def unbind(self, sequence: str, funcid: Optional[str] = None):
+    def unbind(self, sequence: str = None, funcid: Optional[str] = None):
         """ called on the tkinter.Label and tkinter.Canvas """
         if funcid is not None:
             raise ValueError("'funcid' argument can only be None, because there is a bug in" +
