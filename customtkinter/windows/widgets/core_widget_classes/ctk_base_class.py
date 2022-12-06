@@ -161,12 +161,12 @@ class CTkBaseClass(tkinter.Frame, CTkAppearanceModeBaseClass, CTkScalingBaseClas
             sys.stderr.write(f"{type(self).__name__} Warning: font {font} given without size, will be extended with default text size of current theme\n")
             return font[0], ThemeManager.theme["text"]["size"]
 
-        elif type(font) == tuple and 2 <= len(font) <= 3:
+        elif type(font) == tuple and 2 <= len(font) <= 6:
             return font
 
         else:
             raise ValueError(f"Wrong font type {type(font)}\n" +
-                             f"For consistency, Customtkinter requires the font argument to be a tuple of len 2 or 3 or an instance of CTkFont.\n" +
+                             f"For consistency, Customtkinter requires the font argument to be a tuple of len 2 to 6 or an instance of CTkFont.\n" +
                              f"\nUsage example:\n" +
                              f"font=customtkinter.CTkFont(family='<name>', size=<size in px>)\n" +
                              f"font=('<name>', <size in px>)\n")
