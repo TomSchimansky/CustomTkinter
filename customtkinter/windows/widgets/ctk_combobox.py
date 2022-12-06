@@ -1,5 +1,6 @@
 import tkinter
 import sys
+import copy
 from typing import Union, Tuple, Callable, List, Optional
 
 from .core_widget_classes import DropdownMenu
@@ -324,7 +325,7 @@ class CTkComboBox(CTkBaseClass):
         elif attribute_name == "dropdown_font":
             return self._dropdown_menu.cget("font")
         elif attribute_name == "values":
-            return self._values
+            return copy.copy(self._values)
         elif attribute_name == "state":
             return self._state
         elif attribute_name == "hover":

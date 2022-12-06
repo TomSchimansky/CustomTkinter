@@ -1,4 +1,5 @@
 import tkinter
+import copy
 from typing import Union, Tuple, List, Dict, Callable, Optional
 try:
     from typing import Literal
@@ -321,7 +322,7 @@ class CTkSegmentedButton(CTkFrame):
         elif attribute_name == "font":
             return self._font
         elif attribute_name == "values":
-            return self._value_list
+            return copy.copy(self._value_list)
         elif attribute_name == "variable":
             return self._variable
         elif attribute_name == "dynamic_resizing":

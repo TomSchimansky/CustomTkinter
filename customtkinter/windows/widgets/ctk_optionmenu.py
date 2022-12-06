@@ -1,4 +1,5 @@
 import tkinter
+import copy
 import sys
 from typing import Union, Tuple, Callable, Optional
 
@@ -328,7 +329,7 @@ class CTkOptionMenu(CTkBaseClass):
         elif attribute_name == "dropdown_font":
             return self._dropdown_menu.cget("font")
         elif attribute_name == "values":
-            return self._values
+            return copy.copy(self._values)
         elif attribute_name == "variable":
             return self._variable
         elif attribute_name == "state":
