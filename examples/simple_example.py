@@ -12,7 +12,6 @@ app.title("CustomTkinter simple_example.py")
 def button_callback():
     print("Button click", combobox_1.get())
 
-
 def slider_callback(value):
     progressbar_1.set(value)
 
