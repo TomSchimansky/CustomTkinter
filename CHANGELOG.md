@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ToDo:
  - cursor configuring
  - overwrite winfo methods
+ - set icon (self.call("wm", "iconphoto", self._w, tkinter.PhotoImage(file="test_images/CustomTkinter_logo_single.png")))
+ - add option to change label position for checkbox, switch, radiobutton #628
 
 
 ## [5.0.0] - 2022-11-13

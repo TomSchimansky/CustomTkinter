@@ -118,17 +118,23 @@ class CTkCheckBox(CTkBaseClass):
         self._text_label.grid(row=0, column=2, sticky="w")
         self._text_label["anchor"] = "w"
 
-        self._text_label.bind("<Enter>", self._on_enter)
-        self._text_label.bind("<Leave>", self._on_leave)
-        self._text_label.bind("<Button-1>", self.toggle)
-
         # register variable callback and set state according to variable
         if self._variable is not None and self._variable != "":
             self._variable_callback_name = self._variable.trace_add("write", self._variable_callback)
             self._check_state = True if self._variable.get() == self._onvalue else False
 
-        self._draw()  # initial draw
+        self._create_bindings()
         self._set_cursor()
+        self._draw()
+
+    def _create_bindings(self, sequence: Optional[str] = None):
+        """ set necessary bindings for functionality of widget, will overwrite other bindings """
+        if sequence is None or sequence == "<Enter>":
+            self._canvas.bind("<Enter>", self._on_enter)
+        if sequence is None or sequence == "<Leave>":
+            self._canvas.bind("<Leave>", self._on_leave)
+        if sequence is None or sequence == "<Button-1>":
+            self._canvas.bind("<Button-1>", self.toggle)
 
     def _set_scaling(self, *args, **kwargs):
         super()._set_scaling(*args, **kwargs)
@@ -430,13 +436,19 @@ class CTkCheckBox(CTkBaseClass):
     def get(self) -> Union[int, str]:
         return self._onvalue if self._check_state is True else self._offvalue
 
-    def bind(self, sequence=None, command=None, add=None):
+    def bind(self, sequence=None, command=None, add="+"):
         """ called on the tkinter.Canvas """
-        return self._canvas.bind(sequence, command, add)
+        if add != "+" or add is not True:
+            raise ValueError("'add' argument can only be '+' or True to preserve internal callbacks")
+        return self._canvas.bind(sequence, command, add="+")
 
     def unbind(self, sequence, funcid=None):
-        """ called on the tkinter.Canvas """
-        return self._canvas.unbind(sequence, funcid)
+        """ called on the tkinter.Canvas, restores internal callbacks """
+        if funcid is not None:
+            raise ValueError("'funcid' argument can only be None, because there is a bug in" +
+                             " tkinter and its not clear whether the internal callbacks will be unbinded or not")
+        self._canvas.unbind(sequence, None)  # unbind all callbacks for sequence
+        self._create_bindings(sequence=sequence)  # restore internal callbacks for sequence
 
     def focus(self):
         return self._text_label.focus()

@@ -11,6 +11,7 @@
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/customtkinter?color=green&label=downloads)
 ![Downloads](https://static.pepy.tech/personalized-badge/customtkinter?period=total&units=international_system&left_color=grey&right_color=green&left_text=downloads)
 ![PyPI - License](https://img.shields.io/pypi/l/customtkinter)
+![](https://tokei.rs/b1/github/tomschimansky/customtkinter)
 ![Total lines](https://img.shields.io/tokei/lines/github.com/tomschimansky/customtkinter?color=green&label=total%20lines)
 
 </div>

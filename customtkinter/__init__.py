@@ -13,6 +13,10 @@ from .windows.widgets.scaling import ScalingTracker
 from .windows.widgets.theme import ThemeManager
 from .windows.widgets.core_rendering import DrawEngine
 
+# import base widgets
+from .windows.widgets.core_rendering import CTkCanvas
+from .windows.widgets.core_widget_classes import CTkBaseClass
+
 # import widgets
 from .windows.widgets import CTkButton
 from .windows.widgets import CTkCheckBox

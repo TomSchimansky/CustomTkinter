@@ -1,6 +1,6 @@
 import tkinter
 import math
-from typing import Union, Tuple, Optional
+from typing import Union, Tuple, Optional, Literal
 
 from .core_rendering import CTkCanvas
 from .theme import ThemeManager
@@ -29,7 +29,7 @@ class CTkProgressBar(CTkBaseClass):
 
                  variable: Union[tkinter.Variable, None] = None,
                  orientation: str = "horizontal",
-                 mode: str = "determinate",
+                 mode: Literal["determinate", "indeterminate"] = "determinate",
                  determinate_speed: float = 1,
                  indeterminate_speed: float = 1,
                  **kwargs):

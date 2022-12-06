@@ -49,8 +49,8 @@ class CTkScrollbar(CTkBaseClass):
 
         # color
         self._fg_color = ThemeManager.theme["CTkScrollbar"]["fg_color"] if fg_color is None else self._check_color_type(fg_color, transparency=True)
-        self._button_color = ThemeManager.theme["CTkScrollbar"]["scrollbar_color"] if button_color is None else self._check_color_type(button_color)
-        self._button_hover_color = ThemeManager.theme["CTkScrollbar"]["scrollbar_hover_color"] if button_hover_color is None else self._check_color_type(button_hover_color)
+        self._button_color = ThemeManager.theme["CTkScrollbar"]["button_color"] if button_color is None else self._check_color_type(button_color)
+        self._button_hover_color = ThemeManager.theme["CTkScrollbar"]["button_hover_color"] if button_hover_color is None else self._check_color_type(button_hover_color)
 
         # shape
         self._corner_radius = ThemeManager.theme["CTkScrollbar"]["corner_radius"] if corner_radius is None else corner_radius
@@ -71,13 +71,21 @@ class CTkScrollbar(CTkBaseClass):
         self._canvas.place(x=0, y=0, relwidth=1, relheight=1)
         self._draw_engine = DrawEngine(self._canvas)
 
-        self._canvas.bind("<Enter>", self._on_enter)
-        self._canvas.bind("<Leave>", self._on_leave)
-        self._canvas.tag_bind("border_parts", "<Button-1>", self._clicked)
-        self._canvas.bind("<B1-Motion>", self._clicked)
-        self._canvas.bind("<MouseWheel>", self._mouse_scroll_event)
-
+        self._create_bindings()
         self._draw()
+
+    def _create_bindings(self, sequence: Optional[str] = None):
+        """ set necessary bindings for functionality of widget, will overwrite other bindings """
+        if sequence is None:
+            self._canvas.tag_bind("border_parts", "<Button-1>", self._clicked)
+        if sequence is None or sequence == "<Enter>":
+            self._canvas.bind("<Enter>", self._on_enter)
+        if sequence is None or sequence == "<Leave>":
+            self._canvas.bind("<Leave>", self._on_leave)
+        if sequence is None or sequence == "<B1-Motion>":
+            self._canvas.bind("<B1-Motion>", self._clicked)
+        if sequence is None or sequence == "<MouseWheel>":
+            self._canvas.bind("<MouseWheel>", self._mouse_scroll_event)
 
     def _set_scaling(self, *args, **kwargs):
         super()._set_scaling(*args, **kwargs)
@@ -249,13 +257,19 @@ class CTkScrollbar(CTkBaseClass):
     def get(self):
         return self._start_value, self._end_value
 
-    def bind(self, sequence=None, command=None, add=None):
+    def bind(self, sequence=None, command=None, add="+"):
         """ called on the tkinter.Canvas """
-        return self._canvas.bind(sequence, command, add)
+        if add != "+" or add is not True:
+            raise ValueError("'add' argument can only be '+' or True to preserve internal callbacks")
+        return self._canvas.bind(sequence, command, add="+")
 
     def unbind(self, sequence, funcid=None):
-        """ called on the tkinter.Canvas """
-        return self._canvas.unbind(sequence, funcid)
+        """ called on the tkinter.Canvas, restores internal callbacks """
+        if funcid is not None:
+            raise ValueError("'funcid' argument can only be None, because there is a bug in" +
+                             " tkinter and its not clear whether the internal callbacks will be unbinded or not")
+        self._canvas.unbind(sequence, None)  # unbind all callbacks for sequence
+        self._create_bindings(sequence=sequence)  # restore internal callbacks for sequence
 
     def focus(self):
         return self._canvas.focus()

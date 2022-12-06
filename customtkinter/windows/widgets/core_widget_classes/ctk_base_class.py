@@ -240,6 +240,12 @@ class CTkBaseClass(tkinter.Frame, CTkAppearanceModeBaseClass, CTkScalingBaseClas
         super().configure(width=self._apply_widget_scaling(self._desired_width),
                           height=self._apply_widget_scaling(self._desired_height))
 
+    def unbind_all(self, sequence):
+        raise AttributeError("'unbind_all' is not allowed, because it would delete necessary internal callbacks for all widgets")
+
+    def bind_all(self, sequence=None, func=None, add=None):
+        raise AttributeError("'bind_all' is not allowed, could result in undefined behavior")
+
     def place(self, **kwargs):
         """
         Place a widget in the parent widget. Use as options:

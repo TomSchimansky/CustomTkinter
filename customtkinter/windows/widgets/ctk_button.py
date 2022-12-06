@@ -100,15 +100,21 @@ class CTkButton(CTkBaseClass):
         self._draw_engine = DrawEngine(self._canvas)
         self._draw_engine.set_round_to_even_numbers(self._round_width_to_even_numbers, self._round_height_to_even_numbers)  # rendering options
 
-        # canvas event bindings
-        self._canvas.bind("<Enter>", self._on_enter)
-        self._canvas.bind("<Leave>", self._on_leave)
-        self._canvas.bind("<Button-1>", self._clicked)
-        self._canvas.bind("<Button-1>", self._clicked)
-
         # configure cursor and initial draw
+        self._create_bindings()
         self._set_cursor()
         self._draw()
+
+    def _create_bindings(self, sequence: Optional[str] = None):
+        """ set necessary bindings for functionality of widget, will overwrite other bindings """
+        if sequence is None or sequence == "<Enter>":
+            self._canvas.bind("<Enter>", self._on_enter)
+        if sequence is None or sequence == "<Leave>":
+            self._canvas.bind("<Leave>", self._on_leave)
+        if sequence is None or sequence == "<Button-1>":
+            self._canvas.bind("<Button-1>", self._clicked)
+        if sequence is None or sequence == "<Button-1>":
+            self._canvas.bind("<Button-1>", self._clicked)
 
     def _set_scaling(self, *args, **kwargs):
         super()._set_scaling(*args, **kwargs)
@@ -532,17 +538,22 @@ class CTkButton(CTkBaseClass):
             if self._command is not None:
                 return self._command()
 
-    def bind(self, sequence: str = None, command: Callable = None, add: str = None) -> str:
-        """ called on the tkinter.Label and tkinter.Canvas """
-        canvas_bind_return = self._canvas.bind(sequence, command, add)
-        label_bind_return = self._text_label.bind(sequence, command, add)
+    def bind(self, sequence: str = None, command: Callable = None, add: Union[str, bool] = "+") -> str:
+        """ called on the tkinter.Canvas """
+        if add != "+" or add is not True:
+            raise ValueError("'add' argument can only be '+' or True to preserve internal callbacks")
+        canvas_bind_return = self._canvas.bind(sequence, command, add="+")
+        label_bind_return = self._text_label.bind(sequence, command, add="+")
         return canvas_bind_return + " + " + label_bind_return
 
     def unbind(self, sequence: str, funcid: str = None):
         """ called on the tkinter.Label and tkinter.Canvas """
-        canvas_bind_return, label_bind_return = funcid.split(" + ")
-        self._canvas.unbind(sequence, canvas_bind_return)
-        self._text_label.unbind(sequence, label_bind_return)
+        if funcid is not None:
+            raise ValueError("'funcid' argument can only be None, because there is a bug in" +
+                             " tkinter and its not clear whether the internal callbacks will be unbinded or not")
+        self._canvas.unbind(sequence, None)
+        self._text_label.unbind(sequence, None)
+        self._create_bindings(sequence=sequence)  # restore internal callbacks for sequence
 
     def focus(self):
         return self._text_label.focus()
