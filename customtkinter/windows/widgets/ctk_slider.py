@@ -96,11 +96,7 @@ class CTkSlider(CTkBaseClass):
         self._canvas.grid(column=0, row=0, rowspan=1, columnspan=1, sticky="nswe")
         self._draw_engine = DrawEngine(self._canvas)
 
-        self._canvas.bind("<Enter>", self._on_enter)
-        self._canvas.bind("<Leave>", self._on_leave)
-        self._canvas.bind("<Button-1>", self._clicked)
-        self._canvas.bind("<B1-Motion>", self._clicked)
-
+        self._create_bindings()
         self._set_cursor()
         self._draw()  # initial draw
 
@@ -109,6 +105,17 @@ class CTkSlider(CTkBaseClass):
             self._variable_callback_blocked = True
             self.set(self._variable.get(), from_variable_callback=True)
             self._variable_callback_blocked = False
+
+    def _create_bindings(self, sequence: Optional[str] = None):
+        """ set necessary bindings for functionality of widget, will overwrite other bindings """
+        if sequence is None or sequence == "<Enter>":
+            self._canvas.bind("<Enter>", self._on_enter)
+        if sequence is None or sequence == "<Leave>":
+            self._canvas.bind("<Leave>", self._on_leave)
+        if sequence is None or sequence == "<Button-1>":
+            self._canvas.bind("<Button-1>", self._clicked)
+        if sequence is None or sequence == "<B1-Motion>":
+            self._canvas.bind("<B1-Motion>", self._clicked)
 
     def _set_scaling(self, *args, **kwargs):
         super()._set_scaling(*args, **kwargs)
@@ -366,13 +373,19 @@ class CTkSlider(CTkBaseClass):
         if not self._variable_callback_blocked:
             self.set(self._variable.get(), from_variable_callback=True)
 
-    def bind(self, sequence=None, command=None, add=None):
+    def bind(self, sequence: str = None, command: Callable = None, add: Union[str, bool] = True):
         """ called on the tkinter.Canvas """
-        return self._canvas.bind(sequence, command, add)
+        if add != "+" or add is not True:
+            raise ValueError("'add' argument can only be '+' or True to preserve internal callbacks")
+        self._canvas.bind(sequence, command, add=True)
 
-    def unbind(self, sequence, funcid=None):
-        """ called on the tkinter.Canvas """
-        return self._canvas.unbind(sequence, funcid)
+    def unbind(self, sequence: str = None, funcid: str = None):
+        """ called on the tkinter.Label and tkinter.Canvas """
+        if funcid is not None:
+            raise ValueError("'funcid' argument can only be None, because there is a bug in" +
+                             " tkinter and its not clear whether the internal callbacks will be unbinded or not")
+        self._canvas.unbind(sequence, None)
+        self._create_bindings(sequence=sequence)  # restore internal callbacks for sequence
 
     def focus(self):
         return self._canvas.focus()

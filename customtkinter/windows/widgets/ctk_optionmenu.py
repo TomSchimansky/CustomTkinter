@@ -107,10 +107,6 @@ class CTkOptionMenu(CTkBaseClass):
                                          pady=0,
                                          borderwidth=1,
                                          text=self._current_value)
-        self._create_grid()
-
-        if not self._dynamic_resizing:
-            self.grid_propagate(0)
 
         if self._cursor_manipulation_enabled:
             if sys.platform == "darwin":
@@ -118,23 +114,29 @@ class CTkOptionMenu(CTkBaseClass):
             elif sys.platform.startswith("win"):
                 self.configure(cursor="hand2")
 
-        # event bindings
-        self._canvas.bind("<Enter>", self._on_enter)
-        self._canvas.bind("<Leave>", self._on_leave)
-        self._canvas.bind("<Button-1>", self._clicked)
-        self._canvas.bind("<Button-1>", self._clicked)
+        self._create_grid()
+        if not self._dynamic_resizing:
+            self.grid_propagate(0)
 
-        self._text_label.bind("<Enter>", self._on_enter)
-        self._text_label.bind("<Leave>", self._on_leave)
-        self._text_label.bind("<Button-1>", self._clicked)
-        self._text_label.bind("<Button-1>", self._clicked)
-
+        self._create_bindings()
         self._draw()  # initial draw
 
         if self._variable is not None:
             self._variable_callback_name = self._variable.trace_add("write", self._variable_callback)
             self._current_value = self._variable.get()
             self._text_label.configure(text=self._current_value)
+
+    def _create_bindings(self, sequence: Optional[str] = None):
+        """ set necessary bindings for functionality of widget, will overwrite other bindings """
+        if sequence is None or sequence == "<Enter>":
+            self._canvas.bind("<Enter>", self._on_enter)
+            self._text_label.bind("<Enter>", self._on_enter)
+        if sequence is None or sequence == "<Leave>":
+            self._canvas.bind("<Leave>", self._on_leave)
+            self._text_label.bind("<Leave>", self._on_leave)
+        if sequence is None or sequence == "<Button-1>":
+            self._canvas.bind("<Button-1>", self._clicked)
+            self._text_label.bind("<Button-1>", self._clicked)
 
     def _create_grid(self):
         self._canvas.grid(row=0, column=0, sticky="nsew")
@@ -393,17 +395,21 @@ class CTkOptionMenu(CTkBaseClass):
         if self._state is not tkinter.DISABLED and len(self._values) > 0:
             self._open_dropdown_menu()
 
-    def bind(self, sequence: str = None, command: Callable = None, add: str = None) -> str:
-        """ called on the tkinter.Label and tkinter.Canvas """
-        canvas_bind_return = self._canvas.bind(sequence, command, add)
-        label_bind_return = self._text_label.bind(sequence, command, add)
-        return canvas_bind_return + " + " + label_bind_return
+    def bind(self, sequence: str = None, command: Callable = None, add: Union[str, bool] = True):
+        """ called on the tkinter.Canvas """
+        if add != "+" or add is not True:
+            raise ValueError("'add' argument can only be '+' or True to preserve internal callbacks")
+        self._canvas.bind(sequence, command, add=True)
+        self._text_label.bind(sequence, command, add=True)
 
-    def unbind(self, sequence: str, funcid: str = None):
+    def unbind(self, sequence: str = None, funcid: str = None):
         """ called on the tkinter.Label and tkinter.Canvas """
-        canvas_bind_return, label_bind_return = funcid.split(" + ")
-        self._canvas.unbind(sequence, canvas_bind_return)
-        self._text_label.unbind(sequence, label_bind_return)
+        if funcid is not None:
+            raise ValueError("'funcid' argument can only be None, because there is a bug in" +
+                             " tkinter and its not clear whether the internal callbacks will be unbinded or not")
+        self._canvas.unbind(sequence, None)
+        self._text_label.unbind(sequence, None)
+        self._create_bindings(sequence=sequence)  # restore internal callbacks for sequence
 
     def focus(self):
         return self._text_label.focus()

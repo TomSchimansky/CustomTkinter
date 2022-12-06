@@ -408,3 +408,9 @@ class CTkSegmentedButton(CTkFrame):
         else:
             raise ValueError(f"CTkSegmentedButton does not contain value '{value}'")
 
+    def bind(self, sequence=None, command=None, add=None):
+        raise NotImplementedError
+
+    def unbind(self, sequence=None, funcid=None):
+        raise NotImplementedError
+

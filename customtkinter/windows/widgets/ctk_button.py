@@ -113,8 +113,6 @@ class CTkButton(CTkBaseClass):
             self._canvas.bind("<Leave>", self._on_leave)
         if sequence is None or sequence == "<Button-1>":
             self._canvas.bind("<Button-1>", self._clicked)
-        if sequence is None or sequence == "<Button-1>":
-            self._canvas.bind("<Button-1>", self._clicked)
 
     def _set_scaling(self, *args, **kwargs):
         super()._set_scaling(*args, **kwargs)
@@ -538,15 +536,14 @@ class CTkButton(CTkBaseClass):
             if self._command is not None:
                 return self._command()
 
-    def bind(self, sequence: str = None, command: Callable = None, add: Union[str, bool] = "+") -> str:
+    def bind(self, sequence: str = None, command: Callable = None, add: Union[str, bool] = True):
         """ called on the tkinter.Canvas """
         if add != "+" or add is not True:
             raise ValueError("'add' argument can only be '+' or True to preserve internal callbacks")
-        canvas_bind_return = self._canvas.bind(sequence, command, add="+")
-        label_bind_return = self._text_label.bind(sequence, command, add="+")
-        return canvas_bind_return + " + " + label_bind_return
+        self._canvas.bind(sequence, command, add=True)
+        self._text_label.bind(sequence, command, add=True)
 
-    def unbind(self, sequence: str, funcid: str = None):
+    def unbind(self, sequence: str = None, funcid: str = None):
         """ called on the tkinter.Label and tkinter.Canvas """
         if funcid is not None:
             raise ValueError("'funcid' argument can only be None, because there is a bug in" +

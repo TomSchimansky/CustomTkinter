@@ -257,13 +257,13 @@ class CTkScrollbar(CTkBaseClass):
     def get(self):
         return self._start_value, self._end_value
 
-    def bind(self, sequence=None, command=None, add="+"):
+    def bind(self, sequence=None, command=None, add=True):
         """ called on the tkinter.Canvas """
         if add != "+" or add is not True:
             raise ValueError("'add' argument can only be '+' or True to preserve internal callbacks")
-        return self._canvas.bind(sequence, command, add="+")
+        self._canvas.bind(sequence, command, add=True)
 
-    def unbind(self, sequence, funcid=None):
+    def unbind(self, sequence=None, funcid=None):
         """ called on the tkinter.Canvas, restores internal callbacks """
         if funcid is not None:
             raise ValueError("'funcid' argument can only be None, because there is a bug in" +

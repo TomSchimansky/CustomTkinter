@@ -182,10 +182,15 @@ class CTkFrame(CTkBaseClass):
         else:
             return super().cget(attribute_name)
 
-    def bind(self, sequence=None, command=None, add=None):
+    def bind(self, sequence=None, command=None, add=True):
         """ called on the tkinter.Canvas """
-        return self._canvas.bind(sequence, command, add)
+        if not (add == "+" or add is True):
+            raise ValueError("'add' argument can only be '+' or True to preserve internal callbacks")
+        self._canvas.bind(sequence, command, add=True)
 
-    def unbind(self, sequence, funcid=None):
+    def unbind(self, sequence=None, funcid=None):
         """ called on the tkinter.Canvas """
-        return self._canvas.unbind(sequence, funcid)
+        if funcid is not None:
+            raise ValueError("'funcid' argument can only be None, because there is a bug in" +
+                             " tkinter and its not clear whether the internal callbacks will be unbinded or not")
+        self._canvas.unbind(sequence, None)

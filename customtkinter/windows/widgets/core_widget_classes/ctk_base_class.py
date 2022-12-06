@@ -240,6 +240,12 @@ class CTkBaseClass(tkinter.Frame, CTkAppearanceModeBaseClass, CTkScalingBaseClas
         super().configure(width=self._apply_widget_scaling(self._desired_width),
                           height=self._apply_widget_scaling(self._desired_height))
 
+    def bind(self, sequence=None, command=None, add=None):
+        raise NotImplementedError
+
+    def unbind(self, sequence=None, funcid=None):
+        raise NotImplementedError
+
     def unbind_all(self, sequence):
         raise AttributeError("'unbind_all' is not allowed, because it would delete necessary internal callbacks for all widgets")
 

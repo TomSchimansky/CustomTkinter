@@ -247,17 +247,20 @@ class CTkLabel(CTkBaseClass):
         else:
             return super().cget(attribute_name)  # cget of CTkBaseClass
 
-    def bind(self, sequence: str = None, command: Callable = None, add: str = None) -> str:
+    def bind(self, sequence: str = None, command: Callable = None, add: str = True):
         """ called on the tkinter.Label and tkinter.Canvas """
-        canvas_bind_return = self._canvas.bind(sequence, command, add)
-        label_bind_return = self._label.bind(sequence, command, add)
-        return canvas_bind_return + " + " + label_bind_return
+        if add != "+" or add is not True:
+            raise ValueError("'add' argument can only be '+' or True to preserve internal callbacks")
+        self._canvas.bind(sequence, command, add=True)
+        self._label.bind(sequence, command, add=True)
 
-    def unbind(self, sequence: str, funcid: str = None):
+    def unbind(self, sequence: str, funcid: Optional[str] = None):
         """ called on the tkinter.Label and tkinter.Canvas """
-        canvas_bind_return, label_bind_return = funcid.split(" + ")
-        self._canvas.unbind(sequence, canvas_bind_return)
-        self._label.unbind(sequence, label_bind_return)
+        if funcid is not None:
+            raise ValueError("'funcid' argument can only be None, because there is a bug in" +
+                             " tkinter and its not clear whether the internal callbacks will be unbinded or not")
+        self._canvas.unbind(sequence, None)
+        self._label.unbind(sequence, None)
 
     def focus(self):
         return self._label.focus()

@@ -1,5 +1,5 @@
 import tkinter
-from typing import Union, Tuple, Optional
+from typing import Union, Tuple, Optional, Callable
 
 from .core_rendering import CTkCanvas
 from .ctk_scrollbar import CTkScrollbar
@@ -86,7 +86,6 @@ class CTkTextbox(CTkBaseClass):
                                      highlightthickness=0,
                                      relief="flat",
                                      insertbackground=self._apply_appearance_mode(self._text_color),
-                                     bg=self._apply_appearance_mode(self._fg_color),
                                      **pop_from_dict_by_set(kwargs, self._valid_tk_text_attributes))
 
         check_kwargs_empty(kwargs, raise_error=True)
@@ -227,10 +226,10 @@ class CTkTextbox(CTkBaseClass):
                 self._textbox.configure(fg=self._apply_appearance_mode(self._text_color),
                                         bg=self._apply_appearance_mode(self._bg_color),
                                         insertbackground=self._apply_appearance_mode(self._text_color))
-                self._x_scrollbar.configure(fg_color=self._bg_color, scrollbar_color=self._scrollbar_button_color,
-                                            scrollbar_hover_color=self._scrollbar_button_hover_color)
-                self._y_scrollbar.configure(fg_color=self._bg_color, scrollbar_color=self._scrollbar_button_color,
-                                            scrollbar_hover_color=self._scrollbar_button_hover_color)
+                self._x_scrollbar.configure(fg_color=self._bg_color, button_color=self._scrollbar_button_color,
+                                            button_hover_color=self._scrollbar_button_hover_color)
+                self._y_scrollbar.configure(fg_color=self._bg_color, button_color=self._scrollbar_button_color,
+                                            button_hover_color=self._scrollbar_button_hover_color)
             else:
                 self._canvas.itemconfig("inner_parts",
                                         fill=self._apply_appearance_mode(self._fg_color),
@@ -327,18 +326,18 @@ class CTkTextbox(CTkBaseClass):
         else:
             return super().cget(attribute_name)
 
-    def bind(self, sequence=None, command=None, add=None):
-        """ called on the tkinter.Text """
+    def bind(self, sequence: str = None, command: Callable = None, add: Union[str, bool] = True):
+        """ called on the tkinter.Canvas """
+        if add != "+" or add is not True:
+            raise ValueError("'add' argument can only be '+' or True to preserve internal callbacks")
+        self._textbox.bind(sequence, command, add=True)
 
-        # if sequence is <KeyRelease>, allow only to add the binding to keep the _textbox_modified_event() being called
-        if sequence == "<KeyRelease>":
-            return self._textbox.bind(sequence, command, add="+")
-        else:
-            return self._textbox.bind(sequence, command, add)
-
-    def unbind(self, sequence, funcid=None):
-        """ called on the tkinter.Text """
-        return self._textbox.unbind(sequence, funcid)
+    def unbind(self, sequence: str = None, funcid: str = None):
+        """ called on the tkinter.Label and tkinter.Canvas """
+        if funcid is not None:
+            raise ValueError("'funcid' argument can only be None, because there is a bug in" +
+                             " tkinter and its not clear whether the internal callbacks will be unbinded or not")
+        self._textbox.unbind(sequence, None)
 
     def focus(self):
         return self._textbox.focus()

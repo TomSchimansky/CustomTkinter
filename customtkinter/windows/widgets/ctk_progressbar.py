@@ -1,6 +1,6 @@
 import tkinter
 import math
-from typing import Union, Tuple, Optional, Literal
+from typing import Union, Tuple, Optional, Literal, Callable
 
 from .core_rendering import CTkCanvas
 from .theme import ThemeManager
@@ -285,13 +285,18 @@ class CTkProgressBar(CTkBaseClass):
             self._indeterminate_value += self._indeterminate_speed
             self._draw()
 
-    def bind(self, sequence=None, command=None, add=None):
+    def bind(self, sequence: str = None, command: Callable = None, add: Union[str, bool] = True):
         """ called on the tkinter.Canvas """
-        return self._canvas.bind(sequence, command, add)
+        if add != "+" or add is not True:
+            raise ValueError("'add' argument can only be '+' or True to preserve internal callbacks")
+        self._canvas.bind(sequence, command, add=True)
 
-    def unbind(self, sequence, funcid=None):
-        """ called on the tkinter.Canvas """
-        return self._canvas.unbind(sequence, funcid)
+    def unbind(self, sequence: str = None, funcid: str = None):
+        """ called on the tkinter.Label and tkinter.Canvas """
+        if funcid is not None:
+            raise ValueError("'funcid' argument can only be None, because there is a bug in" +
+                             " tkinter and its not clear whether the internal callbacks will be unbinded or not")
+        self._canvas.unbind(sequence, None)
 
     def focus(self):
         return self._canvas.focus()
