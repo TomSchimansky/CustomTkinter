@@ -70,11 +70,4 @@ tabview_1.pack(pady=10, padx=10)
 tabview_1.add("CTkTabview")
 tabview_1.add("Tab 2")
 
-progressbar_1.configure(mode="indeterminate")
-progressbar_1.start()
-#progressbar_1.stop()
-#progressbar_1.start()
-#progressbar_1.stop()
-#progressbar_1.start()
-
 app.mainloop()

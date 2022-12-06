@@ -58,6 +58,7 @@ class CTkProgressBar(CTkBaseClass):
         self._variable = variable
         self._variable_callback_blocked = False
         self._variable_callback_name = None
+        self._loop_after_id = None
 
         # shape
         self._corner_radius = ThemeManager.theme["CTkProgressBar"]["corner_radius"] if corner_radius is None else corner_radius
@@ -249,13 +250,15 @@ class CTkProgressBar(CTkBaseClass):
         return self._determinate_value
 
     def start(self):
-        """ start indeterminate mode """
+        """ start automatic mode """
         if not self._loop_running:
             self._loop_running = True
             self._internal_loop()
 
     def stop(self):
-        """ stop indeterminate mode """
+        """ stop automatic mode """
+        if self._loop_after_id is not None:
+            self.after_cancel(self._loop_after_id)
         self._loop_running = False
 
     def _internal_loop(self):
@@ -265,13 +268,14 @@ class CTkProgressBar(CTkBaseClass):
                 if self._determinate_value > 1:
                     self._determinate_value -= 1
                 self._draw()
-                self.after(20, self._internal_loop)
+                self._loop_after_id = self.after(20, self._internal_loop)
             else:
                 self._indeterminate_value += self._indeterminate_speed
                 self._draw()
-                self.after(20, self._internal_loop)
+                self._loop_after_id = self.after(20, self._internal_loop)
 
     def step(self):
+        """ increase progress """
         if self._mode == "determinate":
             self._determinate_value += self._determinate_speed / 50
             if self._determinate_value > 1:
