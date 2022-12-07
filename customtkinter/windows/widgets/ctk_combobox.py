@@ -110,10 +110,11 @@ class CTkComboBox(CTkBaseClass):
             self._entry.configure(textvariable=self._variable)
 
         # insert default value
-        if len(self._values) > 0:
-            self._entry.insert(0, self._values[0])
-        else:
-            self._entry.insert(0, "CTkComboBox")
+        if self._variable is None:
+            if len(self._values) > 0:
+                self._entry.insert(0, self._values[0])
+            else:
+                self._entry.insert(0, "CTkComboBox")
 
     def _create_bindings(self, sequence: Optional[str] = None):
         """ set necessary bindings for functionality of widget, will overwrite other bindings """
