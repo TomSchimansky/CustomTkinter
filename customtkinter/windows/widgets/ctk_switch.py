@@ -119,7 +119,7 @@ class CTkSwitch(CTkBaseClass):
 
         if self._variable is not None and self._variable != "":
             self._variable_callback_name = self._variable.trace_add("write", self._variable_callback)
-            self.c_heck_state = True if self._variable.get() == self._onvalue else False
+            self._check_state = True if self._variable.get() == self._onvalue else False
 
         self._create_bindings()
         self._set_cursor()
