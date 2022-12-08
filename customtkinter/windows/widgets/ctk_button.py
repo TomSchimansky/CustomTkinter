@@ -40,7 +40,7 @@ class CTkButton(CTkBaseClass):
                  text: str = "CTkButton",
                  font: Optional[Union[tuple, CTkFont]] = None,
                  textvariable: Union[tkinter.Variable, None] = None,
-                 image: Union[tkinter.PhotoImage, CTkImage, None] = None,
+                 image: Union[CTkImage, None] = None,
                  state: str = "normal",
                  hover: bool = True,
                  command: Union[Callable[[], None], None] = None,

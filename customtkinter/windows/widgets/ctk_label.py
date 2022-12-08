@@ -32,7 +32,7 @@ class CTkLabel(CTkBaseClass):
 
                  text: str = "CTkLabel",
                  font: Optional[Union[tuple, CTkFont]] = None,
-                 image: Union[tkinter.PhotoImage, CTkImage, None] = None,
+                 image: Union[CTkImage, None] = None,
                  compound: str = "center",
                  anchor: str = "center",  # label anchor: center, n, e, s, w
                  wraplength: int = 0,
