@@ -488,7 +488,8 @@ class CTkButton(CTkBaseClass):
 
             # set text_label bg color to button hover color
             if self._text_label is not None:
-                self._text_label.configure(bg=self._apply_appearance_mode(inner_parts_color))
+                self._text_label.configure(bg=self._apply_appearance_mode(inner_parts_color),
+                                           fg=self._apply_appearance_mode(self._fg_color))
 
             # set image_label bg color to button hover color
             if self._image_label is not None:
@@ -509,7 +510,8 @@ class CTkButton(CTkBaseClass):
 
         # set text_label bg color (label color)
         if self._text_label is not None:
-            self._text_label.configure(bg=self._apply_appearance_mode(inner_parts_color))
+            self._text_label.configure(bg=self._apply_appearance_mode(inner_parts_color),
+                                      fg=self._apply_appearance_mode(self._text_color))
 
         # set image_label bg color (image bg color)
         if self._image_label is not None:
