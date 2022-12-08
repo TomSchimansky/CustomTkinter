@@ -395,7 +395,7 @@ class CTkButton(CTkBaseClass):
             self._image = self._check_image_type(kwargs.pop("image"))
             if isinstance(self._image, CTkImage):
                 self._image.add_configure_callback(self._update_image)
-            require_redraw = True
+            self._update_image()
 
         if "state" in kwargs:
             self._state = kwargs.pop("state")
