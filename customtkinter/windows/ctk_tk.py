@@ -40,6 +40,16 @@ class CTk(tkinter.Tk, CTkAppearanceModeBaseClass, CTkScalingBaseClass):
         CTkScalingBaseClass.__init__(self, scaling_type="window")
         check_kwargs_empty(kwargs, raise_error=True)
 
+        # set icons
+        try:
+            customtkinter_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+            if sys.platform == "darwin":
+                self.tk.call('wm', 'iconphoto', self._w, tkinter.PhotoImage(file=os.path.join(customtkinter_directory, "assets", "icons", "CustomTkinter_icon_macOS.png")))
+            elif sys.platform.startswith("win"):
+                pass
+        except Exception as e:
+            print(e)
+
         self._current_width = 600  # initial window size, independent of scaling
         self._current_height = 500
         self._min_width: int = 0
