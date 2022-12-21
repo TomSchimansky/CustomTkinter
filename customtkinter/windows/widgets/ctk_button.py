@@ -541,7 +541,10 @@ class CTkButton(CTkBaseClass):
         if not (add == "+" or add is True):
             raise ValueError("'add' argument can only be '+' or True to preserve internal callbacks")
         self._canvas.bind(sequence, command, add=True)
-        self._text_label.bind(sequence, command, add=True)
+        if self._text_label:
+            self._text_label.bind(sequence, command, add=True)
+        if self._image_label:
+            self._image_label.bind(sequence, command, add=True)
 
     def unbind(self, sequence: str = None, funcid: str = None):
         """ called on the tkinter.Label and tkinter.Canvas """
