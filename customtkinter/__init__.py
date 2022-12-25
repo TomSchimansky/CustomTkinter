@@ -78,4 +78,4 @@ def set_window_scaling(scaling_value: float):
 
 def deactivate_automatic_dpi_awareness():
     """ deactivate DPI awareness of current process (windll.shcore.SetProcessDpiAwareness(0)) """
-    ScalingTracker.deactivate_automatic_dpi_awareness = False
+    ScalingTracker.deactivate_automatic_dpi_awareness = True
