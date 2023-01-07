@@ -44,7 +44,7 @@ class CTk(tkinter.Tk, CTkAppearanceModeBaseClass, CTkScalingBaseClass):
             # Set Windows titlebar icon
             if sys.platform.startswith("win"):
                 customtkinter_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-                self.iconbitmap(os.path.join(customtkinter_directory, "assets", "icons", "CustomTkinter_icon_Windows.ico"))
+                self.after(200, lambda: self.iconbitmap(os.path.join(customtkinter_directory, "assets", "icons", "CustomTkinter_icon_Windows.ico")))
         except Exception:
             pass
 
