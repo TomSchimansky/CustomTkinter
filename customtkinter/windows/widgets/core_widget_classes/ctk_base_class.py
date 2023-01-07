@@ -1,4 +1,5 @@
 import sys
+import warnings
 import tkinter
 import tkinter.ttk as ttk
 from typing import Union, Callable, Tuple
@@ -158,7 +159,7 @@ class CTkBaseClass(tkinter.Frame, CTkAppearanceModeBaseClass, CTkScalingBaseClas
             return font
 
         elif type(font) == tuple and len(font) == 1:
-            sys.stderr.write(f"{type(self).__name__} Warning: font {font} given without size, will be extended with default text size of current theme\n")
+            warnings.warn(f"{type(self).__name__} Warning: font {font} given without size, will be extended with default text size of current theme\n")
             return font[0], ThemeManager.theme["text"]["size"]
 
         elif type(font) == tuple and 2 <= len(font) <= 6:
@@ -178,8 +179,8 @@ class CTkBaseClass(tkinter.Frame, CTkAppearanceModeBaseClass, CTkScalingBaseClas
         elif isinstance(image, CTkImage):
             return image
         else:
-            sys.stderr.write(f"{type(self).__name__} Warning: Given image is not CTkImage but {type(image)}. " +
-                             f"Image can not be scaled on HighDPI displays, use CTkImage instead.\n")
+            warnings.warn(f"{type(self).__name__} Warning: Given image is not CTkImage but {type(image)}. " +
+                          f"Image can not be scaled on HighDPI displays, use CTkImage instead.\n")
             return image
 
     def _update_dimensions_event(self, event):
