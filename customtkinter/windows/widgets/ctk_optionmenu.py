@@ -243,8 +243,8 @@ class CTkOptionMenu(CTkBaseClass):
             self._text_color = self._check_color_type(kwargs.pop("text_color"))
             require_redraw = True
 
-        if "dropdown_color" in kwargs:
-            self._dropdown_menu.configure(fg_color=kwargs.pop("dropdown_color"))
+        if "dropdown_fg_color" in kwargs:
+            self._dropdown_menu.configure(fg_color=kwargs.pop("dropdown_fg_color"))
 
         if "dropdown_hover_color" in kwargs:
             self._dropdown_menu.configure(hover_color=kwargs.pop("dropdown_hover_color"))
