@@ -201,6 +201,7 @@ class CTkComboBox(CTkBaseClass):
 
             self._entry.configure(bg=self._apply_appearance_mode(self._fg_color),
                                   fg=self._apply_appearance_mode(self._text_color),
+                                  readonlybackground=self._apply_appearance_mode(self._fg_color),
                                   disabledbackground=self._apply_appearance_mode(self._fg_color),
                                   disabledforeground=self._apply_appearance_mode(self._text_color_disabled),
                                   highlightcolor=self._apply_appearance_mode(self._fg_color),
