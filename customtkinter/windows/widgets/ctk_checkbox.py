@@ -37,6 +37,7 @@ class CTkCheckBox(CTkBaseClass):
                  textvariable: Union[tkinter.Variable, None] = None,
                  state: str = tkinter.NORMAL,
                  hover: bool = True,
+                 border_remain: bool = False,
                  command: Union[Callable[[], None], None] = None,
                  onvalue: Union[int, str] = 1,
                  offvalue: Union[int, str] = 0,
@@ -75,6 +76,7 @@ class CTkCheckBox(CTkBaseClass):
         self._command = command
         self._state = state
         self._hover = hover
+        self._border_remain = border_remain
         self._check_state = False
 
         self._onvalue = onvalue
@@ -197,9 +199,10 @@ class CTkCheckBox(CTkBaseClass):
                 self._canvas.itemconfig("inner_parts",
                                         outline=self._apply_appearance_mode(self._fg_color),
                                         fill=self._apply_appearance_mode(self._fg_color))
-                self._canvas.itemconfig("border_parts",
-                                        outline=self._apply_appearance_mode(self._fg_color),
-                                        fill=self._apply_appearance_mode(self._fg_color))
+                if not self._border_remain:
+                    self._canvas.itemconfig("border_parts",
+                                            outline=self._apply_appearance_mode(self._fg_color),
+                                            fill=self._apply_appearance_mode(self._fg_color))
 
                 if "create_line" in self._canvas.gettags("checkmark"):
                     self._canvas.itemconfig("checkmark", fill=self._apply_appearance_mode(self._checkmark_color))
@@ -366,9 +369,10 @@ class CTkCheckBox(CTkBaseClass):
                 self._canvas.itemconfig("inner_parts",
                                         fill=self._apply_appearance_mode(self._hover_color),
                                         outline=self._apply_appearance_mode(self._hover_color))
-                self._canvas.itemconfig("border_parts",
-                                        fill=self._apply_appearance_mode(self._hover_color),
-                                        outline=self._apply_appearance_mode(self._hover_color))
+                if not self._border_remain:
+                    self._canvas.itemconfig("border_parts",
+                                            fill=self._apply_appearance_mode(self._hover_color),
+                                            outline=self._apply_appearance_mode(self._hover_color))
             else:
                 self._canvas.itemconfig("inner_parts",
                                         fill=self._apply_appearance_mode(self._hover_color),
@@ -379,9 +383,10 @@ class CTkCheckBox(CTkBaseClass):
             self._canvas.itemconfig("inner_parts",
                                     fill=self._apply_appearance_mode(self._fg_color),
                                     outline=self._apply_appearance_mode(self._fg_color))
-            self._canvas.itemconfig("border_parts",
-                                    fill=self._apply_appearance_mode(self._fg_color),
-                                    outline=self._apply_appearance_mode(self._fg_color))
+            if not self._border_remain:
+                self._canvas.itemconfig("border_parts",
+                                        fill=self._apply_appearance_mode(self._fg_color),
+                                        outline=self._apply_appearance_mode(self._fg_color))
         else:
             self._canvas.itemconfig("inner_parts",
                                     fill=self._apply_appearance_mode(self._bg_color),
