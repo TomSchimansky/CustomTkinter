@@ -55,6 +55,7 @@ class CTkCheckBox(CTkBaseClass):
         self._fg_color = ThemeManager.theme["CTkCheckbox"]["fg_color"] if fg_color is None else self._check_color_type(fg_color)
         self._hover_color = ThemeManager.theme["CTkCheckbox"]["hover_color"] if hover_color is None else self._check_color_type(hover_color)
         self._border_color = ThemeManager.theme["CTkCheckbox"]["border_color"] if border_color is None else self._check_color_type(border_color)
+        
         self._checkmark_color = ThemeManager.theme["CTkCheckbox"]["checkmark_color"] if checkmark_color is None else self._check_color_type(checkmark_color)
 
         # shape
@@ -278,6 +279,9 @@ class CTkCheckBox(CTkBaseClass):
 
         if "hover" in kwargs:
             self._hover = kwargs.pop("hover")
+            
+        if "border_remain" in kwargs:
+            self._border_remain = kwargs.pop("border_remain")
 
         if "command" in kwargs:
             self._command = kwargs.pop("command")
@@ -332,6 +336,8 @@ class CTkCheckBox(CTkBaseClass):
             return self._state
         elif attribute_name == "hover":
             return self._hover
+        elif attribute_name == "border_remain":
+            return self._border_remain
         elif attribute_name == "onvalue":
             return self._onvalue
         elif attribute_name == "offvalue":
