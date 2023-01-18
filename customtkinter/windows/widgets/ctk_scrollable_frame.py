@@ -3,7 +3,7 @@ from typing import Optional, Union, Tuple
 import customtkinter
 
 
-class ScrollableFrame(customtkinter.CTkFrame):
+class CTkScrollableFrame(customtkinter.CTkFrame):
     """
     A scrollable frame that allows you to add any kind of items (including frames with multiple widgets on it).
     all you have to do is inherit from this class. Example

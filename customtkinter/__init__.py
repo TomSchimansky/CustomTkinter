@@ -33,7 +33,7 @@ from .windows.widgets import CTkSlider
 from .windows.widgets import CTkSwitch
 from .windows.widgets import CTkTabview
 from .windows.widgets import CTkTextbox
-
+from .windows.widgets import CTkScrollableFrame
 # import windows
 from .windows import CTk
 from .windows import CTkToplevel
