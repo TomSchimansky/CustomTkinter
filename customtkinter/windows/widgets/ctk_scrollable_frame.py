@@ -1,9 +1,12 @@
 from typing import Optional, Union, Tuple
 
-import customtkinter
+from .core_rendering import CTkCanvas
+from .ctk_scrollbar import CTkScrollbar
+from .ctk_frame import CTkFrame
+from .appearance_mode import AppearanceModeTracker
 
 
-class CTkScrollableFrame(customtkinter.CTkFrame):
+class CTkScrollableFrame(CTkFrame):
     """
     A scrollable frame that allows you to add any kind of items (including frames with multiple widgets on it).
     all you have to do is inherit from this class. Example
@@ -17,23 +20,23 @@ class CTkScrollableFrame(customtkinter.CTkFrame):
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(0, weight=1)
 
-        self.canvas = customtkinter.CTkCanvas(self, highlightthickness=0)
+        self.canvas = CTkCanvas(self, highlightthickness=0)
         self.canvas.grid(row=0, column=0, sticky="nswe")
         self.canvas.grid_rowconfigure(0, weight=1)
         self.canvas.grid_columnconfigure(0, weight=1)
 
         self.update_canvas_color()
 
-        self.scrollbar = customtkinter.CTkScrollbar(self, command=self.canvas.yview)
+        self.scrollbar = CTkScrollbar(self, command=self.canvas.yview)
         self.scrollbar.grid(row=0, column=1, sticky="nswe")
 
-        self.scrollable_frame = customtkinter.CTkFrame(self.canvas, width=60000, height=50000) #scrollable frame is invisible. assuming it was stretched at max, the scroll upwards bug wont happen
+        self.scrollable_frame = CTkFrame(self.canvas, width=60000, height=50000) #scrollable frame is invisible. assuming it was stretched at max, the scroll upwards bug wont happen
         self.scrollable_frame.configure(fg_color='transparent')
 
         self.scrollable_frame.grid_columnconfigure(0, weight=1)
         self.update_scrollable_frame_color()
 
-        self._frame_id = self.canvas.create_window(0, 0, window=self.scrollable_frame, anchor=customtkinter.NW)
+        self._frame_id = self.canvas.create_window(0, 0, window=self.scrollable_frame,)
         self.canvas.configure(yscrollcommand=self.scrollbar.set)
 
         self.canvas.bind("<Configure>", self.resize_frame)  # increase the items inside the canvas as the canvas grows
@@ -56,15 +59,21 @@ class CTkScrollableFrame(customtkinter.CTkFrame):
         self.canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
         # self.canvas.yview_moveto(int(-1 * (event.delta / 120)))
 
+    def get_appearance_mode(self) -> str:
+        """ get current state of the appearance mode (light or dark) """
+        if AppearanceModeTracker.appearance_mode == 0:
+            return "Light"
+        elif AppearanceModeTracker.appearance_mode == 1:
+            return "Dark"
     def update_canvas_color(self):
         # because for some reason, Ctk canvas do not update automatically
-        if customtkinter.get_appearance_mode() == "Light":
+        if self.get_appearance_mode() == "Light":
             self.canvas.configure(bg="#ffffff")
-        if customtkinter.get_appearance_mode() == "Dark":
+        if self.get_appearance_mode() == "Dark":
             self.canvas.configure(bg="#343638")
 
     def update_scrollable_frame_color(self):
-        if customtkinter.get_appearance_mode() == "Light":
+        if self.get_appearance_mode() == "Light":
             self.scrollable_frame.configure(bg_color="#ffffff")
-        if customtkinter.get_appearance_mode() == "Dark":
+        if self.get_appearance_mode() == "Dark":
             self.scrollable_frame.configure(bg_color="#343638")
