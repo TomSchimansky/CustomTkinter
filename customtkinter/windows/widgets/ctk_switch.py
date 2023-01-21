@@ -92,6 +92,7 @@ class CTkSwitch(CTkBaseClass):
         self.grid_columnconfigure(0, weight=0)
         self.grid_columnconfigure(1, weight=0, minsize=self._apply_widget_scaling(6))
         self.grid_columnconfigure(2, weight=1)
+        self.grid_rowconfigure(0, weight=1)
 
         self._bg_canvas = CTkCanvas(master=self,
                                     highlightthickness=0,
@@ -221,23 +222,29 @@ class CTkSwitch(CTkBaseClass):
             self._canvas.configure(bg=self._apply_appearance_mode(self._bg_color))
 
             if self._border_color == "transparent":
-                self._canvas.itemconfig("border_parts", fill=self._apply_appearance_mode(self._bg_color),
+                self._canvas.itemconfig("border_parts",
+                                        fill=self._apply_appearance_mode(self._bg_color),
                                         outline=self._apply_appearance_mode(self._bg_color))
             else:
-                self._canvas.itemconfig("border_parts", fill=self._apply_appearance_mode(self._border_color),
+                self._canvas.itemconfig("border_parts",
+                                        fill=self._apply_appearance_mode(self._border_color),
                                         outline=self._apply_appearance_mode(self._border_color))
 
-            self._canvas.itemconfig("inner_parts", fill=self._apply_appearance_mode(self._fg_color),
+            self._canvas.itemconfig("inner_parts",
+                                    fill=self._apply_appearance_mode(self._fg_color),
                                     outline=self._apply_appearance_mode(self._fg_color))
 
             if self._progress_color == "transparent":
-                self._canvas.itemconfig("progress_parts", fill=self._apply_appearance_mode(self._fg_color),
+                self._canvas.itemconfig("progress_parts",
+                                        fill=self._apply_appearance_mode(self._fg_color),
                                         outline=self._apply_appearance_mode(self._fg_color))
             else:
-                self._canvas.itemconfig("progress_parts", fill=self._apply_appearance_mode(self._progress_color),
+                self._canvas.itemconfig("progress_parts",
+                                        fill=self._apply_appearance_mode(self._progress_color),
                                         outline=self._apply_appearance_mode(self._progress_color))
 
-            self._canvas.itemconfig("slider_parts", fill=self._apply_appearance_mode(self._button_color),
+            self._canvas.itemconfig("slider_parts",
+                                    fill=self._apply_appearance_mode(self._button_color),
                                     outline=self._apply_appearance_mode(self._button_color))
 
             if self._state == tkinter.DISABLED:

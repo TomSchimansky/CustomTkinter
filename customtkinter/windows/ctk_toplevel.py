@@ -62,18 +62,24 @@ class CTkToplevel(tkinter.Toplevel, CTkAppearanceModeBaseClass, CTkScalingBaseCl
         # set title of tkinter.Toplevel
         super().title("CTkToplevel")
 
+        # indicator variables
+        self._iconbitmap_method_called = True
         self._state_before_windows_set_titlebar_color = None
         self._windows_set_titlebar_color_called = False  # indicates if windows_set_titlebar_color was called, stays True until revert_withdraw_after_windows_set_titlebar_color is called
         self._withdraw_called_after_windows_set_titlebar_color = False  # indicates if withdraw() was called after windows_set_titlebar_color
         self._iconify_called_after_windows_set_titlebar_color = False  # indicates if iconify() was called after windows_set_titlebar_color
+        self._block_update_dimensions_event = False
 
+        # set CustomTkinter titlebar icon (Windows only)
+        if sys.platform.startswith("win"):
+            self.after(200, self._windows_set_titlebar_icon)
+
+        # set titlebar color (Windows only)
         if sys.platform.startswith("win"):
             self._windows_set_titlebar_color(self._get_appearance_mode())
 
         self.bind('<Configure>', self._update_dimensions_event)
         self.bind('<FocusIn>', self._focus_in_event)
-
-        self._block_update_dimensions_event = False
 
     def destroy(self):
         self._disable_macos_dark_title_bar()
@@ -189,6 +195,19 @@ class CTkToplevel(tkinter.Toplevel, CTkAppearanceModeBaseClass, CTkScalingBaseCl
             return self._fg_color
         else:
             return super().cget(attribute_name)
+
+    def wm_iconbitmap(self, bitmap=None, default=None):
+        self._iconbitmap_method_called = True
+        super().wm_iconbitmap(bitmap, default)
+
+    def _windows_set_titlebar_icon(self):
+        try:
+            # if not the user already called iconbitmap method, set icon
+            if not self._iconbitmap_method_called:
+                customtkinter_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+                self.iconbitmap(os.path.join(customtkinter_directory, "assets", "icons", "CustomTkinter_icon_Windows.ico"))
+        except Exception:
+            pass
 
     @classmethod
     def _enable_macos_dark_title_bar(cls):

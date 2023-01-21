@@ -40,14 +40,6 @@ class CTk(tkinter.Tk, CTkAppearanceModeBaseClass, CTkScalingBaseClass):
         CTkScalingBaseClass.__init__(self, scaling_type="window")
         check_kwargs_empty(kwargs, raise_error=True)
 
-        try:
-            # Set Windows titlebar icon
-            if sys.platform.startswith("win"):
-                customtkinter_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-                self.after(200, lambda: self.iconbitmap(os.path.join(customtkinter_directory, "assets", "icons", "CustomTkinter_icon_Windows.ico")))
-        except Exception:
-            pass
-
         self._current_width = 600  # initial window size, independent of scaling
         self._current_height = 500
         self._min_width: int = 0
@@ -61,22 +53,27 @@ class CTk(tkinter.Tk, CTkAppearanceModeBaseClass, CTkScalingBaseClass):
         # set bg of tkinter.Tk
         super().configure(bg=self._apply_appearance_mode(self._fg_color))
 
-        # set title and initial geometry
+        # set title
         self.title("CTk")
-        # self.geometry(f"{self._current_width}x{self._current_height}")
 
+        # indicator variables
+        self._iconbitmap_method_called = False  # indicates if wm_iconbitmap method got called
         self._state_before_windows_set_titlebar_color = None
         self._window_exists = False  # indicates if the window is already shown through update() or mainloop() after init
         self._withdraw_called_before_window_exists = False  # indicates if withdraw() was called before window is first shown through update() or mainloop()
         self._iconify_called_before_window_exists = False  # indicates if iconify() was called before window is first shown through update() or mainloop()
+        self._block_update_dimensions_event = False
 
+        # set CustomTkinter titlebar icon (Windows only)
+        if sys.platform.startswith("win"):
+            self.after(200, self._windows_set_titlebar_icon)
+
+        # set titlebar color (Windows only)
         if sys.platform.startswith("win"):
             self._windows_set_titlebar_color(self._get_appearance_mode())
 
         self.bind('<Configure>', self._update_dimensions_event)
         self.bind('<FocusIn>', self._focus_in_event)
-
-        self._block_update_dimensions_event = False
 
     def destroy(self):
         self._disable_macos_dark_title_bar()
@@ -218,6 +215,19 @@ class CTk(tkinter.Tk, CTkAppearanceModeBaseClass, CTkScalingBaseClass):
             return self._fg_color
         else:
             return super().cget(attribute_name)
+
+    def wm_iconbitmap(self, bitmap=None, default=None):
+        self._iconbitmap_method_called = True
+        super().wm_iconbitmap(bitmap, default)
+
+    def _windows_set_titlebar_icon(self):
+        try:
+            # if not the user already called iconbitmap method, set icon
+            if not self._iconbitmap_method_called:
+                customtkinter_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+                self.iconbitmap(os.path.join(customtkinter_directory, "assets", "icons", "CustomTkinter_icon_Windows.ico"))
+        except Exception:
+            pass
 
     @classmethod
     def _enable_macos_dark_title_bar(cls):

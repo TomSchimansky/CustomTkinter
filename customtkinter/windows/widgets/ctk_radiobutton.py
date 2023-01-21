@@ -85,6 +85,7 @@ class CTkRadioButton(CTkBaseClass):
         self.grid_columnconfigure(0, weight=0)
         self.grid_columnconfigure(1, weight=0, minsize=self._apply_widget_scaling(6))
         self.grid_columnconfigure(2, weight=1)
+        self.grid_rowconfigure(0, weight=1)
 
         self._bg_canvas = CTkCanvas(master=self,
                                     highlightthickness=0,
