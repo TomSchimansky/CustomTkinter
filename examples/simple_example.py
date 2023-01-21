@@ -1,4 +1,3 @@
-import tkinter
 import customtkinter
 
 customtkinter.set_appearance_mode("dark")  # Modes: "System" (standard), "Dark", "Light"
@@ -7,7 +6,6 @@ customtkinter.set_default_color_theme("blue")  # Themes: "blue" (standard), "gre
 app = customtkinter.CTk()
 app.geometry("400x780")
 app.title("CustomTkinter simple_example.py")
-
 
 def button_callback():
     print("Button click", combobox_1.get())
@@ -20,7 +18,7 @@ def slider_callback(value):
 frame_1 = customtkinter.CTkFrame(master=app)
 frame_1.pack(pady=20, padx=60, fill="both", expand=True)
 
-label_1 = customtkinter.CTkLabel(master=frame_1, justify=tkinter.LEFT)
+label_1 = customtkinter.CTkLabel(master=frame_1, justify=customtkinter.LEFT)
 label_1.pack(pady=10, padx=10)
 
 progressbar_1 = customtkinter.CTkProgressBar(master=frame_1)
@@ -47,7 +45,7 @@ combobox_1.set("CTkComboBox")
 checkbox_1 = customtkinter.CTkCheckBox(master=frame_1)
 checkbox_1.pack(pady=10, padx=10)
 
-radiobutton_var = tkinter.IntVar(value=1)
+radiobutton_var = customtkinter.IntVar(value=1)
 
 radiobutton_1 = customtkinter.CTkRadioButton(master=frame_1, variable=radiobutton_var, value=1)
 radiobutton_1.pack(pady=10, padx=10)
