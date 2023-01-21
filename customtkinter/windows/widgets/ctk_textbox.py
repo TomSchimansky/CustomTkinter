@@ -119,7 +119,7 @@ class CTkTextbox(CTkBaseClass):
 
         self._create_grid_for_text_and_scrollbars(re_grid_textbox=True, re_grid_x_scrollbar=True, re_grid_y_scrollbar=True)
 
-        self.after(50, self._check_if_scrollbars_needed)
+        self.after(50, self._check_if_scrollbars_needed, None, True)
         self._draw()
 
     def _create_grid_for_text_and_scrollbars(self, re_grid_textbox=False, re_grid_x_scrollbar=False, re_grid_y_scrollbar=False):
@@ -151,7 +151,7 @@ class CTkTextbox(CTkBaseClass):
             else:
                 self._y_scrollbar.grid_forget()
 
-    def _check_if_scrollbars_needed(self, event=None, continue_loop: bool = True):
+    def _check_if_scrollbars_needed(self, event=None, continue_loop: bool = False):
         """ Method hides or places the scrollbars if they are needed on key release event of tkinter.text widget """
 
         if self._scrollbars_activated:
@@ -349,7 +349,6 @@ class CTkTextbox(CTkBaseClass):
         return self._textbox.focus_force()
 
     def insert(self, index, text, tags=None):
-        self._check_if_scrollbars_needed()
         return self._textbox.insert(index, text, tags)
 
     def get(self, index1, index2=None):
