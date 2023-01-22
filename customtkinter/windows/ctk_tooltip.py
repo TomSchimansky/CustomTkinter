@@ -15,8 +15,8 @@ class CTkTooltip(CTkToplevel):
                  fg_color: Union[str, Tuple[str, str]] = "default",
                  mouse_offset: Tuple[int, int] = (1, 1),
                  **kwargs):
-        self.wait_time = delay  # milliseconds
-        self.wrap_length = wrap_length
+        self.wait_time = delay  # milliseconds until tooltip appears
+        self.wrap_length = wrap_length  # wrap length of the tooltip text
         self.master = master
         self.text = text
         self.mouse_offset = mouse_offset
@@ -66,7 +66,7 @@ class CTkTooltip(CTkToplevel):
 
     def show(self, event=None):
         # Get the position the tooltip needs to appear at
-        super().__init__(self.master, **self.kwargs)
+        super().__init__(self.master)
         self._visible = True
         x = y = 0
         x, y, cx, cy = self.master.bbox("insert")
@@ -78,7 +78,7 @@ class CTkTooltip(CTkToplevel):
         self.wm_geometry(f'+{x}+{y}')
         self.wm_attributes('-transparentcolor', self.bg_color)
         super().configure(bg_color=self.bg_color)
-        label = CTkLabel(self, text=self.text, corner_radius=10, bg_color=self.bg_color, fg_color=self.fg_color, width=1, wraplength=self.wrap_length)
+        label = CTkLabel(self, text=self.text, corner_radius=10, bg_color=self.bg_color, fg_color=self.fg_color, width=1, wraplength=self.wrap_length, **self.kwargs)
         label.pack()
 
     def hide(self):
