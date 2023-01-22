@@ -21,7 +21,7 @@ class CTkCanvas(tkinter.Canvas):
     radius need a smaller circle character to look correct when rendered on the canvas.
 
     For an optimal result, the draw-engine creates two aa-circles on top of each other, while
-    one is rotated by 90 degrees. This helps to make the circle look more symetric, which is
+    one is rotated by 90 degrees. This helps to make the circle look more symmetric, which is
     not can be a problem when using only a single circle character.
     """
 
