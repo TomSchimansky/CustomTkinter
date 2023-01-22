@@ -269,6 +269,8 @@ class CTkBaseClass(tkinter.Frame, CTkAppearanceModeBaseClass, CTkScalingBaseClas
         relheight=amount - height of this widget between 0.0 and 1.0 relative to height of master (1.0 is the same height as the master)
         bordermode="inside" or "outside" - whether to take border width of master widget into account
         """
+        if "width" in kwargs or "height" in kwargs:
+            raise ValueError("'width' and 'height' arguments must be passed to the constructor of the widget, not the place method")
         self._last_geometry_manager_call = {"function": super().place, "kwargs": kwargs}
         return super().place(**self._apply_argument_scaling(kwargs))
 
