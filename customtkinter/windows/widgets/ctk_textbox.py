@@ -17,7 +17,7 @@ class CTkTextbox(CTkBaseClass):
     set wrap='none' to disable automatic line wrapping.
     For detailed information check out the documentation.
 
-    Detailed methods and parameters of the underlaying tkinter.Text widget can be found here:
+    Detailed methods and parameters of the underlying tkinter.Text widget can be found here:
     https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/text.html
     (most of them are implemented here too)
     """
