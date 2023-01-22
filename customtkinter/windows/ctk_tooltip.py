@@ -17,9 +17,9 @@ class CTkTooltip(CTkToplevel):
                  **kwargs):
         self.wait_time = delay  # milliseconds until tooltip appears
         self.wrap_length = wrap_length  # wrap length of the tooltip text
-        self.master = master
-        self.text = text
-        self.mouse_offset = mouse_offset
+        self.master = master  # parent widget
+        self.text = text  # text to display
+        self.mouse_offset = mouse_offset  # offset from mouse position (x, y)
         self.master.bind("<Enter>", self._schedule, add="+")
         self.master.bind("<Leave>", self._leave, add="+")
         self.master.bind("<ButtonPress>", self._leave, add="+")
@@ -86,6 +86,7 @@ class CTkTooltip(CTkToplevel):
         self.withdraw()
 
     def configure(self, **kwargs):
+        # Change attributes of the tooltip, and redraw if necessary
         require_redraw = False
         if "fg_color" in kwargs:
             self.fg_color = kwargs["fg_color"]
