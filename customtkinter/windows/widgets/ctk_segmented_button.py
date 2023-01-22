@@ -167,7 +167,7 @@ class CTkSegmentedButton(CTkFrame):
                                command=lambda v=value: self.set(v, from_button_callback=True),
                                background_corner_colors=None,
                                round_width_to_even_numbers=False,
-                               round_height_to_even_numbers=False)  # DrawEngine rendering option (so that theres no gap between buttons)
+                               round_height_to_even_numbers=False)  # DrawEngine rendering option (so that there's no gap between buttons)
 
         return new_button
 
