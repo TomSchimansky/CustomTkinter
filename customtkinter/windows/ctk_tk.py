@@ -220,6 +220,10 @@ class CTk(tkinter.Tk, CTkAppearanceModeBaseClass, CTkScalingBaseClass):
         self._iconbitmap_method_called = True
         super().wm_iconbitmap(bitmap, default)
 
+    def iconbitmap(self, bitmap=None, default=None):
+        self._iconbitmap_method_called = True
+        super().wm_iconbitmap(bitmap, default)
+
     def _windows_set_titlebar_icon(self):
         try:
             # if not the user already called iconbitmap method, set icon
