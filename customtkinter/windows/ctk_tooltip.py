@@ -3,6 +3,7 @@ from .ctk_toplevel import CTkToplevel
 from .widgets.ctk_label import CTkLabel
 from .widgets.appearance_mode.appearance_mode_tracker import AppearanceModeTracker
 from typing import Union, Tuple
+import sys
 
 
 class CTkTooltip(CTkToplevel):
@@ -21,17 +22,22 @@ class CTkTooltip(CTkToplevel):
         self.text = text  # text to display
         self.mouse_offset = mouse_offset  # offset from mouse position (x, y)
         self.master.bind("<Enter>", self._schedule, add="+")
-        self.master.bind("<Leave>", self._leave, add="+")
+        self.master.bind("<Leave>", lambda e: self.master.after(5, self._leave), add="+")
         self.master.bind("<ButtonPress>", self._leave, add="+")
         self._id = None
         self.kwargs = kwargs
         self._visible = False
+        self._is_hovering_tooltip = False
 
         # determine colors
-        self.fg_color = ThemeManager.theme["CTkFrame"]["top_fg_color"] if fg_color == "default" else fg_color
+        self.__appearance_mode = AppearanceModeTracker.get_mode()
+        if fg_color == "default":
+            self.fg_color = '#CBCBCB' if self.__appearance_mode == 0 else '#545454'
+        else:
+            self.fg_color = fg_color
         if bg_color == "transparent":
             if bg_color.startswith('#'):
-                color_list = [int(fg_color[i:i + 2], 16) for i in range(1, len(fg_color), 2)]
+                color_list = [int(self.fg_color[i:i + 2], 16) for i in range(1, len(self.fg_color), 2)]
                 if not any(color == 255 for color in color_list):
                     for i in range(len(color_list)):
                         color_list[i] += 1
@@ -41,7 +47,6 @@ class CTkTooltip(CTkToplevel):
 
                 self.bg_color = "#" + ''.join(['{:02x}'.format(x) for x in color_list])
             else:
-                self.__appearance_mode = AppearanceModeTracker.get_mode()
                 if self.__appearance_mode == 0:
                     self.bg_color = 'gray86' if self.fg_color != 'gray86' else 'gray84'
                 else:
@@ -50,9 +55,10 @@ class CTkTooltip(CTkToplevel):
             self.bg_color = bg_color
 
     def _leave(self, event=None):
-        self._unschedule()
-        if self._visible: self.hide()
-        self._visible = False
+        if not self._is_hovering_tooltip:
+            self._unschedule()
+            if self._visible: self.hide()
+            self._visible = False
 
     def _schedule(self, event=None):
         self._id = self.master.after(self.wait_time, self.show)
@@ -64,6 +70,15 @@ class CTkTooltip(CTkToplevel):
         if id:
             self.master.after_cancel(id)
 
+    def _tt_enter(self, event=None):
+        if not self._is_hovering_tooltip:
+            self._is_hovering_tooltip = True
+
+    def _tt_leave(self, event=None):
+        if self._is_hovering_tooltip:
+            self._is_hovering_tooltip = False
+            self._leave()
+
     def show(self, event=None):
         # Get the position the tooltip needs to appear at
         super().__init__(self.master)
@@ -73,13 +88,20 @@ class CTkTooltip(CTkToplevel):
         # Has to be offset from mouse position, otherwise it will appear and disappear instantly because it left the parent widget
         x += self.master.winfo_pointerx() + self.mouse_offset[0]
         y += self.master.winfo_pointery() + self.mouse_offset[1]
-        self.wm_attributes("-toolwindow", True)
+        if sys.platform.startswith("win"):
+            self.wm_attributes('-transparentcolor', self.bg_color) # rounds corners
+            self.wm_attributes("-toolwindow", True) # removes icon from taskbar
+            super().configure(bg_color=self.bg_color)
+        elif sys.platform == 'darwin':
+            self.wm_attributes('-transparent', True)
+            super().configure(bg_color='systemTransparent')
         self.wm_overrideredirect(True)
         self.wm_geometry(f'+{x}+{y}')
-        self.wm_attributes('-transparentcolor', self.bg_color)
-        super().configure(bg_color=self.bg_color)
         label = CTkLabel(self, text=self.text, corner_radius=10, bg_color=self.bg_color, fg_color=self.fg_color, width=1, wraplength=self.wrap_length, **self.kwargs)
         label.pack()
+        label.bind("<Enter>", self._tt_enter, add="+")
+        label.bind("<Leave>", self._tt_leave, add="+")
+        if sys.platform == 'darwin': label.configure(bg_color='systemTransparent')
 
     def hide(self):
         self._unschedule()
