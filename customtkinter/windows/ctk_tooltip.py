@@ -28,6 +28,7 @@ class CTkTooltip(CTkToplevel):
         self.kwargs = kwargs
         self._visible = False
         self._is_hovering_tooltip = False
+        self._bg_color_is_default = True if bg_color == "transparent" else False  #  used on linux because rounded corners doesnt seem to be possible usually
 
         # determine colors
         self.__appearance_mode = AppearanceModeTracker.get_mode()
@@ -82,6 +83,7 @@ class CTkTooltip(CTkToplevel):
     def show(self, event=None):
         # Get the position the tooltip needs to appear at
         super().__init__(self.master)
+        super().withdraw() # hide and reshow window once all code is ran to fix issues due to slower machines (??)
         self._visible = True
         x = y = 0
         x, y, cx, cy = self.master.bbox("insert")
@@ -89,12 +91,15 @@ class CTkTooltip(CTkToplevel):
         x += self.master.winfo_pointerx() + self.mouse_offset[0]
         y += self.master.winfo_pointery() + self.mouse_offset[1]
         if sys.platform.startswith("win"):
-            self.wm_attributes('-transparentcolor', self.bg_color) # rounds corners
+            self.wm_attributes('-transparentcolor', self.bg_color) # used for rounded corners
             self.wm_attributes("-toolwindow", True) # removes icon from taskbar
             super().configure(bg_color=self.bg_color)
         elif sys.platform == 'darwin':
-            self.wm_attributes('-transparent', True)
+            self.wm_attributes('-transparent', True)  # used for rounded corners
             super().configure(bg_color='systemTransparent')
+        elif sys.platform.startswith("linux"):
+            if self._bg_color_is_default:
+                self.bg_color = self.fg_color  # create square edge tooltips
         self.wm_overrideredirect(True)
         self.wm_geometry(f'+{x}+{y}')
         label = CTkLabel(self, text=self.text, corner_radius=10, bg_color=self.bg_color, fg_color=self.fg_color, width=1, wraplength=self.wrap_length, **self.kwargs)
@@ -102,6 +107,7 @@ class CTkTooltip(CTkToplevel):
         label.bind("<Enter>", self._tt_enter, add="+")
         label.bind("<Leave>", self._tt_leave, add="+")
         if sys.platform == 'darwin': label.configure(bg_color='systemTransparent')
+        super().deiconify()
 
     def hide(self):
         self._unschedule()
