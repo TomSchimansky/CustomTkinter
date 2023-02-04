@@ -24,8 +24,8 @@ class CTkFrame(CTkBaseClass):
                  bg_color: Union[str, Tuple[str, str]] = "transparent",
                  fg_color: Optional[Union[str, Tuple[str, str]]] = None,
                  border_color: Optional[Union[str, Tuple[str, str]]] = None,
-                 background_corner_colors: Union[Tuple[Union[str, Tuple[str, str]]], None] = None,
 
+                 background_corner_colors: Union[Tuple[Union[str, Tuple[str, str]]], None] = None,
                  overwrite_preferred_drawing_method: Union[str, None] = None,
                  **kwargs):
 

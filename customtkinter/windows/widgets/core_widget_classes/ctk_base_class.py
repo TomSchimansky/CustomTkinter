@@ -179,8 +179,7 @@ class CTkBaseClass(tkinter.Frame, CTkAppearanceModeBaseClass, CTkScalingBaseClas
         elif isinstance(image, CTkImage):
             return image
         else:
-            warnings.warn(f"{type(self).__name__} Warning: Given image is not CTkImage but {type(image)}. " +
-                          f"Image can not be scaled on HighDPI displays, use CTkImage instead.\n")
+            warnings.warn(f"{type(self).__name__} Warning: Given image is not CTkImage but {type(image)}. Image can not be scaled on HighDPI displays, use CTkImage instead.\n")
             return image
 
     def _update_dimensions_event(self, event):
