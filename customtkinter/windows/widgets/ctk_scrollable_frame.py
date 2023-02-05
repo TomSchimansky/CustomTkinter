@@ -146,6 +146,12 @@ class CTkScrollableFrame(tkinter.Frame, CTkAppearanceModeBaseClass, CTkScalingBa
                                       height=self._apply_widget_scaling(self._desired_height))
 
     def configure(self, **kwargs):
+        if "width" in kwargs:
+            self._set_dimensions(width=kwargs.pop("width"))
+
+        if "height" in kwargs:
+            self._set_dimensions(height=kwargs.pop("height"))
+
         if "corner_radius" in kwargs:
             new_corner_radius = kwargs.pop("corner_radius")
             self._parent_frame.configure(corner_radius=new_corner_radius)
@@ -179,12 +185,6 @@ class CTkScrollableFrame(tkinter.Frame, CTkAppearanceModeBaseClass, CTkScalingBa
 
         if "scrollbar_button_hover_color" in kwargs:
             self._scrollbar.configure(fg_color=kwargs.pop("scrollbar_button_hover_color"))
-
-        if "width" in kwargs:
-            self._set_dimensions(width=kwargs.pop("width"))
-
-        if "height" in kwargs:
-            self._set_dimensions(height=kwargs.pop("height"))
 
         if "label_text" in kwargs:
             self._label_text = kwargs.pop("label_text")
