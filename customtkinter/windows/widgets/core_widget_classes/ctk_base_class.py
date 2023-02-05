@@ -193,12 +193,15 @@ class CTkBaseClass(tkinter.Frame, CTkAppearanceModeBaseClass, CTkScalingBaseClas
         if master_widget is None:
             master_widget = self.master
 
-        if isinstance(master_widget, (windows.widgets.core_widget_classes.CTkBaseClass, windows.CTk, windows.CTkToplevel)):
+        if isinstance(master_widget, (windows.widgets.core_widget_classes.CTkBaseClass, windows.CTk, windows.CTkToplevel, windows.widgets.ctk_scrollable_frame.CTkScrollableFrame)):
             if master_widget.cget("fg_color") is not None and master_widget.cget("fg_color") != "transparent":
                 return master_widget.cget("fg_color")
 
+            elif isinstance(master_widget, windows.widgets.ctk_scrollable_frame.CTkScrollableFrame):
+                return self._detect_color_of_master(master_widget.master.master.master)
+
             # if fg_color of master is None, try to retrieve fg_color from master of master
-            elif hasattr(master_widget.master, "master"):
+            elif hasattr(master_widget, "master"):
                 return self._detect_color_of_master(master_widget.master)
 
         elif isinstance(master_widget, (ttk.Frame, ttk.LabelFrame, ttk.Notebook, ttk.Label)):  # master is ttk widget

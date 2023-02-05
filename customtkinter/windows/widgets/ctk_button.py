@@ -428,6 +428,7 @@ class CTkButton(CTkBaseClass):
 
         if "command" in kwargs:
             self._command = kwargs.pop("command")
+            self._set_cursor()
 
         if "compound" in kwargs:
             self._compound = kwargs.pop("compound")

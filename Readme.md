@@ -105,6 +105,12 @@ how to position the text and image at once with the ``compound`` option:
 | _`image_example.py` on Windows 11_
 ###
 
+### Scrollable Frames
+Scrollable frames are possible in vertical or horizontal orientation and can be combined
+with any other widgets.
+![](documentation_images/scrollable_frame_example_Windows.png)
+| _`scrollable_frame_example.py` on Windows 11_
+
 ### Integration of TkinterMapView widget
 In the following example I used a TkinterMapView which integrates
 well with a CustomTkinter program. It's a tile based map widget which displays

@@ -87,21 +87,9 @@ class App(customtkinter.CTk):
         self.radio_button_3 = customtkinter.CTkRadioButton(master=self.radiobutton_frame, variable=self.radio_var, value=2)
         self.radio_button_3.grid(row=3, column=2, pady=10, padx=20, sticky="n")
 
-        # create checkbox and switch frame
-        self.checkbox_slider_frame = customtkinter.CTkFrame(self)
-        self.checkbox_slider_frame.grid(row=1, column=3, padx=(20, 20), pady=(20, 0), sticky="nsew")
-        self.checkbox_1 = customtkinter.CTkCheckBox(master=self.checkbox_slider_frame)
-        self.checkbox_1.grid(row=1, column=0, pady=(20, 10), padx=20, sticky="n")
-        self.checkbox_2 = customtkinter.CTkCheckBox(master=self.checkbox_slider_frame)
-        self.checkbox_2.grid(row=2, column=0, pady=10, padx=20, sticky="n")
-        self.switch_1 = customtkinter.CTkSwitch(master=self.checkbox_slider_frame, command=lambda: print("switch 1 toggle"))
-        self.switch_1.grid(row=3, column=0, pady=10, padx=20, sticky="n")
-        self.switch_2 = customtkinter.CTkSwitch(master=self.checkbox_slider_frame)
-        self.switch_2.grid(row=4, column=0, pady=(10, 20), padx=20, sticky="n")
-
         # create slider and progressbar frame
         self.slider_progressbar_frame = customtkinter.CTkFrame(self, fg_color="transparent")
-        self.slider_progressbar_frame.grid(row=1, column=1, columnspan=2, padx=(20, 0), pady=(20, 0), sticky="nsew")
+        self.slider_progressbar_frame.grid(row=1, column=1, padx=(20, 0), pady=(20, 0), sticky="nsew")
         self.slider_progressbar_frame.grid_columnconfigure(0, weight=1)
         self.slider_progressbar_frame.grid_rowconfigure(4, weight=1)
         self.seg_button_1 = customtkinter.CTkSegmentedButton(self.slider_progressbar_frame)
@@ -117,12 +105,32 @@ class App(customtkinter.CTk):
         self.progressbar_3 = customtkinter.CTkProgressBar(self.slider_progressbar_frame, orientation="vertical")
         self.progressbar_3.grid(row=0, column=2, rowspan=5, padx=(10, 20), pady=(10, 10), sticky="ns")
 
+        # create scrollable frame
+        self.scrollable_frame = customtkinter.CTkScrollableFrame(self, label_text="CTkScrollableFrame")
+        self.scrollable_frame.grid(row=1, column=2, padx=(20, 0), pady=(20, 0), sticky="nsew")
+        self.scrollable_frame.grid_columnconfigure(0, weight=1)
+        self.scrollable_frame_switches = []
+        for i in range(100):
+            switch = customtkinter.CTkSwitch(master=self.scrollable_frame, text=f"CTkSwitch {i}")
+            switch.grid(row=i, column=0, padx=10, pady=(0, 20))
+            self.scrollable_frame_switches.append(switch)
+
+        # create checkbox and switch frame
+        self.checkbox_slider_frame = customtkinter.CTkFrame(self)
+        self.checkbox_slider_frame.grid(row=1, column=3, padx=(20, 20), pady=(20, 0), sticky="nsew")
+        self.checkbox_1 = customtkinter.CTkCheckBox(master=self.checkbox_slider_frame)
+        self.checkbox_1.grid(row=1, column=0, pady=(20, 0), padx=20, sticky="n")
+        self.checkbox_2 = customtkinter.CTkCheckBox(master=self.checkbox_slider_frame)
+        self.checkbox_2.grid(row=2, column=0, pady=(20, 0), padx=20, sticky="n")
+        self.checkbox_3 = customtkinter.CTkCheckBox(master=self.checkbox_slider_frame)
+        self.checkbox_3.grid(row=3, column=0, pady=20, padx=20, sticky="n")
+
         # set default values
         self.sidebar_button_3.configure(state="disabled", text="Disabled CTkButton")
-        self.checkbox_2.configure(state="disabled")
-        self.switch_2.configure(state="disabled")
+        self.checkbox_3.configure(state="disabled")
         self.checkbox_1.select()
-        self.switch_1.select()
+        self.scrollable_frame_switches[0].select()
+        self.scrollable_frame_switches[4].select()
         self.radio_button_3.configure(state="disabled")
         self.appearance_mode_optionemenu.set("Dark")
         self.scaling_optionemenu.set("100%")
