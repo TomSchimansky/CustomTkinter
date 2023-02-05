@@ -9,9 +9,6 @@ try:
 except ImportError:
     from typing_extensions import TypedDict
 
-# removed due to circular import
-# from ...ctk_tk import CTk
-# from ...ctk_toplevel import CTkToplevel
 from .... import windows  # import windows for isinstance checks
 
 from ..theme import ThemeManager
@@ -74,7 +71,7 @@ class CTkBaseClass(tkinter.Frame, CTkAppearanceModeBaseClass, CTkScalingBaseClas
         super().bind('<Configure>', self._update_dimensions_event)
 
         # overwrite configure methods of master when master is tkinter widget, so that bg changes get applied on child CTk widget as well
-        if isinstance(self.master, (tkinter.Tk, tkinter.Toplevel, tkinter.Frame, tkinter.LabelFrame, ttk.Frame, ttk.LabelFrame, ttk.Notebook)) and not isinstance(self.master, CTkBaseClass):
+        if isinstance(self.master, (tkinter.Tk, tkinter.Toplevel, tkinter.Frame, tkinter.LabelFrame, ttk.Frame, ttk.LabelFrame, ttk.Notebook)) and not isinstance(self.master, (CTkBaseClass, CTkAppearanceModeBaseClass)):
             master_old_configure = self.master.config
 
             def new_configure(*args, **kwargs):

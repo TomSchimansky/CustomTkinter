@@ -70,6 +70,9 @@ class CTkToplevel(tkinter.Toplevel, CTkAppearanceModeBaseClass, CTkScalingBaseCl
         self._iconify_called_after_windows_set_titlebar_color = False  # indicates if iconify() was called after windows_set_titlebar_color
         self._block_update_dimensions_event = False
 
+        # save focus before calling withdraw
+        self.focused_widget_before_widthdraw = None
+
         # set CustomTkinter titlebar icon (Windows only)
         if sys.platform.startswith("win"):
             self.after(200, self._windows_set_titlebar_icon)
@@ -238,6 +241,7 @@ class CTkToplevel(tkinter.Toplevel, CTkAppearanceModeBaseClass, CTkScalingBaseCl
         if sys.platform.startswith("win") and not self._deactivate_windows_window_header_manipulation:
 
             self._state_before_windows_set_titlebar_color = self.state()
+            self.focused_widget_before_widthdraw = self.focus_get()
             super().withdraw()  # hide window so that it can be redrawn after the titlebar change so that the color change is visible
             super().update()
 
@@ -267,6 +271,10 @@ class CTkToplevel(tkinter.Toplevel, CTkAppearanceModeBaseClass, CTkScalingBaseCl
 
             self._windows_set_titlebar_color_called = True
             self.after(5, self._revert_withdraw_after_windows_set_titlebar_color)
+
+            if self.focused_widget_before_widthdraw is not None:
+                self.after(10, self.focused_widget_before_widthdraw.focus)
+                self.focused_widget_before_widthdraw = None
 
     def _revert_withdraw_after_windows_set_titlebar_color(self):
         """ if in a short time (5ms) after """
