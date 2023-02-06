@@ -72,7 +72,7 @@ class CTkEntry(CTkBaseClass):
         if isinstance(self._font, CTkFont):
             self._font.add_size_configure_callback(self._update_font)
 
-        if not (self._textvariable is None or self._textvariable == ""):
+        if not (self._textvariable is None or self._textvariable.get() == ""):
             self._textvariable_callback_name = self._textvariable.trace_add("write", self._textvariable_callback)
 
         self._canvas = CTkCanvas(master=self,
@@ -255,31 +255,31 @@ class CTkEntry(CTkBaseClass):
     def cget(self, attribute_name: str) -> any:
         if attribute_name == "corner_radius":
             return self._corner_radius
-        elif attribute_name == "border_width":
+        if attribute_name == "border_width":
             return self._border_width
 
-        elif attribute_name == "fg_color":
+        if attribute_name == "fg_color":
             return self._fg_color
-        elif attribute_name == "border_color":
+        if attribute_name == "border_color":
             return self._border_color
-        elif attribute_name == "text_color":
+        if attribute_name == "text_color":
             return self._text_color
-        elif attribute_name == "placeholder_text_color":
+        if attribute_name == "placeholder_text_color":
             return self._placeholder_text_color
 
-        elif attribute_name == "textvariable":
+        if attribute_name == "textvariable":
             return self._textvariable
-        elif attribute_name == "placeholder_text":
+        if attribute_name == "placeholder_text":
             return self._placeholder_text
-        elif attribute_name == "font":
+        if attribute_name == "font":
             return self._font
-        elif attribute_name == "state":
+        if attribute_name == "state":
             return self._state
 
-        elif attribute_name in self._valid_tk_entry_attributes:
+        if attribute_name in self._valid_tk_entry_attributes:
             return self._entry.cget(attribute_name)  # cget of tkinter.Entry
-        else:
-            return super().cget(attribute_name)  # cget of CTkBaseClass
+
+        return super().cget(attribute_name)  # cget of CTkBaseClass
 
     def bind(self, sequence=None, command=None, add=True):
         """ called on the tkinter.Entry """
@@ -296,7 +296,7 @@ class CTkEntry(CTkBaseClass):
         self._create_bindings(sequence=sequence)  # restore internal callbacks for sequence
 
     def _activate_placeholder(self):
-        if self._entry.get() == "" and self._placeholder_text is not None and (self._textvariable is None or self._textvariable == ""):
+        if self._entry.get() == "" and self._placeholder_text is not None and (self._textvariable is None or self._textvariable.get() == ""):
             self._placeholder_text_active = True
 
             self._pre_placeholder_arguments = {"show": self._entry.cget("show")}
