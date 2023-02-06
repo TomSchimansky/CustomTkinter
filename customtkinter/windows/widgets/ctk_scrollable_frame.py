@@ -113,7 +113,7 @@ class CTkScrollableFrame(tkinter.Frame, CTkAppearanceModeBaseClass, CTkScalingBa
             self._parent_frame.grid_columnconfigure(0, weight=1)
             self._parent_frame.grid_rowconfigure(1, weight=1)
             self._parent_canvas.grid(row=1, column=0, sticky="nsew", padx=(border_spacing, 0), pady=border_spacing)
-            self._scrollbar.grid(row=1, column=1, sticky="nsew", padx=border_spacing)
+            self._scrollbar.grid(row=1, column=1, sticky="nsew", pady=border_spacing)
 
             if self._label_text is not None and self._label_text != "":
                 self._label.grid(row=0, column=0, columnspan=2, sticky="ew", padx=border_spacing, pady=border_spacing)

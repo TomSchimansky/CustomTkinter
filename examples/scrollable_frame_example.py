@@ -104,7 +104,8 @@ class App(customtkinter.CTk):
 
         # create scrollable radiobutton frame
         self.scrollable_radiobutton_frame = ScrollableRadiobuttonFrame(master=self, width=500, command=self.radiobutton_frame_event,
-                                                                       item_list=[f"item {i}" for i in range(100)])
+                                                                       item_list=[f"item {i}" for i in range(100)],
+                                                                       label_text="ScrollableRadiobuttonFrame")
         self.scrollable_radiobutton_frame.grid(row=0, column=1, padx=15, pady=15, sticky="ns")
         self.scrollable_radiobutton_frame.configure(width=200)
         self.scrollable_radiobutton_frame.remove_item("item 3")
