@@ -8,22 +8,27 @@ from .ctk_toplevel import CTkToplevel
 
 
 class CTkConfirmationBox(CTkToplevel):
-    def __init__(self,
-                 fg_color: Optional[Union[str, Tuple[str, str]]] = None,
-                 text_color: Optional[Union[str, Tuple[str, str]]] = None,
-                 button_fg_color: Optional[Union[str, Tuple[str, str]]] = None,
-                 button_hover_color: Optional[Union[str, Tuple[str, str]]] = None,
-                 button_text_color: Optional[Union[str, Tuple[str, str]]] = None,
-                 entry_fg_color: Optional[Union[str, Tuple[str, str]]] = None,
-                 entry_border_color: Optional[Union[str, Tuple[str, str]]] = None,
-                 entry_text_color: Optional[Union[str, Tuple[str, str]]] = None,
 
-                 title: str = "CTkConfirmationBox",
-                 yes: callable= lambda: print("Pressed Yes"),
-                 no: callable = lambda: print("Pressed No")
-                ):
-#     def __init__(self,__yes__,__no__ = lambda: print("Pressed No"), *args, **kwargs):
-        # super().__init__(*args, **kwargs)
+    """
+        Dialog box meant for a simple "are you sure"/confirmation
+        For either events yes or no, functions can be passed
+        during the creation of the widget
+        By default on closing the no function gets executed
+    """
+    def __init__(self,
+        fg_color: Optional[Union[str, Tuple[str, str]]] = None,
+        text_color: Optional[Union[str, Tuple[str, str]]] = None,
+        button_fg_color: Optional[Union[str, Tuple[str, str]]] = None,
+        button_hover_color: Optional[Union[str, Tuple[str, str]]] = None,
+        button_text_color: Optional[Union[str, Tuple[str, str]]] = None,
+        entry_fg_color: Optional[Union[str, Tuple[str, str]]] = None,
+        entry_border_color: Optional[Union[str, Tuple[str, str]]] = None,
+        entry_text_color: Optional[Union[str, Tuple[str, str]]] = None,
+
+        title: str = "CTkConfirmationBox",
+        yes: callable = lambda: print("Pressed Yes"),
+        no:  callable = lambda: print("Pressed No")
+        ):
 
         super().__init__(fg_color=fg_color)
 
