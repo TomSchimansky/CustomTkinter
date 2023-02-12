@@ -119,6 +119,6 @@ class CTkConfirmationBox(CTkToplevel):
         self.destroy()
 
     def _on_closing(self):
-        self._no()
+        # self._no()
         self.grab_release()
         self.destroy()
