@@ -75,6 +75,7 @@ class CTkTooltip(CTkToplevel):
 
     def show(self, event=None):
         # Get the position the tooltip needs to appear at
+        if self._visible: return
         super().__init__(self.master)
         super().withdraw() # hide and reshow window once all code is ran to fix issues due to slower machines (??)
         self._visible = True
