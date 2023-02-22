@@ -60,11 +60,9 @@ class CTkTooltip(CTkToplevel):
 
     def _leave(self, event=None):
         self._unschedule()
-        print("leave")
         if self._visible: self.hide()
 
     def _schedule(self, event=None):
-        print("schedule")
         self._unschedule()
         self._id = self.master.after(self.wait_time, self.show)
 
@@ -76,7 +74,6 @@ class CTkTooltip(CTkToplevel):
             self.master.after_cancel(id)
 
     def show(self, event=None):
-        print("show")
         # Get the position the tooltip needs to appear at
         super().__init__(self.master)
         super().withdraw() # hide and reshow window once all code is ran to fix issues due to slower machines (??)
@@ -105,7 +102,6 @@ class CTkTooltip(CTkToplevel):
         super().deiconify()
 
     def hide(self):
-        print("hide")
         self._unschedule()
         self.withdraw()
         self._visible = False
