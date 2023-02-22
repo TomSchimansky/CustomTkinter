@@ -22,8 +22,10 @@ class CTkTooltip(CTkToplevel):
         self.text = text  # text to display
         self.mouse_offset = mouse_offset  # offset from mouse position (x, y)
         self.master.bind("<Enter>", self._schedule, add="+")
-        self.master.bind("<Leave>", lambda e: self.master.after(5, self._leave), add="+")
+        self.master.bind("<Leave>", self._leave)
         self.master.bind("<ButtonPress>", self._leave, add="+")
+        label = self.master.winfo_children()[0]
+        label.bind("<Enter>", self._schedule, add="+")
         self._id = None
         self.kwargs = kwargs
         self._visible = False
@@ -55,13 +57,15 @@ class CTkTooltip(CTkToplevel):
         else:
             self.bg_color = bg_color
 
+
     def _leave(self, event=None):
-        if not self._is_hovering_tooltip:
-            self._unschedule()
-            if self._visible: self.hide()
-            self._visible = False
+        self._unschedule()
+        print("leave")
+        if self._visible: self.hide()
 
     def _schedule(self, event=None):
+        print("schedule")
+        self._unschedule()
         self._id = self.master.after(self.wait_time, self.show)
 
     def _unschedule(self):
@@ -71,16 +75,8 @@ class CTkTooltip(CTkToplevel):
         if id:
             self.master.after_cancel(id)
 
-    def _tt_enter(self, event=None):
-        if not self._is_hovering_tooltip:
-            self._is_hovering_tooltip = True
-
-    def _tt_leave(self, event=None):
-        if self._is_hovering_tooltip:
-            self._is_hovering_tooltip = False
-            self._leave()
-
     def show(self, event=None):
+        print("show")
         # Get the position the tooltip needs to appear at
         super().__init__(self.master)
         super().withdraw() # hide and reshow window once all code is ran to fix issues due to slower machines (??)
@@ -104,42 +100,40 @@ class CTkTooltip(CTkToplevel):
         self.wm_geometry(f'+{x}+{y}')
         label = CTkLabel(self, text=self.text, corner_radius=10, bg_color=self.bg_color, fg_color=self.fg_color, width=1, wraplength=self.wrap_length, **self.kwargs)
         label.pack()
-        label.bind("<Enter>", self._tt_enter, add="+")
-        label.bind("<Leave>", self._tt_leave, add="+")
         if sys.platform == 'darwin': label.configure(bg_color='systemTransparent')
+        label.bind("<Enter>", self._leave, add="+")
         super().deiconify()
 
     def hide(self):
+        print("hide")
         self._unschedule()
         self.withdraw()
+        self._visible = False
 
     def configure(self, **kwargs):
         # Change attributes of the tooltip, and redraw if necessary
         require_redraw = False
         if "fg_color" in kwargs:
-            self.fg_color = kwargs["fg_color"]
+            self.fg_color = kwargs.pop("fg_color")
             require_redraw = True
-            del kwargs["fg_color"]
         if "bg_color" in kwargs:
-            self.bg_color = kwargs["bg_color"]
+            self.bg_color = kwargs.pop("bg_color")
             require_redraw = True
-            del kwargs["bg_color"]
         if "text" in kwargs:
-            self.text = kwargs["text"]
+            self.text = kwargs.pop("text")
             require_redraw = True
-            del kwargs["text"]
         if "delay" in kwargs:
-            self.wait_time = kwargs["delay"]
-            del kwargs["delay"]
+            self.wait_time = kwargs.pop("delay")
         if "wrap_length" in kwargs:
-            self.wrap_length = kwargs["wrap_length"]
+            self.wrap_length = kwargs.pop("wrap_length")
             require_redraw = True
-            del kwargs["wrap_length"]
         if "mouse_offset" in kwargs:
-            self.mouse_offset = kwargs["mouse_offset"]
+            self.mouse_offset = kwargs.pop("mouse_offset")
             require_redraw = True
-            del kwargs["mouse_offset"]
-        super().configure(**kwargs)
+        self.kwargs = kwargs
         if require_redraw:
             self.hide()
             self.show()
+
+    def is_visible(self):
+        return self._visible
