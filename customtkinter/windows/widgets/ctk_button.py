@@ -40,7 +40,7 @@ class CTkButton(CTkBaseClass):
                  text: str = "CTkButton",
                  font: Optional[Union[tuple, CTkFont]] = None,
                  textvariable: Union[tkinter.Variable, None] = None,
-                 image: Union[CTkImage, None] = None,
+                 image: Union[CTkImage, "ImageTk.PhotoImage", None] = None,
                  state: str = "normal",
                  hover: bool = True,
                  command: Union[Callable[[], None], None] = None,
@@ -169,8 +169,11 @@ class CTkButton(CTkBaseClass):
 
     def _update_image(self):
         if self._image_label is not None:
-            self._image_label.configure(image=self._image.create_scaled_photo_image(self._get_widget_scaling(),
-                                                                                    self._get_appearance_mode()))
+            if isinstance(self._image, CTkImage):
+                self._image_label.configure(image=self._image.create_scaled_photo_image(self._get_widget_scaling(),
+                                                                                        self._get_appearance_mode()))
+            elif self._image is not None:
+                self._image_label.configure(image=self._image)
 
     def destroy(self):
         if isinstance(self._font, CTkFont):
@@ -425,6 +428,7 @@ class CTkButton(CTkBaseClass):
 
         if "command" in kwargs:
             self._command = kwargs.pop("command")
+            self._set_cursor()
 
         if "compound" in kwargs:
             self._compound = kwargs.pop("compound")

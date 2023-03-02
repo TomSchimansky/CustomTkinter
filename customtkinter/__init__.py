@@ -1,4 +1,4 @@
-__version__ = "5.0.4"
+__version__ = "5.1.2"
 
 import os
 import sys
@@ -33,6 +33,7 @@ from .windows.widgets import CTkSlider
 from .windows.widgets import CTkSwitch
 from .windows.widgets import CTkTabview
 from .windows.widgets import CTkTextbox
+from .windows.widgets import CTkScrollableFrame
 
 # import windows
 from .windows import CTk

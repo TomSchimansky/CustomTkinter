@@ -9,9 +9,6 @@ try:
 except ImportError:
     from typing_extensions import TypedDict
 
-# removed due to circular import
-# from ...ctk_tk import CTk
-# from ...ctk_toplevel import CTkToplevel
 from .... import windows  # import windows for isinstance checks
 
 from ..theme import ThemeManager
@@ -74,7 +71,7 @@ class CTkBaseClass(tkinter.Frame, CTkAppearanceModeBaseClass, CTkScalingBaseClas
         super().bind('<Configure>', self._update_dimensions_event)
 
         # overwrite configure methods of master when master is tkinter widget, so that bg changes get applied on child CTk widget as well
-        if isinstance(self.master, (tkinter.Tk, tkinter.Toplevel, tkinter.Frame, tkinter.LabelFrame, ttk.Frame, ttk.LabelFrame, ttk.Notebook)) and not isinstance(self.master, CTkBaseClass):
+        if isinstance(self.master, (tkinter.Tk, tkinter.Toplevel, tkinter.Frame, tkinter.LabelFrame, ttk.Frame, ttk.LabelFrame, ttk.Notebook)) and not isinstance(self.master, (CTkBaseClass, CTkAppearanceModeBaseClass)):
             master_old_configure = self.master.config
 
             def new_configure(*args, **kwargs):
@@ -179,8 +176,7 @@ class CTkBaseClass(tkinter.Frame, CTkAppearanceModeBaseClass, CTkScalingBaseClas
         elif isinstance(image, CTkImage):
             return image
         else:
-            warnings.warn(f"{type(self).__name__} Warning: Given image is not CTkImage but {type(image)}. " +
-                          f"Image can not be scaled on HighDPI displays, use CTkImage instead.\n")
+            warnings.warn(f"{type(self).__name__} Warning: Given image is not CTkImage but {type(image)}. Image can not be scaled on HighDPI displays, use CTkImage instead.\n")
             return image
 
     def _update_dimensions_event(self, event):
@@ -197,12 +193,15 @@ class CTkBaseClass(tkinter.Frame, CTkAppearanceModeBaseClass, CTkScalingBaseClas
         if master_widget is None:
             master_widget = self.master
 
-        if isinstance(master_widget, (windows.widgets.core_widget_classes.CTkBaseClass, windows.CTk, windows.CTkToplevel)):
+        if isinstance(master_widget, (windows.widgets.core_widget_classes.CTkBaseClass, windows.CTk, windows.CTkToplevel, windows.widgets.ctk_scrollable_frame.CTkScrollableFrame)):
             if master_widget.cget("fg_color") is not None and master_widget.cget("fg_color") != "transparent":
                 return master_widget.cget("fg_color")
 
+            elif isinstance(master_widget, windows.widgets.ctk_scrollable_frame.CTkScrollableFrame):
+                return self._detect_color_of_master(master_widget.master.master.master)
+
             # if fg_color of master is None, try to retrieve fg_color from master of master
-            elif hasattr(master_widget.master, "master"):
+            elif hasattr(master_widget, "master"):
                 return self._detect_color_of_master(master_widget.master)
 
         elif isinstance(master_widget, (ttk.Frame, ttk.LabelFrame, ttk.Notebook, ttk.Label)):  # master is ttk widget
@@ -269,6 +268,8 @@ class CTkBaseClass(tkinter.Frame, CTkAppearanceModeBaseClass, CTkScalingBaseClas
         relheight=amount - height of this widget between 0.0 and 1.0 relative to height of master (1.0 is the same height as the master)
         bordermode="inside" or "outside" - whether to take border width of master widget into account
         """
+        if "width" in kwargs or "height" in kwargs:
+            raise ValueError("'width' and 'height' arguments must be passed to the constructor of the widget, not the place method")
         self._last_geometry_manager_call = {"function": super().place, "kwargs": kwargs}
         return super().place(**self._apply_argument_scaling(kwargs))
 

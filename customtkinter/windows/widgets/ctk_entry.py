@@ -133,7 +133,7 @@ class CTkEntry(CTkBaseClass):
 
         self._canvas.configure(width=self._apply_widget_scaling(self._desired_width),
                                height=self._apply_widget_scaling(self._desired_height))
-        self._draw()
+        self._draw(no_color_updates=True)
 
     def _update_font(self):
         """ pass font to tkinter widgets with applied font scaling and update grid with workaround """
@@ -153,14 +153,14 @@ class CTkEntry(CTkBaseClass):
     def _draw(self, no_color_updates=False):
         super()._draw(no_color_updates)
 
-        self._canvas.configure(bg=self._apply_appearance_mode(self._bg_color))
-
         requires_recoloring = self._draw_engine.draw_rounded_rect_with_border(self._apply_widget_scaling(self._current_width),
                                                                               self._apply_widget_scaling(self._current_height),
                                                                               self._apply_widget_scaling(self._corner_radius),
                                                                               self._apply_widget_scaling(self._border_width))
 
         if requires_recoloring or no_color_updates is False:
+            self._canvas.configure(bg=self._apply_appearance_mode(self._bg_color))
+
             if self._apply_appearance_mode(self._fg_color) == "transparent":
                 self._canvas.itemconfig("inner_parts",
                                         fill=self._apply_appearance_mode(self._bg_color),
@@ -342,13 +342,13 @@ class CTkEntry(CTkBaseClass):
             return self._entry.get()
 
     def focus(self):
-        return self._entry.focus()
+        self._entry.focus()
 
     def focus_set(self):
-        return self._entry.focus_set()
+        self._entry.focus_set()
 
     def focus_force(self):
-        return self._entry.focus_force()
+        self._entry.focus_force()
 
     def index(self, index):
         return self._entry.index(index)

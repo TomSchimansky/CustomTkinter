@@ -13,3 +13,4 @@ from .ctk_slider import CTkSlider
 from .ctk_switch import CTkSwitch
 from .ctk_tabview import CTkTabview
 from .ctk_textbox import CTkTextbox
+from .ctk_scrollable_frame import CTkScrollableFrame
