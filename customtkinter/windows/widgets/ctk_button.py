@@ -436,6 +436,7 @@ class CTkButton(CTkBaseClass):
 
         if "anchor" in kwargs:
             self._anchor = kwargs.pop("anchor")
+            self._create_grid()
             require_redraw = True
 
         super().configure(require_redraw=require_redraw, **kwargs)
