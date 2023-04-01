@@ -46,6 +46,8 @@ class CTkButton(CTkBaseClass):
                  command: Union[Callable[[], None], None] = None,
                  compound: str = "left",
                  anchor: str = "center",
+
+                 takefocus: bool = True,
                  **kwargs):
 
         # transfer basic functionality (bg_color, size, appearance_mode, scaling) to CTkBaseClass
@@ -93,6 +95,7 @@ class CTkButton(CTkBaseClass):
 
         # canvas and draw engine
         self._canvas = CTkCanvas(master=self,
+                                 takefocus=takefocus,
                                  highlightthickness=0,
                                  width=self._apply_widget_scaling(self._desired_width),
                                  height=self._apply_widget_scaling(self._desired_height))
@@ -131,6 +134,16 @@ class CTkButton(CTkBaseClass):
                 self._text_label.bind("<Button-1>", self._clicked)
             if self._image_label is not None:
                 self._image_label.bind("<Button-1>", self._clicked)
+
+        if sequence is None or sequence == "<FocusIn>":
+            self._canvas.bind("<FocusIn>", self._on_enter)
+
+        if sequence is None or sequence == "<FocusOut>":
+            self._canvas.bind("<FocusOut>", self._on_leave)
+
+        if sequence is None or sequence == "<space>":
+            self._canvas.bind("<space>", self._clicked)
+
 
     def _set_scaling(self, *args, **kwargs):
         super()._set_scaling(*args, **kwargs)
@@ -584,10 +597,10 @@ class CTkButton(CTkBaseClass):
         self._create_bindings(sequence=sequence)  # restore internal callbacks for sequence
 
     def focus(self):
-        return self._text_label.focus()
+        return self._canvas.focus()
 
     def focus_set(self):
-        return self._text_label.focus_set()
+        return self._canvas.focus_set()
 
     def focus_force(self):
-        return self._text_label.focus_force()
+        return self._canvas.focus_force()
