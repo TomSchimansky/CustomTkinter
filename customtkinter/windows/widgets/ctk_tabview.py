@@ -373,7 +373,7 @@ class CTkTabview(CTkBaseClass):
         else:
             return self._name_list[index]
 
-    def index(self, name=""):
+    def index(self, name: str ="") -> int:
         """ returns index of selected tab, returns empty int if no tab selected\n
         if a name is defined, return the associated index """
         if name == "":
@@ -381,6 +381,6 @@ class CTkTabview(CTkBaseClass):
         else:
             return self._name_list.index(name)
         
-    def len(self):
+    def len(self) -> int:
         """ return the number of defined tabs """
         return len(self._name_list)
