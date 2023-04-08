@@ -296,7 +296,7 @@ class CTkEntry(CTkBaseClass):
         self._create_bindings(sequence=sequence)  # restore internal callbacks for sequence
 
     def _activate_placeholder(self):
-        if self._entry.get() == "" and self._placeholder_text is not None and (self._textvariable is None or self._textvariable == ""):
+        if self._entry.get() == "" and self._placeholder_text is not None and (self._textvariable is None or self._textvariable.get() == ""):
             self._placeholder_text_active = True
 
             self._pre_placeholder_arguments = {"show": self._entry.cget("show")}
