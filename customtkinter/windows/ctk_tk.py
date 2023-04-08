@@ -57,6 +57,7 @@ class CTk(tkinter.Tk, CTkAppearanceModeBaseClass, CTkScalingBaseClass):
         self.title("CTk")
 
         # indicator variables
+        self._iconphoto_method_called = False  # indicates if wm_iconphoto method got called
         self._iconbitmap_method_called = False  # indicates if wm_iconbitmap method got called
         self._state_before_windows_set_titlebar_color = None
         self._window_exists = False  # indicates if the window is already shown through update() or mainloop() after init
@@ -229,10 +230,16 @@ class CTk(tkinter.Tk, CTkAppearanceModeBaseClass, CTkScalingBaseClass):
         self._iconbitmap_method_called = True
         super().wm_iconbitmap(bitmap, default)
 
+    def wm_iconphoto(self, default=False, *args):
+        self._iconphoto_method_called = True
+        super().wm_iconphoto(default, *args)
+
+    iconphoto = wm_iconphoto
+
     def _windows_set_titlebar_icon(self):
         try:
             # if not the user already called iconbitmap method, set icon
-            if not self._iconbitmap_method_called:
+            if not (self._iconbitmap_method_called or self._iconphoto_method_called):
                 customtkinter_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
                 self.iconbitmap(os.path.join(customtkinter_directory, "assets", "icons", "CustomTkinter_icon_Windows.ico"))
         except Exception:
