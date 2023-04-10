@@ -1,5 +1,4 @@
 import customtkinter
-import time
 
 app = customtkinter.CTk()
 

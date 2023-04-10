@@ -1,14 +1,14 @@
-import tkinter
+from __future__ import annotations
+
 import copy
 import sys
-from typing import Union, Tuple, Callable, Optional
+import tkinter
+from typing import Any, Callable
 
-from .core_rendering import CTkCanvas
-from .theme import ThemeManager
-from .core_rendering import DrawEngine
-from .core_widget_classes import CTkBaseClass
-from .core_widget_classes import DropdownMenu
+from .core_rendering import CTkCanvas, DrawEngine
+from .core_widget_classes import CTkBaseClass, DropdownMenu
 from .font import CTkFont
+from .theme import ThemeManager
 
 
 class CTkOptionMenu(CTkBaseClass):
@@ -18,31 +18,31 @@ class CTkOptionMenu(CTkBaseClass):
     """
 
     def __init__(self,
-                 master: any,
+                 master: CTkBaseClass,
                  width: int = 140,
                  height: int = 28,
-                 corner_radius: Optional[Union[int]] = None,
+                 corner_radius: int | None = None,
 
-                 bg_color: Union[str, Tuple[str, str]] = "transparent",
-                 fg_color: Optional[Union[str, Tuple[str, str]]] = None,
-                 button_color: Optional[Union[str, Tuple[str, str]]] = None,
-                 button_hover_color: Optional[Union[str, Tuple[str, str]]] = None,
-                 text_color: Optional[Union[str, Tuple[str, str]]] = None,
-                 text_color_disabled: Optional[Union[str, Tuple[str, str]]] = None,
-                 dropdown_fg_color: Optional[Union[str, Tuple[str, str]]] = None,
-                 dropdown_hover_color: Optional[Union[str, Tuple[str, str]]] = None,
-                 dropdown_text_color: Optional[Union[str, Tuple[str, str]]] = None,
+                 bg_color: str | tuple[str, str] = "transparent",
+                 fg_color: str | tuple[str, str] | None = None,
+                 button_color: str | tuple[str, str] | None = None,
+                 button_hover_color: str | tuple[str, str] | None = None,
+                 text_color: str | tuple[str, str] | None = None,
+                 text_color_disabled: str | tuple[str, str] | None = None,
+                 dropdown_fg_color: str | tuple[str, str] | None = None,
+                 dropdown_hover_color: str | tuple[str, str] | None = None,
+                 dropdown_text_color: str | tuple[str, str] | None = None,
 
-                 font: Optional[Union[tuple, CTkFont]] = None,
-                 dropdown_font: Optional[Union[tuple, CTkFont]] = None,
-                 values: Optional[list] = None,
-                 variable: Union[tkinter.Variable, None] = None,
+                 font: tuple[Any, ...] | CTkFont | None = None,
+                 dropdown_font: tuple[Any, ...] | CTkFont | None = None,
+                 values: list | None = None,
+                 variable: tkinter.Variable | None = None,
                  state: str = tkinter.NORMAL,
                  hover: bool = True,
-                 command: Union[Callable[[str], None], None] = None,
+                 command: Callable[[str], None] | None = None,
                  dynamic_resizing: bool = True,
                  anchor: str = "w",
-                 **kwargs):
+                 **kwargs: Any):
 
         # transfer basic functionality (_bg_color, size, __appearance_mode, scaling) to CTkBaseClass
         super().__init__(master=master, bg_color=bg_color, width=width, height=height, **kwargs)
@@ -68,7 +68,7 @@ class CTkOptionMenu(CTkBaseClass):
         self._command = command
         self._variable = variable
         self._variable_callback_blocked: bool = False
-        self._variable_callback_name: Union[str, None] = None
+        self._variable_callback_name: str | None = None
         self._state = state
         self._hover = hover
         self._dynamic_resizing = dynamic_resizing
@@ -127,7 +127,7 @@ class CTkOptionMenu(CTkBaseClass):
             self._current_value = self._variable.get()
             self._text_label.configure(text=self._current_value)
 
-    def _create_bindings(self, sequence: Optional[str] = None):
+    def _create_bindings(self, sequence: str | None = None):
         """ set necessary bindings for functionality of widget, will overwrite other bindings """
         if sequence is None or sequence == "<Enter>":
             self._canvas.bind("<Enter>", self._on_enter)
@@ -147,7 +147,7 @@ class CTkOptionMenu(CTkBaseClass):
                               padx=(max(self._apply_widget_scaling(self._corner_radius), self._apply_widget_scaling(3)),
                                     max(self._apply_widget_scaling(self._current_width - left_section_width + 3), self._apply_widget_scaling(3))))
 
-    def _set_scaling(self, *args, **kwargs):
+    def _set_scaling(self, *args: Any, **kwargs: Any):
         super()._set_scaling(*args, **kwargs)
 
         # change label font size and grid padding
@@ -157,7 +157,7 @@ class CTkOptionMenu(CTkBaseClass):
         self._create_grid()
         self._draw(no_color_updates=True)
 
-    def _set_dimensions(self, width: int = None, height: int = None):
+    def _set_dimensions(self, width: int | None = None, height: int | None = None):
         super()._set_dimensions(width, height)
 
         self._canvas.configure(width=self._apply_widget_scaling(self._desired_width),
@@ -182,7 +182,7 @@ class CTkOptionMenu(CTkBaseClass):
 
         super().destroy()
 
-    def _draw(self, no_color_updates=False):
+    def _draw(self, no_color_updates: bool = False):
         super()._draw(no_color_updates)
 
         left_section_width = self._current_width - self._current_height
@@ -221,7 +221,7 @@ class CTkOptionMenu(CTkBaseClass):
 
         self._canvas.update_idletasks()
 
-    def configure(self, require_redraw=False, **kwargs):
+    def configure(self, require_redraw: bool = False, **kwargs: Any):
         if "corner_radius" in kwargs:
             self._corner_radius = kwargs.pop("corner_radius")
             self._create_grid()
@@ -303,7 +303,7 @@ class CTkOptionMenu(CTkBaseClass):
 
         super().configure(require_redraw=require_redraw, **kwargs)
 
-    def cget(self, attribute_name: str) -> any:
+    def cget(self, attribute_name: str) -> Any:
         if attribute_name == "corner_radius":
             return self._corner_radius
 
@@ -350,20 +350,20 @@ class CTkOptionMenu(CTkBaseClass):
         self._dropdown_menu.open(self.winfo_rootx(),
                                  self.winfo_rooty() + self._apply_widget_scaling(self._current_height + 0))
 
-    def _on_enter(self, event=0):
+    def _on_enter(self, event: tkinter.Event[Any] | None = None):
         if self._hover is True and self._state == tkinter.NORMAL and len(self._values) > 0:
             # set color of inner button parts to hover color
             self._canvas.itemconfig("inner_parts_right",
                                     outline=self._apply_appearance_mode(self._button_hover_color),
                                     fill=self._apply_appearance_mode(self._button_hover_color))
 
-    def _on_leave(self, event=0):
+    def _on_leave(self, event: tkinter.Event[Any] | None = None):
         # set color of inner button parts
         self._canvas.itemconfig("inner_parts_right",
                                 outline=self._apply_appearance_mode(self._button_color),
                                 fill=self._apply_appearance_mode(self._button_color))
 
-    def _variable_callback(self, var_name, index, mode):
+    def _variable_callback(self, var_name: str, index: int, mode: Any):
         if not self._variable_callback_blocked:
             self._current_value = self._variable.get()
             self._text_label.configure(text=self._current_value)
@@ -392,18 +392,18 @@ class CTkOptionMenu(CTkBaseClass):
     def get(self) -> str:
         return self._current_value
 
-    def _clicked(self, event=0):
+    def _clicked(self, event: tkinter.Event[Any] | None = None):
         if self._state is not tkinter.DISABLED and len(self._values) > 0:
             self._open_dropdown_menu()
 
-    def bind(self, sequence: str = None, command: Callable = None, add: Union[str, bool] = True):
+    def bind(self, sequence: str, command: Callable[..., None] | None = None, add: str | bool = True):
         """ called on the tkinter.Canvas """
         if not (add == "+" or add is True):
             raise ValueError("'add' argument can only be '+' or True to preserve internal callbacks")
         self._canvas.bind(sequence, command, add=True)
         self._text_label.bind(sequence, command, add=True)
 
-    def unbind(self, sequence: str = None, funcid: str = None):
+    def unbind(self, sequence: str, funcid: str | None = None):
         """ called on the tkinter.Label and tkinter.Canvas """
         if funcid is not None:
             raise ValueError("'funcid' argument can only be None, because there is a bug in" +

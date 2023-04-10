@@ -1,16 +1,19 @@
-import tkinter
-from distutils.version import StrictVersion as Version
-import sys
+from __future__ import annotations
+
+import ctypes
 import os
 import platform
-import ctypes
-from typing import Union, Tuple, Optional
+import sys
+import tkinter
+from distutils.version import StrictVersion as Version
+from typing import Any
 
-from .widgets.theme import ThemeManager
-from .widgets.scaling import CTkScalingBaseClass
+from customtkinter.windows.widgets.utility.utility_functions import (
+    check_kwargs_empty, pop_from_dict_by_set)
+
 from .widgets.appearance_mode import CTkAppearanceModeBaseClass
-
-from customtkinter.windows.widgets.utility.utility_functions import pop_from_dict_by_set, check_kwargs_empty
+from .widgets.scaling import CTkScalingBaseClass
+from .widgets.theme import ThemeManager
 
 
 class CTk(tkinter.Tk, CTkAppearanceModeBaseClass, CTkScalingBaseClass):
@@ -19,9 +22,9 @@ class CTk(tkinter.Tk, CTkAppearanceModeBaseClass, CTkScalingBaseClass):
     For detailed information check out the documentation.
     """
 
-    _valid_tk_constructor_arguments: set = {"screenName", "baseName", "className", "useTk", "sync", "use"}
+    _valid_tk_constructor_arguments: set[str] = {"screenName", "baseName", "className", "useTk", "sync", "use"}
 
-    _valid_tk_configure_arguments: set = {'bd', 'borderwidth', 'class', 'menu', 'relief', 'screen',
+    _valid_tk_configure_arguments: set[str] = {'bd', 'borderwidth', 'class', 'menu', 'relief', 'screen',
                                           'use', 'container', 'cursor', 'height',
                                           'highlightthickness', 'padx', 'pady', 'takefocus', 'visual', 'width'}
 
@@ -29,8 +32,8 @@ class CTk(tkinter.Tk, CTkAppearanceModeBaseClass, CTkScalingBaseClass):
     _deactivate_windows_window_header_manipulation: bool = False
 
     def __init__(self,
-                 fg_color: Optional[Union[str, Tuple[str, str]]] = None,
-                 **kwargs):
+                 fg_color: str | tuple[str, str] | None = None,
+                 **kwargs: Any):
 
         self._enable_macos_dark_title_bar()
 
@@ -46,7 +49,7 @@ class CTk(tkinter.Tk, CTkAppearanceModeBaseClass, CTkScalingBaseClass):
         self._min_height: int = 0
         self._max_width: int = 1_000_000
         self._max_height: int = 1_000_000
-        self._last_resizable_args: Union[Tuple[list, dict], None] = None  # (args, kwargs)
+        self._last_resizable_args: tuple[list, dict] | None = None  # (args, kwargs)
 
         self._fg_color = ThemeManager.theme["CTk"]["fg_color"] if fg_color is None else self._check_color_type(fg_color)
 
@@ -86,12 +89,12 @@ class CTk(tkinter.Tk, CTkAppearanceModeBaseClass, CTkScalingBaseClass):
         CTkAppearanceModeBaseClass.destroy(self)
         CTkScalingBaseClass.destroy(self)
 
-    def _focus_in_event(self, event):
+    def _focus_in_event(self, event: tkinter.Event[Any] | None = None):
         # sometimes window looses jumps back on macOS if window is selected from Mission Control, so has to be lifted again
         if sys.platform == "darwin":
             self.lift()
 
-    def _update_dimensions_event(self, event=None):
+    def _update_dimensions_event(self, event: tkinter.Event[Any] | None = None):
         if not self._block_update_dimensions_event:
 
             detected_width = super().winfo_width()  # detect current window size
@@ -104,7 +107,7 @@ class CTk(tkinter.Tk, CTkAppearanceModeBaseClass, CTkScalingBaseClass):
                 self._current_width = self._reverse_window_scaling(detected_width)  # adjust current size according to new size given by event
                 self._current_height = self._reverse_window_scaling(detected_height)  # _current_width and _current_height are independent of the scale
 
-    def _set_scaling(self, new_widget_scaling, new_window_scaling):
+    def _set_scaling(self, new_widget_scaling: float, new_window_scaling: float):
         super()._set_scaling(new_widget_scaling, new_window_scaling)
 
         # Force new dimensions on window by using min, max, and geometry. Without min, max it won't work.
@@ -149,7 +152,7 @@ class CTk(tkinter.Tk, CTkAppearanceModeBaseClass, CTkScalingBaseClass):
 
         super().update()
 
-    def mainloop(self, *args, **kwargs):
+    def mainloop(self, *args: Any, **kwargs: Any):
         if not self._window_exists:
             if sys.platform.startswith("win"):
                 self._windows_set_titlebar_color(self._get_appearance_mode())
@@ -171,7 +174,7 @@ class CTk(tkinter.Tk, CTkAppearanceModeBaseClass, CTkScalingBaseClass):
 
         return current_resizable_values
 
-    def minsize(self, width: int = None, height: int = None):
+    def minsize(self, width: int | None = None, height: int | None = None):
         self._min_width = width
         self._min_height = height
         if self._current_width < width:
@@ -180,7 +183,7 @@ class CTk(tkinter.Tk, CTkAppearanceModeBaseClass, CTkScalingBaseClass):
             self._current_height = height
         super().minsize(self._apply_window_scaling(self._min_width), self._apply_window_scaling(self._min_height))
 
-    def maxsize(self, width: int = None, height: int = None):
+    def maxsize(self, width: int | None = None, height: int | None = None):
         self._max_width = width
         self._max_height = height
         if self._current_width > width:
@@ -189,7 +192,7 @@ class CTk(tkinter.Tk, CTkAppearanceModeBaseClass, CTkScalingBaseClass):
             self._current_height = height
         super().maxsize(self._apply_window_scaling(self._max_width), self._apply_window_scaling(self._max_height))
 
-    def geometry(self, geometry_string: str = None):
+    def geometry(self, geometry_string: str | None = None):
         if geometry_string is not None:
             super().geometry(self._apply_geometry_scaling(geometry_string))
 
@@ -201,7 +204,7 @@ class CTk(tkinter.Tk, CTkAppearanceModeBaseClass, CTkScalingBaseClass):
         else:
             return self._reverse_geometry_scaling(super().geometry())
 
-    def configure(self, **kwargs):
+    def configure(self, **kwargs: Any):
         if "fg_color" in kwargs:
             self._fg_color = self._check_color_type(kwargs.pop("fg_color"))
             super().configure(bg=self._apply_appearance_mode(self._fg_color))
@@ -215,7 +218,7 @@ class CTk(tkinter.Tk, CTkAppearanceModeBaseClass, CTkScalingBaseClass):
         super().configure(**pop_from_dict_by_set(kwargs, self._valid_tk_configure_arguments))
         check_kwargs_empty(kwargs)
 
-    def cget(self, attribute_name: str) -> any:
+    def cget(self, attribute_name: str) -> Any:
         if attribute_name == "fg_color":
             return self._fg_color
         else:

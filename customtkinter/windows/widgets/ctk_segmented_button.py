@@ -1,15 +1,13 @@
-import tkinter
-import copy
-from typing import Union, Tuple, List, Dict, Callable, Optional
-try:
-    from typing import Literal
-except ImportError:
-    from typing_extensions import Literal
+from __future__ import annotations
 
-from .theme import ThemeManager
-from .font import CTkFont
+import copy
+import tkinter
+from typing import Any, Callable
+
 from .ctk_button import CTkButton
 from .ctk_frame import CTkFrame
+from .font import CTkFont
+from .theme import ThemeManager
 
 
 class CTkSegmentedButton(CTkFrame):
@@ -19,29 +17,29 @@ class CTkSegmentedButton(CTkFrame):
     """
 
     def __init__(self,
-                 master: any,
+                 master: CTkBaseClass,
                  width: int = 140,
                  height: int = 28,
-                 corner_radius: Optional[int] = None,
+                 corner_radius: int | None = None,
                  border_width: int = 3,
 
-                 bg_color: Union[str, Tuple[str, str]] = "transparent",
-                 fg_color: Optional[Union[str, Tuple[str, str]]] = None,
-                 selected_color: Optional[Union[str, Tuple[str, str]]] = None,
-                 selected_hover_color: Optional[Union[str, Tuple[str, str]]] = None,
-                 unselected_color: Optional[Union[str, Tuple[str, str]]] = None,
-                 unselected_hover_color: Optional[Union[str, Tuple[str, str]]] = None,
-                 text_color: Optional[Union[str, Tuple[str, str]]] = None,
-                 text_color_disabled: Optional[Union[str, Tuple[str, str]]] = None,
-                 background_corner_colors: Union[Tuple[Union[str, Tuple[str, str]]], None] = None,
+                 bg_color: str | tuple[str, str] = "transparent",
+                 fg_color: str | tuple[str, str] | None = None,
+                 selected_color: str | tuple[str, str] | None = None,
+                 selected_hover_color: str | tuple[str, str] | None = None,
+                 unselected_color: str | tuple[str, str] | None = None,
+                 unselected_hover_color: str | tuple[str, str] | None = None,
+                 text_color: str | tuple[str, str] | None = None,
+                 text_color_disabled: str | tuple[str, str] | None = None,
+                 background_corner_colors: tuple[str | tuple[str, str]] | None = None,
 
-                 font: Optional[Union[tuple, CTkFont]] = None,
-                 values: Optional[list] = None,
-                 variable: Union[tkinter.Variable, None] = None,
+                 font: tuple[Any, ...] | CTkFont | None = None,
+                 values: list[str] | None = None,
+                 variable: tkinter.Variable | None = None,
                  dynamic_resizing: bool = True,
-                 command: Union[Callable[[str], None], None] = None,
+                 command: Callable[[str], None] | None = None,
                  state: str = "normal",
-                 **kwargs):
+                 **kwargs: Any):
 
         super().__init__(master=master, bg_color=bg_color, width=width, height=height, **kwargs)
 
@@ -61,15 +59,15 @@ class CTkSegmentedButton(CTkFrame):
 
         self._background_corner_colors = background_corner_colors  # rendering options for DrawEngine
 
-        self._command: Callable[[str], None] = command
+        self._command = command
         self._font = CTkFont() if font is None else font
         self._state = state
 
-        self._buttons_dict: Dict[str, CTkButton] = {}  # mapped from value to button object
+        self._buttons_dict: dict[str, CTkButton] = {}  # mapped from value to button object
         if values is None:
-            self._value_list: List[str] = ["CTkSegmentedButton"]
+            self._value_list: list[str] = ["CTkSegmentedButton"]
         else:
-            self._value_list: List[str] = values  # Values ordered like buttons rendered on widget
+            self._value_list: list[str] = values  # Values ordered like buttons rendered on widget
 
         self._dynamic_resizing = dynamic_resizing
         if not self._dynamic_resizing:
@@ -83,7 +81,7 @@ class CTkSegmentedButton(CTkFrame):
 
         self._variable = variable
         self._variable_callback_blocked: bool = False
-        self._variable_callback_name: Union[str, None] = None
+        self._variable_callback_name: str | None = None
 
         if self._variable is not None:
             self._variable_callback_name = self._variable.trace_add("write", self._variable_callback)
@@ -97,13 +95,13 @@ class CTkSegmentedButton(CTkFrame):
 
         super().destroy()
 
-    def _set_dimensions(self, width: int = None, height: int = None):
+    def _set_dimensions(self, width: int | None = None, height: int | None = None):
         super()._set_dimensions(width, height)
 
         for button in self._buttons_dict.values():
             button.configure(height=height)
 
-    def _variable_callback(self, var_name, index, mode):
+    def _variable_callback(self, var_name: str, index: int, mode: Any):
         if not self._variable_callback_blocked:
             self.set(self._variable.get(), from_variable_callback=True)
 
@@ -172,7 +170,7 @@ class CTkSegmentedButton(CTkFrame):
         return new_button
 
     @staticmethod
-    def _check_unique_values(values: List[str]):
+    def _check_unique_values(values: list[str]):
         """ raises exception if values are not unique """
         if len(values) != len(set(values)):
             raise ValueError("CTkSegmentedButton values are not unique")
@@ -196,7 +194,7 @@ class CTkSegmentedButton(CTkFrame):
             self._buttons_dict[value] = self._create_button(index, value)
             self._configure_button_corners_for_index(index)
 
-    def configure(self, **kwargs):
+    def configure(self, **kwargs: Any):
         if "bg_color" in kwargs:
             super().configure(bg_color=kwargs.pop("bg_color"))
 
@@ -298,7 +296,7 @@ class CTkSegmentedButton(CTkFrame):
 
         super().configure(**kwargs)
 
-    def cget(self, attribute_name: str) -> any:
+    def cget(self, attribute_name: str) -> Any:
         if attribute_name == "corner_radius":
             return self._sb_corner_radius
         elif attribute_name == "border_width":
@@ -413,9 +411,8 @@ class CTkSegmentedButton(CTkFrame):
         else:
             raise ValueError(f"CTkSegmentedButton does not contain value '{value}'")
 
-    def bind(self, sequence=None, command=None, add=None):
+    def bind(self, sequence: Any =None, command: Any =None, add: Any = None):
         raise NotImplementedError
 
-    def unbind(self, sequence=None, funcid=None):
+    def unbind(self, sequence: Any = None, funcid: Any = None):
         raise NotImplementedError
-

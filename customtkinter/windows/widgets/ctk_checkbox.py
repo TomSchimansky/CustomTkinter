@@ -1,12 +1,13 @@
-import tkinter
-import sys
-from typing import Union, Tuple, Callable, Optional
+from __future__ import annotations
 
-from .core_rendering import CTkCanvas
-from .theme import ThemeManager
-from .core_rendering import DrawEngine
+import sys
+import tkinter
+from typing import Any, Callable
+
+from .core_rendering import CTkCanvas, DrawEngine
 from .core_widget_classes import CTkBaseClass
 from .font import CTkFont
+from .theme import ThemeManager
 
 
 class CTkCheckBox(CTkBaseClass):
@@ -16,32 +17,32 @@ class CTkCheckBox(CTkBaseClass):
     """
 
     def __init__(self,
-                 master: any,
+                 master: CTkBaseClass,
                  width: int = 100,
                  height: int = 24,
                  checkbox_width: int = 24,
                  checkbox_height: int = 24,
-                 corner_radius: Optional[int] = None,
-                 border_width: Optional[int] = None,
+                 corner_radius: int | None = None,
+                 border_width: int | None = None,
 
-                 bg_color: Union[str, Tuple[str, str]] = "transparent",
-                 fg_color: Optional[Union[str, Tuple[str, str]]] = None,
-                 hover_color: Optional[Union[str, Tuple[str, str]]] = None,
-                 border_color: Optional[Union[str, Tuple[str, str]]] = None,
-                 checkmark_color: Optional[Union[str, Tuple[str, str]]] = None,
-                 text_color: Optional[Union[str, Tuple[str, str]]] = None,
-                 text_color_disabled: Optional[Union[str, Tuple[str, str]]] = None,
+                 bg_color: str | tuple[str, str] = "transparent",
+                 fg_color: str | tuple[str, str] | None = None,
+                 hover_color: str | tuple[str, str] | None = None,
+                 border_color: str | tuple[str, str] | None = None,
+                 checkmark_color: str | tuple[str, str] | None = None,
+                 text_color: str | tuple[str, str] | None = None,
+                 text_color_disabled: str | tuple[str, str] | None = None,
 
                  text: str = "CTkCheckBox",
-                 font: Optional[Union[tuple, CTkFont]] = None,
-                 textvariable: Union[tkinter.Variable, None] = None,
+                 font: tuple[Any, ...] | CTkFont | None = None,
+                 textvariable: tkinter.Variable | None = None,
                  state: str = tkinter.NORMAL,
                  hover: bool = True,
-                 command: Union[Callable[[], None], None] = None,
-                 onvalue: Union[int, str] = 1,
-                 offvalue: Union[int, str] = 0,
-                 variable: Union[tkinter.Variable, None] = None,
-                 **kwargs):
+                 command: Callable[[], None] | None = None,
+                 onvalue: int | str = 1,
+                 offvalue: int | str = 0,
+                 variable: tkinter.Variable | None = None,
+                 **kwargs: Any):
 
         # transfer basic functionality (_bg_color, size, __appearance_mode, scaling) to CTkBaseClass
         super().__init__(master=master, bg_color=bg_color, width=width, height=height, **kwargs)
@@ -62,7 +63,6 @@ class CTkCheckBox(CTkBaseClass):
 
         # text
         self._text = text
-        self._text_label: Union[tkinter.Label, None] = None
         self._text_color = ThemeManager.theme["CTkCheckbox"]["text_color"] if text_color is None else self._check_color_type(text_color)
         self._text_color_disabled = ThemeManager.theme["CTkCheckbox"]["text_color_disabled"] if text_color_disabled is None else self._check_color_type(text_color_disabled)
 
@@ -79,9 +79,9 @@ class CTkCheckBox(CTkBaseClass):
 
         self._onvalue = onvalue
         self._offvalue = offvalue
-        self._variable: tkinter.Variable = variable
+        self._variable = variable
         self._variable_callback_blocked = False
-        self._textvariable: tkinter.Variable = textvariable
+        self._textvariable = textvariable
         self._variable_callback_name = None
 
         # configure grid system (1x3)
@@ -123,7 +123,7 @@ class CTkCheckBox(CTkBaseClass):
         self._set_cursor()
         self._draw()
 
-    def _create_bindings(self, sequence: Optional[str] = None):
+    def _create_bindings(self, sequence: str | None = None):
         """ set necessary bindings for functionality of widget, will overwrite other bindings """
         if sequence is None or sequence == "<Enter>":
             self._canvas.bind("<Enter>", self._on_enter)
@@ -135,7 +135,7 @@ class CTkCheckBox(CTkBaseClass):
             self._canvas.bind("<Button-1>", self.toggle)
             self._text_label.bind("<Button-1>", self.toggle)
 
-    def _set_scaling(self, *args, **kwargs):
+    def _set_scaling(self, *args: Any, **kwargs: Any):
         super()._set_scaling(*args, **kwargs)
 
         self.grid_columnconfigure(1, weight=0, minsize=self._apply_widget_scaling(6))
@@ -148,7 +148,7 @@ class CTkCheckBox(CTkBaseClass):
                                height=self._apply_widget_scaling(self._checkbox_height))
         self._draw(no_color_updates=True)
 
-    def _set_dimensions(self, width: int = None, height: int = None):
+    def _set_dimensions(self, width: int | None = None, height: int | None = None):
         super()._set_dimensions(width, height)
 
         self._bg_canvas.configure(width=self._apply_widget_scaling(self._desired_width),
@@ -173,7 +173,7 @@ class CTkCheckBox(CTkBaseClass):
 
         super().destroy()
 
-    def _draw(self, no_color_updates=False):
+    def _draw(self, no_color_updates: bool = False):
         super()._draw(no_color_updates)
 
         requires_recoloring_1 = self._draw_engine.draw_rounded_rect_with_border(self._apply_widget_scaling(self._checkbox_width),
@@ -220,22 +220,22 @@ class CTkCheckBox(CTkBaseClass):
 
             self._text_label.configure(bg=self._apply_appearance_mode(self._bg_color))
 
-    def configure(self, require_redraw=False, **kwargs):
+    def configure(self, require_redraw: bool = False, **kwargs: Any):
         if "corner_radius" in kwargs:
             self._corner_radius = kwargs.pop("corner_radius")
             require_redraw = True
 
         if "border_width" in kwargs:
-            self._border_width = kwargs.pop("border_width")
+            self._border_width: int = kwargs.pop("border_width")
             require_redraw = True
 
         if "checkbox_width" in kwargs:
-            self._checkbox_width = kwargs.pop("checkbox_width")
+            self._checkbox_width: int = kwargs.pop("checkbox_width")
             self._canvas.configure(width=self._apply_widget_scaling(self._checkbox_width))
             require_redraw = True
 
         if "checkbox_height" in kwargs:
-            self._checkbox_height = kwargs.pop("checkbox_height")
+            self._checkbox_height: int = kwargs.pop("checkbox_height")
             self._canvas.configure(height=self._apply_widget_scaling(self._checkbox_height))
             require_redraw = True
 
@@ -296,7 +296,7 @@ class CTkCheckBox(CTkBaseClass):
 
         super().configure(require_redraw=require_redraw, **kwargs)
 
-    def cget(self, attribute_name: str) -> any:
+    def cget(self, attribute_name: str) -> Any:
         if attribute_name == "corner_radius":
             return self._corner_radius
         elif attribute_name == "border_width":
@@ -360,7 +360,7 @@ class CTkCheckBox(CTkBaseClass):
                     if self._text_label is not None:
                         self._text_label.configure(cursor="hand2")
 
-    def _on_enter(self, event=0):
+    def _on_enter(self, event: tkinter.Event[Any] | None = None):
         if self._hover is True and self._state == tkinter.NORMAL:
             if self._check_state is True:
                 self._canvas.itemconfig("inner_parts",
@@ -374,7 +374,7 @@ class CTkCheckBox(CTkBaseClass):
                                         fill=self._apply_appearance_mode(self._hover_color),
                                         outline=self._apply_appearance_mode(self._hover_color))
 
-    def _on_leave(self, event=0):
+    def _on_leave(self, event: tkinter.Event[Any] | None = None):
         if self._check_state is True:
             self._canvas.itemconfig("inner_parts",
                                     fill=self._apply_appearance_mode(self._fg_color),
@@ -390,14 +390,14 @@ class CTkCheckBox(CTkBaseClass):
                                     fill=self._apply_appearance_mode(self._border_color),
                                     outline=self._apply_appearance_mode(self._border_color))
 
-    def _variable_callback(self, var_name, index, mode):
+    def _variable_callback(self, var_name: str, index: int, mode: Any):
         if not self._variable_callback_blocked:
             if self._variable.get() == self._onvalue:
                 self.select(from_variable_callback=True)
             elif self._variable.get() == self._offvalue:
                 self.deselect(from_variable_callback=True)
 
-    def toggle(self, event=0):
+    def toggle(self, event: tkinter.Event[Any] | None = None):
         if self._state == tkinter.NORMAL:
             if self._check_state is True:
                 self._check_state = False
@@ -414,7 +414,7 @@ class CTkCheckBox(CTkBaseClass):
             if self._command is not None:
                 self._command()
 
-    def select(self, from_variable_callback=False):
+    def select(self, from_variable_callback: bool =False):
         self._check_state = True
         self._draw()
 
@@ -423,7 +423,7 @@ class CTkCheckBox(CTkBaseClass):
             self._variable.set(self._onvalue)
             self._variable_callback_blocked = False
 
-    def deselect(self, from_variable_callback=False):
+    def deselect(self, from_variable_callback: bool = False):
         self._check_state = False
         self._draw()
 
@@ -432,17 +432,17 @@ class CTkCheckBox(CTkBaseClass):
             self._variable.set(self._offvalue)
             self._variable_callback_blocked = False
 
-    def get(self) -> Union[int, str]:
+    def get(self) -> int | str:
         return self._onvalue if self._check_state is True else self._offvalue
 
-    def bind(self, sequence: str = None, command: Callable = None, add: Union[str, bool] = True):
+    def bind(self, sequence: str, command: Callable[..., None] | None = None, add: str | bool = True):
         """ called on the tkinter.Canvas """
         if not (add == "+" or add is True):
             raise ValueError("'add' argument can only be '+' or True to preserve internal callbacks")
         self._canvas.bind(sequence, command, add=True)
         self._text_label.bind(sequence, command, add=True)
 
-    def unbind(self, sequence: str = None, funcid: str = None):
+    def unbind(self, sequence: str, funcid: str | None = None):
         """ called on the tkinter.Label and tkinter.Canvas """
         if funcid is not None:
             raise ValueError("'funcid' argument can only be None, because there is a bug in" +

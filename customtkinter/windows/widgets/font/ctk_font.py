@@ -1,6 +1,9 @@
-from tkinter.font import Font
+from __future__ import annotations
+
 import copy
-from typing import List, Callable, Tuple, Optional
+from tkinter.font import Font
+from typing import Any, Callable
+
 try:
     from typing import Literal
 except ImportError:
@@ -25,14 +28,14 @@ class CTkFont(Font):
     """
 
     def __init__(self,
-                 family: Optional[str] = None,
-                 size: Optional[int] = None,
-                 weight: Literal["normal", "bold"] = None,
+                 family: str | None = None,
+                 size: int | None = None,
+                 weight: Literal["normal", "bold"] | None = None,
                  slant: Literal["italic", "roman"] = "roman",
                  underline: bool = False,
                  overstrike: bool = False):
 
-        self._size_configure_callback_list: List[Callable] = []
+        self._size_configure_callback_list: list[Callable[..., None]] = []
 
         self._size = ThemeManager.theme["CTkFont"]["size"] if size is None else size
 
@@ -46,22 +49,22 @@ class CTkFont(Font):
         self._family = super().cget("family")
         self._tuple_style_string = f"{super().cget('weight')} {slant} {'underline' if underline else ''} {'overstrike' if overstrike else ''}"
 
-    def add_size_configure_callback(self, callback: Callable):
+    def add_size_configure_callback(self, callback: Callable[..., None]):
         """ add function, that gets called when font got configured """
         self._size_configure_callback_list.append(callback)
 
-    def remove_size_configure_callback(self, callback: Callable):
+    def remove_size_configure_callback(self, callback: Callable[..., None]):
         """ remove function, that gets called when font got configured """
         self._size_configure_callback_list.remove(callback)
 
-    def create_scaled_tuple(self, font_scaling: float) -> Tuple[str, int, str]:
+    def create_scaled_tuple(self, font_scaling: float) -> tuple[str, int, str]:
         """ return scaled tuple representation of font in the form (family: str, size: int, style: str)"""
         return self._family, round(-abs(self._size) * font_scaling), self._tuple_style_string
 
-    def config(self, *args, **kwargs):
+    def config(self, *args: Any, **kwargs: Any):
         raise AttributeError("'config' is not implemented for CTk widgets. For consistency, always use 'configure' instead.")
 
-    def configure(self, **kwargs):
+    def configure(self, **kwargs: Any):
         if "size" in kwargs:
             self._size = kwargs.pop("size")
             super().configure(size=-abs(self._size))
@@ -79,7 +82,7 @@ class CTkFont(Font):
         for callback in self._size_configure_callback_list:
             callback()
 
-    def cget(self, attribute_name: str) -> any:
+    def cget(self, attribute_name: str) -> Any:
         if attribute_name == "size":
             return self._size
         if attribute_name == "family":
@@ -87,5 +90,5 @@ class CTkFont(Font):
         else:
             return super().cget(attribute_name)
 
-    def copy(self) -> "CTkFont":
+    def copy(self) -> CTkFont:
         return copy.deepcopy(self)

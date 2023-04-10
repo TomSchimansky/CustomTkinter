@@ -1,24 +1,25 @@
-import sys
-import os
+from __future__ import annotations
+
 import json
-from typing import List, Union
+import os
+import sys
+from typing import Any
 
 
 class ThemeManager:
-
-    theme: dict = {}  # contains all the theme data
-    _built_in_themes: List[str] = ["blue", "green", "dark-blue", "sweetkind"]
-    _currently_loaded_theme: Union[str, None] = None
+    theme: dict[str, Any] = {}  # contains all the theme data
+    _built_in_themes: list[str] = ["blue", "green", "dark-blue", "sweetkind"]
+    _currently_loaded_theme: str | None = None
 
     @classmethod
     def load_theme(cls, theme_name_or_path: str):
         script_directory = os.path.dirname(os.path.abspath(__file__))
 
         if theme_name_or_path in cls._built_in_themes:
-            with open(os.path.join(script_directory, "../../../assets", "themes", f"{theme_name_or_path}.json"), "r") as f:
+            with open(os.path.join(script_directory, "../../../assets", "themes", f"{theme_name_or_path}.json")) as f:
                 cls.theme = json.load(f)
         else:
-            with open(theme_name_or_path, "r") as f:
+            with open(theme_name_or_path) as f:
                 cls.theme = json.load(f)
 
         # store theme path for saving
@@ -39,9 +40,9 @@ class ThemeManager:
     def save_theme(cls):
         if cls._currently_loaded_theme is not None:
             if cls._currently_loaded_theme not in cls._built_in_themes:
-                with open(cls._currently_loaded_theme, "r") as f:
+                with open(cls._currently_loaded_theme) as f:
                     json.dump(cls.theme, f, indent=2)
             else:
                 raise ValueError(f"cannot modify builtin theme '{cls._currently_loaded_theme}'")
         else:
-            raise ValueError(f"cannot save theme, no theme is loaded")
+            raise ValueError("cannot save theme, no theme is loaded")

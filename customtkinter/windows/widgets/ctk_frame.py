@@ -1,9 +1,16 @@
-from typing import Union, Tuple, List, Optional
+from __future__ import annotations
 
-from .core_rendering import CTkCanvas
-from .theme import ThemeManager
-from .core_rendering import DrawEngine
+import sys
+from typing import Any
+
+if sys.version_info >= (3, 8):
+    from typing import Literal
+else:
+    from typing_extensions import Literal
+
+from .core_rendering import CTkCanvas, DrawEngine
 from .core_widget_classes import CTkBaseClass
+from .theme import ThemeManager
 
 
 class CTkFrame(CTkBaseClass):
@@ -15,19 +22,19 @@ class CTkFrame(CTkBaseClass):
     """
 
     def __init__(self,
-                 master: any,
+                 master: CTkBaseClass,
                  width: int = 200,
                  height: int = 200,
-                 corner_radius: Optional[Union[int, str]] = None,
-                 border_width: Optional[Union[int, str]] = None,
+                 corner_radius: int | str | None = None,
+                 border_width: int | str | None = None,
 
-                 bg_color: Union[str, Tuple[str, str]] = "transparent",
-                 fg_color: Optional[Union[str, Tuple[str, str]]] = None,
-                 border_color: Optional[Union[str, Tuple[str, str]]] = None,
+                 bg_color: str | tuple[str, str] = "transparent",
+                 fg_color: str | tuple[str, str] | None = None,
+                 border_color: str | tuple[str, str] | None = None,
 
-                 background_corner_colors: Union[Tuple[Union[str, Tuple[str, str]]], None] = None,
-                 overwrite_preferred_drawing_method: Union[str, None] = None,
-                 **kwargs):
+                 background_corner_colors: tuple[str | tuple[str, str]] | None = None,
+                 overwrite_preferred_drawing_method: str | None = None,
+                 **kwargs: Any):
 
         # transfer basic functionality (_bg_color, size, __appearance_mode, scaling) to CTkBaseClass
         super().__init__(master=master, bg_color=bg_color, width=width, height=height, **kwargs)
@@ -64,7 +71,7 @@ class CTkFrame(CTkBaseClass):
 
         self._draw(no_color_updates=True)
 
-    def winfo_children(self) -> List[any]:
+    def winfo_children(self) -> list[Any]:
         """
         winfo_children of CTkFrame without self.canvas widget,
         because it's not a child but part of the CTkFrame itself
@@ -77,21 +84,21 @@ class CTkFrame(CTkBaseClass):
         except ValueError:
             return child_widgets
 
-    def _set_scaling(self, *args, **kwargs):
+    def _set_scaling(self, *args: Any, **kwargs: Any):
         super()._set_scaling(*args, **kwargs)
 
         self._canvas.configure(width=self._apply_widget_scaling(self._desired_width),
                                height=self._apply_widget_scaling(self._desired_height))
         self._draw()
 
-    def _set_dimensions(self, width=None, height=None):
+    def _set_dimensions(self, width: int | None = None, height: int | None = None):
         super()._set_dimensions(width, height)
 
         self._canvas.configure(width=self._apply_widget_scaling(self._desired_width),
                                height=self._apply_widget_scaling(self._desired_height))
         self._draw()
 
-    def _draw(self, no_color_updates=False):
+    def _draw(self, no_color_updates: bool = False):
         super()._draw(no_color_updates)
 
         if not self._canvas.winfo_exists():
@@ -131,7 +138,7 @@ class CTkFrame(CTkBaseClass):
         # self._canvas.tag_lower("inner_parts")  # maybe unnecessary, I don't know ???
         # self._canvas.tag_lower("border_parts")
 
-    def configure(self, require_redraw=False, **kwargs):
+    def configure(self, require_redraw: bool = False, **kwargs: Any):
         if "fg_color" in kwargs:
             self._fg_color = self._check_color_type(kwargs.pop("fg_color"), transparency=True)
             require_redraw = True
@@ -166,7 +173,7 @@ class CTkFrame(CTkBaseClass):
 
         super().configure(require_redraw=require_redraw, **kwargs)
 
-    def cget(self, attribute_name: str) -> any:
+    def cget(self, attribute_name: str) -> Any:
         if attribute_name == "corner_radius":
             return self._corner_radius
         elif attribute_name == "border_width":
@@ -182,7 +189,7 @@ class CTkFrame(CTkBaseClass):
         else:
             return super().cget(attribute_name)
 
-    def bind(self, sequence=None, command=None, add=True):
+    def bind(self, sequence=None, command=None, add: Literal["+", True] = True):
         """ called on the tkinter.Canvas """
         if not (add == "+" or add is True):
             raise ValueError("'add' argument can only be '+' or True to preserve internal callbacks")

@@ -1,12 +1,19 @@
-import tkinter
-from typing import Union, Tuple, Optional
+from __future__ import annotations
 
-from .core_rendering import CTkCanvas
-from .theme import ThemeManager
-from .core_rendering import DrawEngine
+import sys
+import tkinter
+from typing import Any
+
+if sys.version_info >= (3, 8):
+    from typing import Literal
+else:
+    from typing_extensions import Literal
+
+from .core_rendering import CTkCanvas, DrawEngine
 from .core_widget_classes import CTkBaseClass
 from .font import CTkFont
-from .utility import pop_from_dict_by_set, check_kwargs_empty
+from .theme import ThemeManager
+from .utility import check_kwargs_empty, pop_from_dict_by_set
 
 
 class CTkEntry(CTkBaseClass):
@@ -23,23 +30,23 @@ class CTkEntry(CTkBaseClass):
                                   "show", "takefocus", "validate", "validatecommand", "xscrollcommand"}
 
     def __init__(self,
-                 master: any,
+                 master: CTkBaseClass,
                  width: int = 140,
                  height: int = 28,
-                 corner_radius: Optional[int] = None,
-                 border_width: Optional[int] = None,
+                 corner_radius: int | None = None,
+                 border_width: int | None = None,
 
-                 bg_color: Union[str, Tuple[str, str]] = "transparent",
-                 fg_color: Optional[Union[str, Tuple[str, str]]] = None,
-                 border_color: Optional[Union[str, Tuple[str, str]]] = None,
-                 text_color: Optional[Union[str, Tuple[str, str]]] = None,
-                 placeholder_text_color: Optional[Union[str, Tuple[str, str]]] = None,
+                 bg_color: str | tuple[str, str] = "transparent",
+                 fg_color: str | tuple[str, str] | None = None,
+                 border_color: str | tuple[str, str] | None = None,
+                 text_color: str | tuple[str, str] | None = None,
+                 placeholder_text_color: str | tuple[str, str] | None = None,
 
-                 textvariable: Union[tkinter.Variable, None] = None,
-                 placeholder_text: Union[str, None] = None,
-                 font: Optional[Union[tuple, CTkFont]] = None,
+                 textvariable: tkinter.Variable | None = None,
+                 placeholder_text: str | None = None,
+                 font: tuple[Any, ...] | CTkFont | None = None,
                  state: str = tkinter.NORMAL,
-                 **kwargs):
+                 **kwargs: Any):
 
         # transfer basic functionality (bg_color, size, appearance_mode, scaling) to CTkBaseClass
         super().__init__(master=master, bg_color=bg_color, width=width, height=height)
@@ -97,7 +104,7 @@ class CTkEntry(CTkBaseClass):
         self._create_bindings()
         self._draw()
 
-    def _create_bindings(self, sequence: Optional[str] = None):
+    def _create_bindings(self, sequence: str | None = None):
         """ set necessary bindings for functionality of widget, will overwrite other bindings """
         if sequence is None or sequence == "<FocusIn>":
             self._entry.bind("<FocusIn>", self._entry_focus_in)
@@ -116,11 +123,11 @@ class CTkEntry(CTkBaseClass):
                              padx=self._apply_widget_scaling(self._minimum_x_padding),
                              pady=(self._apply_widget_scaling(self._border_width), self._apply_widget_scaling(self._border_width + 1)))
 
-    def _textvariable_callback(self, var_name, index, mode):
+    def _textvariable_callback(self, var_name: str, index: int, mode: Any):
         if self._textvariable.get() == "":
             self._activate_placeholder()
 
-    def _set_scaling(self, *args, **kwargs):
+    def _set_scaling(self, *args: Any, **kwargs: Any):
         super()._set_scaling(*args, **kwargs)
 
         self._entry.configure(font=self._apply_font_scaling(self._font))
@@ -128,7 +135,7 @@ class CTkEntry(CTkBaseClass):
         self._create_grid()
         self._draw(no_color_updates=True)
 
-    def _set_dimensions(self, width=None, height=None):
+    def _set_dimensions(self, width: int | None = None, height: int | None = None):
         super()._set_dimensions(width, height)
 
         self._canvas.configure(width=self._apply_widget_scaling(self._desired_width),
@@ -150,7 +157,7 @@ class CTkEntry(CTkBaseClass):
 
         super().destroy()
 
-    def _draw(self, no_color_updates=False):
+    def _draw(self, no_color_updates: bool = False):
         super()._draw(no_color_updates)
 
         requires_recoloring = self._draw_engine.draw_rounded_rect_with_border(self._apply_widget_scaling(self._current_width),
@@ -191,7 +198,7 @@ class CTkEntry(CTkBaseClass):
                                    disabledforeground=self._apply_appearance_mode(self._text_color),
                                    insertbackground=self._apply_appearance_mode(self._text_color))
 
-    def configure(self, require_redraw=False, **kwargs):
+    def configure(self, require_redraw: bool = False, **kwargs: Any):
         if "state" in kwargs:
             self._state = kwargs.pop("state")
             self._entry.configure(state=self._state)
@@ -252,7 +259,7 @@ class CTkEntry(CTkBaseClass):
         self._entry.configure(**pop_from_dict_by_set(kwargs, self._valid_tk_entry_attributes))  # configure Tkinter.Entry
         super().configure(require_redraw=require_redraw, **kwargs)  # configure CTkBaseClass
 
-    def cget(self, attribute_name: str) -> any:
+    def cget(self, attribute_name: str) -> Any:
         if attribute_name == "corner_radius":
             return self._corner_radius
         elif attribute_name == "border_width":
@@ -281,7 +288,7 @@ class CTkEntry(CTkBaseClass):
         else:
             return super().cget(attribute_name)  # cget of CTkBaseClass
 
-    def bind(self, sequence=None, command=None, add=True):
+    def bind(self, sequence=None, command=None, add: Literal["+", True] = True):
         """ called on the tkinter.Entry """
         if not (add == "+" or add is True):
             raise ValueError("'add' argument can only be '+' or True to preserve internal callbacks")
@@ -316,11 +323,11 @@ class CTkEntry(CTkBaseClass):
             for argument, value in self._pre_placeholder_arguments.items():
                 self._entry[argument] = value
 
-    def _entry_focus_out(self, event=None):
+    def _entry_focus_out(self, event: tkinter.Event[Any] | None = None):
         self._activate_placeholder()
         self._is_focused = False
 
-    def _entry_focus_in(self, event=None):
+    def _entry_focus_in(self, event: tkinter.Event[Any] | None = None):
         self._deactivate_placeholder()
         self._is_focused = True
 
@@ -330,7 +337,7 @@ class CTkEntry(CTkBaseClass):
         if not self._is_focused and self._entry.get() == "":
             self._activate_placeholder()
 
-    def insert(self, index, string):
+    def insert(self, index: int, string):
         self._deactivate_placeholder()
 
         return self._entry.insert(index, string)

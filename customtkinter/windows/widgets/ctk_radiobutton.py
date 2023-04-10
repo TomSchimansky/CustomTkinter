@@ -1,12 +1,13 @@
-import tkinter
-import sys
-from typing import Union, Tuple, Callable, Optional
+from __future__ import annotations
 
-from .core_rendering import CTkCanvas
-from .theme import ThemeManager
-from .core_rendering import DrawEngine
+import sys
+import tkinter
+from typing import Any, Callable
+
+from .core_rendering import CTkCanvas, DrawEngine
 from .core_widget_classes import CTkBaseClass
 from .font import CTkFont
+from .theme import ThemeManager
 
 
 class CTkRadioButton(CTkBaseClass):
@@ -16,31 +17,31 @@ class CTkRadioButton(CTkBaseClass):
     """
 
     def __init__(self,
-                 master: any,
+                 master: CTkBaseClass,
                  width: int = 100,
                  height: int = 22,
                  radiobutton_width: int = 22,
                  radiobutton_height: int = 22,
-                 corner_radius: Optional[int] = None,
-                 border_width_unchecked: Optional[int] = None,
-                 border_width_checked: Optional[int] = None,
+                 corner_radius: int | None = None,
+                 border_width_unchecked: int | None = None,
+                 border_width_checked: int | None = None,
 
-                 bg_color: Union[str, Tuple[str, str]] = "transparent",
-                 fg_color: Optional[Union[str, Tuple[str, str]]] = None,
-                 hover_color: Optional[Union[str, Tuple[str, str]]] = None,
-                 border_color: Optional[Union[str, Tuple[str, str]]] = None,
-                 text_color: Optional[Union[str, Tuple[str, str]]] = None,
-                 text_color_disabled: Optional[Union[str, Tuple[str, str]]] = None,
+                 bg_color: str | tuple[str, str] = "transparent",
+                 fg_color: str | tuple[str, str] | None = None,
+                 hover_color: str | tuple[str, str] | None = None,
+                 border_color: str | tuple[str, str] | None = None,
+                 text_color: str | tuple[str, str] | None = None,
+                 text_color_disabled: str | tuple[str, str] | None = None,
 
                  text: str = "CTkRadioButton",
-                 font: Optional[Union[tuple, CTkFont]] = None,
-                 textvariable: Union[tkinter.Variable, None] = None,
-                 variable: Union[tkinter.Variable, None] = None,
-                 value: Union[int, str] = 0,
+                 font: tuple[Any, ...] | CTkFont | None = None,
+                 textvariable: tkinter.Variable | None = None,
+                 variable: tkinter.Variable | None = None,
+                 value: int | str = 0,
                  state: str = tkinter.NORMAL,
                  hover: bool = True,
-                 command: Union[Callable, None] = None,
-                 **kwargs):
+                 command: Callable[..., None] | None = None,
+                 **kwargs: Any):
 
         # transfer basic functionality (_bg_color, size, __appearance_mode, scaling) to CTkBaseClass
         super().__init__(master=master, bg_color=bg_color, width=width, height=height, **kwargs)
@@ -61,7 +62,7 @@ class CTkRadioButton(CTkBaseClass):
 
         # text
         self._text = text
-        self._text_label: Union[tkinter.Label, None] = None
+        self._text_label: tkinter.Label | None = None
         self._text_color = ThemeManager.theme["CTkRadiobutton"]["text_color"] if text_color is None else self._check_color_type(text_color)
         self._text_color_disabled = ThemeManager.theme["CTkRadiobutton"]["text_color_disabled"] if text_color_disabled is None else self._check_color_type(text_color_disabled)
 
@@ -79,7 +80,7 @@ class CTkRadioButton(CTkBaseClass):
         self._variable: tkinter.Variable = variable
         self._variable_callback_blocked: bool = False
         self._textvariable = textvariable
-        self._variable_callback_name: Union[str, None] = None
+        self._variable_callback_name: str | None = None
 
         # configure grid system (3x1)
         self.grid_columnconfigure(0, weight=0)
@@ -119,7 +120,7 @@ class CTkRadioButton(CTkBaseClass):
         self._set_cursor()
         self._draw()
 
-    def _create_bindings(self, sequence: Optional[str] = None):
+    def _create_bindings(self, sequence: str | None = None):
         """ set necessary bindings for functionality of widget, will overwrite other bindings """
         if sequence is None or sequence == "<Enter>":
             self._canvas.bind("<Enter>", self._on_enter)
@@ -131,7 +132,7 @@ class CTkRadioButton(CTkBaseClass):
             self._canvas.bind("<Button-1>", self.invoke)
             self._text_label.bind("<Button-1>", self.invoke)
 
-    def _set_scaling(self, *args, **kwargs):
+    def _set_scaling(self, *args: Any, **kwargs: Any):
         super()._set_scaling(*args, **kwargs)
 
         self.grid_columnconfigure(1, weight=0, minsize=self._apply_widget_scaling(6))
@@ -143,7 +144,7 @@ class CTkRadioButton(CTkBaseClass):
                                height=self._apply_widget_scaling(self._radiobutton_height))
         self._draw(no_color_updates=True)
 
-    def _set_dimensions(self, width: int = None, height: int = None):
+    def _set_dimensions(self, width: int | None = None, height: int | None = None):
         super()._set_dimensions(width, height)
 
         self._bg_canvas.configure(width=self._apply_widget_scaling(self._desired_width),
@@ -167,7 +168,7 @@ class CTkRadioButton(CTkBaseClass):
 
         super().destroy()
 
-    def _draw(self, no_color_updates=False):
+    def _draw(self, no_color_updates: bool = False):
         super()._draw(no_color_updates)
 
         if self._check_state is True:
@@ -205,7 +206,7 @@ class CTkRadioButton(CTkBaseClass):
 
             self._text_label.configure(bg=self._apply_appearance_mode(self._bg_color))
 
-    def configure(self, require_redraw=False, **kwargs):
+    def configure(self, require_redraw: bool = False, **kwargs: Any):
         if "corner_radius" in kwargs:
             self._corner_radius = kwargs.pop("corner_radius")
             require_redraw = True
@@ -289,7 +290,7 @@ class CTkRadioButton(CTkBaseClass):
 
         super().configure(require_redraw=require_redraw, **kwargs)
 
-    def cget(self, attribute_name: str) -> any:
+    def cget(self, attribute_name: str) -> Any:
         if attribute_name == "corner_radius":
             return self._corner_radius
         elif attribute_name == "border_width_unchecked":
@@ -354,13 +355,13 @@ class CTkRadioButton(CTkBaseClass):
                     if self._text_label is not None:
                         self._text_label.configure(cursor="hand2")
 
-    def _on_enter(self, event=0):
+    def _on_enter(self, event: tkinter.Event[Any] | None = None):
         if self._hover is True and self._state == tkinter.NORMAL:
             self._canvas.itemconfig("border_parts",
                                     fill=self._apply_appearance_mode(self._hover_color),
                                     outline=self._apply_appearance_mode(self._hover_color))
 
-    def _on_leave(self, event=0):
+    def _on_leave(self, event: tkinter.Event[Any] | None = None):
         if self._check_state is True:
             self._canvas.itemconfig("border_parts",
                                     fill=self._apply_appearance_mode(self._fg_color),
@@ -370,14 +371,14 @@ class CTkRadioButton(CTkBaseClass):
                                     fill=self._apply_appearance_mode(self._border_color),
                                     outline=self._apply_appearance_mode(self._border_color))
 
-    def _variable_callback(self, var_name, index, mode):
+    def _variable_callback(self, var_name: str, index: int, mode: Any):
         if not self._variable_callback_blocked:
             if self._variable.get() == self._value:
                 self.select(from_variable_callback=True)
             else:
                 self.deselect(from_variable_callback=True)
 
-    def invoke(self, event=0):
+    def invoke(self, event: tkinter.Event[Any] | None = None):
         if self._state == tkinter.NORMAL:
             if self._check_state is False:
                 self._check_state = True
@@ -386,7 +387,7 @@ class CTkRadioButton(CTkBaseClass):
             if self._command is not None:
                 self._command()
 
-    def select(self, from_variable_callback=False):
+    def select(self, from_variable_callback: bool = False):
         self._check_state = True
         self._draw()
 
@@ -395,7 +396,7 @@ class CTkRadioButton(CTkBaseClass):
             self._variable.set(self._value)
             self._variable_callback_blocked = False
 
-    def deselect(self, from_variable_callback=False):
+    def deselect(self, from_variable_callback: bool = False):
         self._check_state = False
         self._draw()
 
@@ -404,14 +405,14 @@ class CTkRadioButton(CTkBaseClass):
             self._variable.set("")
             self._variable_callback_blocked = False
 
-    def bind(self, sequence: str = None, command: Callable = None, add: Union[str, bool] = True):
+    def bind(self, sequence: str, command: Callable[..., None] | None = None, add: str | bool = True):
         """ called on the tkinter.Canvas """
         if not (add == "+" or add is True):
             raise ValueError("'add' argument can only be '+' or True to preserve internal callbacks")
         self._canvas.bind(sequence, command, add=True)
         self._text_label.bind(sequence, command, add=True)
 
-    def unbind(self, sequence: str = None, funcid: str = None):
+    def unbind(self, sequence: str, funcid: str | None = None):
         """ called on the tkinter.Label and tkinter.Canvas """
         if funcid is not None:
             raise ValueError("'funcid' argument can only be None, because there is a bug in" +

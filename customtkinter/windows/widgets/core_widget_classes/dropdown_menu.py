@@ -1,25 +1,27 @@
-import tkinter
-import sys
-from typing import Union, Tuple, Callable, List, Optional
+from __future__ import annotations
 
-from ..theme import ThemeManager
-from ..font import CTkFont
+import sys
+import tkinter
+from typing import Any, Callable
+
 from ..appearance_mode import CTkAppearanceModeBaseClass
+from ..font import CTkFont
 from ..scaling import CTkScalingBaseClass
+from ..theme import ThemeManager
 
 
 class DropdownMenu(tkinter.Menu, CTkAppearanceModeBaseClass, CTkScalingBaseClass):
-    def __init__(self, *args,
+    def __init__(self, *args: Any,
                  min_character_width: int = 18,
 
-                 fg_color: Optional[Union[str, Tuple[str, str]]] = None,
-                 hover_color: Optional[Union[str, Tuple[str, str]]] = None,
-                 text_color: Optional[Union[str, Tuple[str, str]]] = None,
+                 fg_color: str | tuple[str, str] | None = None,
+                 hover_color: str | tuple[str, str] | None = None,
+                 text_color: str | tuple[str, str] | None = None,
 
-                 font: Optional[Union[tuple, CTkFont]] = None,
-                 command: Union[Callable, None] = None,
-                 values: Optional[List[str]] = None,
-                 **kwargs):
+                 font: tuple[Any, ...] | CTkFont | None = None,
+                 command: Callable[..., None] | None = None,
+                 values: list[str] | None = None,
+                 **kwargs: Any):
 
         # call init methods of super classes
         tkinter.Menu.__init__(self, *args, **kwargs)
@@ -105,7 +107,7 @@ class DropdownMenu(tkinter.Menu, CTkAppearanceModeBaseClass, CTkScalingBaseClass
         if self._command is not None:
             self._command(value)
 
-    def open(self, x: Union[int, float], y: Union[int, float]):
+    def open(self, x: int | float, y: int | float):
 
         if sys.platform == "darwin":
             y += self._apply_widget_scaling(8)
@@ -117,7 +119,7 @@ class DropdownMenu(tkinter.Menu, CTkAppearanceModeBaseClass, CTkScalingBaseClass
         else:  # Linux
             self.tk_popup(int(x), int(y))
 
-    def configure(self, **kwargs):
+    def configure(self, **kwargs: Any):
         if "fg_color" in kwargs:
             self._fg_color = self._check_color_type(kwargs.pop("fg_color"))
             super().configure(bg=self._apply_appearance_mode(self._fg_color))
@@ -148,7 +150,7 @@ class DropdownMenu(tkinter.Menu, CTkAppearanceModeBaseClass, CTkScalingBaseClass
 
         super().configure(**kwargs)
 
-    def cget(self, attribute_name: str) -> any:
+    def cget(self, attribute_name: str) -> Any:
         if attribute_name == "min_character_width":
             return self._min_character_width
 
@@ -170,7 +172,7 @@ class DropdownMenu(tkinter.Menu, CTkAppearanceModeBaseClass, CTkScalingBaseClass
             return super().cget(attribute_name)
 
     @staticmethod
-    def _check_font_type(font: any):
+    def _check_font_type(font: Any):
         if isinstance(font, CTkFont):
             return font
 
@@ -188,7 +190,7 @@ class DropdownMenu(tkinter.Menu, CTkAppearanceModeBaseClass, CTkScalingBaseClass
                              f"font=customtkinter.CTkFont(family='<name>', size=<size in px>)\n" +
                              f"font=('<name>', <size in px>)\n")
 
-    def _set_scaling(self, new_widget_scaling, new_window_scaling):
+    def _set_scaling(self, new_widget_scaling: float, new_window_scaling: float):
         super()._set_scaling(new_widget_scaling, new_window_scaling)
         self._configure_menu_for_platforms()
 

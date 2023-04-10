@@ -1,8 +1,14 @@
 from __future__ import annotations
-import sys
+
 import math
+import sys
 import tkinter
-from typing import Union, TYPE_CHECKING
+from typing import TYPE_CHECKING
+
+if sys.version_info >= (3, 8):
+    from typing import Literal
+else:
+    from typing_extensions import Literal
 
 if TYPE_CHECKING:
     from ..core_rendering import CTkCanvas
@@ -26,7 +32,7 @@ class DrawEngine:
 
     """
 
-    preferred_drawing_method: str = None  # 'polygon_shapes', 'font_shapes', 'circle_shapes'
+    preferred_drawing_method: Literal["polygon_shapes", "font_shapes", "circle_shapes"] = None
 
     def __init__(self, canvas: CTkCanvas):
         self._canvas = canvas
@@ -37,7 +43,7 @@ class DrawEngine:
         self._round_width_to_even_numbers: bool = round_width_to_even_numbers
         self._round_height_to_even_numbers: bool = round_height_to_even_numbers
 
-    def __calc_optimal_corner_radius(self, user_corner_radius: Union[float, int]) -> Union[float, int]:
+    def __calc_optimal_corner_radius(self, user_corner_radius: float | int) -> float | int:
         # optimize for drawing with polygon shapes
         if self.preferred_drawing_method == "polygon_shapes":
             if sys.platform == "darwin":
@@ -61,7 +67,7 @@ class DrawEngine:
             else:
                 return user_corner_radius
 
-    def draw_background_corners(self, width: Union[float, int], height: Union[float, int], ):
+    def draw_background_corners(self, width: float | int, height: float | int):
         if self._round_width_to_even_numbers:
             width = math.floor(width / 2) * 2  # round (floor) _current_width and _current_height and restrict them to even values only
         if self._round_height_to_even_numbers:
@@ -93,8 +99,8 @@ class DrawEngine:
 
         return requires_recoloring
 
-    def draw_rounded_rect_with_border(self, width: Union[float, int], height: Union[float, int], corner_radius: Union[float, int],
-                                      border_width: Union[float, int], overwrite_preferred_drawing_method: str = None) -> bool:
+    def draw_rounded_rect_with_border(self, width: float | int, height: float | int, corner_radius: float | int,
+                                      border_width: float | int, overwrite_preferred_drawing_method: str | None = None) -> bool:
         """ Draws a rounded rectangle with a corner_radius and border_width on the canvas. The border elements have a 'border_parts' tag,
             the main foreground elements have an 'inner_parts' tag to color the elements accordingly.
 
@@ -184,7 +190,7 @@ class DrawEngine:
         return requires_recoloring
 
     def __draw_rounded_rect_with_border_font_shapes(self, width: int, height: int, corner_radius: int, border_width: int, inner_corner_radius: int,
-                                                    exclude_parts: tuple) -> bool:
+                                                    exclude_parts: tuple[str, ...]) -> bool:
         requires_recoloring = False
 
         # create border button parts
@@ -396,8 +402,8 @@ class DrawEngine:
 
         return requires_recoloring
 
-    def draw_rounded_rect_with_border_vertical_split(self, width: Union[float, int], height: Union[float, int], corner_radius: Union[float, int],
-                                                     border_width: Union[float, int], left_section_width: Union[float, int]) -> bool:
+    def draw_rounded_rect_with_border_vertical_split(self, width: float | int, height: float | int, corner_radius: float | int,
+                                                     border_width: float | int, left_section_width: float | int) -> bool:
         """ Draws a rounded rectangle with a corner_radius and border_width on the canvas which is split at left_section_width.
             The border elements have the tags 'border_parts_left', 'border_parts_lright',
             the main foreground elements have an 'inner_parts_left' and inner_parts_right' tag,
@@ -690,8 +696,8 @@ class DrawEngine:
 
         return requires_recoloring
 
-    def draw_rounded_progress_bar_with_border(self, width: Union[float, int], height: Union[float, int], corner_radius: Union[float, int],
-                                              border_width: Union[float, int], progress_value_1: float, progress_value_2: float, orientation: str) -> bool:
+    def draw_rounded_progress_bar_with_border(self, width: float | int, height: float | int, corner_radius: float | int,
+                                              border_width: float | int, progress_value_1: float, progress_value_2: float, orientation: str) -> bool:
         """ Draws a rounded bar on the canvas, and onntop sits a progress bar from value 1 to value 2 (range 0-1, left to right, bottom to top).
             The border elements get the 'border_parts' tag", the main elements get the 'inner_parts' tag and
             the progress elements get the 'progress_parts' tag. The 'orientation' argument defines from which direction the progress starts (n, w, s, e).
@@ -868,8 +874,8 @@ class DrawEngine:
 
         return requires_recoloring or requires_recoloring_2
 
-    def draw_rounded_slider_with_border_and_button(self, width: Union[float, int], height: Union[float, int], corner_radius: Union[float, int],
-                                                   border_width: Union[float, int], button_length: Union[float, int], button_corner_radius: Union[float, int],
+    def draw_rounded_slider_with_border_and_button(self, width: float | int, height: float | int, corner_radius: float | int,
+                                                   border_width: float | int, button_length: float | int, button_corner_radius: float | int,
                                                    slider_value: float, orientation: str) -> bool:
 
         if self._round_width_to_even_numbers:
@@ -1028,8 +1034,8 @@ class DrawEngine:
 
         return requires_recoloring
 
-    def draw_rounded_scrollbar(self, width: Union[float, int], height: Union[float, int], corner_radius: Union[float, int],
-                               border_spacing: Union[float, int], start_value: float, end_value: float, orientation: str) -> bool:
+    def draw_rounded_scrollbar(self, width: float | int, height: float | int, corner_radius: float | int,
+                               border_spacing: float | int, start_value: float, end_value: float, orientation: str) -> bool:
 
         if self._round_width_to_even_numbers:
             width = math.floor(width / 2) * 2  # round _current_width and _current_height and restrict them to even values only
@@ -1171,7 +1177,7 @@ class DrawEngine:
 
         return requires_recoloring
 
-    def draw_checkmark(self, width: Union[float, int], height: Union[float, int], size: Union[int, float]) -> bool:
+    def draw_checkmark(self, width: float | int, height: float | int, size: int | float) -> bool:
         """ Draws a rounded rectangle with a corner_radius and border_width on the canvas. The border elements have a 'border_parts' tag,
             the main foreground elements have an 'inner_parts' tag to color the elements accordingly.
 
@@ -1201,7 +1207,7 @@ class DrawEngine:
 
         return requires_recoloring
 
-    def draw_dropdown_arrow(self, x_position: Union[int, float], y_position: Union[int, float], size: Union[int, float]) -> bool:
+    def draw_dropdown_arrow(self, x_position: int | float, y_position: int | float, size: int | float) -> bool:
         """ Draws a dropdown bottom facing arrow at (x_position, y_position) in a given size
 
             returns bool if recoloring is necessary """

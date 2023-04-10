@@ -1,10 +1,20 @@
+from __future__ import annotations
+
 import sys
 import tkinter
 from distutils.version import StrictVersion as Version
-from typing import Callable
+from typing import Callable, TYPE_CHECKING
+
+if sys.version_info >= (3, 8):
+    from typing import Literal
+else:
+    from typing_extensions import Literal
+
+if TYPE_CHECKING:
+    from customtkinter.windows.ctk_tk import CTk
 
 try:
-    import darkdetect
+    import darkdetect   # type: ignore
 
     if Version(darkdetect.__version__) < Version("0.3.1"):
         sys.stderr.write("WARNING: You have to upgrade the darkdetect library: pip3 install --upgrade darkdetect\n")
@@ -18,13 +28,13 @@ except Exception:
 
 class AppearanceModeTracker:
 
-    callback_list = []
-    app_list = []
+    callback_list: list[Callable[[str], None]] = []
+    app_list: list[CTk] = []
     update_loop_running = False
     update_loop_interval = 30  # milliseconds
 
-    appearance_mode_set_by = "system"
-    appearance_mode = 0  # Light (standard)
+    appearance_mode_set_by: Literal["system", "user"] = "system"
+    appearance_mode: Literal[0, 1] = 0  # 0 = Light, 1 = Dark
 
     @classmethod
     def init_appearance_mode(cls):
@@ -36,7 +46,7 @@ class AppearanceModeTracker:
                 cls.update_callbacks()
 
     @classmethod
-    def add(cls, callback: Callable, widget=None):
+    def add(cls, callback: Callable[[str], None], widget: CTk | None = None):
         cls.callback_list.append(callback)
 
         if widget is not None:
@@ -49,16 +59,16 @@ class AppearanceModeTracker:
                     cls.update_loop_running = True
 
     @classmethod
-    def remove(cls, callback: Callable):
+    def remove(cls, callback: Callable[[str], None]):
         try:
             cls.callback_list.remove(callback)
         except ValueError:
             return
 
     @staticmethod
-    def detect_appearance_mode() -> int:
+    def detect_appearance_mode() -> Literal[0, 1]:
         try:
-            if darkdetect.theme() == "Dark":
+            if darkdetect.theme() == "Dark":    # type: ignore
                 return 1  # Dark
             else:
                 return 0  # Light
@@ -66,7 +76,7 @@ class AppearanceModeTracker:
             return 0  # Light
 
     @classmethod
-    def get_tk_root_of_widget(cls, widget):
+    def get_tk_root_of_widget(cls, widget: CTk) -> CTk:
         current_widget = widget
 
         while isinstance(current_widget, tkinter.Tk) is False:

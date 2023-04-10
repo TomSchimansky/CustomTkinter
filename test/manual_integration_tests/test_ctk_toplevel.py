@@ -1,10 +1,14 @@
+from __future__ import annotations
+
+from typing import Any, Callable
+
 import customtkinter
 
 customtkinter.set_appearance_mode("dark")
 
 
 class ToplevelWindow(customtkinter.CTkToplevel):
-    def __init__(self, *args, closing_event=None, **kwargs):
+    def __init__(self, *args: Any, closing_event: Callable[[], None] | None = None, **kwargs: Any):
         super().__init__(*args, **kwargs)
         self.protocol("WM_DELETE_WINDOW", self.closing)
         self.geometry("500x300")
