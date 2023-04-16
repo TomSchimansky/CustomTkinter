@@ -17,8 +17,8 @@ class CTkLabel(CTkBaseClass):
     """
 
     # attributes that are passed to and managed by the tkinter entry only:
-    _valid_tk_label_attributes = {"cursor", "justify", "padx", "pady",
-                                  "textvariable", "state", "takefocus", "underline"}
+    _valid_tk_label_attributes = {"cursor", "justify", "padx", "pady", "relief", "borderwidth",
+                                  "bd", "textvariable", "state", "takefocus", "underline"}
 
     def __init__(self,
                  master: any,
@@ -79,7 +79,6 @@ class CTkLabel(CTkBaseClass):
                                     highlightthickness=0,
                                     padx=0,
                                     pady=0,
-                                    borderwidth=0,
                                     anchor=self._anchor,
                                     compound=self._compound,
                                     wraplength=self._apply_widget_scaling(self._wraplength),
