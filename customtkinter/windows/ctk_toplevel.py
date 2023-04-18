@@ -19,8 +19,9 @@ class CTkToplevel(tkinter.Toplevel, CTkAppearanceModeBaseClass, CTkScalingBaseCl
     For detailed information check out the documentation.
     """
 
-    _valid_tk_toplevel_arguments: set = {"bd", "borderwidth", "class", "container", "cursor", "height",
-                                         "highlightbackground", "highlightthickness", "menu", "relief",
+    _valid_tk_toplevel_arguments: set = {"master", "bd", "borderwidth", "class", "container",
+                                         "cursor", "height", "highlightbackground",
+                                         "highlightthickness", "menu", "relief",
                                          "screen", "takefocus", "use", "visual", "width"}
 
     _deactivate_macos_window_header_manipulation: bool = False
