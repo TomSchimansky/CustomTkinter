@@ -45,7 +45,7 @@ class CTkEntry(CTkBaseClass):
                  textvariable: tkinter.Variable | None = None,
                  placeholder_text: str | None = None,
                  font: tuple[Any, ...] | CTkFont | None = None,
-                 state: str = tkinter.NORMAL,
+                 state: Literal["normal", "disabled", "readonly"] = "normal",
                  **kwargs: Any):
 
         # transfer basic functionality (bg_color, size, appearance_mode, scaling) to CTkBaseClass
@@ -288,7 +288,7 @@ class CTkEntry(CTkBaseClass):
         else:
             return super().cget(attribute_name)  # cget of CTkBaseClass
 
-    def bind(self, sequence=None, command=None, add: Literal["+", True] = True):
+    def bind(self, sequence=None, command=None, add: Literal["+"] | bool = True):
         """ called on the tkinter.Entry """
         if not (add == "+" or add is True):
             raise ValueError("'add' argument can only be '+' or True to preserve internal callbacks")

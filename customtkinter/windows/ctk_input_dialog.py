@@ -51,7 +51,6 @@ class CTkInputDialog(CTkToplevel):
         self.grab_set()  # make other windows not clickable
 
     def _create_widgets(self):
-
         self.grid_columnconfigure((0, 1), weight=1)
         self.rowconfigure(0, weight=1)
 

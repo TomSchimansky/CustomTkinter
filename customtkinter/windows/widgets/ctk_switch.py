@@ -4,6 +4,11 @@ import sys
 import tkinter
 from typing import Any, Callable
 
+if sys.version_info >= (3, 8):
+    from typing import Literal
+else:
+    from typing_extensions import Literal
+
 from .core_rendering import CTkCanvas, DrawEngine
 from .core_widget_classes import CTkBaseClass
 from .font import CTkFont
@@ -43,7 +48,7 @@ class CTkSwitch(CTkBaseClass):
                  variable: tkinter.Variable | None = None,
                  hover: bool = True,
                  command: Callable[..., None] | None = None,
-                 state: str = tkinter.NORMAL,
+                 state: Literal["normal", "disabled", "readonly"] = "normal",
                  **kwargs: Any):
 
         # transfer basic functionality (_bg_color, size, __appearance_mode, scaling) to CTkBaseClass

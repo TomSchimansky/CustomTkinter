@@ -129,7 +129,7 @@ class CTkTextbox(CTkBaseClass):
         self.after(50, self._check_if_scrollbars_needed, None, True)
         self._draw()
 
-    def _create_grid_for_text_and_scrollbars(self, re_grid_textbox=False, re_grid_x_scrollbar=False, re_grid_y_scrollbar=False):
+    def _create_grid_for_text_and_scrollbars(self, re_grid_textbox: bool = False, re_grid_x_scrollbar: bool = False, re_grid_y_scrollbar: bool = False):
 
         # configure 2x2 grid
         self.grid_rowconfigure(0, weight=1)
@@ -158,7 +158,7 @@ class CTkTextbox(CTkBaseClass):
             else:
                 self._y_scrollbar.grid_forget()
 
-    def _check_if_scrollbars_needed(self, event=None, continue_loop: bool = False):
+    def _check_if_scrollbars_needed(self, event: tkinter.Event[Any] | None = None, continue_loop: bool = False):
         """ Method hides or places the scrollbars if they are needed on key release event of tkinter.text widget """
 
         if self._scrollbars_activated:
@@ -355,7 +355,7 @@ class CTkTextbox(CTkBaseClass):
     def focus_force(self):
         return self._textbox.focus_force()
 
-    def insert(self, index: int, text, tags=None):
+    def insert(self, index: int, text: str, tags=None):
         return self._textbox.insert(index, text, tags)
 
     def get(self, index1, index2=None):
@@ -435,16 +435,16 @@ class CTkTextbox(CTkBaseClass):
     def see(self, index):
         return self._textbox.see(index)
 
-    def tag_add(self, tagName, index1, index2=None):
+    def tag_add(self, tagName: str, index1, index2=None):
         return self._textbox.tag_add(tagName, index1, index2)
 
-    def tag_bind(self, tagName, sequence, func, add=None):
+    def tag_bind(self, tagName: str, sequence: str, func, add: bool | Literal["", "+"] | None = None):
         return self._textbox.tag_bind(tagName, sequence, func, add)
 
-    def tag_cget(self, tagName, option):
+    def tag_cget(self, tagName: str, option: str):
         return self._textbox.tag_cget(tagName, option)
 
-    def tag_config(self, tagName, **kwargs: Any):
+    def tag_config(self, tagName: str, **kwargs: Any):
         if "font" in kwargs:
             raise AttributeError("'font' option forbidden, because would be incompatible with scaling")
         return self._textbox.tag_config(tagName, **kwargs)
@@ -476,10 +476,10 @@ class CTkTextbox(CTkBaseClass):
     def tag_unbind(self, tagName: str, sequence, funcid=None):
         return self._textbox.tag_unbind(tagName, sequence, funcid)
 
-    def window_cget(self, index: int, option):
+    def window_cget(self, index: int, option: str):
         raise AttributeError("embedding widgets is forbidden, would probably cause all kinds of problems ;)")
 
-    def window_configure(self, index: int, option):
+    def window_configure(self, index: int, option: str):
         raise AttributeError("embedding widgets is forbidden, would probably cause all kinds of problems ;)")
 
     def window_create(self, index: int, **kwargs: Any):
@@ -500,7 +500,7 @@ class CTkTextbox(CTkBaseClass):
     def yview(self, *args):
         return self._textbox.yview(*args)
 
-    def yview_moveto(self, fraction):
+    def yview_moveto(self, fraction: float):
         return self._textbox.yview_moveto(fraction)
 
     def yview_scroll(self, n, what):

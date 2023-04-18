@@ -56,11 +56,11 @@ class CTkToplevel(tkinter.Toplevel, CTkAppearanceModeBaseClass, CTkScalingBaseCl
 
         self._current_width = 200  # initial window size, always without scaling
         self._current_height = 200
-        self._min_width: int = 0
-        self._min_height: int = 0
-        self._max_width: int = 1_000_000
-        self._max_height: int = 1_000_000
-        self._last_resizable_args: tuple[list, dict] | None = None  # (args, kwargs)
+        self._min_width: int | None = 0
+        self._min_height: int | None = 0
+        self._max_width: int | None = 1_000_000
+        self._max_height: int | None = 1_000_000
+        self._last_resizable_args: tuple[list[int], dict[str, float]] | None = None  # (args, kwargs)
 
         self._fg_color = ThemeManager.theme["CTkToplevel"]["fg_color"] if fg_color is None else self._check_color_type(fg_color)
 

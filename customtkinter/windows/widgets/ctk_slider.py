@@ -337,7 +337,7 @@ class CTkSlider(CTkBaseClass):
                                 fill=self._apply_appearance_mode(self._button_color),
                                 outline=self._apply_appearance_mode(self._button_color))
 
-    def _round_to_step_size(self, value) -> float:
+    def _round_to_step_size(self, value: float) -> float:
         if self._number_of_steps is not None:
             step_size = (self._to - self._from_) / self._number_of_steps
             value = self._to - (round((self._to - value) / step_size) * step_size)
@@ -348,7 +348,7 @@ class CTkSlider(CTkBaseClass):
     def get(self) -> float:
         return self._output_value
 
-    def set(self, output_value, from_variable_callback: bool = False):
+    def set(self, output_value: float, from_variable_callback: bool = False):
         if self._from_ < self._to:
             if output_value > self._to:
                 output_value = self._to

@@ -264,7 +264,7 @@ class CTkScrollbar(CTkBaseClass):
     def get(self):
         return self._start_value, self._end_value
 
-    def bind(self, sequence=None, command: Callable[..., None] | None = None, add: Literal["+", True] = True):
+    def bind(self, sequence=None, command: Callable[..., None] | None = None, add: Literal["+"] | bool = True):
         """ called on the tkinter.Canvas """
         if not (add == "+" or add is True):
             raise ValueError("'add' argument can only be '+' or True to preserve internal callbacks")

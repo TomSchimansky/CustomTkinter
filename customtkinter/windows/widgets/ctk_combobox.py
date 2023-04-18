@@ -43,11 +43,11 @@ class CTkComboBox(CTkBaseClass):
                  font: tuple[Any, ...] | CTkFont | None = None,
                  dropdown_font: tuple[Any, ...] | CTkFont | None = None,
                  values: list[str] | None = None,
-                 state: str = tkinter.NORMAL,
+                 state: Literal["normal", "disabled", "readonly"] = "normal",
                  hover: bool = True,
                  variable: tkinter.Variable | None = None,
                  command: Callable[[str], None] | None = None,
-                 justify: str = "left",
+                 justify: Literal["left", "center", "right"] = "left",
                  **kwargs: Any):
 
         # transfer basic functionality (_bg_color, size, __appearance_mode, scaling) to CTkBaseClass
@@ -401,13 +401,13 @@ class CTkComboBox(CTkBaseClass):
         if self._state is not tkinter.DISABLED and len(self._values) > 0:
             self._open_dropdown_menu()
 
-    def bind(self, sequence=None, command=None, add: Literal["+", True] = True):
+    def bind(self, sequence: str | None = None, command=None, add: Literal["+"] | bool = True):
         """ called on the tkinter.Entry """
         if not (add == "+" or add is True):
             raise ValueError("'add' argument can only be '+' or True to preserve internal callbacks")
         self._entry.bind(sequence, command, add=True)
 
-    def unbind(self, sequence=None, funcid=None):
+    def unbind(self, sequence=None, funcid: str | None = None):
         """ called on the tkinter.Entry """
         if funcid is not None:
             raise ValueError("'funcid' argument can only be None, because there is a bug in" +

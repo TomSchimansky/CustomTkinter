@@ -197,7 +197,7 @@ class CTk(tkinter.Tk, CTkAppearanceModeBaseClass, CTkScalingBaseClass):
             super().geometry(self._apply_geometry_scaling(geometry_string))
 
             # update width and height attributes
-            width, height, x, y = self._parse_geometry_string(geometry_string)
+            width, height, *_ = self._parse_geometry_string(geometry_string)
             if width is not None and height is not None:
                 self._current_width = max(self._min_width, min(width, self._max_width))  # bound value between min and max
                 self._current_height = max(self._min_height, min(height, self._max_height))

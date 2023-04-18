@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 import sys
-from typing import Any
+import tkinter
+from typing import Any, Callable
 
 if sys.version_info >= (3, 8):
     from typing import Literal
@@ -189,13 +190,13 @@ class CTkFrame(CTkBaseClass):
         else:
             return super().cget(attribute_name)
 
-    def bind(self, sequence=None, command=None, add: Literal["+", True] = True):
+    def bind(self, sequence: str | None = None, command: Callable[[tkinter.Event[Any]], None] | None = None, add: Literal["+"] | bool = True):
         """ called on the tkinter.Canvas """
         if not (add == "+" or add is True):
             raise ValueError("'add' argument can only be '+' or True to preserve internal callbacks")
         self._canvas.bind(sequence, command, add=True)
 
-    def unbind(self, sequence=None, funcid=None):
+    def unbind(self, sequence=None, funcid: str | None = None):
         """ called on the tkinter.Canvas """
         if funcid is not None:
             raise ValueError("'funcid' argument can only be None, because there is a bug in" +
