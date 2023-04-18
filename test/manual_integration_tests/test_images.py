@@ -40,4 +40,3 @@ label_3 = customtkinter.CTkLabel(app, image=ImageTk.PhotoImage(Image.open(file_p
 label_3.pack(padx=20, pady=20)
 
 app.mainloop()
-

@@ -1,7 +1,14 @@
+from __future__ import annotations
 
-def pop_from_dict_by_set(dictionary: dict, valid_keys: set) -> dict:
+from typing import Any, TypeVar
+
+KT = TypeVar("KT")
+VT = TypeVar("VT")
+
+
+def pop_from_dict_by_set(dictionary: dict[KT, VT], valid_keys: set[KT]) -> dict[KT, VT]:
     """ remove and create new dict with key value pairs of dictionary, where key is in valid_keys """
-    new_dictionary = {}
+    new_dictionary: dict[KT, VT] = {}
 
     for key in list(dictionary.keys()):
         if key in valid_keys:
@@ -10,7 +17,7 @@ def pop_from_dict_by_set(dictionary: dict, valid_keys: set) -> dict:
     return new_dictionary
 
 
-def check_kwargs_empty(kwargs_dict, raise_error=False) -> bool:
+def check_kwargs_empty(kwargs_dict: dict[Any, Any], raise_error: bool =False) -> bool:
     """ returns True if kwargs are empty, False otherwise, raises error if not empty """
 
     if len(kwargs_dict) > 0:

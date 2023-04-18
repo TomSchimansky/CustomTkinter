@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from typing import Any
+
 import customtkinter
 import os
 from PIL import Image
@@ -79,7 +83,7 @@ class App(customtkinter.CTk):
         # select default frame
         self.select_frame_by_name("home")
 
-    def select_frame_by_name(self, name):
+    def select_frame_by_name(self, name: str):
         # set button color for selected button
         self.home_button.configure(fg_color=("gray75", "gray25") if name == "home" else "transparent")
         self.frame_2_button.configure(fg_color=("gray75", "gray25") if name == "frame_2" else "transparent")
@@ -108,11 +112,10 @@ class App(customtkinter.CTk):
     def frame_3_button_event(self):
         self.select_frame_by_name("frame_3")
 
-    def change_appearance_mode_event(self, new_appearance_mode):
+    def change_appearance_mode_event(self, new_appearance_mode: Any):
         customtkinter.set_appearance_mode(new_appearance_mode)
 
 
 if __name__ == "__main__":
     app = App()
     app.mainloop()
-

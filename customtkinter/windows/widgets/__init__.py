@@ -7,10 +7,10 @@ from .ctk_label import CTkLabel
 from .ctk_optionmenu import CTkOptionMenu
 from .ctk_progressbar import CTkProgressBar
 from .ctk_radiobutton import CTkRadioButton
+from .ctk_scrollable_frame import CTkScrollableFrame
 from .ctk_scrollbar import CTkScrollbar
 from .ctk_segmented_button import CTkSegmentedButton
 from .ctk_slider import CTkSlider
 from .ctk_switch import CTkSwitch
 from .ctk_tabview import CTkTabview
 from .ctk_textbox import CTkTextbox
-from .ctk_scrollable_frame import CTkScrollableFrame

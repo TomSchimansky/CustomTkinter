@@ -1,12 +1,11 @@
-import tkinter.messagebox
 import customtkinter
 
 customtkinter.set_appearance_mode("dark")
 
 
 class App(customtkinter.CTk):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, *args: Any, **kwargs: Any):
+        super().__init__(*args, **kwargs: Any)
 
         self.title("test filedialog")
 

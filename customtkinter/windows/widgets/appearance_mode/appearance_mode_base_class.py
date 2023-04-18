@@ -1,4 +1,11 @@
-from typing import Union, Tuple, List
+from __future__ import annotations
+
+import sys
+
+if sys.version_info >= (3, 8):
+    from typing import Literal
+else:
+    from typing_extensions import Literal
 
 from .appearance_mode_tracker import AppearanceModeTracker
 
@@ -19,7 +26,7 @@ class CTkAppearanceModeBaseClass:
     def destroy(self):
         AppearanceModeTracker.remove(self._set_appearance_mode)
 
-    def _set_appearance_mode(self, mode_string: str):
+    def _set_appearance_mode(self, mode_string: Literal["light", "dark"]):
         """ can be overridden but super method must be called at the beginning """
         if mode_string.lower() == "dark":
             self.__appearance_mode = 1
@@ -33,7 +40,7 @@ class CTkAppearanceModeBaseClass:
         else:
             return "dark"
 
-    def _apply_appearance_mode(self, color: Union[str, Tuple[str, str], List[str]]) -> str:
+    def _apply_appearance_mode(self, color: str | tuple[str, str] | list[str]) -> str:
         """
         color can be either a single hex color string or a color name or it can be a
         tuple color with (light_color, dark_color). The functions returns
@@ -46,7 +53,7 @@ class CTkAppearanceModeBaseClass:
             return color
 
     @staticmethod
-    def _check_color_type(color: any, transparency: bool = False):
+    def _check_color_type(color: Literal["transparent"] | str | tuple[str, str] | None, transparency: bool = False):
         if color is None:
             raise ValueError(f"color is None, for transparency set color='transparent'")
         elif isinstance(color, (tuple, list)) and (color[0] == "transparent" or color[1] == "transparent"):

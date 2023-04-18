@@ -1,15 +1,17 @@
-import tkinter
+from __future__ import annotations
+
 import math
-from typing import Union, Tuple, Optional, Callable
+import tkinter
+from typing import Any, Callable
+
 try:
     from typing import Literal
 except ImportError:
     from typing_extensions import Literal
 
-from .core_rendering import CTkCanvas
-from .theme import ThemeManager
-from .core_rendering import DrawEngine
+from .core_rendering import CTkCanvas, DrawEngine
 from .core_widget_classes import CTkBaseClass
+from .theme import ThemeManager
 
 
 class CTkProgressBar(CTkBaseClass):
@@ -20,23 +22,23 @@ class CTkProgressBar(CTkBaseClass):
     """
 
     def __init__(self,
-                 master: any,
-                 width: Optional[int] = None,
-                 height: Optional[int] = None,
-                 corner_radius: Optional[int] = None,
-                 border_width: Optional[int] = None,
+                 master: CTkBaseClass,
+                 width: int | None = None,
+                 height: int | None = None,
+                 corner_radius: int | None = None,
+                 border_width: int | None = None,
 
-                 bg_color: Union[str, Tuple[str, str]] = "transparent",
-                 fg_color: Optional[Union[str, Tuple[str, str]]] = None,
-                 border_color: Optional[Union[str, Tuple[str, str]]] = None,
-                 progress_color: Optional[Union[str, Tuple[str, str]]] = None,
+                 bg_color: str | tuple[str, str] = "transparent",
+                 fg_color: str | tuple[str, str] | None = None,
+                 border_color: str | tuple[str, str] | None = None,
+                 progress_color: str | tuple[str, str] | None = None,
 
-                 variable: Union[tkinter.Variable, None] = None,
+                 variable: tkinter.Variable | None = None,
                  orientation: str = "horizontal",
                  mode: Literal["determinate", "indeterminate"] = "determinate",
                  determinate_speed: float = 1,
                  indeterminate_speed: float = 1,
-                 **kwargs):
+                 **kwargs: Any):
 
         # set default dimensions according to orientation
         if width is None:
@@ -94,14 +96,14 @@ class CTkProgressBar(CTkBaseClass):
             self.set(self._variable.get(), from_variable_callback=True)
             self._variable_callback_blocked = False
 
-    def _set_scaling(self, *args, **kwargs):
+    def _set_scaling(self, *args: Any, **kwargs: Any):
         super()._set_scaling(*args, **kwargs)
 
         self._canvas.configure(width=self._apply_widget_scaling(self._desired_width),
                                height=self._apply_widget_scaling(self._desired_height))
         self._draw(no_color_updates=True)
 
-    def _set_dimensions(self, width=None, height=None):
+    def _set_dimensions(self, width: int | None = None, height: int | None = None):
         super()._set_dimensions(width, height)
 
         self._canvas.configure(width=self._apply_widget_scaling(self._desired_width),
@@ -114,7 +116,7 @@ class CTkProgressBar(CTkBaseClass):
 
         super().destroy()
 
-    def _draw(self, no_color_updates=False):
+    def _draw(self, no_color_updates: bool = False):
         super()._draw(no_color_updates)
 
         if self._orientation.lower() == "horizontal":
@@ -157,7 +159,7 @@ class CTkProgressBar(CTkBaseClass):
                                     fill=self._apply_appearance_mode(self._progress_color),
                                     outline=self._apply_appearance_mode(self._progress_color))
 
-    def configure(self, require_redraw=False, **kwargs):
+    def configure(self, require_redraw: bool = False, **kwargs: Any):
         if "corner_radius" in kwargs:
             self._corner_radius = kwargs.pop("corner_radius")
             require_redraw = True
@@ -202,7 +204,7 @@ class CTkProgressBar(CTkBaseClass):
 
         super().configure(require_redraw=require_redraw, **kwargs)
 
-    def cget(self, attribute_name: str) -> any:
+    def cget(self, attribute_name: str) -> Any:
         if attribute_name == "corner_radius":
             return self._corner_radius
         elif attribute_name == "border_width":
@@ -229,11 +231,11 @@ class CTkProgressBar(CTkBaseClass):
         else:
             return super().cget(attribute_name)
 
-    def _variable_callback(self, var_name, index, mode):
+    def _variable_callback(self, var_name: str, index: int, mode: Any):
         if not self._variable_callback_blocked:
             self.set(self._variable.get(), from_variable_callback=True)
 
-    def set(self, value, from_variable_callback=False):
+    def set(self, value, from_variable_callback: bool = False):
         """ set determinate value """
         self._determinate_value = value
 
@@ -289,13 +291,13 @@ class CTkProgressBar(CTkBaseClass):
             self._indeterminate_value += self._indeterminate_speed
             self._draw()
 
-    def bind(self, sequence: str = None, command: Callable = None, add: Union[str, bool] = True):
+    def bind(self, sequence: str, command: Callable[..., None] | None = None, add: str | bool = True):
         """ called on the tkinter.Canvas """
         if not (add == "+" or add is True):
             raise ValueError("'add' argument can only be '+' or True to preserve internal callbacks")
         self._canvas.bind(sequence, command, add=True)
 
-    def unbind(self, sequence: str = None, funcid: str = None):
+    def unbind(self, sequence: str, funcid: str | None = None):
         """ called on the tkinter.Label and tkinter.Canvas """
         if funcid is not None:
             raise ValueError("'funcid' argument can only be None, because there is a bug in" +

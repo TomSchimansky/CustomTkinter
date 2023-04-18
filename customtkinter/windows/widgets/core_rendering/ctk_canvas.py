@@ -1,6 +1,9 @@
-import tkinter
+from __future__ import annotations
+
 import sys
-from typing import Union, Tuple
+import tkinter
+
+from typing import Any
 
 
 class CTkCanvas(tkinter.Canvas):
@@ -25,11 +28,11 @@ class CTkCanvas(tkinter.Canvas):
     not can be a problem when using only a single circle character.
     """
 
-    radius_to_char_fine: dict = None  # dict to map radius to font circle character
+    radius_to_char_fine: dict[int, str] = {}  # dict to map radius to font circle character
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: Any, **kwargs: Any):
         super().__init__(*args, **kwargs)
-        self._aa_circle_canvas_ids = set()
+        self._aa_circle_canvas_ids: set[str | int] = set()
 
     @classmethod
     def init_font_character_mapping(cls):
@@ -71,7 +74,7 @@ class CTkCanvas(tkinter.Canvas):
             return self.radius_to_char_fine[radius]
 
     def create_aa_circle(self, x_pos: int, y_pos: int, radius: int, angle: int = 0, fill: str = "white",
-                         tags: Union[str, Tuple[str, ...]] = "", anchor: str = tkinter.CENTER) -> int:
+                         tags: str | tuple[str, ...] = "", anchor: str = tkinter.CENTER) -> int:
         # create a circle with a font element
         circle_1 = self.create_text(x_pos, y_pos, text=self._get_char_from_radius(radius), anchor=anchor, fill=fill,
                                     font=("CustomTkinter_shapes_font", -radius * 2), tags=tags, angle=angle)
@@ -80,8 +83,7 @@ class CTkCanvas(tkinter.Canvas):
 
         return circle_1
 
-    def coords(self, tag_or_id, *args):
-
+    def coords(self, tag_or_id: int | str, *args: Any):
         if type(tag_or_id) == str and "ctk_aa_circle_font_element" in self.gettags(tag_or_id):
             coords_id = self.find_withtag(tag_or_id)[0]  # take the lowest id for the given tag
             super().coords(coords_id, *args[:2])
@@ -98,7 +100,7 @@ class CTkCanvas(tkinter.Canvas):
         else:
             super().coords(tag_or_id, *args)
 
-    def itemconfig(self, tag_or_id, *args, **kwargs):
+    def itemconfig(self, tag_or_id: int | str, *args: Any, **kwargs: Any):
         kwargs_except_outline = kwargs.copy()
         if "outline" in kwargs_except_outline:
             del kwargs_except_outline["outline"]

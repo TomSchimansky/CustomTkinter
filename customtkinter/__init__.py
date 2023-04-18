@@ -2,49 +2,30 @@ __version__ = "5.1.2"
 
 import os
 import sys
-from tkinter import Variable, StringVar, IntVar, DoubleVar, BooleanVar
-from tkinter.constants import *
 import tkinter.filedialog as filedialog
-
-# import manager classes
-from .windows.widgets.appearance_mode import AppearanceModeTracker
-from .windows.widgets.font import FontManager
-from .windows.widgets.scaling import ScalingTracker
-from .windows.widgets.theme import ThemeManager
-from .windows.widgets.core_rendering import DrawEngine
-
-# import base widgets
-from .windows.widgets.core_rendering import CTkCanvas
-from .windows.widgets.core_widget_classes import CTkBaseClass
-
-# import widgets
-from .windows.widgets import CTkButton
-from .windows.widgets import CTkCheckBox
-from .windows.widgets import CTkComboBox
-from .windows.widgets import CTkEntry
-from .windows.widgets import CTkFrame
-from .windows.widgets import CTkLabel
-from .windows.widgets import CTkOptionMenu
-from .windows.widgets import CTkProgressBar
-from .windows.widgets import CTkRadioButton
-from .windows.widgets import CTkScrollbar
-from .windows.widgets import CTkSegmentedButton
-from .windows.widgets import CTkSlider
-from .windows.widgets import CTkSwitch
-from .windows.widgets import CTkTabview
-from .windows.widgets import CTkTextbox
-from .windows.widgets import CTkScrollableFrame
+from tkinter import BooleanVar, DoubleVar, IntVar, StringVar, Variable
+from tkinter.constants import *
 
 # import windows
-from .windows import CTk
-from .windows import CTkToplevel
-from .windows import CTkInputDialog
-
+from .windows import CTk, CTkInputDialog, CTkToplevel
+# import widgets
+from .windows.widgets import (CTkButton, CTkCheckBox, CTkComboBox, CTkEntry,
+                              CTkFrame, CTkLabel, CTkOptionMenu,
+                              CTkProgressBar, CTkRadioButton,
+                              CTkScrollableFrame, CTkScrollbar,
+                              CTkSegmentedButton, CTkSlider, CTkSwitch,
+                              CTkTabview, CTkTextbox)
+# import manager classes
+from .windows.widgets.appearance_mode import AppearanceModeTracker
+# import base widgets
+from .windows.widgets.core_rendering import CTkCanvas, DrawEngine
+from .windows.widgets.core_widget_classes import CTkBaseClass
 # import font classes
-from .windows.widgets.font import CTkFont
-
+from .windows.widgets.font import CTkFont, FontManager
 # import image classes
 from .windows.widgets.image import CTkImage
+from .windows.widgets.scaling import ScalingTracker
+from .windows.widgets.theme import ThemeManager
 
 _ = Variable, StringVar, IntVar, DoubleVar, BooleanVar, CENTER, filedialog  # prevent IDE from removing unused imports
 

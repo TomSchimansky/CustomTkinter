@@ -1,10 +1,17 @@
-import sys
-from typing import Union, Tuple, Callable, Optional
+from __future__ import annotations
 
-from .core_rendering import CTkCanvas
-from .theme import ThemeManager
-from .core_rendering import DrawEngine
+import sys
+import tkinter
+from typing import Any, Callable
+
+if sys.version_info >= (3, 8):
+    from typing import Literal
+else:
+    from typing_extensions import Literal
+
+from .core_rendering import CTkCanvas, DrawEngine
 from .core_widget_classes import CTkBaseClass
+from .theme import ThemeManager
 
 
 class CTkScrollbar(CTkBaseClass):
@@ -15,22 +22,22 @@ class CTkScrollbar(CTkBaseClass):
     """
 
     def __init__(self,
-                 master: any,
-                 width: Optional[Union[int, str]] = None,
-                 height: Optional[Union[int, str]] = None,
-                 corner_radius: Optional[int] = None,
-                 border_spacing: Optional[int] = None,
+                 master: CTkBaseClass,
+                 width: int | str | None = None,
+                 height: int | str | None = None,
+                 corner_radius: int | None = None,
+                 border_spacing: int | None = None,
                  minimum_pixel_length: int = 20,
 
-                 bg_color: Union[str, Tuple[str, str]] = "transparent",
-                 fg_color: Optional[Union[str, Tuple[str, str]]] = None,
-                 button_color: Optional[Union[str, Tuple[str, str]]] = None,
-                 button_hover_color: Optional[Union[str, Tuple[str, str]]] = None,
+                 bg_color: str | tuple[str, str] = "transparent",
+                 fg_color: str | tuple[str, str] | None = None,
+                 button_color: str | tuple[str, str] | None = None,
+                 button_hover_color: str | tuple[str, str] | None = None,
 
                  hover: bool = True,
-                 command: Union[Callable, None] = None,
+                 command: Callable[..., None] | None = None,
                  orientation: str = "vertical",
-                 **kwargs):
+                 **kwargs: Any):
 
         # set default dimensions according to orientation
         if width is None:
@@ -74,7 +81,7 @@ class CTkScrollbar(CTkBaseClass):
         self._create_bindings()
         self._draw()
 
-    def _create_bindings(self, sequence: Optional[str] = None):
+    def _create_bindings(self, sequence: str | None = None):
         """ set necessary bindings for functionality of widget, will overwrite other bindings """
         if sequence is None:
             self._canvas.tag_bind("border_parts", "<Button-1>", self._clicked)
@@ -87,14 +94,14 @@ class CTkScrollbar(CTkBaseClass):
         if sequence is None or sequence == "<MouseWheel>":
             self._canvas.bind("<MouseWheel>", self._mouse_scroll_event)
 
-    def _set_scaling(self, *args, **kwargs):
+    def _set_scaling(self, *args: Any, **kwargs: Any):
         super()._set_scaling(*args, **kwargs)
 
         self._canvas.configure(width=self._apply_widget_scaling(self._desired_width),
                                height=self._apply_widget_scaling(self._desired_height))
         self._draw(no_color_updates=True)
 
-    def _set_dimensions(self, width=None, height=None):
+    def _set_dimensions(self, width: int | None = None, height: int | None = None):
         super()._set_dimensions(width, height)
 
         self._canvas.configure(width=self._apply_widget_scaling(self._desired_width),
@@ -125,7 +132,7 @@ class CTkScrollbar(CTkBaseClass):
             else:
                 return self._start_value, self._end_value
 
-    def _draw(self, no_color_updates=False):
+    def _draw(self, no_color_updates: bool = False):
         super()._draw(no_color_updates)
 
         corrected_start_value, corrected_end_value = self._get_scrollbar_values_for_minimum_pixel_size()
@@ -160,7 +167,7 @@ class CTkScrollbar(CTkBaseClass):
 
         self._canvas.update_idletasks()
 
-    def configure(self, require_redraw=False, **kwargs):
+    def configure(self, require_redraw: bool = False, **kwargs: Any):
         if "fg_color" in kwargs:
             self._fg_color = self._check_color_type(kwargs.pop("fg_color"), transparency=True)
             require_redraw = True
@@ -189,7 +196,7 @@ class CTkScrollbar(CTkBaseClass):
 
         super().configure(require_redraw=require_redraw, **kwargs)
 
-    def cget(self, attribute_name: str) -> any:
+    def cget(self, attribute_name: str) -> Any:
         if attribute_name == "corner_radius":
             return self._corner_radius
         elif attribute_name == "border_spacing":
@@ -214,24 +221,24 @@ class CTkScrollbar(CTkBaseClass):
         else:
             return super().cget(attribute_name)
 
-    def _on_enter(self, event=0):
+    def _on_enter(self, event: tkinter.Event[Any] | None = None):
         if self._hover is True:
             self._hover_state = True
             self._canvas.itemconfig("scrollbar_parts",
                                     outline=self._apply_appearance_mode(self._button_hover_color),
                                     fill=self._apply_appearance_mode(self._button_hover_color))
 
-    def _on_leave(self, event=0):
+    def _on_leave(self, event: tkinter.Event[Any] | None = None):
         self._hover_state = False
         self._canvas.itemconfig("scrollbar_parts",
                                 outline=self._apply_appearance_mode(self._button_color),
                                 fill=self._apply_appearance_mode(self._button_color))
 
-    def _clicked(self, event):
+    def _clicked(self, event: tkinter.Event[Any] | None = None):
         if self._orientation == "vertical":
-            value = self._reverse_widget_scaling(((event.y - self._border_spacing) / (self._current_height - 2 * self._border_spacing)))
+            value = self._reverse_widget_scaling((event.y - self._border_spacing) / (self._current_height - 2 * self._border_spacing))
         else:
-            value = self._reverse_widget_scaling(((event.x - self._border_spacing) / (self._current_width - 2 * self._border_spacing)))
+            value = self._reverse_widget_scaling((event.x - self._border_spacing) / (self._current_width - 2 * self._border_spacing))
 
         current_scrollbar_length = self._end_value - self._start_value
         value = max(current_scrollbar_length / 2, min(value, 1 - (current_scrollbar_length / 2)))
@@ -242,7 +249,7 @@ class CTkScrollbar(CTkBaseClass):
         if self._command is not None:
             self._command('moveto', self._start_value)
 
-    def _mouse_scroll_event(self, event=None):
+    def _mouse_scroll_event(self, event: tkinter.Event[Any] | None = None):
         if self._command is not None:
             if sys.platform.startswith("win"):
                 self._command('scroll', -int(event.delta/40), 'units')
@@ -257,7 +264,7 @@ class CTkScrollbar(CTkBaseClass):
     def get(self):
         return self._start_value, self._end_value
 
-    def bind(self, sequence=None, command=None, add=True):
+    def bind(self, sequence=None, command: Callable[..., None] | None = None, add: Literal["+"] | bool = True):
         """ called on the tkinter.Canvas """
         if not (add == "+" or add is True):
             raise ValueError("'add' argument can only be '+' or True to preserve internal callbacks")

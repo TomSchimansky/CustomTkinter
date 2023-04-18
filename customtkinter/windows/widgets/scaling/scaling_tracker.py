@@ -1,13 +1,17 @@
-import tkinter
-import sys
-from typing import Callable
+from __future__ import annotations
 
+import sys
+import tkinter
+from typing import Callable, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from customtkinter.windows import CTk
 
 class ScalingTracker:
     deactivate_automatic_dpi_awareness = False
 
-    window_widgets_dict = {}  # contains window objects as keys with list of widget callbacks as elements
-    window_dpi_scaling_dict = {}  # contains window objects as keys and corresponding scaling factors
+    window_widgets_dict: dict[CTk, list[Callable[..., None]]] = {}  # contains window objects as keys with list of widget callbacks as elements
+    window_dpi_scaling_dict: dict[CTk, float] = {}  # contains window objects as keys and corresponding scaling factors
 
     widget_scaling = 1  # user values which multiply to detected window scaling factor
     window_scaling = 1
@@ -17,12 +21,12 @@ class ScalingTracker:
     loop_pause_after_new_scaling = 1500  # ms
 
     @classmethod
-    def get_widget_scaling(cls, widget) -> float:
+    def get_widget_scaling(cls, widget: CTk) -> float:
         window_root = cls.get_window_root_of_widget(widget)
         return cls.window_dpi_scaling_dict[window_root] * cls.widget_scaling
 
     @classmethod
-    def get_window_scaling(cls, window) -> float:
+    def get_window_scaling(cls, window: CTk) -> float:
         window_root = cls.get_window_root_of_widget(window)
         return cls.window_dpi_scaling_dict[window_root] * cls.window_scaling
 
@@ -37,7 +41,7 @@ class ScalingTracker:
         cls.update_scaling_callbacks_all()
 
     @classmethod
-    def get_window_root_of_widget(cls, widget):
+    def get_window_root_of_widget(cls, widget: CTk):
         current_widget = widget
 
         while isinstance(current_widget, tkinter.Tk) is False and\
@@ -58,7 +62,7 @@ class ScalingTracker:
                                          cls.window_scaling)
 
     @classmethod
-    def update_scaling_callbacks_for_window(cls, window):
+    def update_scaling_callbacks_for_window(cls, window: CTk):
         for set_scaling_callback in cls.window_widgets_dict[window]:
             if not cls.deactivate_automatic_dpi_awareness:
                 set_scaling_callback(cls.window_dpi_scaling_dict[window] * cls.widget_scaling,
@@ -68,7 +72,7 @@ class ScalingTracker:
                                      cls.window_scaling)
 
     @classmethod
-    def add_widget(cls, widget_callback: Callable, widget):
+    def add_widget(cls, widget_callback: Callable[..., None], widget: CTk):
         window_root = cls.get_window_root_of_widget(widget)
 
         if window_root not in cls.window_widgets_dict:
@@ -84,7 +88,7 @@ class ScalingTracker:
             cls.update_loop_running = True
 
     @classmethod
-    def remove_widget(cls, widget_callback, widget):
+    def remove_widget(cls, widget_callback: Callable[..., None], widget: CTk):
         window_root = cls.get_window_root_of_widget(widget)
         try:
             cls.window_widgets_dict[window_root].remove(widget_callback)
@@ -92,14 +96,14 @@ class ScalingTracker:
             pass
 
     @classmethod
-    def remove_window(cls, window_callback, window):
+    def remove_window(cls, window_callback: Callable[..., None], window: CTk):
         try:
             del cls.window_widgets_dict[window]
         except:
             pass
 
     @classmethod
-    def add_window(cls, window_callback, window):
+    def add_window(cls, window_callback: Callable[..., None], window: CTk):
         if window not in cls.window_widgets_dict:
             cls.window_widgets_dict[window] = [window_callback]
         else:
@@ -135,11 +139,9 @@ class ScalingTracker:
                 #     DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE = 18,
                 #     DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2 = 34
                 # }
-
                 # ctypes.windll.user32.SetProcessDpiAwarenessContext(34)  # Non client area scaling at runtime (titlebar)
                 # does not work with resizable(False, False), window starts growing on monitor with different scaling (weird tkinter bug...)
                 # ctypes.windll.user32.EnableNonClientDpiScaling(hwnd) does not work for some reason (tested on Windows 11)
-
                 # It's too bad, that these Windows API methods don't work properly with tkinter. But I tested days with multiple monitor setups,
                 # and I don't think there is anything left to do. So this is the best option at the moment:
 
@@ -148,13 +150,13 @@ class ScalingTracker:
                 pass  # DPI awareness on Linux not implemented
 
     @classmethod
-    def get_window_dpi_scaling(cls, window) -> float:
+    def get_window_dpi_scaling(cls, window: CTk) -> float:
         if not cls.deactivate_automatic_dpi_awareness:
             if sys.platform == "darwin":
                 return 1  # scaling works automatically on macOS
 
             elif sys.platform.startswith("win"):
-                from ctypes import windll, pointer, wintypes
+                from ctypes import pointer, windll, wintypes
 
                 DPI100pc = 96  # DPI 96 is 100% scaling
                 DPI_type = 0  # MDT_EFFECTIVE_DPI = 0, MDT_ANGULAR_DPI = 1, MDT_RAW_DPI = 2
@@ -181,14 +183,14 @@ class ScalingTracker:
                     cls.window_dpi_scaling_dict[window] = current_dpi_scaling_value
 
                     if sys.platform.startswith("win"):
-                        window.attributes("-alpha", 0.15)
+                        window.attributes("-alpha", 0.15)   # type: ignore
 
                     window.block_update_dimensions_event()
                     cls.update_scaling_callbacks_for_window(window)
                     window.unblock_update_dimensions_event()
 
                     if sys.platform.startswith("win"):
-                        window.attributes("-alpha", 1)
+                        window.attributes("-alpha", 1)  # type: ignore
 
                     new_scaling_detected = True
 

@@ -1,13 +1,14 @@
-import tkinter
-from typing import Union, Tuple, Callable, Optional
+from __future__ import annotations
 
-from .core_rendering import CTkCanvas
-from .theme import ThemeManager
-from .core_rendering import DrawEngine
+import tkinter
+from typing import Any, Callable
+
+from .core_rendering import CTkCanvas, DrawEngine
 from .core_widget_classes import CTkBaseClass
 from .font import CTkFont
 from .image import CTkImage
-from .utility import pop_from_dict_by_set, check_kwargs_empty
+from .theme import ThemeManager
+from .utility import check_kwargs_empty, pop_from_dict_by_set
 
 
 class CTkLabel(CTkBaseClass):
@@ -21,22 +22,22 @@ class CTkLabel(CTkBaseClass):
                                   "textvariable", "state", "takefocus", "underline"}
 
     def __init__(self,
-                 master: any,
+                 master: CTkBaseClass,
                  width: int = 0,
                  height: int = 28,
-                 corner_radius: Optional[int] = None,
+                 corner_radius: int | None = None,
 
-                 bg_color: Union[str, Tuple[str, str]] = "transparent",
-                 fg_color: Optional[Union[str, Tuple[str, str]]] = None,
-                 text_color: Optional[Union[str, Tuple[str, str]]] = None,
+                 bg_color: str | tuple[str, str] = "transparent",
+                 fg_color: str | tuple[str, str] | None = None,
+                 text_color: str | tuple[str, str] | None = None,
 
                  text: str = "CTkLabel",
-                 font: Optional[Union[tuple, CTkFont]] = None,
-                 image: Union[CTkImage, None] = None,
+                 font: tuple[Any, ...] | CTkFont | None = None,
+                 image: CTkImage | None = None,
                  compound: str = "center",
                  anchor: str = "center",  # label anchor: center, n, e, s, w
                  wraplength: int = 0,
-                 **kwargs):
+                 **kwargs: Any):
 
         # transfer basic functionality (_bg_color, size, __appearance_mode, scaling) to CTkBaseClass
         super().__init__(master=master, bg_color=bg_color, width=width, height=height)
@@ -93,7 +94,7 @@ class CTkLabel(CTkBaseClass):
         self._update_image()
         self._draw()
 
-    def _set_scaling(self, *args, **kwargs):
+    def _set_scaling(self, *args: Any, **kwargs: Any):
         super()._set_scaling(*args, **kwargs)
 
         self._canvas.configure(width=self._apply_widget_scaling(self._desired_width), height=self._apply_widget_scaling(self._desired_height))
@@ -108,7 +109,7 @@ class CTkLabel(CTkBaseClass):
         super()._set_appearance_mode(mode_string)
         self._update_image()
 
-    def _set_dimensions(self, width=None, height=None):
+    def _set_dimensions(self, width: int | None = None, height: int | None = None):
         super()._set_dimensions(width, height)
 
         self._canvas.configure(width=self._apply_widget_scaling(self._desired_width),
@@ -144,7 +145,7 @@ class CTkLabel(CTkBaseClass):
         self._label.grid(row=0, column=0, sticky=text_label_grid_sticky,
                          padx=self._apply_widget_scaling(min(self._corner_radius, round(self._current_height / 2))))
 
-    def _draw(self, no_color_updates=False):
+    def _draw(self, no_color_updates: bool = False):
         super()._draw(no_color_updates)
 
         requires_recoloring = self._draw_engine.draw_rounded_rect_with_border(self._apply_widget_scaling(self._current_width),
@@ -170,7 +171,7 @@ class CTkLabel(CTkBaseClass):
 
             self._canvas.configure(bg=self._apply_appearance_mode(self._bg_color))
 
-    def configure(self, require_redraw=False, **kwargs):
+    def configure(self, require_redraw: bool = False, **kwargs: Any):
         if "corner_radius" in kwargs:
             self._corner_radius = kwargs.pop("corner_radius")
             self._create_grid()
@@ -220,7 +221,7 @@ class CTkLabel(CTkBaseClass):
         self._label.configure(**pop_from_dict_by_set(kwargs, self._valid_tk_label_attributes))  # configure tkinter.Label
         super().configure(require_redraw=require_redraw, **kwargs)  # configure CTkBaseClass
 
-    def cget(self, attribute_name: str) -> any:
+    def cget(self, attribute_name: str) -> Any:
         if attribute_name == "corner_radius":
             return self._corner_radius
 
@@ -247,14 +248,14 @@ class CTkLabel(CTkBaseClass):
         else:
             return super().cget(attribute_name)  # cget of CTkBaseClass
 
-    def bind(self, sequence: str = None, command: Callable = None, add: str = True):
+    def bind(self, sequence: str, command: Callable[..., None] | None = None, add: str = True):
         """ called on the tkinter.Label and tkinter.Canvas """
         if not (add == "+" or add is True):
             raise ValueError("'add' argument can only be '+' or True to preserve internal callbacks")
         self._canvas.bind(sequence, command, add=True)
         self._label.bind(sequence, command, add=True)
 
-    def unbind(self, sequence: str = None, funcid: Optional[str] = None):
+    def unbind(self, sequence: str, funcid: str | None = None):
         """ called on the tkinter.Label and tkinter.Canvas """
         if funcid is not None:
             raise ValueError("'funcid' argument can only be None, because there is a bug in" +

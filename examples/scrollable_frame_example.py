@@ -1,25 +1,29 @@
+from __future__ import annotations
+
+from typing import Any, Callable
+
 import customtkinter
 import os
 from PIL import Image
 
 
 class ScrollableCheckBoxFrame(customtkinter.CTkScrollableFrame):
-    def __init__(self, master, item_list, command=None, **kwargs):
+    def __init__(self, master, item_list: list[str], command: Callable[..., None] | None = None, **kwargs: Any):
         super().__init__(master, **kwargs)
 
         self.command = command
-        self.checkbox_list = []
-        for i, item in enumerate(item_list):
+        self.checkbox_list: list[customtkinter.CTkCheckBox] = []
+        for item in item_list:
             self.add_item(item)
 
-    def add_item(self, item):
+    def add_item(self, item: str):
         checkbox = customtkinter.CTkCheckBox(self, text=item)
         if self.command is not None:
             checkbox.configure(command=self.command)
         checkbox.grid(row=len(self.checkbox_list), column=0, pady=(0, 10))
         self.checkbox_list.append(checkbox)
 
-    def remove_item(self, item):
+    def remove_item(self, item: str):
         for checkbox in self.checkbox_list:
             if item == checkbox.cget("text"):
                 checkbox.destroy()
@@ -31,7 +35,7 @@ class ScrollableCheckBoxFrame(customtkinter.CTkScrollableFrame):
 
 
 class ScrollableRadiobuttonFrame(customtkinter.CTkScrollableFrame):
-    def __init__(self, master, item_list, command=None, **kwargs):
+    def __init__(self, master, item_list: list[str], command: Callable[..., None] | None = None, **kwargs: Any):
         super().__init__(master, **kwargs)
 
         self.command = command
@@ -59,7 +63,7 @@ class ScrollableRadiobuttonFrame(customtkinter.CTkScrollableFrame):
 
 
 class ScrollableLabelButtonFrame(customtkinter.CTkScrollableFrame):
-    def __init__(self, master, command=None, **kwargs):
+    def __init__(self, master, command=None, **kwargs: Any):
         super().__init__(master, **kwargs)
         self.grid_columnconfigure(0, weight=1)
 

@@ -1,12 +1,13 @@
-import tkinter
-from typing import Union, Tuple, Dict, List, Callable, Optional
+from __future__ import annotations
 
-from .theme import ThemeManager
-from .ctk_frame import CTkFrame
-from .core_rendering import CTkCanvas
-from .core_rendering import DrawEngine
+import tkinter
+from typing import Any, Callable
+
+from .core_rendering import CTkCanvas, DrawEngine
 from .core_widget_classes import CTkBaseClass
+from .ctk_frame import CTkFrame
 from .ctk_segmented_button import CTkSegmentedButton
+from .theme import ThemeManager
 
 
 class CTkTabview(CTkBaseClass):
@@ -21,28 +22,28 @@ class CTkTabview(CTkBaseClass):
     _segmented_button_border_width: int = 3
 
     def __init__(self,
-                 master: any,
+                 master: CTkBaseClass,
                  width: int = 300,
                  height: int = 250,
-                 corner_radius: Optional[int] = None,
-                 border_width: Optional[int] = None,
+                 corner_radius: int | None = None,
+                 border_width: int | None = None,
 
-                 bg_color: Union[str, Tuple[str, str]] = "transparent",
-                 fg_color: Optional[Union[str, Tuple[str, str]]] = None,
-                 border_color: Optional[Union[str, Tuple[str, str]]] = None,
+                 bg_color: str | tuple[str, str] = "transparent",
+                 fg_color: str | tuple[str, str] | None = None,
+                 border_color: str | tuple[str, str] | None = None,
 
-                 segmented_button_fg_color: Optional[Union[str, Tuple[str, str]]] = None,
-                 segmented_button_selected_color: Optional[Union[str, Tuple[str, str]]] = None,
-                 segmented_button_selected_hover_color: Optional[Union[str, Tuple[str, str]]] = None,
-                 segmented_button_unselected_color: Optional[Union[str, Tuple[str, str]]] = None,
-                 segmented_button_unselected_hover_color: Optional[Union[str, Tuple[str, str]]] = None,
+                 segmented_button_fg_color: str | tuple[str, str] | None = None,
+                 segmented_button_selected_color: str | tuple[str, str] | None = None,
+                 segmented_button_selected_hover_color: str | tuple[str, str] | None = None,
+                 segmented_button_unselected_color: str | tuple[str, str] | None = None,
+                 segmented_button_unselected_hover_color: str | tuple[str, str] | None = None,
 
-                 text_color: Optional[Union[str, Tuple[str, str]]] = None,
-                 text_color_disabled: Optional[Union[str, Tuple[str, str]]] = None,
+                 text_color: str | tuple[str, str] | None = None,
+                 text_color_disabled: str | tuple[str, str] | None = None,
 
-                 command: Union[Callable, None] = None,
+                 command: Callable[..., None] | None = None,
                  state: str = "normal",
-                 **kwargs):
+                 **kwargs: Any):
 
         # transfer some functionality to CTkFrame
         super().__init__(master=master, bg_color=bg_color, width=width, height=height, **kwargs)
@@ -91,14 +92,14 @@ class CTkTabview(CTkBaseClass):
         self._configure_grid()
         self._set_grid_canvas()
 
-        self._tab_dict: Dict[str, CTkFrame] = {}
-        self._name_list: List[str] = []  # list of unique tab names in order of tabs
+        self._tab_dict: dict[str, CTkFrame] = {}
+        self._name_list: list[str] = []  # list of unique tab names in order of tabs
         self._current_name: str = ""
         self._command = command
 
         self._draw()
 
-    def _segmented_button_callback(self, selected_name):
+    def _segmented_button_callback(self, selected_name: str):
         self._current_name = selected_name
         self._grid_forget_all_tabs()
         self._set_grid_tab_by_name(self._current_name)
@@ -106,7 +107,7 @@ class CTkTabview(CTkBaseClass):
         if self._command is not None:
             self._command()
 
-    def winfo_children(self) -> List[any]:
+    def winfo_children(self) -> list[Any]:
         """
         winfo_children of CTkTabview without canvas and segmented button widgets,
         because it's not a child but part of the CTkTabview itself
@@ -120,7 +121,7 @@ class CTkTabview(CTkBaseClass):
         except ValueError:
             return child_widgets
 
-    def _set_scaling(self, *args, **kwargs):
+    def _set_scaling(self, *args: Any, **kwargs: Any):
         super()._set_scaling(*args, **kwargs)
 
         self._canvas.configure(width=self._apply_widget_scaling(self._desired_width),
@@ -128,7 +129,7 @@ class CTkTabview(CTkBaseClass):
         self._configure_grid()
         self._draw(no_color_updates=True)
 
-    def _set_dimensions(self, width=None, height=None):
+    def _set_dimensions(self, width: int | None = None, height: int | None = None):
         super()._set_dimensions(width, height)
 
         self._canvas.configure(width=self._apply_widget_scaling(self._desired_width),
@@ -211,7 +212,7 @@ class CTkTabview(CTkBaseClass):
             self._canvas.configure(bg=self._apply_appearance_mode(self._bg_color))
             tkinter.Frame.configure(self, bg=self._apply_appearance_mode(self._bg_color))  # configure bg color of tkinter.Frame, cuase canvas does not fill frame
 
-    def configure(self, require_redraw=False, **kwargs):
+    def configure(self, require_redraw: bool = False, **kwargs: Any):
         if "corner_radius" in kwargs:
             self._corner_radius = kwargs.pop("corner_radius")
             require_redraw = True

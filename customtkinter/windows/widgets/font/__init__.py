@@ -1,11 +1,10 @@
 import os
 import sys
 
-from .ctk_font import CTkFont
-from .font_manager import FontManager
-
 # import DrawEngine to set preferred_drawing_method if loading shapes font fails
 from ..core_rendering import DrawEngine
+from .ctk_font import CTkFont
+from .font_manager import FontManager
 
 FontManager.init_font_manager()
 

@@ -1,11 +1,11 @@
-import sys
+from __future__ import annotations
+
 import os
 import shutil
-from typing import Union
+import sys
 
 
 class FontManager:
-
     linux_font_path = "~/.fonts/"
 
     @classmethod
@@ -25,10 +25,11 @@ class FontManager:
             return True
 
     @classmethod
-    def windows_load_font(cls, font_path: Union[str, bytes], private: bool = True, enumerable: bool = False) -> bool:
-        """ Function taken from: https://stackoverflow.com/questions/11993290/truly-custom-font-in-tkinter/30631309#30631309 """
+    def windows_load_font(cls, font_path: str | bytes, private: bool = True, enumerable: bool = False) -> bool:
+        """ Function taken from: https://stackoverflow.com/a/30631309/ """
 
-        from ctypes import windll, byref, create_unicode_buffer, create_string_buffer
+        from ctypes import (byref, create_string_buffer, create_unicode_buffer,
+                            windll)
 
         FR_PRIVATE = 0x10
         FR_NOT_ENUM = 0x20

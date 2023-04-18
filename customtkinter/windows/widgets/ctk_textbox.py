@@ -1,13 +1,20 @@
-import tkinter
-from typing import Union, Tuple, Optional, Callable
+from __future__ import annotations
 
-from .core_rendering import CTkCanvas
-from .ctk_scrollbar import CTkScrollbar
-from .theme import ThemeManager
-from .core_rendering import DrawEngine
+import sys
+import tkinter
+from typing import Any, Callable
+
+if sys.version_info >= (3, 8):
+    from typing import Literal
+else:
+    from typing_extensions import Literal
+
+from .core_rendering import CTkCanvas, DrawEngine
 from .core_widget_classes import CTkBaseClass
+from .ctk_scrollbar import CTkScrollbar
 from .font import CTkFont
-from .utility import pop_from_dict_by_set, check_kwargs_empty
+from .theme import ThemeManager
+from .utility import check_kwargs_empty, pop_from_dict_by_set
 
 
 class CTkTextbox(CTkBaseClass):
@@ -32,23 +39,23 @@ class CTkTextbox(CTkBaseClass):
                                  "xscrollcommand", "yscrollcommand"}
 
     def __init__(self,
-                 master: any,
+                 master: CTkBaseClass,
                  width: int = 200,
                  height: int = 200,
-                 corner_radius: Optional[int] = None,
-                 border_width: Optional[int] = None,
+                 corner_radius: int | None = None,
+                 border_width: int | None = None,
                  border_spacing: int = 3,
 
-                 bg_color: Union[str, Tuple[str, str]] = "transparent",
-                 fg_color: Optional[Union[str, Tuple[str, str]]] = None,
-                 border_color: Optional[Union[str, Tuple[str, str]]] = None,
-                 text_color: Optional[Union[str, str]] = None,
-                 scrollbar_button_color: Optional[Union[str, Tuple[str, str]]] = None,
-                 scrollbar_button_hover_color:  Optional[Union[str, Tuple[str, str]]] = None,
+                 bg_color: str | tuple[str, str] = "transparent",
+                 fg_color: str | tuple[str, str] | None = None,
+                 border_color: str | tuple[str, str] | None = None,
+                 text_color: str | str | None = None,
+                 scrollbar_button_color: str | tuple[str, str] | None = None,
+                 scrollbar_button_hover_color:  str | tuple[str, str] | None = None,
 
-                 font: Optional[Union[tuple, CTkFont]] = None,
+                 font: tuple[Any, ...] | CTkFont | None = None,
                  activate_scrollbars: bool = True,
-                 **kwargs):
+                 **kwargs: Any):
 
         # transfer basic functionality (_bg_color, size, __appearance_mode, scaling) to CTkBaseClass
         super().__init__(master=master, bg_color=bg_color, width=width, height=height)
@@ -122,7 +129,7 @@ class CTkTextbox(CTkBaseClass):
         self.after(50, self._check_if_scrollbars_needed, None, True)
         self._draw()
 
-    def _create_grid_for_text_and_scrollbars(self, re_grid_textbox=False, re_grid_x_scrollbar=False, re_grid_y_scrollbar=False):
+    def _create_grid_for_text_and_scrollbars(self, re_grid_textbox: bool = False, re_grid_x_scrollbar: bool = False, re_grid_y_scrollbar: bool = False):
 
         # configure 2x2 grid
         self.grid_rowconfigure(0, weight=1)
@@ -151,7 +158,7 @@ class CTkTextbox(CTkBaseClass):
             else:
                 self._y_scrollbar.grid_forget()
 
-    def _check_if_scrollbars_needed(self, event=None, continue_loop: bool = False):
+    def _check_if_scrollbars_needed(self, event: tkinter.Event[Any] | None = None, continue_loop: bool = False):
         """ Method hides or places the scrollbars if they are needed on key release event of tkinter.text widget """
 
         if self._scrollbars_activated:
@@ -176,7 +183,7 @@ class CTkTextbox(CTkBaseClass):
         if self._textbox.winfo_exists() and continue_loop is True:
             self.after(self._scrollbar_update_time, lambda: self._check_if_scrollbars_needed(continue_loop=True))
 
-    def _set_scaling(self, *args, **kwargs):
+    def _set_scaling(self, *args: Any, **kwargs: Any):
         super()._set_scaling(*args, **kwargs)
 
         self._textbox.configure(font=self._apply_font_scaling(self._font))
@@ -185,7 +192,7 @@ class CTkTextbox(CTkBaseClass):
         self._create_grid_for_text_and_scrollbars(re_grid_textbox=True, re_grid_x_scrollbar=True, re_grid_y_scrollbar=True)
         self._draw(no_color_updates=True)
 
-    def _set_dimensions(self, width=None, height=None):
+    def _set_dimensions(self, width: int | None = None, height: int | None = None):
         super()._set_dimensions(width, height)
 
         self._canvas.configure(width=self._apply_widget_scaling(self._desired_width),
@@ -207,7 +214,7 @@ class CTkTextbox(CTkBaseClass):
 
         super().destroy()
 
-    def _draw(self, no_color_updates=False):
+    def _draw(self, no_color_updates: bool = False):
         super()._draw(no_color_updates)
 
         if not self._canvas.winfo_exists():
@@ -250,7 +257,7 @@ class CTkTextbox(CTkBaseClass):
         self._canvas.tag_lower("inner_parts")
         self._canvas.tag_lower("border_parts")
 
-    def configure(self, require_redraw=False, **kwargs):
+    def configure(self, require_redraw: bool = False, **kwargs: Any):
         if "fg_color" in kwargs:
             self._fg_color = self._check_color_type(kwargs.pop("fg_color"), transparency=True)
             require_redraw = True
@@ -305,7 +312,7 @@ class CTkTextbox(CTkBaseClass):
         self._textbox.configure(**pop_from_dict_by_set(kwargs, self._valid_tk_text_attributes))
         super().configure(require_redraw=require_redraw, **kwargs)
 
-    def cget(self, attribute_name: str) -> any:
+    def cget(self, attribute_name: str) -> Any:
         if attribute_name == "corner_radius":
             return self._corner_radius
         elif attribute_name == "border_width":
@@ -326,13 +333,13 @@ class CTkTextbox(CTkBaseClass):
         else:
             return super().cget(attribute_name)
 
-    def bind(self, sequence: str = None, command: Callable = None, add: Union[str, bool] = True):
+    def bind(self, sequence: str, command: Callable[..., None] | None = None, add: str | bool = True):
         """ called on the tkinter.Canvas """
         if not (add == "+" or add is True):
             raise ValueError("'add' argument can only be '+' or True to preserve internal callbacks")
         self._textbox.bind(sequence, command, add=True)
 
-    def unbind(self, sequence: str = None, funcid: str = None):
+    def unbind(self, sequence: str, funcid: str | None = None):
         """ called on the tkinter.Label and tkinter.Canvas """
         if funcid is not None:
             raise ValueError("'funcid' argument can only be None, because there is a bug in" +
@@ -348,7 +355,7 @@ class CTkTextbox(CTkBaseClass):
     def focus_force(self):
         return self._textbox.focus_force()
 
-    def insert(self, index, text, tags=None):
+    def insert(self, index: int, text: str, tags=None):
         return self._textbox.insert(index, text, tags)
 
     def get(self, index1, index2=None):
@@ -357,7 +364,7 @@ class CTkTextbox(CTkBaseClass):
     def bbox(self, index):
         return self._textbox.bbox(index)
 
-    def compare(self, index, op, index2):
+    def compare(self, index: int, op, index2):
         return self._textbox.compare(index, op, index2)
 
     def delete(self, index1, index2=None):
@@ -383,10 +390,10 @@ class CTkTextbox(CTkBaseClass):
         self._check_if_scrollbars_needed()
         return self._textbox.edit_undo()
 
-    def image_create(self, index, **kwargs):
+    def image_create(self, index: int, **kwargs: Any):
         raise AttributeError("embedding images is forbidden, because would be incompatible with scaling")
 
-    def image_cget(self, index, option):
+    def image_cget(self, index: int, option):
         raise AttributeError("embedding images is forbidden, because would be incompatible with scaling")
 
     def image_configure(self, index):
@@ -422,78 +429,78 @@ class CTkTextbox(CTkBaseClass):
     def scan_mark(self, x, y):
         return self._textbox.scan_mark(x, y)
 
-    def search(self, pattern, index, *args, **kwargs):
+    def search(self, pattern, index: int, *args: Any, **kwargs: Any):
         return self._textbox.search(pattern, index, *args, **kwargs)
 
     def see(self, index):
         return self._textbox.see(index)
 
-    def tag_add(self, tagName, index1, index2=None):
+    def tag_add(self, tagName: str, index1, index2=None):
         return self._textbox.tag_add(tagName, index1, index2)
 
-    def tag_bind(self, tagName, sequence, func, add=None):
+    def tag_bind(self, tagName: str, sequence: str, func, add: bool | Literal["", "+"] | None = None):
         return self._textbox.tag_bind(tagName, sequence, func, add)
 
-    def tag_cget(self, tagName, option):
+    def tag_cget(self, tagName: str, option: str):
         return self._textbox.tag_cget(tagName, option)
 
-    def tag_config(self, tagName, **kwargs):
+    def tag_config(self, tagName: str, **kwargs: Any):
         if "font" in kwargs:
             raise AttributeError("'font' option forbidden, because would be incompatible with scaling")
         return self._textbox.tag_config(tagName, **kwargs)
 
-    def tag_delete(self, *tagName):
+    def tag_delete(self, *tagName: str):
         return self._textbox.tag_delete(*tagName)
 
-    def tag_lower(self, tagName, belowThis=None):
+    def tag_lower(self, tagName: str, belowThis=None):
         return self._textbox.tag_lower(tagName, belowThis)
 
     def tag_names(self, index=None):
         return self._textbox.tag_names(index)
 
-    def tag_nextrange(self, tagName, index1, index2=None):
+    def tag_nextrange(self, tagName: str, index1, index2=None):
         return self._textbox.tag_nextrange(tagName, index1, index2)
 
-    def tag_prevrange(self, tagName, index1, index2=None):
+    def tag_prevrange(self, tagName: str, index1, index2=None):
         return self._textbox.tag_prevrange(tagName, index1, index2)
 
-    def tag_raise(self, tagName, aboveThis=None):
+    def tag_raise(self, tagName: str, aboveThis: str | None = None):
         return self._textbox.tag_raise(tagName, aboveThis)
 
-    def tag_ranges(self, tagName):
+    def tag_ranges(self, tagName: str):
         return self._textbox.tag_ranges(tagName)
 
-    def tag_remove(self, tagName, index1, index2=None):
+    def tag_remove(self, tagName: str, index1, index2=None):
         return self._textbox.tag_remove(tagName, index1, index2)
 
-    def tag_unbind(self, tagName, sequence, funcid=None):
+    def tag_unbind(self, tagName: str, sequence, funcid=None):
         return self._textbox.tag_unbind(tagName, sequence, funcid)
 
-    def window_cget(self, index, option):
+    def window_cget(self, index: int, option: str):
         raise AttributeError("embedding widgets is forbidden, would probably cause all kinds of problems ;)")
 
-    def window_configure(self, index, option):
+    def window_configure(self, index: int, option: str):
         raise AttributeError("embedding widgets is forbidden, would probably cause all kinds of problems ;)")
 
-    def window_create(self, index, **kwargs):
+    def window_create(self, index: int, **kwargs: Any):
         raise AttributeError("embedding widgets is forbidden, would probably cause all kinds of problems ;)")
 
     def window_names(self):
         raise AttributeError("embedding widgets is forbidden, would probably cause all kinds of problems ;)")
 
-    def xview(self, *args):
+    def xview(self, *args: Any):
         return self._textbox.xview(*args)
 
-    def xview_moveto(self, fraction):
+    def xview_moveto(self, fraction: float):
         return self._textbox.xview_moveto(fraction)
 
-    def xview_scroll(self, n, what):
+    def xview_scroll(self, n: int, what: Literal["units", "pages"]):
         return self._textbox.xview_scroll(n, what)
 
     def yview(self, *args):
         return self._textbox.yview(*args)
 
-    def yview_moveto(self, fraction):
+    def yview_moveto(self, fraction: float):
         return self._textbox.yview_moveto(fraction)
 
     def yview_scroll(self, n, what):

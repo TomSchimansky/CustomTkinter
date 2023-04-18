@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from typing import Any
+
 import customtkinter
 from PIL import Image
 import os
@@ -9,7 +13,7 @@ class App(customtkinter.CTk):
     width = 900
     height = 600
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: Any, **kwargs: Any):
         super().__init__(*args, **kwargs)
 
         self.title("CustomTkinter example_background_image.py")
