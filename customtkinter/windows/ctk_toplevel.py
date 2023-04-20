@@ -19,7 +19,7 @@ class CTkToplevel(tkinter.Toplevel, CTkAppearanceModeBaseClass, CTkScalingBaseCl
     For detailed information check out the documentation.
     """
 
-    _valid_tk_toplevel_arguments: set = {"bd", "borderwidth", "class", "container", "cursor", "height",
+    _valid_tk_toplevel_arguments: set = {"master", "bd", "borderwidth", "class", "container", "cursor", "height",
                                          "highlightbackground", "highlightthickness", "menu", "relief",
                                          "screen", "takefocus", "use", "visual", "width"}
 
