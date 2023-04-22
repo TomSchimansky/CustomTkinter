@@ -17,6 +17,12 @@
 
 ---
 
+<div align="center">
+<h5>
+Official website: https://customtkinter.tomschimansky.com
+</h5>
+</div>
+
 CustomTkinter is a python UI-library based on Tkinter, which provides new, modern and
 fully customizable widgets. They are created and used like normal Tkinter widgets and
 can also be used in combination with normal Tkinter elements. The widgets
@@ -45,7 +51,7 @@ pip3 install customtkinter
 
 The **official** documentation can be found here:
 
-**➡️ https://customtkinter.tomschimansky.com**.
+**➡️ https://customtkinter.tomschimansky.com/documentation**.
 
 ## Example Program
 To test customtkinter you can try this simple example with only a single button:
