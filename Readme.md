@@ -43,7 +43,7 @@ pip3 install customtkinter
 
 ## Documentation
 
-The **official** documentation can be found in the Wiki Tab here:
+The **official** documentation can be found here:
 
 **➡️ https://customtkinter.tomschimansky.com**.
 
