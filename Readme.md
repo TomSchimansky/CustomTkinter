@@ -18,9 +18,9 @@
 ---
 
 <div align="center">
-<h5>
+<h3>
 Official website: https://customtkinter.tomschimansky.com
-</h5>
+</h3>
 </div>
 
 CustomTkinter is a python UI-library based on Tkinter, which provides new, modern and
