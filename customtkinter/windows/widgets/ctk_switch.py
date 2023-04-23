@@ -54,7 +54,7 @@ class CTkSwitch(CTkBaseClass):
 
         # color
         self._border_color = self._check_color_type(border_color, transparency=True)
-        self._fg_color = ThemeManager.theme["CTkSwitch"]["fg_Color"] if fg_color is None else self._check_color_type(fg_color)
+        self._fg_color = ThemeManager.theme["CTkSwitch"]["fg_color"] if fg_color is None else self._check_color_type(fg_color)
         self._progress_color = ThemeManager.theme["CTkSwitch"]["progress_color"] if progress_color is None else self._check_color_type(progress_color, transparency=True)
         self._button_color = ThemeManager.theme["CTkSwitch"]["button_color"] if button_color is None else self._check_color_type(button_color)
         self._button_hover_color = ThemeManager.theme["CTkSwitch"]["button_hover_color"] if button_hover_color is None else self._check_color_type(button_hover_color)
