@@ -299,6 +299,10 @@ class CTkSwitch(CTkBaseClass):
             self._fg_color = self._check_color_type(kwargs.pop("fg_color"))
             require_redraw = True
 
+        if "border_color" in kwargs:
+            self._border_color = self._check_color_type(kwargs.pop("border_color"), transparency=True)
+            require_redraw = True
+
         if "progress_color" in kwargs:
             self._progress_color = self._check_color_type(kwargs.pop("progress_color"), transparency=True)
             require_redraw = True
@@ -311,8 +315,12 @@ class CTkSwitch(CTkBaseClass):
             self._button_hover_color = self._check_color_type(kwargs.pop("button_hover_color"))
             require_redraw = True
 
-        if "border_color" in kwargs:
-            self._border_color = self._check_color_type(kwargs.pop("border_color"), transparency=True)
+        if "text_color" in kwargs:
+            self._text_color = self._check_color_type(kwargs.pop("text_color"))
+            require_redraw = True
+
+        if "text_color_disabled" in kwargs:
+            self._text_color_disabled = self._check_color_type(kwargs.pop("text_color_disabled"))
             require_redraw = True
 
         if "hover" in kwargs:
