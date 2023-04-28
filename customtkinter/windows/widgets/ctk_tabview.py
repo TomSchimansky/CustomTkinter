@@ -99,9 +99,9 @@ class CTkTabview(CTkBaseClass):
         self._draw()
 
     def _segmented_button_callback(self, selected_name):
+        self._set_grid_tab_by_name(selected_name)
+        self._tab_dict[self._current_name].grid_forget()
         self._current_name = selected_name
-        self._grid_forget_all_tabs()
-        self._set_grid_tab_by_name(self._current_name)
 
         if self._command is not None:
             self._command()
