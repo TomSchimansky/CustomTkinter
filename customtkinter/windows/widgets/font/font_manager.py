@@ -27,7 +27,6 @@ class FontManager:
     @classmethod
     def windows_load_font(cls, font_path: Union[str, bytes], private: bool = True, enumerable: bool = False) -> bool:
         """ Function taken from: https://stackoverflow.com/questions/11993290/truly-custom-font-in-tkinter/30631309#30631309 """
-
         from ctypes import windll, byref, create_unicode_buffer, create_string_buffer
 
         FR_PRIVATE = 0x10

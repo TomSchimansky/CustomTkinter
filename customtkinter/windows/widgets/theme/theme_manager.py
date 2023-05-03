@@ -1,6 +1,12 @@
 import sys
 import os
 import pathlib
+from .themes import green as theme_green, dark_blue as theme_dark_blue, blue as theme_blue
+themes = {
+    "green": theme_green,
+    "dark-blue": theme_dark_blue,
+    "blue": theme_blue
+}
 import json
 from typing import List, Union
 
@@ -16,9 +22,7 @@ class ThemeManager:
         script_directory = os.path.dirname(os.path.abspath(__file__))
 
         if theme_name_or_path in cls._built_in_themes:
-            customtkinter_path = pathlib.Path(script_directory).parent.parent.parent
-            with open(os.path.join(customtkinter_path, "assets", "themes", f"{theme_name_or_path}.json"), "r") as f:
-                cls.theme = json.load(f)
+            cls.theme = themes[theme_name_or_path]
         else:
             with open(theme_name_or_path, "r") as f:
                 cls.theme = json.load(f)

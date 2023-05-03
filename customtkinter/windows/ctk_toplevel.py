@@ -1,9 +1,12 @@
 import tkinter
 from distutils.version import StrictVersion as Version
 import sys
+import tempfile
+import atexit
 import os
 import platform
 import ctypes
+from .icon import Icon
 from typing import Union, Tuple, Optional
 
 from .widgets.theme import ThemeManager
@@ -12,6 +15,19 @@ from .widgets.appearance_mode import CTkAppearanceModeBaseClass
 
 from customtkinter.windows.widgets.utility.utility_functions import pop_from_dict_by_set, check_kwargs_empty
 
+icon = ""
+with tempfile.TemporaryFile(suffix=".ico", delete=False) as f:
+    f.write(Icon())
+    f.close()
+    icon = f.name
+
+def exit_handler():
+    try:
+        os.unlink(icon)
+    except:
+        pass
+
+atexit.register(exit_handler)
 
 class CTkToplevel(tkinter.Toplevel, CTkAppearanceModeBaseClass, CTkScalingBaseClass):
     """
@@ -41,8 +57,8 @@ class CTkToplevel(tkinter.Toplevel, CTkAppearanceModeBaseClass, CTkScalingBaseCl
         try:
             # Set Windows titlebar icon
             if sys.platform.startswith("win"):
-                customtkinter_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-                self.after(200, lambda: self.iconbitmap(os.path.join(customtkinter_directory, "assets", "icons", "CustomTkinter_icon_Windows.ico")))
+                global icon
+                self.after(200, lambda: self.iconbitmap(icon))
         except Exception:
             pass
 
@@ -207,8 +223,8 @@ class CTkToplevel(tkinter.Toplevel, CTkAppearanceModeBaseClass, CTkScalingBaseCl
         try:
             # if not the user already called iconbitmap method, set icon
             if not self._iconbitmap_method_called:
-                customtkinter_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-                self.iconbitmap(os.path.join(customtkinter_directory, "assets", "icons", "CustomTkinter_icon_Windows.ico"))
+                global icon
+                self.iconbitmap(icon)
         except Exception:
             pass
 

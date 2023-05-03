@@ -1,3 +1,7 @@
+## A modern and customizable python UI-library based on Tkinter modified to work with pyinstaller onefile
+
+Works by embedding all the files into Python scripts and then extracting them to the temporary directory on the system
+
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="./documentation_images/CustomTkinter_logo_dark.png">
@@ -42,9 +46,9 @@ desktop platforms (Windows, macOS, Linux).
 ## Installation
 Install the module with pip:
 ```
-pip3 install customtkinter
+pip3 install customtkinter-pyinstaller
 ```
-**Update existing installation:** ```pip3 install customtkinter --upgrade```\
+**Update existing installation:** ```pip3 install customtkinter-pyinstaller --upgrade```\
 (update as often as possible because this library is under active development)
 
 ## Documentation

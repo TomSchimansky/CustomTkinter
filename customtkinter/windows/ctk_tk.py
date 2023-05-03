@@ -2,8 +2,11 @@ import tkinter
 from distutils.version import StrictVersion as Version
 import sys
 import os
+import tempfile
+import atexit
 import platform
 import ctypes
+from .icon import Icon
 from typing import Union, Tuple, Optional
 
 from .widgets.theme import ThemeManager
@@ -12,6 +15,19 @@ from .widgets.appearance_mode import CTkAppearanceModeBaseClass
 
 from customtkinter.windows.widgets.utility.utility_functions import pop_from_dict_by_set, check_kwargs_empty
 
+icon = ""
+with tempfile.TemporaryFile(suffix=".ico", delete=False) as f:
+    f.write(Icon())
+    f.close()
+    icon = f.name
+
+def exit_handler():
+    try:
+        os.unlink(icon)
+    except:
+        pass
+
+atexit.register(exit_handler)
 
 class CTk(tkinter.Tk, CTkAppearanceModeBaseClass, CTkScalingBaseClass):
     """
@@ -31,7 +47,7 @@ class CTk(tkinter.Tk, CTkAppearanceModeBaseClass, CTkScalingBaseClass):
     def __init__(self,
                  fg_color: Optional[Union[str, Tuple[str, str]]] = None,
                  **kwargs):
-
+        
         self._enable_macos_dark_title_bar()
 
         # call init methods of super classes
@@ -233,8 +249,8 @@ class CTk(tkinter.Tk, CTkAppearanceModeBaseClass, CTkScalingBaseClass):
         try:
             # if not the user already called iconbitmap method, set icon
             if not self._iconbitmap_method_called:
-                customtkinter_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-                self.iconbitmap(os.path.join(customtkinter_directory, "assets", "icons", "CustomTkinter_icon_Windows.ico"))
+                global icon
+                self.iconbitmap(icon)
         except Exception:
             pass
 
