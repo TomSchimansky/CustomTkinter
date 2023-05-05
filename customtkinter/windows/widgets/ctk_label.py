@@ -14,6 +14,8 @@ class CTkLabel(CTkBaseClass):
     """
     Label with rounded corners. Default is fg_color=None (transparent fg_color).
     For detailed information check out the documentation.
+
+    state argument will probably be removed because it has no effect
     """
 
     # attributes that are passed to and managed by the tkinter entry only:
