@@ -37,6 +37,7 @@ entry_1.pack(pady=10, padx=10)
 optionmenu_1 = customtkinter.CTkOptionMenu(frame_1, values=["Option 1", "Option 2", "Option 42 long long long..."])
 optionmenu_1.pack(pady=10, padx=10)
 optionmenu_1.set("CTkOptionMenu")
+optionmenu_1.configure(state="disabled", text_color_disabled="red")
 
 combobox_1 = customtkinter.CTkComboBox(frame_1, values=["Option 1", "Option 2", "Option 42 long long long..."])
 combobox_1.pack(pady=10, padx=10)
