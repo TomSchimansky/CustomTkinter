@@ -265,12 +265,20 @@ class CTkCheckBox(CTkBaseClass):
             self._hover_color = self._check_color_type(kwargs.pop("hover_color"))
             require_redraw = True
 
+        if "border_color" in kwargs:
+            self._border_color = self._check_color_type(kwargs.pop("border_color"))
+            require_redraw = True
+
+        if "checkmark_color" in kwargs:
+            self._checkmark_color = self._check_color_type(kwargs.pop("checkmark_color"))
+            require_redraw = True
+
         if "text_color" in kwargs:
             self._text_color = self._check_color_type(kwargs.pop("text_color"))
             require_redraw = True
 
-        if "border_color" in kwargs:
-            self._border_color = self._check_color_type(kwargs.pop("border_color"))
+        if "text_color_disabled" in kwargs:
+            self._text_color_disabled = self._check_color_type(kwargs.pop("text_color_disabled"))
             require_redraw = True
 
         if "hover" in kwargs:
