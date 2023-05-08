@@ -1,6 +1,6 @@
 import tkinter
 import sys
-from typing import Union, Tuple, Callable, Optional
+from typing import Union, Tuple, Callable, Optional, Literal
 
 from .core_rendering import CTkCanvas
 from .theme import ThemeManager
@@ -35,6 +35,7 @@ class CTkCheckBox(CTkBaseClass):
                  text: str = "CTkCheckBox",
                  font: Optional[Union[tuple, CTkFont]] = None,
                  textvariable: Union[tkinter.Variable, None] = None,
+                 text_side: Literal["left", "right"] = "right",
                  state: str = tkinter.NORMAL,
                  hover: bool = True,
                  command: Union[Callable[[], None], None] = None,
@@ -65,6 +66,7 @@ class CTkCheckBox(CTkBaseClass):
         self._text_label: Union[tkinter.Label, None] = None
         self._text_color = ThemeManager.theme["CTkCheckbox"]["text_color"] if text_color is None else self._check_color_type(text_color)
         self._text_color_disabled = ThemeManager.theme["CTkCheckbox"]["text_color_disabled"] if text_color_disabled is None else self._check_color_type(text_color_disabled)
+        self._text_side = self._check_text_side(text_side)
 
         # font
         self._font = CTkFont() if font is None else self._check_font_type(font)
@@ -100,7 +102,7 @@ class CTkCheckBox(CTkBaseClass):
                                  highlightthickness=0,
                                  width=self._apply_widget_scaling(self._checkbox_width),
                                  height=self._apply_widget_scaling(self._checkbox_height))
-        self._canvas.grid(row=0, column=0, sticky="e")
+
         self._draw_engine = DrawEngine(self._canvas)
 
         self._text_label = tkinter.Label(master=self,
@@ -111,8 +113,8 @@ class CTkCheckBox(CTkBaseClass):
                                          justify=tkinter.LEFT,
                                          font=self._apply_font_scaling(self._font),
                                          textvariable=self._textvariable)
-        self._text_label.grid(row=0, column=2, sticky="w")
         self._text_label["anchor"] = "w"
+        self._set_text_side()
 
         # register variable callback and set state according to variable
         if self._variable is not None and self._variable != "":
@@ -122,6 +124,21 @@ class CTkCheckBox(CTkBaseClass):
         self._create_bindings()
         self._set_cursor()
         self._draw()
+
+    @staticmethod
+    def _check_text_side(text_side: str) -> str:
+        if text_side not in ["left", "right"]:
+            raise ValueError("text_side must be either 'left' or 'right'")
+        else:
+            return text_side
+
+    def _set_text_side(self) -> None:
+        if self._text_side == "left":
+            self._canvas.grid(row=0, column=2, sticky="w")
+            self._text_label.grid(row=0, column=0, sticky="e")
+        elif self._text_side == "right":
+            self._canvas.grid(row=0, column=0, sticky="e")
+            self._text_label.grid(row=0, column=2, sticky="w")
 
     def _create_bindings(self, sequence: Optional[str] = None):
         """ set necessary bindings for functionality of widget, will overwrite other bindings """
@@ -301,6 +318,10 @@ class CTkCheckBox(CTkBaseClass):
                 self._variable_callback_name = self._variable.trace_add("write", self._variable_callback)
                 self._check_state = True if self._variable.get() == self._onvalue else False
                 require_redraw = True
+
+        if "text_side" in kwargs:
+            self._text_side = self._check_text_side(kwargs.pop("text_side"))
+            self._set_text_side()
 
         super().configure(require_redraw=require_redraw, **kwargs)
 
