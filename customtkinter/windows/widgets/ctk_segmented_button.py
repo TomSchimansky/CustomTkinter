@@ -10,6 +10,7 @@ from .theme import ThemeManager
 from .font import CTkFont
 from .ctk_button import CTkButton
 from .ctk_frame import CTkFrame
+from .utility import check_kwargs_empty
 
 
 class CTkSegmentedButton(CTkFrame):
@@ -40,10 +41,9 @@ class CTkSegmentedButton(CTkFrame):
                  variable: Union[tkinter.Variable, None] = None,
                  dynamic_resizing: bool = True,
                  command: Union[Callable[[str], None], None] = None,
-                 state: str = "normal",
-                 **kwargs):
+                 state: str = "normal"):
 
-        super().__init__(master=master, bg_color=bg_color, width=width, height=height, **kwargs)
+        super().__init__(master=master, bg_color=bg_color, width=width, height=height)
 
         self._sb_fg_color = ThemeManager.theme["CTkSegmentedButton"]["fg_color"] if fg_color is None else self._check_color_type(fg_color)
 
@@ -197,6 +197,23 @@ class CTkSegmentedButton(CTkFrame):
             self._configure_button_corners_for_index(index)
 
     def configure(self, **kwargs):
+        if "width" in kwargs:
+            super().configure(width=kwargs.pop("width"))
+
+        if "height" in kwargs:
+            super().configure(height=kwargs.pop("height"))
+
+        if "corner_radius" in kwargs:
+            self._sb_corner_radius = kwargs.pop("corner_radius")
+            super().configure(corner_radius=self._sb_corner_radius)
+            for button in self._buttons_dict.values():
+                button.configure(corner_radius=self._sb_corner_radius)
+
+        if "border_width" in kwargs:
+            self._sb_border_width = kwargs.pop("border_width")
+            for button in self._buttons_dict.values():
+                button.configure(border_width=self._sb_border_width)
+
         if "bg_color" in kwargs:
             super().configure(bg_color=kwargs.pop("bg_color"))
 
@@ -296,14 +313,20 @@ class CTkSegmentedButton(CTkFrame):
             for button in self._buttons_dict.values():
                 button.configure(state=self._state)
 
-        super().configure(**kwargs)
+        check_kwargs_empty(kwargs, raise_error=True)
 
     def cget(self, attribute_name: str) -> any:
-        if attribute_name == "corner_radius":
+        if attribute_name == "width":
+            return super().cget(attribute_name)
+        elif attribute_name == "height":
+            return super().cget(attribute_name)
+        elif attribute_name == "corner_radius":
             return self._sb_corner_radius
         elif attribute_name == "border_width":
             return self._sb_border_width
 
+        elif attribute_name == "bg_color":
+            return super().cget(attribute_name)
         elif attribute_name == "fg_color":
             return self._sb_fg_color
         elif attribute_name == "selected_color":
@@ -331,7 +354,7 @@ class CTkSegmentedButton(CTkFrame):
             return self._command
 
         else:
-            return super().cget(attribute_name)
+            raise ValueError(f"'{attribute_name}' is not a supported argument. Look at the documentation for supported arguments.")
 
     def set(self, value: str, from_variable_callback: bool = False, from_button_callback: bool = False):
         if value == self._current_value:
