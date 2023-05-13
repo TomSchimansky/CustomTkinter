@@ -38,14 +38,6 @@ class CTkToplevel(tkinter.Toplevel, CTkAppearanceModeBaseClass, CTkScalingBaseCl
         CTkScalingBaseClass.__init__(self, scaling_type="window")
         check_kwargs_empty(kwargs, raise_error=True)
 
-        try:
-            # Set Windows titlebar icon
-            if sys.platform.startswith("win"):
-                customtkinter_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-                self.after(200, lambda: self.iconbitmap(os.path.join(customtkinter_directory, "assets", "icons", "CustomTkinter_icon_Windows.ico")))
-        except Exception:
-            pass
-
         self._current_width = 200  # initial window size, always without scaling
         self._current_height = 200
         self._min_width: int = 0
