@@ -1,7 +1,6 @@
 from typing import Union, Tuple, Optional
 
 from .widgets import CTkLabel
-from .widgets import CTkEntry
 from .widgets import CTkButton
 from .widgets.theme import ThemeManager
 from .ctk_toplevel import CTkToplevel
