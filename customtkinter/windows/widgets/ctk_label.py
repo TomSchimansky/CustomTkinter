@@ -31,6 +31,7 @@ class CTkLabel(CTkBaseClass):
                  bg_color: Union[str, Tuple[str, str]] = "transparent",
                  fg_color: Optional[Union[str, Tuple[str, str]]] = None,
                  text_color: Optional[Union[str, Tuple[str, str]]] = None,
+                 text_color_disabled: Optional[Union[str, Tuple[str, str]]] = None,
 
                  text: str = "CTkLabel",
                  font: Optional[Union[tuple, CTkFont]] = None,
@@ -46,6 +47,14 @@ class CTkLabel(CTkBaseClass):
         # color
         self._fg_color = ThemeManager.theme["CTkLabel"]["fg_color"] if fg_color is None else self._check_color_type(fg_color, transparency=True)
         self._text_color = ThemeManager.theme["CTkLabel"]["text_color"] if text_color is None else self._check_color_type(text_color)
+
+        if text_color_disabled is None:
+            if "text_color_disabled" in ThemeManager.theme["CTkLabel"]:
+                self._text_color_disabled = ThemeManager.theme["CTkLabel"]["text_color"]
+            else:
+                self._text_color_disabled = self._text_color
+        else:
+            self._text_color_disabled = self._check_color_type(text_color_disabled)
 
         # shape
         self._corner_radius = ThemeManager.theme["CTkLabel"]["corner_radius"] if corner_radius is None else corner_radius
@@ -161,6 +170,7 @@ class CTkLabel(CTkBaseClass):
                                         outline=self._apply_appearance_mode(self._bg_color))
 
                 self._label.configure(fg=self._apply_appearance_mode(self._text_color),
+                                      disabledforeground=self._apply_appearance_mode(self._text_color_disabled),
                                       bg=self._apply_appearance_mode(self._bg_color))
             else:
                 self._canvas.itemconfig("inner_parts",
@@ -168,6 +178,7 @@ class CTkLabel(CTkBaseClass):
                                         outline=self._apply_appearance_mode(self._fg_color))
 
                 self._label.configure(fg=self._apply_appearance_mode(self._text_color),
+                                      disabledforeground=self._apply_appearance_mode(self._text_color_disabled),
                                       bg=self._apply_appearance_mode(self._fg_color))
 
             self._canvas.configure(bg=self._apply_appearance_mode(self._bg_color))
@@ -184,6 +195,10 @@ class CTkLabel(CTkBaseClass):
 
         if "text_color" in kwargs:
             self._text_color = self._check_color_type(kwargs.pop("text_color"))
+            require_redraw = True
+
+        if "text_color_disabled" in kwargs:
+            self._text_color_disabled = self._check_color_type(kwargs.pop("text_color_disabled"))
             require_redraw = True
 
         if "text" in kwargs:
@@ -230,6 +245,8 @@ class CTkLabel(CTkBaseClass):
             return self._fg_color
         elif attribute_name == "text_color":
             return self._text_color
+        elif attribute_name == "text_color_disabled":
+            return self._text_color_disabled
 
         elif attribute_name == "text":
             return self._text
