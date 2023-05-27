@@ -37,6 +37,12 @@ class ThemeManager:
                 else:
                     cls.theme[key] = cls.theme[key]["Linux"]
 
+        # fix name inconsistencies
+        if "CTkCheckbox" in cls.theme.keys():
+            cls.theme["CTkCheckBox"] = cls.theme.pop("CTkCheckbox")
+        if "CTkRadiobutton" in cls.theme.keys():
+            cls.theme["CTkRadioButton"] = cls.theme.pop("CTkRadiobutton")
+
     @classmethod
     def save_theme(cls):
         if cls._currently_loaded_theme is not None:
