@@ -2,7 +2,7 @@ import sys
 import warnings
 import tkinter
 import tkinter.ttk as ttk
-from typing import Union, Callable, Tuple
+from typing import Union, Callable, Tuple, Optional
 
 try:
     from typing import TypedDict
@@ -35,10 +35,12 @@ class CTkBaseClass(tkinter.Frame, CTkAppearanceModeBaseClass, CTkScalingBaseClas
                  height: int = 0,
 
                  bg_color: Union[str, Tuple[str, str]] = "transparent",
+
+                 name: Optional[str] = None,
                  **kwargs):
 
         # call init methods of super classes
-        tkinter.Frame.__init__(self, master=master, width=width, height=height, **pop_from_dict_by_set(kwargs, self._valid_tk_frame_attributes))
+        tkinter.Frame.__init__(self, master=master, width=width, height=height, name=name, **pop_from_dict_by_set(kwargs, self._valid_tk_frame_attributes))
         CTkAppearanceModeBaseClass.__init__(self)
         CTkScalingBaseClass.__init__(self, scaling_type="widget")
 
