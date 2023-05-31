@@ -39,10 +39,12 @@ class CTkEntry(CTkBaseClass):
                  placeholder_text: Union[str, None] = None,
                  font: Optional[Union[tuple, CTkFont]] = None,
                  state: str = tkinter.NORMAL,
+
+                 name: Optional[str] = None,
                  **kwargs):
 
         # transfer basic functionality (bg_color, size, appearance_mode, scaling) to CTkBaseClass
-        super().__init__(master=master, bg_color=bg_color, width=width, height=height)
+        super().__init__(master=master, bg_color=bg_color, width=width, height=height, name=name)
 
         # configure grid system (1x1)
         self.grid_rowconfigure(0, weight=1)
