@@ -20,7 +20,7 @@ class CTkLabel(CTkBaseClass):
 
     # attributes that are passed to and managed by the tkinter entry only:
     _valid_tk_label_attributes = {"cursor", "justify", "padx", "pady",
-                                  "textvariable", "state", "takefocus", "underline"}
+                                  "textvariable", "state", "takefocus", "underline", "name"}
 
     def __init__(self,
                  master: any,
