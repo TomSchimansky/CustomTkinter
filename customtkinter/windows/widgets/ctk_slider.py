@@ -387,6 +387,10 @@ class CTkSlider(CTkBaseClass):
         self._canvas.unbind(sequence, None)
         self._create_bindings(sequence=sequence)  # restore internal callbacks for sequence
 
+    def event_generate(self, sequence, **kw):
+        """ called on the tkinter.Canvas """
+        self._canvas.event_generate(sequence, **kw)
+
     def focus(self):
         return self._canvas.focus()
 

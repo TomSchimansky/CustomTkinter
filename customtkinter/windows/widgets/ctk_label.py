@@ -281,6 +281,10 @@ class CTkLabel(CTkBaseClass):
         self._canvas.unbind(sequence, None)
         self._label.unbind(sequence, None)
 
+    def event_generate(self, sequence, **kw):
+        """ called on the tkinter.Canvas """
+        self._canvas.event_generate(sequence, **kw)
+
     def focus(self):
         return self._label.focus()
 
