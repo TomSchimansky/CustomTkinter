@@ -109,13 +109,13 @@ class CTkToplevel(tkinter.Toplevel, CTkAppearanceModeBaseClass, CTkScalingBaseCl
     def _set_scaling(self, new_widget_scaling, new_window_scaling):
         super()._set_scaling(new_widget_scaling, new_window_scaling)
 
-        # Force new dimensions on window by using abs_min, max, and geometry. Without abs_min, max it won't work.
+        # Force new dimensions on window by using min, max, and geometry. Without min, max it won't work.
         super().minsize(self._apply_window_scaling(self._current_width), self._apply_window_scaling(self._current_height))
         super().maxsize(self._apply_window_scaling(self._current_width), self._apply_window_scaling(self._current_height))
 
         super().geometry(f"{self._apply_window_scaling(self._current_width)}x{self._apply_window_scaling(self._current_height)}")
 
-        # set new scaled abs_min and max with delay (delay prevents weird bug where window dimensions snap to unscaled dimensions when mouse releases window)
+        # set new scaled min and max with delay (delay prevents weird bug where window dimensions snap to unscaled dimensions when mouse releases window)
         self.after(1000, self._set_scaled_min_max)  # Why 1000ms delay? Experience! (Everything tested on Windows 11)
 
     def block_update_dimensions_event(self):
@@ -137,7 +137,7 @@ class CTkToplevel(tkinter.Toplevel, CTkAppearanceModeBaseClass, CTkScalingBaseCl
             # update width and height attributes
             width, height, x, y = self._parse_geometry_string(geometry_string)
             if width is not None and height is not None:
-                self._current_width = max(self._min_width, min(width, self._max_width))  # bound value between abs_min and max
+                self._current_width = max(self._min_width, min(width, self._max_width))  # bound value between min and max
                 self._current_height = max(self._min_height, min(height, self._max_height))
         else:
             return self._reverse_geometry_scaling(super().geometry())
