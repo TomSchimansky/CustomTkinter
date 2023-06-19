@@ -86,7 +86,7 @@ class CTkInputDialog(CTkToplevel):
                                         hover_color=self._button_hover_color,
                                         text_color=self._button_text_color,
                                         text='Cancel',
-                                        command=self._ok_event)
+                                        command=self._cancel_event)
         self._cancel_button.grid(row=2, column=1, columnspan=1, padx=(10, 20), pady=(0, 20), sticky="ew")
 
         self.after(150, lambda: self._entry.focus())  # set focus to entry with slight delay, otherwise it won't work
