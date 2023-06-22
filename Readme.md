@@ -56,7 +56,6 @@ The **official** documentation can be found here:
 ## Example Program
 To test customtkinter you can try this simple example with only a single button:
 ```python
-import tkinter
 import customtkinter
 
 customtkinter.set_appearance_mode("System")  # Modes: system (default), light, dark
@@ -70,7 +69,7 @@ def button_function():
 
 # Use CTkButton instead of tkinter Button
 button = customtkinter.CTkButton(master=app, text="CTkButton", command=button_function)
-button.place(relx=0.5, rely=0.5, anchor=tkinter.CENTER)
+button.place(relx=0.5, rely=0.5, anchor=customtkinter.CENTER)
 
 app.mainloop()
 ```
