@@ -59,7 +59,7 @@ To test customtkinter you can try this simple example with only a single button:
 import customtkinter
 
 customtkinter.set_appearance_mode("System")  # Modes: system (default), light, dark
-customtkinter.set_default_color_theme("blue")  # Themes: blue (default), dark-blue, green
+customtkinter.set_default_color_theme("blue")  # Themes: "blue" (standard), "green", "dark-blue", "purple"
 
 app = customtkinter.CTk()  # create CTk window like you do with the Tk window
 app.geometry("400x240")
