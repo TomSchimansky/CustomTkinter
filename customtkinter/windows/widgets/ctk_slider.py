@@ -199,13 +199,28 @@ class CTkSlider(CTkBaseClass):
                                         outline=self._apply_appearance_mode(self._button_color))
 
     def configure(self, require_redraw=False, **kwargs):
-        if "state" in kwargs:
-            self._state = kwargs.pop("state")
-            self._set_cursor()
+        if "corner_radius" in kwargs:
+            self._corner_radius = kwargs.pop("corner_radius")
+            require_redraw = True
+
+        if "button_corner_radius" in kwargs:
+            self._button_corner_radius = kwargs.pop("button_corner_radius")
+            require_redraw = True
+
+        if "border_width" in kwargs:
+            self._border_width = kwargs.pop("border_width")
+            require_redraw = True
+
+        if "button_length" in kwargs:
+            self._button_length = kwargs.pop("button_length")
             require_redraw = True
 
         if "fg_color" in kwargs:
             self._fg_color = self._check_color_type(kwargs.pop("fg_color"))
+            require_redraw = True
+
+        if "border_color" in kwargs:
+            self._border_color = self._check_color_type(kwargs.pop("border_color"), transparency=True)
             require_redraw = True
 
         if "progress_color" in kwargs:
@@ -220,19 +235,16 @@ class CTkSlider(CTkBaseClass):
             self._button_hover_color = self._check_color_type(kwargs.pop("button_hover_color"))
             require_redraw = True
 
-        if "border_color" in kwargs:
-            self._border_color = self._check_color_type(kwargs.pop("border_color"), transparency=True)
-            require_redraw = True
-
-        if "border_width" in kwargs:
-            self._border_width = kwargs.pop("border_width")
-            require_redraw = True
-
         if "from_" in kwargs:
             self._from_ = kwargs.pop("from_")
 
         if "to" in kwargs:
             self._to = kwargs.pop("to")
+
+        if "state" in kwargs:
+            self._state = kwargs.pop("state")
+            self._set_cursor()
+            require_redraw = True
 
         if "number_of_steps" in kwargs:
             self._number_of_steps = kwargs.pop("number_of_steps")
@@ -254,6 +266,10 @@ class CTkSlider(CTkBaseClass):
                 self.set(self._variable.get(), from_variable_callback=True)
             else:
                 self._variable = None
+
+        if "orientation" in kwargs:
+            self._orientation = kwargs.pop("orientation")
+            require_redraw = True
 
         super().configure(require_redraw=require_redraw, **kwargs)
 

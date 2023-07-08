@@ -1,4 +1,5 @@
 import tkinter
+import tkinterDnD
 from distutils.version import StrictVersion as Version
 import sys
 import os
@@ -12,8 +13,10 @@ from .widgets.appearance_mode import CTkAppearanceModeBaseClass
 
 from customtkinter.windows.widgets.utility.utility_functions import pop_from_dict_by_set, check_kwargs_empty
 
+TK_CLASS = tkinterDnD.Tk
 
-class CTk(tkinter.Tk, CTkAppearanceModeBaseClass, CTkScalingBaseClass):
+
+class CTk(TK_CLASS, CTkAppearanceModeBaseClass, CTkScalingBaseClass):
     """
     Main app window with dark titlebar on Windows and macOS.
     For detailed information check out the documentation.
@@ -35,7 +38,7 @@ class CTk(tkinter.Tk, CTkAppearanceModeBaseClass, CTkScalingBaseClass):
         self._enable_macos_dark_title_bar()
 
         # call init methods of super classes
-        tkinter.Tk.__init__(self, **pop_from_dict_by_set(kwargs, self._valid_tk_constructor_arguments))
+        TK_CLASS.__init__(self, **pop_from_dict_by_set(kwargs, self._valid_tk_constructor_arguments))
         CTkAppearanceModeBaseClass.__init__(self)
         CTkScalingBaseClass.__init__(self, scaling_type="window")
         check_kwargs_empty(kwargs, raise_error=True)
