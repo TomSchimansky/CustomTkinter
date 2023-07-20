@@ -74,7 +74,7 @@ class CTkInputDialog(CTkToplevel):
                                border_color=self._entry_border_color,
                                text_color=self._entry_text_color,
                                font=self._font,
-                              show=self._entry_show)
+                               show=self._entry_show)
         self._entry.grid(row=1, column=0, columnspan=2, padx=20, pady=(0, 20), sticky="ew")
 
         self._ok_button = CTkButton(master=self,
