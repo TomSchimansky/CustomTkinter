@@ -202,6 +202,14 @@ class CTkTabview(CTkBaseClass):
                            width=0,
                            border_width=0,
                            corner_radius=0)
+
+        if self._fg_color == "transparent":
+            new_tab.configure(fg_color=self._apply_appearance_mode(self._bg_color),
+                              bg_color=self._apply_appearance_mode(self._bg_color))
+        else:
+            new_tab.configure(fg_color=self._apply_appearance_mode(self._fg_color),
+                              bg_color=self._apply_appearance_mode(self._fg_color))
+
         return new_tab
 
     def _draw(self, no_color_updates: bool = False):
@@ -235,7 +243,7 @@ class CTkTabview(CTkBaseClass):
                                     fill=self._apply_appearance_mode(self._border_color),
                                     outline=self._apply_appearance_mode(self._border_color))
             self._canvas.configure(bg=self._apply_appearance_mode(self._bg_color))
-            tkinter.Frame.configure(self, bg=self._apply_appearance_mode(self._bg_color))  # configure bg color of tkinter.Frame, cuase canvas does not fill frame
+            tkinter.Frame.configure(self, bg=self._apply_appearance_mode(self._bg_color))  # configure bg color of tkinter.Frame, cause canvas does not fill frame
 
     def configure(self, require_redraw=False, **kwargs):
         if "corner_radius" in kwargs:
