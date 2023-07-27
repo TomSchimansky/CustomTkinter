@@ -383,6 +383,9 @@ class CTkSegmentedButton(CTkFrame):
     def get(self) -> str:
         return self._current_value
 
+    def index(self, value: str) -> int:
+        return self._value_list.index(value)
+
     def insert(self, index: int, value: str):
         if value not in self._buttons_dict:
             if value != "":

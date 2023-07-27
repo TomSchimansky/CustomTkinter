@@ -63,9 +63,22 @@ text_1.insert("0.0", "CTkTextbox\n\n\n\n")
 segmented_button_1 = customtkinter.CTkSegmentedButton(master=frame_1, values=["CTkSegmentedButton", "Value 2"])
 segmented_button_1.pack(pady=10, padx=10)
 
-tabview_1 = customtkinter.CTkTabview(master=frame_1, width=200, height=70)
+tabview_1 = customtkinter.CTkTabview(master=frame_1, width=300, height=120, fg_color="transparent", corner_radius=4, anchor="sw")
 tabview_1.pack(pady=10, padx=10)
-tabview_1.add("CTkTabview")
-tabview_1.add("Tab 2")
+tabview_1.add("1")
+tabview_1.add("2")
+tabview_1.add("3")
+
+b1 = customtkinter.CTkButton(tabview_1.tab("1"))
+b1.pack()
+b2 = customtkinter.CTkButton(tabview_1.tab("2"))
+b2.pack()
+
+tabview_1.move(1, "3")
+tabview_1.rename("3", "42")
+print(tabview_1.index("42"))
+
+tabview_1.configure(fg_color='transparent', corner_radius=10, border_width=5)
+tabview_1.configure(fg_color='green', corner_radius=10, border_width=5)
 
 app.mainloop()
