@@ -30,8 +30,8 @@ class CTkSlider(CTkBaseClass):
                  button_color: Optional[Union[str, Tuple[str, str]]] = None,
                  button_hover_color: Optional[Union[str, Tuple[str, str]]] = None,
 
-                 from_: int = 0,
-                 to: int = 1,
+                 from_: int | float = 0,
+                 to: int | float = 1,
                  state: str = "normal",
                  number_of_steps: Union[int, None] = None,
                  hover: bool = True,
