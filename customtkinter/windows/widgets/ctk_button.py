@@ -314,7 +314,7 @@ class CTkButton(CTkBaseClass):
             if self._image_label is not None and self._text_label is not None:
                 self.grid_columnconfigure(2, weight=0, minsize=self._apply_widget_scaling(self._image_label_spacing))
             else:
-                self.grid_columnconfigure(2, weight=0)
+                self.grid_columnconfigure(2, weight=0, minsize=0)
 
             self.grid_rowconfigure((1, 3), weight=0)
             self.grid_columnconfigure((1, 3), weight=1)
@@ -323,7 +323,7 @@ class CTkButton(CTkBaseClass):
             if self._image_label is not None and self._text_label is not None:
                 self.grid_rowconfigure(2, weight=0, minsize=self._apply_widget_scaling(self._image_label_spacing))
             else:
-                self.grid_rowconfigure(2, weight=0)
+                self.grid_rowconfigure(2, weight=0, minsize=0)
 
             self.grid_columnconfigure((1, 3), weight=0)
             self.grid_rowconfigure((1, 3), weight=1)
