@@ -46,6 +46,8 @@ from .windows.widgets.font import CTkFont
 # import image classes
 from .windows.widgets.image import CTkImage
 
+from .windows import ctk_tk
+
 _ = Variable, StringVar, IntVar, DoubleVar, BooleanVar, CENTER, filedialog  # prevent IDE from removing unused imports
 
 
@@ -80,3 +82,7 @@ def set_window_scaling(scaling_value: float):
 def deactivate_automatic_dpi_awareness():
     """ deactivate DPI awareness of current process (windll.shcore.SetProcessDpiAwareness(0)) """
     ScalingTracker.deactivate_automatic_dpi_awareness = True
+
+
+def set_ctk_parent_class(ctk_parent_class):
+    ctk_tk.CTK_PARENT_CLASS = ctk_parent_class
