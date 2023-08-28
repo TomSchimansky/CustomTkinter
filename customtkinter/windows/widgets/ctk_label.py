@@ -35,6 +35,7 @@ class CTkLabel(CTkBaseClass):
 
                  text: str = "CTkLabel",
                  font: Optional[Union[tuple, CTkFont]] = None,
+                 textvariable: Union[tkinter.Variable, None] = None,
                  image: Union[CTkImage, None] = None,
                  compound: str = "center",
                  anchor: str = "center",  # label anchor: center, n, e, s, w
@@ -86,6 +87,8 @@ class CTkLabel(CTkBaseClass):
         self._canvas.grid(row=0, column=0, sticky="nswe")
         self._draw_engine = DrawEngine(self._canvas)
 
+        self.textvariable = textvariable
+
         self._label = tkinter.Label(master=self,
                                     highlightthickness=0,
                                     padx=0,
@@ -95,7 +98,8 @@ class CTkLabel(CTkBaseClass):
                                     compound=self._compound,
                                     wraplength=self._apply_widget_scaling(self._wraplength),
                                     text=self._text,
-                                    font=self._apply_font_scaling(self._font))
+                                    font=self._apply_font_scaling(self._font),
+                                    textvariable=self.textvariable)
         self._label.configure(**pop_from_dict_by_set(kwargs, self._valid_tk_label_attributes))
 
         check_kwargs_empty(kwargs, raise_error=True)
