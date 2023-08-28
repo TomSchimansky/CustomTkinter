@@ -1,2 +1,2 @@
-darkdetect~=0.3.1
-typing-extensions~=4.4.0
+darkdetect~=0.8.0
+typing-extensions~=4.7.1 
