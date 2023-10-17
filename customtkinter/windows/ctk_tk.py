@@ -1,10 +1,10 @@
 import tkinter
-from distutils.version import StrictVersion as Version
 import sys
 import os
 import platform
 import ctypes
 from typing import Union, Tuple, Optional
+from pkg_resources import parse_version
 
 from .widgets.theme import ThemeManager
 from .widgets.scaling import CTkScalingBaseClass
@@ -243,16 +243,16 @@ class CTk(CTK_PARENT_CLASS, CTkAppearanceModeBaseClass, CTkScalingBaseClass):
     @classmethod
     def _enable_macos_dark_title_bar(cls):
         if sys.platform == "darwin" and not cls._deactivate_macos_window_header_manipulation:  # macOS
-            if Version(platform.python_version()) < Version("3.10"):
-                if Version(tkinter.Tcl().call("info", "patchlevel")) >= Version("8.6.9"):  # Tcl/Tk >= 8.6.9
+            if parse_version(platform.python_version()) < parse_version("3.10"):
+                if parse_version(tkinter.Tcl().call("info", "patchlevel")) >= parse_version("8.6.9"):  # Tcl/Tk >= 8.6.9
                     os.system("defaults write -g NSRequiresAquaSystemAppearance -bool No")
                     # This command allows dark-mode for all programs
 
     @classmethod
     def _disable_macos_dark_title_bar(cls):
         if sys.platform == "darwin" and not cls._deactivate_macos_window_header_manipulation:  # macOS
-            if Version(platform.python_version()) < Version("3.10"):
-                if Version(tkinter.Tcl().call("info", "patchlevel")) >= Version("8.6.9"):  # Tcl/Tk >= 8.6.9
+            if parse_version(platform.python_version()) < parse_version("3.10"):
+                if parse_version(tkinter.Tcl().call("info", "patchlevel")) >= parse_version("8.6.9"):  # Tcl/Tk >= 8.6.9
                     os.system("defaults delete -g NSRequiresAquaSystemAppearance")
                     # This command reverts the dark-mode setting for all programs.
 
