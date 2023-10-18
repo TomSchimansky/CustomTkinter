@@ -40,6 +40,7 @@ class CTkTabview(CTkBaseClass):
                  text_color: Optional[Union[str, Tuple[str, str]]] = None,
                  text_color_disabled: Optional[Union[str, Tuple[str, str]]] = None,
 
+                 delete_tab_in_sequence: bool = False,
                  command: Union[Callable, None] = None,
                  anchor: str = "center",
                  state: str = "normal",
@@ -96,6 +97,7 @@ class CTkTabview(CTkBaseClass):
         self._tab_dict: Dict[str, CTkFrame] = {}
         self._name_list: List[str] = []  # list of unique tab names in order of tabs
         self._current_name: str = ""
+        self._delete_tab_in_sequence = delete_tab_in_sequence
         self._command = command
 
         self._draw()
@@ -278,6 +280,8 @@ class CTkTabview(CTkBaseClass):
         if "text_color_disabled" in kwargs:
             self._segmented_button.configure(text_color_disabled=kwargs.pop("text_color_disabled"))
 
+        if "delete_tab_in_sequence" in kwargs:
+            self._delete_tab_in_sequence = kwargs.pop("delete_tab_in_sequence")
         if "command" in kwargs:
             self._command = kwargs.pop("command")
         if "anchor" in kwargs:
@@ -313,6 +317,9 @@ class CTkTabview(CTkBaseClass):
             return self._segmented_button.cget(attribute_name)
         elif attribute_name == "text_color_disabled":
             return self._segmented_button.cget(attribute_name)
+        
+        elif attribute_name == "delete_tab_in_sequence":
+            return self._delete_tab_in_sequence
 
         elif attribute_name == "command":
             return self._command
@@ -392,8 +399,9 @@ class CTkTabview(CTkBaseClass):
         """ delete tab by name """
 
         if name in self._tab_dict:
+            self._current_tab_index = self._name_list.index(name)
             self._name_list.remove(name)
-            self._tab_dict[name].grid_forget()
+            self._tab_dict[name].destroy()
             self._tab_dict.pop(name)
             self._segmented_button.delete(name)
 
@@ -411,9 +419,15 @@ class CTkTabview(CTkBaseClass):
 
             # more tabs are left
             else:
-                # if current_name is deleted tab, select first tab at position 0
+                # if current_name is deleted tab
                 if self._current_name == name:
-                    self.set(self._name_list[0])
+                    # select previous tab
+                    if self._delete_tab_in_sequence:
+                        self.set(self._name_list[self._current_tab_index - 1])
+                    # select first tab at position 0
+                    else:
+                        self.set(self._name_list[0])
+
         else:
             raise ValueError(f"CTkTabview has no tab named '{name}'")
 
