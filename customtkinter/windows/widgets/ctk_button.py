@@ -46,10 +46,12 @@ class CTkButton(CTkBaseClass):
                  command: Union[Callable[[], None], None] = None,
                  compound: str = "left",
                  anchor: str = "center",
+
+                 name: Optional[str] = None,
                  **kwargs):
 
         # transfer basic functionality (bg_color, size, appearance_mode, scaling) to CTkBaseClass
-        super().__init__(master=master, bg_color=bg_color, width=width, height=height, **kwargs)
+        super().__init__(master=master, bg_color=bg_color, width=width, height=height, name=name, **kwargs)
 
         # shape
         self._corner_radius: int = ThemeManager.theme["CTkButton"]["corner_radius"] if corner_radius is None else corner_radius

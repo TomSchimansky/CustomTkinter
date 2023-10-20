@@ -36,7 +36,8 @@ class CTkScrollableFrame(tkinter.Frame, CTkAppearanceModeBaseClass, CTkScalingBa
                  label_text: str = "",
                  label_font: Optional[Union[tuple, CTkFont]] = None,
                  label_anchor: str = "center",
-                 orientation: Literal["vertical", "horizontal"] = "vertical"):
+                 orientation: Literal["vertical", "horizontal"] = "vertical",
+                 name: Optional[str] = None):
 
         self._orientation = orientation
 
@@ -45,7 +46,8 @@ class CTkScrollableFrame(tkinter.Frame, CTkAppearanceModeBaseClass, CTkScalingBa
         self._desired_height = height
 
         self._parent_frame = CTkFrame(master=master, width=0, height=0, corner_radius=corner_radius,
-                                      border_width=border_width, bg_color=bg_color, fg_color=fg_color, border_color=border_color)
+                                      border_width=border_width, bg_color=bg_color, fg_color=fg_color,
+                                      border_color=border_color, name=name)
         self._parent_canvas = tkinter.Canvas(master=self._parent_frame, highlightthickness=0)
         self._set_scroll_increments()
 

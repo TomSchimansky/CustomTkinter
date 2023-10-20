@@ -20,7 +20,7 @@ class CTkLabel(CTkBaseClass):
 
     # attributes that are passed to and managed by the tkinter entry only:
     _valid_tk_label_attributes = {"cursor", "justify", "padx", "pady",
-                                  "textvariable", "state", "takefocus", "underline"}
+                                  "textvariable", "state", "takefocus", "underline", "name"}
 
     def __init__(self,
                  master: any,
@@ -39,10 +39,12 @@ class CTkLabel(CTkBaseClass):
                  compound: str = "center",
                  anchor: str = "center",  # label anchor: center, n, e, s, w
                  wraplength: int = 0,
+
+                 name: Optional[str] = None,
                  **kwargs):
 
         # transfer basic functionality (_bg_color, size, __appearance_mode, scaling) to CTkBaseClass
-        super().__init__(master=master, bg_color=bg_color, width=width, height=height)
+        super().__init__(master=master, bg_color=bg_color, width=width, height=height, name=name)
 
         # color
         self._fg_color = ThemeManager.theme["CTkLabel"]["fg_color"] if fg_color is None else self._check_color_type(fg_color, transparency=True)

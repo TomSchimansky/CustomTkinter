@@ -27,10 +27,12 @@ class CTkFrame(CTkBaseClass):
 
                  background_corner_colors: Union[Tuple[Union[str, Tuple[str, str]]], None] = None,
                  overwrite_preferred_drawing_method: Union[str, None] = None,
+
+                 name: Optional[str] = None,
                  **kwargs):
 
         # transfer basic functionality (_bg_color, size, __appearance_mode, scaling) to CTkBaseClass
-        super().__init__(master=master, bg_color=bg_color, width=width, height=height, **kwargs)
+        super().__init__(master=master, bg_color=bg_color, width=width, height=height, name=name, **kwargs)
 
         # color
         self._border_color = ThemeManager.theme["CTkFrame"]["border_color"] if border_color is None else self._check_color_type(border_color)
