@@ -1,3 +1,7 @@
+<div align = "center">
+  <h1> CustomTkinter </h1>
+  <hr>
+</div>
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="./documentation_images/CustomTkinter_logo_dark.png">
