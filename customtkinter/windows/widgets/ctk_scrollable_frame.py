@@ -79,6 +79,8 @@ class CTkScrollableFrame(tkinter.Frame, CTkAppearanceModeBaseClass, CTkScalingBa
         self.bind_all("<KeyPress-Shift_R>", self._keyboard_shift_press_all, add="+")
         self.bind_all("<KeyRelease-Shift_L>", self._keyboard_shift_release_all, add="+")
         self.bind_all("<KeyRelease-Shift_R>", self._keyboard_shift_release_all, add="+")
+        self.bind("<Button-4>", lambda e: self._parent_canvas.yview("scroll", -1, "units"))
+        self.bind("<Button-5>", lambda e: self._parent_canvas.yview("scroll", 1, "units"))
         self._create_window_id = self._parent_canvas.create_window(0, 0, window=self, anchor="nw")
 
         if self._parent_frame.cget("fg_color") == "transparent":
