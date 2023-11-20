@@ -28,7 +28,9 @@ class CTkComboBox(CTkBaseClass):
                  fg_color: Optional[Union[str, Tuple[str, str]]] = None,
                  border_color: Optional[Union[str, Tuple[str, str]]] = None,
                  button_color: Optional[Union[str, Tuple[str, str]]] = None,
+                 border_button_color: Optional[Union[str, Tuple[str, str]]] = None,
                  button_hover_color: Optional[Union[str, Tuple[str, str]]] = None,
+                 border_button_hover_color: Optional[Union[str, Tuple[str, str]]] = None,
                  dropdown_fg_color: Optional[Union[str, Tuple[str, str]]] = None,
                  dropdown_hover_color: Optional[Union[str, Tuple[str, str]]] = None,
                  dropdown_text_color: Optional[Union[str, Tuple[str, str]]] = None,
@@ -56,7 +58,9 @@ class CTkComboBox(CTkBaseClass):
         self._fg_color = ThemeManager.theme["CTkComboBox"]["fg_color"] if fg_color is None else self._check_color_type(fg_color)
         self._border_color = ThemeManager.theme["CTkComboBox"]["border_color"] if border_color is None else self._check_color_type(border_color)
         self._button_color = ThemeManager.theme["CTkComboBox"]["button_color"] if button_color is None else self._check_color_type(button_color)
+        self._border_button_color = ThemeManager.theme["CTkComboBox"]["button_color"] if border_button_color is None else self._check_color_type(border_button_color)
         self._button_hover_color = ThemeManager.theme["CTkComboBox"]["button_hover_color"] if button_hover_color is None else self._check_color_type(button_hover_color)
+        self._border_button_hover_color = ThemeManager.theme["CTkComboBox"]["button_hover_color"] if border_button_hover_color is None else self._check_color_type(border_button_hover_color)
         self._text_color = ThemeManager.theme["CTkComboBox"]["text_color"] if text_color is None else self._check_color_type(text_color)
         self._text_color_disabled = ThemeManager.theme["CTkComboBox"]["text_color_disabled"] if text_color_disabled is None else self._check_color_type(text_color_disabled)
 
@@ -115,6 +119,8 @@ class CTkComboBox(CTkBaseClass):
                 self._entry.insert(0, self._values[0])
             else:
                 self._entry.insert(0, "CTkComboBox")
+
+        self._canvas.itemconfig("inner_parts_right", outline=self._apply_appearance_mode("red"))
 
     def _create_bindings(self, sequence: Optional[str] = None):
         """ set necessary bindings for functionality of widget, will overwrite other bindings """
@@ -196,8 +202,8 @@ class CTkComboBox(CTkBaseClass):
                                     outline=self._apply_appearance_mode(self._button_color),
                                     fill=self._apply_appearance_mode(self._button_color))
             self._canvas.itemconfig("border_parts_right",
-                                    outline=self._apply_appearance_mode(self._button_color),
-                                    fill=self._apply_appearance_mode(self._button_color))
+                                    outline=self._apply_appearance_mode(self._border_button_color),
+                                    fill=self._apply_appearance_mode(self._border_button_color))
 
             self._entry.configure(bg=self._apply_appearance_mode(self._fg_color),
                                   fg=self._apply_appearance_mode(self._text_color),
@@ -240,8 +246,16 @@ class CTkComboBox(CTkBaseClass):
             self._button_color = self._check_color_type(kwargs.pop("button_color"))
             require_redraw = True
 
+        if "border_button_color" in kwargs:
+            self._border_button_color = self._check_color_type(kwargs.pop("border_button_color"))
+            require_redraw = True
+
         if "button_hover_color" in kwargs:
             self._button_hover_color = self._check_color_type(kwargs.pop("button_hover_color"))
+            require_redraw = True
+
+        if "border_button_hover_color" in kwargs:
+            self._border_button_hover_color = self._check_color_type(kwargs.pop("border_button_hover_color"))
             require_redraw = True
 
         if "dropdown_fg_color" in kwargs:
@@ -309,8 +323,12 @@ class CTkComboBox(CTkBaseClass):
             return self._border_color
         elif attribute_name == "button_color":
             return self._button_color
+        elif attribute_name == "border_button_color":
+            return self._border_button_color
         elif attribute_name == "button_hover_color":
             return self._button_hover_color
+        elif attribute_name == "border_button_hover_color":
+            return self._border_button_hover_color
         elif attribute_name == "dropdown_fg_color":
             return self._dropdown_menu.cget("fg_color")
         elif attribute_name == "dropdown_hover_color":
@@ -353,8 +371,8 @@ class CTkComboBox(CTkBaseClass):
                                     outline=self._apply_appearance_mode(self._button_hover_color),
                                     fill=self._apply_appearance_mode(self._button_hover_color))
             self._canvas.itemconfig("border_parts_right",
-                                    outline=self._apply_appearance_mode(self._button_hover_color),
-                                    fill=self._apply_appearance_mode(self._button_hover_color))
+                                    outline=self._apply_appearance_mode(self._border_button_hover_color),
+                                    fill=self._apply_appearance_mode(self._border_button_hover_color))
 
     def _on_leave(self, event=0):
         if sys.platform == "darwin" and len(self._values) > 0 and self._cursor_manipulation_enabled:
@@ -367,8 +385,8 @@ class CTkComboBox(CTkBaseClass):
                                 outline=self._apply_appearance_mode(self._button_color),
                                 fill=self._apply_appearance_mode(self._button_color))
         self._canvas.itemconfig("border_parts_right",
-                                outline=self._apply_appearance_mode(self._button_color),
-                                fill=self._apply_appearance_mode(self._button_color))
+                                outline=self._apply_appearance_mode(self._border_button_color),
+                                fill=self._apply_appearance_mode(self._border_button_color))
 
     def _dropdown_callback(self, value: str):
         if self._state == "readonly":
