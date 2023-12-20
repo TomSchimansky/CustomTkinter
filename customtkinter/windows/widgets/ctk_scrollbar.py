@@ -229,7 +229,6 @@ class CTkScrollbar(CTkBaseClass):
                                 fill=self._apply_appearance_mode(self._button_color))
 
     def _clicked(self, event):
-        print("OUTSIDE")
         self._motion_center_offset = 0
         self._on_motion(event)
     
