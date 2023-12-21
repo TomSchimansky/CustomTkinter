@@ -236,7 +236,7 @@ class CTkScrollbar(CTkBaseClass):
         if self._orientation == "vertical":
             value = self._reverse_widget_scaling(((event.y - self._border_spacing) / (self._current_height - 2 * self._border_spacing)))
         else:
-            value = self._reverse_widget_scaling(((event.x - self._border_spacing) / (self._current_height - 2 * self._border_spacing)))
+            value = self._reverse_widget_scaling(((event.x - self._border_spacing) / (self._current_width - 2 * self._border_spacing)))
         center = self._start_value + ((self._end_value - self._start_value) * 0.5)
         self._motion_center_offset = center - value
 
