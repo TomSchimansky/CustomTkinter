@@ -38,14 +38,6 @@ class CTkToplevel(tkinter.Toplevel, CTkAppearanceModeBaseClass, CTkScalingBaseCl
         CTkScalingBaseClass.__init__(self, scaling_type="window")
         check_kwargs_empty(kwargs, raise_error=True)
 
-        try:
-            # Set Windows titlebar icon
-            if sys.platform.startswith("win"):
-                customtkinter_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-                self.after(200, lambda: self.iconbitmap(os.path.join(customtkinter_directory, "assets", "icons", "CustomTkinter_icon_Windows.ico")))
-        except Exception:
-            pass
-
         self._current_width = 200  # initial window size, always without scaling
         self._current_height = 200
         self._min_width: int = 0
@@ -63,7 +55,7 @@ class CTkToplevel(tkinter.Toplevel, CTkAppearanceModeBaseClass, CTkScalingBaseCl
         super().title("CTkToplevel")
 
         # indicator variables
-        self._iconbitmap_method_called = True
+        self._iconbitmap_method_called = False
         self._state_before_windows_set_titlebar_color = None
         self._windows_set_titlebar_color_called = False  # indicates if windows_set_titlebar_color was called, stays True until revert_withdraw_after_windows_set_titlebar_color is called
         self._withdraw_called_after_windows_set_titlebar_color = False  # indicates if withdraw() was called after windows_set_titlebar_color
@@ -203,7 +195,12 @@ class CTkToplevel(tkinter.Toplevel, CTkAppearanceModeBaseClass, CTkScalingBaseCl
         self._iconbitmap_method_called = True
         super().wm_iconbitmap(bitmap, default)
 
+    def iconbitmap(self, bitmap=None, default=None):
+        self._iconbitmap_method_called = True
+        super().wm_iconbitmap(bitmap, default)
+
     def _windows_set_titlebar_icon(self):
+        print(self.title,self._iconbitmap_method_called)
         try:
             # if not the user already called iconbitmap method, set icon
             if not self._iconbitmap_method_called:
