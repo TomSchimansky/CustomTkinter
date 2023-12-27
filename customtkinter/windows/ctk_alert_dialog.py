@@ -1,16 +1,15 @@
 from typing import Union, Tuple, Optional
 
 from .widgets import CTkLabel
-from .widgets import CTkEntry
 from .widgets import CTkButton
 from .widgets.theme import ThemeManager
 from .ctk_toplevel import CTkToplevel
 from .widgets.font import CTkFont
 
 
-class CTkInputDialog(CTkToplevel):
+class CTkAlertDialog(CTkToplevel):
     """
-    Dialog with extra window, message, entry widget, cancel and ok button.
+    Dialog with extra window, message, cancel and ok button.
     For detailed information check out the documentation.
     """
 
@@ -31,6 +30,7 @@ class CTkInputDialog(CTkToplevel):
         self._button_fg_color = ThemeManager.theme["CTkButton"]["fg_color"] if button_fg_color is None else self._check_color_type(button_fg_color)
         self._button_hover_color = ThemeManager.theme["CTkButton"]["hover_color"] if button_hover_color is None else self._check_color_type(button_hover_color)
         self._button_text_color = ThemeManager.theme["CTkButton"]["text_color"] if button_text_color is None else self._check_color_type(button_text_color)
+        self._is_ok: bool = False
         self._running: bool = False
         self._title = title
         self._text = text
@@ -81,7 +81,7 @@ class CTkInputDialog(CTkToplevel):
 
 
     def _ok_event(self, event=None):
-        self._user_input = self._entry.get()
+        self._is_ok = True
         self.grab_release()
         self.destroy()
 
@@ -90,6 +90,11 @@ class CTkInputDialog(CTkToplevel):
         self.destroy()
 
     def _cancel_event(self):
+        self._is_ok = False
         self.grab_release()
         self.destroy()
+
+    def get_state(self):
+        self.master.wait_window(self)
+        return self._is_ok
 
