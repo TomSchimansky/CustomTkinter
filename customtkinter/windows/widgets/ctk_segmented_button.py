@@ -1,6 +1,6 @@
 import tkinter
 import copy
-from typing import Union, Tuple, List, Dict, Callable, Optional
+from typing import Union, Tuple, List, Dict, Callable, Optional, Any
 try:
     from typing import Literal
 except ImportError:
@@ -20,7 +20,7 @@ class CTkSegmentedButton(CTkFrame):
     """
 
     def __init__(self,
-                 master: any,
+                 master: Any,
                  width: int = 140,
                  height: int = 28,
                  corner_radius: Optional[int] = None,
@@ -40,7 +40,7 @@ class CTkSegmentedButton(CTkFrame):
                  values: Optional[list] = None,
                  variable: Union[tkinter.Variable, None] = None,
                  dynamic_resizing: bool = True,
-                 command: Union[Callable[[str], None], None] = None,
+                 command: Union[Callable[[str], Any], None] = None,
                  state: str = "normal"):
 
         super().__init__(master=master, bg_color=bg_color, width=width, height=height)

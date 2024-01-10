@@ -1,6 +1,6 @@
 import tkinter
 import sys
-from typing import Union, Tuple, Callable, Optional
+from typing import Union, Tuple, Callable, Optional, Any
 
 from .core_rendering import CTkCanvas
 from .theme import ThemeManager
@@ -16,7 +16,7 @@ class CTkCheckBox(CTkBaseClass):
     """
 
     def __init__(self,
-                 master: any,
+                 master: Any,
                  width: int = 100,
                  height: int = 24,
                  checkbox_width: int = 24,
@@ -37,7 +37,7 @@ class CTkCheckBox(CTkBaseClass):
                  textvariable: Union[tkinter.Variable, None] = None,
                  state: str = tkinter.NORMAL,
                  hover: bool = True,
-                 command: Union[Callable[[], None], None] = None,
+                 command: Union[Callable[[], Any], None] = None,
                  onvalue: Union[int, str] = 1,
                  offvalue: Union[int, str] = 0,
                  variable: Union[tkinter.Variable, None] = None,

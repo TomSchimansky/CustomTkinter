@@ -1,5 +1,5 @@
 import tkinter
-from typing import Union, Tuple, Callable, Optional
+from typing import Union, Tuple, Callable, Optional, Any
 
 from .core_rendering import CTkCanvas
 from .theme import ThemeManager
@@ -23,7 +23,7 @@ class CTkLabel(CTkBaseClass):
                                   "textvariable", "state", "takefocus", "underline"}
 
     def __init__(self,
-                 master: any,
+                 master: Any,
                  width: int = 0,
                  height: int = 28,
                  corner_radius: Optional[int] = None,

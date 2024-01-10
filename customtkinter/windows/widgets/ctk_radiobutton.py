@@ -1,6 +1,6 @@
 import tkinter
 import sys
-from typing import Union, Tuple, Callable, Optional
+from typing import Union, Tuple, Callable, Optional, Any
 
 from .core_rendering import CTkCanvas
 from .theme import ThemeManager
@@ -16,7 +16,7 @@ class CTkRadioButton(CTkBaseClass):
     """
 
     def __init__(self,
-                 master: any,
+                 master: Any,
                  width: int = 100,
                  height: int = 22,
                  radiobutton_width: int = 22,
@@ -39,7 +39,7 @@ class CTkRadioButton(CTkBaseClass):
                  value: Union[int, str] = 0,
                  state: str = tkinter.NORMAL,
                  hover: bool = True,
-                 command: Union[Callable, None] = None,
+                 command: Union[Callable, Any] = None,
                  **kwargs):
 
         # transfer basic functionality (_bg_color, size, __appearance_mode, scaling) to CTkBaseClass

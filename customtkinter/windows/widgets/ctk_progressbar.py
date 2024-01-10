@@ -1,6 +1,6 @@
 import tkinter
 import math
-from typing import Union, Tuple, Optional, Callable
+from typing import Union, Tuple, Optional, Callable, Any
 try:
     from typing import Literal
 except ImportError:
@@ -20,7 +20,7 @@ class CTkProgressBar(CTkBaseClass):
     """
 
     def __init__(self,
-                 master: any,
+                 master: Any,
                  width: Optional[int] = None,
                  height: Optional[int] = None,
                  corner_radius: Optional[int] = None,

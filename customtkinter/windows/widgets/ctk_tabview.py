@@ -1,5 +1,5 @@
 import tkinter
-from typing import Union, Tuple, Dict, List, Callable, Optional
+from typing import Union, Tuple, Dict, List, Callable, Optional, Any
 
 from .theme import ThemeManager
 from .ctk_frame import CTkFrame
@@ -21,7 +21,7 @@ class CTkTabview(CTkBaseClass):
     _segmented_button_border_width: int = 3
 
     def __init__(self,
-                 master: any,
+                 master: Any,
                  width: int = 300,
                  height: int = 250,
                  corner_radius: Optional[int] = None,
@@ -40,7 +40,7 @@ class CTkTabview(CTkBaseClass):
                  text_color: Optional[Union[str, Tuple[str, str]]] = None,
                  text_color_disabled: Optional[Union[str, Tuple[str, str]]] = None,
 
-                 command: Union[Callable, None] = None,
+                 command: Union[Callable, Any] = None,
                  anchor: str = "center",
                  state: str = "normal",
                  **kwargs):

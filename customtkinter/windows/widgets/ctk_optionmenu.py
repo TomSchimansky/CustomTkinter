@@ -1,7 +1,7 @@
 import tkinter
 import copy
 import sys
-from typing import Union, Tuple, Callable, Optional
+from typing import Union, Tuple, Callable, Optional, Any
 
 from .core_rendering import CTkCanvas
 from .theme import ThemeManager
@@ -18,7 +18,7 @@ class CTkOptionMenu(CTkBaseClass):
     """
 
     def __init__(self,
-                 master: any,
+                 master: Any,
                  width: int = 140,
                  height: int = 28,
                  corner_radius: Optional[Union[int]] = None,
@@ -39,7 +39,7 @@ class CTkOptionMenu(CTkBaseClass):
                  variable: Union[tkinter.Variable, None] = None,
                  state: str = tkinter.NORMAL,
                  hover: bool = True,
-                 command: Union[Callable[[str], None], None] = None,
+                 command: Union[Callable[[str], Any], None] = None,
                  dynamic_resizing: bool = True,
                  anchor: str = "w",
                  **kwargs):

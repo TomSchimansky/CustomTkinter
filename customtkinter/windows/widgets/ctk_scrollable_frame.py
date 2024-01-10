@@ -1,4 +1,4 @@
-from typing import Union, Tuple, Optional
+from typing import Union, Tuple, Optional, Any
 try:
     from typing import Literal
 except ImportError:
@@ -18,7 +18,7 @@ from .theme import ThemeManager
 
 class CTkScrollableFrame(tkinter.Frame, CTkAppearanceModeBaseClass, CTkScalingBaseClass):
     def __init__(self,
-                 master: any,
+                 master: Any,
                  width: int = 200,
                  height: int = 200,
                  corner_radius: Optional[Union[int, str]] = None,

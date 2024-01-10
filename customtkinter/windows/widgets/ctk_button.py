@@ -1,6 +1,6 @@
 import tkinter
 import sys
-from typing import Union, Tuple, Callable, Optional
+from typing import Union, Tuple, Callable, Optional, Any
 
 from .core_rendering import CTkCanvas
 from .theme import ThemeManager
@@ -19,7 +19,7 @@ class CTkButton(CTkBaseClass):
     _image_label_spacing: int = 6
 
     def __init__(self,
-                 master: any,
+                 master: Any,
                  width: int = 140,
                  height: int = 28,
                  corner_radius: Optional[int] = None,
@@ -43,7 +43,7 @@ class CTkButton(CTkBaseClass):
                  image: Union[CTkImage, "ImageTk.PhotoImage", None] = None,
                  state: str = "normal",
                  hover: bool = True,
-                 command: Union[Callable[[], None], None] = None,
+                 command: Union[Callable[[], Any], None] = None,
                  compound: str = "left",
                  anchor: str = "center",
                  **kwargs):

@@ -1,6 +1,6 @@
 import tkinter
 import sys
-from typing import Union, Tuple, Callable, Optional
+from typing import Union, Tuple, Callable, Optional, Any
 
 from .core_rendering import CTkCanvas
 from .theme import ThemeManager
@@ -16,7 +16,7 @@ class CTkSwitch(CTkBaseClass):
     """
 
     def __init__(self,
-                 master: any,
+                 master: Any,
                  width: int = 100,
                  height: int = 24,
                  switch_width: int = 36,
@@ -41,7 +41,7 @@ class CTkSwitch(CTkBaseClass):
                  offvalue: Union[int, str] = 0,
                  variable: Union[tkinter.Variable, None] = None,
                  hover: bool = True,
-                 command: Union[Callable, None] = None,
+                 command: Union[Callable, Any] = None,
                  state: str = tkinter.NORMAL,
                  **kwargs):
 

@@ -1,5 +1,5 @@
 import tkinter
-from typing import Union, Tuple, Optional
+from typing import Union, Tuple, Optional, Any
 
 from .core_rendering import CTkCanvas
 from .theme import ThemeManager
@@ -23,7 +23,7 @@ class CTkEntry(CTkBaseClass):
                                   "show", "takefocus", "validate", "validatecommand", "xscrollcommand"}
 
     def __init__(self,
-                 master: any,
+                 master: Any,
                  width: int = 140,
                  height: int = 28,
                  corner_radius: Optional[int] = None,

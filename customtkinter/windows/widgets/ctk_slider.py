@@ -1,6 +1,6 @@
 import tkinter
 import sys
-from typing import Union, Tuple, Callable, Optional
+from typing import Union, Tuple, Callable, Optional, Any
 
 from .core_rendering import CTkCanvas
 from .theme import ThemeManager
@@ -15,7 +15,7 @@ class CTkSlider(CTkBaseClass):
     """
 
     def __init__(self,
-                 master: any,
+                 master: Any,
                  width: Optional[int] = None,
                  height: Optional[int] = None,
                  corner_radius: Optional[int] = None,
@@ -35,7 +35,7 @@ class CTkSlider(CTkBaseClass):
                  state: str = "normal",
                  number_of_steps: Union[int, None] = None,
                  hover: bool = True,
-                 command: Union[Callable[[float], None], None] = None,
+                 command: Union[Callable[[float], Any], None] = None,
                  variable: Union[tkinter.Variable, None] = None,
                  orientation: str = "horizontal",
                  **kwargs):
