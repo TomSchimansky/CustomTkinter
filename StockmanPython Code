@@ -1,0 +1,78 @@
+from tkinter import *
+from tkinter import messagebox
+from tkinter import ttk,Image
+import mysql.connector as sql
+mycon=sql.connect(host="localhost",user="root",password="12345678",database="google")
+mycur=mycon.cursor()
+win=Tk()
+pid=StringVar()
+pn=StringVar()
+pq=IntVar()
+pr=IntVar()
+q="select pc from stock"
+mycur.execute(q)
+pl=mycur.fetchall()
+def addproduct():
+    pcc=pid.get()
+    pnn=pn.get()
+    pqq=pq.get()
+    prr=pr.get()
+    q="insert into stock (pc,pn,pq,pr) values('{}','{}','{}','{}')".format(pcc,pnn,pqq,prr)
+    mycur.execute(q)
+    mycon.commit()
+    messagebox.showinfo("Add Record","Record Added Successfully")
+def deleteproduct():
+    pcc=pid.get()
+    q="delete from stock where pid='{pcc}'"
+    mycur.execute(q)
+    mycon.commit()
+    messagebox.showinfo("RECORD SUCCESSFULLY DELETED")
+def updateproduct():
+    pcc=pid.get()
+    q="update stock set pn=''"
+    
+win.geometry('500x500')
+win.resizable(0,0)
+win.title("Ayush pvt")
+win.config(background="lightblue")
+image=PhotoImage(file="c:\\Users\\manga\\OneDrive\\Desktop\\hubnet.png")
+win.iconphoto(False,image)
+l1=Label(win,text="Ayush 3rd Eye Surveillance",bg="red",fg="white",font=("sitka small",17,"bold"),bd=5)
+l1.pack(padx=0,pady=5)
+cl=Label(win,text="Select ProductId",bg="yellow",font=("sitka small",12,"bold"))
+cl.place(x=20,y=80)
+cbb=StringVar()
+cb=ttk.Combobox(win,values=pl,width=42,textvariable=cbb)
+cb.place(x=200,y=80)
+nn=StringVar()
+def getpid():
+    nn.set(cbb.get())
+
+l2=Label(win,text="Product ID   : ",bg="yellow",font=("sitka small",12,"bold"))
+l2.place(x=20,y=130)
+l3=Label(win,text="Product Name : ",bg="yellow",font=("sitka small",12,"bold"))
+l3.place(x=20,y=180)
+l4=Label(win,text="Product Qnt  : ",bg="yellow",font=("sitka small",12,"bold"))
+l4.place(x=20,y=230)
+l5=Label(win,text="Product Rate : ",bg="yellow",font=("sitka small",12,"bold"))
+l5.place(x=20,y=280)
+e1=Entry(win,font=("algerian",16,"bold"),bg="white",fg="black",bd=5,textvariable=pid)
+e1.place(x=200,y=120)
+e2=Entry(win,font=("algerian",16,"bold"),bg="white",fg="black",bd=5,textvariable=pn)
+e2.place(x=200,y=170)
+e3=Entry(win,font=("algerian",16,"bold"),bg="white",fg="black",bd=5,textvariable=pq)
+e3.place(x=200,y=220)
+e4=Entry(win,font=("algerian",16,"bold"),bg="white",fg="black",bd=5,textvariable=pr)
+e4.place(x=200,y=270)
+b1=Button(win,text="AddNewStock",bg="black",fg="white",bd=5,command=addproduct)
+b1.place(x=200,y=330)
+b2=Button(win,text="DeleteStock",bg="black",fg="white",bd=5,command=deleteproduct)
+b2.place(x=302,y=330)
+b3=Button(win,text="UpdateStock",bg="black",fg="white",bd=5,command=getpid)
+b3.place(x=390,y=330)
+e5=Entry(win,textvariable=nn,font=("algerian",20,"bold"),bg="white",fg="black",bd=5)
+e5.place(x=80,y=380)
+l6=Label(win,text="Email : ayushumta@gmail.com",font=("sitka small",16,"bold"),bg="white",fg="black")
+l6.place(x=30,y=450)
+win.mainloop()
+
