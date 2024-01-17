@@ -9,7 +9,7 @@
 
 ![PyPI](https://img.shields.io/pypi/v/customtkinter)
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/customtkinter?color=green&label=downloads)
-![Downloads last 6 month](https://static.pepy.tech/personalized-badge/customtkinter?period=total&units=international_system&left_color=grey&right_color=green&left_text=downloads)
+![Downloads last 6 month](https://static.pepy.tech/personalized-badge/customtkinter?period=total&units=international_system&left_color=grey&right_color=green&left_text='downloads last 6 month')
 ![PyPI - License](https://img.shields.io/badge/license-MIT-blue)
 ![LOC](https://tokei.rs/b1/github/tomschimansky/customtkinter?category=lines)
 
