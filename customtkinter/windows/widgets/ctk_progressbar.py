@@ -302,6 +302,10 @@ class CTkProgressBar(CTkBaseClass):
                              " tkinter and its not clear whether the internal callbacks will be unbinded or not")
         self._canvas.unbind(sequence, None)
 
+    def event_generate(self, sequence, **kw):
+        """ called on the tkinter.Canvas """
+        self._canvas.event_generate(sequence, **kw)
+
     def focus(self):
         return self._canvas.focus()
 
