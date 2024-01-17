@@ -26,7 +26,8 @@ class CTkInputDialog(CTkToplevel):
 
                  title: str = "CTkDialog",
                  font: Optional[Union[tuple, CTkFont]] = None,
-                 text: str = "CTkDialog"):
+                 text: str = "CTkDialog",
+                 show=""):
 
         super().__init__(fg_color=fg_color)
 
@@ -38,6 +39,7 @@ class CTkInputDialog(CTkToplevel):
         self._entry_fg_color = ThemeManager.theme["CTkEntry"]["fg_color"] if entry_fg_color is None else self._check_color_type(entry_fg_color)
         self._entry_border_color = ThemeManager.theme["CTkEntry"]["border_color"] if entry_border_color is None else self._check_color_type(entry_border_color)
         self._entry_text_color = ThemeManager.theme["CTkEntry"]["text_color"] if entry_text_color is None else self._check_color_type(entry_text_color)
+        self._entry_show = show
 
         self._user_input: Union[str, None] = None
         self._running: bool = False
@@ -71,7 +73,8 @@ class CTkInputDialog(CTkToplevel):
                                fg_color=self._entry_fg_color,
                                border_color=self._entry_border_color,
                                text_color=self._entry_text_color,
-                               font=self._font)
+                               font=self._font,
+                               show=self._entry_show)
         self._entry.grid(row=1, column=0, columnspan=2, padx=20, pady=(0, 20), sticky="ew")
 
         self._ok_button = CTkButton(master=self,
