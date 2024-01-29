@@ -15,7 +15,6 @@ from .ctk_label import CTkLabel
 from .font import CTkFont
 from .theme import ThemeManager
 
-
 class CTkScrollableFrame(tkinter.Frame, CTkAppearanceModeBaseClass, CTkScalingBaseClass):
     def __init__(self,
                  master: Any,
@@ -55,6 +54,10 @@ class CTkScrollableFrame(tkinter.Frame, CTkAppearanceModeBaseClass, CTkScalingBa
             self._parent_canvas.configure(xscrollcommand=self._scrollbar.set)
         elif self._orientation == "vertical":
             self._scrollbar = CTkScrollbar(master=self._parent_frame, orientation="vertical", command=self._parent_canvas.yview,
+                                           fg_color=scrollbar_fg_color, button_color=scrollbar_button_color, button_hover_color=scrollbar_button_hover_color)
+            self._parent_canvas.configure(yscrollcommand=self._scrollbar.set)
+        elif self._orientation == ["vertical", "horizontal"] or self._orientation == ["horizontal", "vertical"]:
+            self._scrollbar = CTkScrollbar(master=self._parent_frame, orientation=["vertical", "horizontal"] , command=self._parent_canvas.yview,
                                            fg_color=scrollbar_fg_color, button_color=scrollbar_button_color, button_hover_color=scrollbar_button_hover_color)
             self._parent_canvas.configure(yscrollcommand=self._scrollbar.set)
 
