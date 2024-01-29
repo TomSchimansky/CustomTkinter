@@ -1,6 +1,6 @@
 import tkinter
 import sys
-from typing import Union, Tuple
+from typing import Union, Tuple, List
 
 
 class CTkCanvas(tkinter.Canvas):
@@ -80,23 +80,25 @@ class CTkCanvas(tkinter.Canvas):
 
         return circle_1
 
-    def coords(self, tag_or_id, *args):
+    def coords(self, tag_or_id, *args) -> List[float]:
 
         if type(tag_or_id) == str and "ctk_aa_circle_font_element" in self.gettags(tag_or_id):
             coords_id = self.find_withtag(tag_or_id)[0]  # take the lowest id for the given tag
-            super().coords(coords_id, *args[:2])
+            coords = super().coords(coords_id, *args[:2])
 
             if len(args) == 3:
                 super().itemconfigure(coords_id, font=("CustomTkinter_shapes_font", -int(args[2]) * 2), text=self._get_char_from_radius(args[2]))
 
         elif type(tag_or_id) == int and tag_or_id in self._aa_circle_canvas_ids:
-            super().coords(tag_or_id, *args[:2])
+            coords = super().coords(tag_or_id, *args[:2])
 
             if len(args) == 3:
                 super().itemconfigure(tag_or_id, font=("CustomTkinter_shapes_font", -args[2] * 2), text=self._get_char_from_radius(args[2]))
 
         else:
-            super().coords(tag_or_id, *args)
+            coords = super().coords(tag_or_id, *args)
+
+        return coords
 
     def itemconfig(self, tag_or_id, *args, **kwargs):
         kwargs_except_outline = kwargs.copy()
