@@ -39,6 +39,7 @@ class CTkEntry(CTkBaseClass):
                  placeholder_text: Union[str, None] = None,
                  font: Optional[Union[tuple, CTkFont]] = None,
                  state: str = tkinter.NORMAL,
+                 focus_loss_outside_click: bool = True,
                  **kwargs):
 
         # transfer basic functionality (bg_color, size, appearance_mode, scaling) to CTkBaseClass
@@ -65,6 +66,7 @@ class CTkEntry(CTkBaseClass):
         self._pre_placeholder_arguments = {}  # some set arguments of the entry will be changed for placeholder and then set back
         self._textvariable = textvariable
         self._state = state
+        self.focus_loss_outside_click = focus_loss_outside_click
         self._textvariable_callback_name: str = ""
 
         # font
@@ -97,12 +99,41 @@ class CTkEntry(CTkBaseClass):
         self._create_bindings()
         self._draw()
 
+    def _get_root_window(self):
+        """Find the root window."""
+        widget = self
+        while widget.master is not None:
+            widget = widget.master
+        return widget  # This should now always return the root window
+
+    def _on_root_click(self, event):
+        """Handle clicks on the root window."""
+        try:
+            if not self._is_click_inside(event):
+                # Set focus to the root window or another widget to ensure CTkEntry loses focus
+                self._root_window.focus_set()
+        except Exception as e:
+            print(f"Error in _on_root_click: {e}")
+
+    def _is_click_inside(self, event):
+        """Check if click was inside the CTkEntry widget."""
+        try:
+            x1, y1, x2, y2 = self.winfo_rootx(), self.winfo_rooty(), self.winfo_rootx() + self.winfo_width(), self.winfo_rooty() + self.winfo_height()
+            return x1 <= event.x_root <= x2 and y1 <= event.y_root <= y2
+        except Exception as e:
+            print(f"Error in _is_click_inside: {e}")
+            return False  # Default to False in case of an error
+
     def _create_bindings(self, sequence: Optional[str] = None):
         """ set necessary bindings for functionality of widget, will overwrite other bindings """
         if sequence is None or sequence == "<FocusIn>":
             self._entry.bind("<FocusIn>", self._entry_focus_in)
         if sequence is None or sequence == "<FocusOut>":
             self._entry.bind("<FocusOut>", self._entry_focus_out)
+
+        if self.focus_loss_outside_click:
+            self._root_window = self._get_root_window()
+            self._root_window.bind("<Button-1>", self._on_root_click, add='+')
 
     def _create_grid(self):
         self._canvas.grid(column=0, row=0, sticky="nswe")
