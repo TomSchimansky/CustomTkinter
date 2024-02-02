@@ -7,7 +7,7 @@ from .theme import ThemeManager
 from .core_rendering import DrawEngine
 from .core_widget_classes import CTkBaseClass
 from .font import CTkFont
-from .utility import pop_from_dict_by_set, check_kwargs_empty
+from .utility import pop_from_dict_by_set, check_kwargs_empty, handle_root_click, get_root_window
 
 
 class CTkTextbox(CTkBaseClass):
@@ -121,32 +121,14 @@ class CTkTextbox(CTkBaseClass):
         self._create_grid_for_text_and_scrollbars(re_grid_textbox=True, re_grid_x_scrollbar=True, re_grid_y_scrollbar=True)
 
         if focus_loss_outside_click:
-            self._root_window = self._get_root_window()
-            self._root_window.bind("<Button-1>", self._on_root_click, add=True)
+            self._root_window = get_root_window(self)
+            self._root_window.bind("<Button-1>", self.on_root_click, add=True)
 
         self.after(50, self._check_if_scrollbars_needed, None, True)
         self._draw()
 
-    def _get_root_window(self):
-        widget = self
-        while widget.master is not None:
-            widget = widget.master
-        return widget
-
-    def _on_root_click(self, event):
-        try:
-            if not self._is_click_inside(event) and self._root_window.focus_get() == self._textbox:
-                self._root_window.focus_set()
-        except Exception as e:
-            print(f"Error in _on_root_click: {e}")
-
-    def _is_click_inside(self, event):
-        try:
-            x1, y1, x2, y2 = self.winfo_rootx(), self.winfo_rooty(), self.winfo_rootx() + self.winfo_width(), self.winfo_rooty() + self.winfo_height()
-            return x1 <= event.x_root <= x2 and y1 <= event.y_root <= y2
-        except Exception as e:
-            print(f"Error in _is_click_inside: {e}")
-            return False
+    def on_root_click(self, event):
+        handle_root_click(self, event, self._textbox)
 
     def _create_grid_for_text_and_scrollbars(self, re_grid_textbox=False, re_grid_x_scrollbar=False, re_grid_y_scrollbar=False):
 

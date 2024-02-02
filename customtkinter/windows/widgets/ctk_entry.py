@@ -6,7 +6,7 @@ from .theme import ThemeManager
 from .core_rendering import DrawEngine
 from .core_widget_classes import CTkBaseClass
 from .font import CTkFont
-from .utility import pop_from_dict_by_set, check_kwargs_empty
+from .utility import pop_from_dict_by_set, check_kwargs_empty, handle_root_click, get_root_window
 
 
 class CTkEntry(CTkBaseClass):
@@ -97,38 +97,21 @@ class CTkEntry(CTkBaseClass):
         self._create_grid()
         self._activate_placeholder()
         self._create_bindings()
+
+        if self.focus_loss_outside_click:
+            self._root_window = get_root_window(self)
+            self._root_window.bind("<Button-1>", self.on_root_click, add=True)
+
         self._draw()
 
-    def _get_root_window(self):
-        widget = self
-        while widget.master is not None:
-            widget = widget.master
-        return widget
-
-    def _on_root_click(self, event):
-        try:
-            if not self._is_click_inside(event) and self._root_window.focus_get() == self._entry:
-                self._root_window.focus_set()
-        except Exception as e:
-            print(f"Error in _on_root_click: {e}")
-
-    def _is_click_inside(self, event):
-        try:
-            x1, y1, x2, y2 = self.winfo_rootx(), self.winfo_rooty(), self.winfo_rootx() + self.winfo_width(), self.winfo_rooty() + self.winfo_height()
-            return x1 <= event.x_root <= x2 and y1 <= event.y_root <= y2
-        except Exception as e:
-            print(f"Error in _is_click_inside: {e}")
-            return False
+    def on_root_click(self, event):
+        handle_root_click(self, event, self._entry)
 
     def _create_bindings(self, sequence: Optional[str] = None):
         if sequence is None or sequence == "<FocusIn>":
             self._entry.bind("<FocusIn>", self._entry_focus_in)
         if sequence is None or sequence == "<FocusOut>":
             self._entry.bind("<FocusOut>", self._entry_focus_out)
-
-        if self.focus_loss_outside_click:
-            self._root_window = self._get_root_window()
-            self._root_window.bind("<Button-1>", self._on_root_click, add=True)
 
     def _create_grid(self):
         self._canvas.grid(column=0, row=0, sticky="nswe")
