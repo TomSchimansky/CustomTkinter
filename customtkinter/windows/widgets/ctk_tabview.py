@@ -382,11 +382,14 @@ class CTkTabview(CTkBaseClass):
         self._segmented_button.insert(old_index, new_name)
 
         # name list
-        self._name_list.remove(old_name)
-        self._name_list.append(new_name)
+        self._name_list[self._name_list.index(old_name)] = new_name
 
         # tab dictionary
         self._tab_dict[new_name] = self._tab_dict.pop(old_name)
+
+        # update current_name so we don't loose the connection to the frame
+        if self._current_name == old_name:
+            self._current_name = new_name
 
     def delete(self, name: str):
         """ delete tab by name """
