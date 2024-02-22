@@ -316,3 +316,20 @@ class CTkScrollableFrame(tkinter.Frame, CTkAppearanceModeBaseClass, CTkScalingBa
 
     def lower(self, belowThis=None):
         self._parent_frame.lower(belowThis)
+
+    def scroll_to_y(self, y_pos: int):
+        """
+        scrolls the view to a specific y position.
+
+        parameters:
+        y_pos (int): The y position to scroll to, in pixels.
+        """
+        # get the total scrollable area height
+        # the 4th element of the bbox tuple is the height
+        scrollable_height = self._parent_canvas.bbox("all")[3]
+
+        # calculate the fraction of the total scrollable area
+        fraction = y_pos / scrollable_height
+
+        # use yview_moveto to scroll to the specific y position
+        self._parent_canvas.yview_moveto(fraction)
