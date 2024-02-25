@@ -30,6 +30,7 @@ from .windows.widgets import CTkRadioButton
 from .windows.widgets import CTkScrollbar
 from .windows.widgets import CTkSegmentedButton
 from .windows.widgets import CTkSlider
+from .windows.widgets import CTkSpinBox
 from .windows.widgets import CTkSwitch
 from .windows.widgets import CTkTabview
 from .windows.widgets import CTkTextbox

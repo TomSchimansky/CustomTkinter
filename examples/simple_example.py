@@ -47,6 +47,10 @@ combobox_1 = customtkinter.CTkComboBox(frame_1, values=["Option 1", "Option 2", 
 combobox_1.pack(pady=10, padx=10)
 combobox_1.set("CTkComboBox")
 
+spinbox_1 = customtkinter.CTkSpinBox(frame_1, from_=0, to=100, step_button=0.5, step_scroll=5)
+spinbox_1.pack(pady=10, padx=10)
+spinbox_1.set("CTkSpinBox")
+
 checkbox_1 = customtkinter.CTkCheckBox(master=frame_1)
 checkbox_1.pack(pady=10, padx=10)
 

@@ -2,7 +2,7 @@ from __future__ import annotations
 import sys
 import math
 import tkinter
-from typing import Union, TYPE_CHECKING
+from typing import Union, Literal, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from ..core_rendering import CTkCanvas
@@ -22,7 +22,7 @@ class DrawEngine:
      - draw_rounded_slider_with_border_and_button()
      - draw_rounded_scrollbar()
      - draw_checkmark()
-     - draw_dropdown_arrow()
+     - draw_arrow()
 
     """
 
@@ -399,7 +399,7 @@ class DrawEngine:
     def draw_rounded_rect_with_border_vertical_split(self, width: Union[float, int], height: Union[float, int], corner_radius: Union[float, int],
                                                      border_width: Union[float, int], left_section_width: Union[float, int]) -> bool:
         """ Draws a rounded rectangle with a corner_radius and border_width on the canvas which is split at left_section_width.
-            The border elements have the tags 'border_parts_left', 'border_parts_lright',
+            The border elements have the tags 'border_parts_left', 'border_parts_right',
             the main foreground elements have an 'inner_parts_left' and inner_parts_right' tag,
             to color the elements accordingly.
 
@@ -1201,35 +1201,43 @@ class DrawEngine:
 
         return requires_recoloring
 
-    def draw_dropdown_arrow(self, x_position: Union[int, float], y_position: Union[int, float], size: Union[int, float]) -> bool:
-        """ Draws a dropdown bottom facing arrow at (x_position, y_position) in a given size
+    def draw_arrow(self, x_position: Union[int, float], y_position: Union[int, float],
+                   size: Union[int, float], direction: Literal["down", "up"] = "down") -> bool:
+        """ Draws an arrow at (x_position, y_position) in a given size and with required direction
 
             returns bool if recoloring is necessary """
 
         x_position, y_position, size = round(x_position), round(y_position), round(size)
         requires_recoloring = False
 
+        if direction=="down":
+            name = "dropdown_arrow"
+        elif direction=="up":
+            name = "dropup_arrow"
+
         if self.preferred_drawing_method == "polygon_shapes" or self.preferred_drawing_method == "circle_shapes":
-            if not self._canvas.find_withtag("dropdown_arrow"):
-                self._canvas.create_line(0, 0, 0, 0, tags="dropdown_arrow", width=round(size / 3), joinstyle=tkinter.ROUND, capstyle=tkinter.ROUND)
-                self._canvas.tag_raise("dropdown_arrow")
+            if not self._canvas.find_withtag(name):
+                self._canvas.create_line(0, 0, 0, 0, tags=name, width=round(size / 3), joinstyle=tkinter.ROUND, capstyle=tkinter.ROUND)
+                self._canvas.tag_raise(name)
                 requires_recoloring = True
 
-            self._canvas.coords("dropdown_arrow",
+            ymul = -1 if direction=="up" else 1
+            self._canvas.coords(name,
                                 x_position - (size / 2),
-                                y_position - (size / 5),
+                                y_position - (size / 5) * ymul,
                                 x_position,
-                                y_position + (size / 5),
+                                y_position + (size / 5) * ymul,
                                 x_position + (size / 2),
-                                y_position - (size / 5))
+                                y_position - (size / 5) * ymul)
 
         elif self.preferred_drawing_method == "font_shapes":
-            if not self._canvas.find_withtag("dropdown_arrow"):
-                self._canvas.create_text(0, 0, text="Y", font=("CustomTkinter_shapes_font", -size), tags="dropdown_arrow", anchor=tkinter.CENTER)
-                self._canvas.tag_raise("dropdown_arrow")
+            if not self._canvas.find_withtag(name):
+                self._canvas.create_text(0, 0, text="Y", angle=(180 if direction=="up" else 0),
+                                         font=("CustomTkinter_shapes_font", -size), tags=name, anchor=tkinter.CENTER)
+                self._canvas.tag_raise(name)
                 requires_recoloring = True
 
-            self._canvas.itemconfigure("dropdown_arrow", font=("CustomTkinter_shapes_font", -size))
-            self._canvas.coords("dropdown_arrow", x_position, y_position)
+            self._canvas.itemconfigure(name, font=("CustomTkinter_shapes_font", -size))
+            self._canvas.coords(name, x_position, y_position)
 
         return requires_recoloring

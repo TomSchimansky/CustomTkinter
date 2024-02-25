@@ -192,7 +192,7 @@ class CTkOptionMenu(CTkBaseClass):
                                                                                              0,
                                                                                              self._apply_widget_scaling(left_section_width))
 
-        requires_recoloring_2 = self._draw_engine.draw_dropdown_arrow(self._apply_widget_scaling(self._current_width - (self._current_height / 2)),
+        requires_recoloring_2 = self._draw_engine.draw_arrow(self._apply_widget_scaling(self._current_width - (self._current_height / 2)),
                                                                       self._apply_widget_scaling(self._current_height / 2),
                                                                       self._apply_widget_scaling(self._current_height / 3))
 
