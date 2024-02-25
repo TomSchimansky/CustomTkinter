@@ -32,7 +32,7 @@ class CTkSpinBox(CTkBaseClass):
                  text_color_disabled: Optional[Union[str, Tuple[str, str]]] = None,
 
                  font: Optional[Union[tuple, CTkFont]] = None,
-                 format: Optional[str] = "{}",
+                 format: str = "{}",
                  from_: Optional[Union[int, float]] = None,
                  to: Optional[Union[int, float]] = None,
                  values: Optional[List] = None,
@@ -41,8 +41,8 @@ class CTkSpinBox(CTkBaseClass):
                  step_scroll: Optional[Union[int, float]] = None,
                  state: str = tkinter.NORMAL,
                  hover: bool = True,
-                 variable: Union[tkinter.Variable, None] = None,
-                 command: Union[Callable[[Union[int, float, str]], Any], None] = None,
+                 variable: Optional[Union[tkinter.Variable]] = None,
+                 command: Optional[Union[Callable[[Union[int, float, str]], Any]]] = None,
                  justify: str = "left",
                  **kwargs):
 
@@ -74,14 +74,12 @@ class CTkSpinBox(CTkBaseClass):
 
         # spinbox functionality
         self._format = format
+        self._values = values
+        self._formatted_values: Optional[List[str]] = None
         if values is not None:
             #converted to str to allow index method with Entry's value
-            self._values = values
             inner = self._format[self._format.index("{"):self._format.index("}")+1]
-            self._formatted_values = list(map(inner.format, self._values))
-        else:
-            self._values = None
-            self._formatted_values = None
+            self._formatted_values = list(map(inner.format, values))
         self._from = from_
         self._to = to
         if step_button is None and step_scroll is None:
@@ -114,14 +112,16 @@ class CTkSpinBox(CTkBaseClass):
         self._draw()  # initial draw
 
         if self._original_variable is not None:
-            self._support_variabile = tkinter.StringVar(value=self._format.format(self._original_variable.get()))
-            self._entry.configure(textvariable=self._support_variabile)
-            self._support_variabile.trace_add("write", self._update_original_variable)
+            self._support_variable = tkinter.StringVar(value=self._format.format(self._original_variable.get()))
+            self._entry.configure(textvariable=self._support_variable)
+            self._inner_change = False
+            self._support_variable.trace_add("write", self._support_to_original)
+            self._original_variable.trace_add("write", self._original_to_support)
         elif default_value is not None:
             self.set(default_value)
 
-    def _update_original_variable(self, *args):
-        value = self.get()
+    def _support_to_original(self, *_: Any) -> None:
+        value: Union[int, float, bool, str] = self.get()
         if value:
             try:
                 if isinstance(self._original_variable, tkinter.IntVar):
@@ -133,7 +133,19 @@ class CTkSpinBox(CTkBaseClass):
             except ValueError:
                 pass
             else:
-                self._original_variable.set(value)
+                if self._inner_change:
+                    self._inner_change = False
+                else:
+                    self._inner_change = True
+                    self._original_variable.set(value)
+
+    def _original_to_support(self, *_: Any) -> None:
+        if self._inner_change:
+            self._inner_change = False
+        else:
+            self._inner_change = True
+            self.set(self._original_variable.get())
+
 
     def _create_bindings(self, sequence: Optional[str] = None):
         """ set necessary bindings for functionality of widget, will overwrite other bindings """
@@ -297,15 +309,15 @@ class CTkSpinBox(CTkBaseClass):
             inner = self._format[self._format.index("{"):self._format.index("}")+1]
             self._formatted_values = list(map(inner.format, self._values))
             self.set(self.get()) #to verify current value is still valid
-        
+
         if "from_" in kwargs:
             self._from = kwargs.pop("from_")
             self.set(self.get()) #to clamp current value to new limit
-        
+
         if "to" in kwargs:
             self._to = kwargs.pop("to")
             self.set(self.get()) #to clamp current value to new limit
-        
+
         if "format" in kwargs:
             value = self.get()
             self._format = kwargs.pop("format")
@@ -313,13 +325,13 @@ class CTkSpinBox(CTkBaseClass):
                 inner = self._format[self._format.index("{"):self._format.index("}")+1]
                 self._formatted_values = list(map(inner.format, self._values))
             self.set(value) #to update current value's format
-        
+
         if "step_button" in kwargs:
             self._step_button = kwargs.pop("step_button")
-        
+
         if "step_scroll" in kwargs:
             self._step_scroll = kwargs.pop("step_scroll")
-        
+
         if "default_value" in kwargs:
             kwargs.pop("default_value")
 
@@ -420,7 +432,7 @@ class CTkSpinBox(CTkBaseClass):
                                 outline=self._apply_appearance_mode(self._button_color),
                                 fill=self._apply_appearance_mode(self._button_color))
 
-    def set(self, value: Union[int, float, str]):
+    def set(self, value: Union[int, float, str]) -> None:
         formatted_value = self._format.format(value)
 
         if self._state == "readonly":
@@ -440,7 +452,7 @@ class CTkSpinBox(CTkBaseClass):
         value = value.replace(post, "")
         return value
 
-    def _clicked(self, event: tkinter.Event=None):
+    def _clicked(self, event: tkinter.Event) -> None:
         if self._state is not tkinter.DISABLED:
             if event.type == tkinter.EventType.ButtonPress:
                 is_up = event.y < self._canvas.winfo_height() / 2
@@ -456,7 +468,7 @@ class CTkSpinBox(CTkBaseClass):
 
             current_value = self.get()
 
-            if self._values is not None and self._values:
+            if self._formatted_values is not None and self._values:
                 try:
                     idx = self._formatted_values.index(current_value) + delta
                 except ValueError:
