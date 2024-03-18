@@ -275,7 +275,10 @@ class CTkRadioButton(CTkBaseClass):
         if "textvariable" in kwargs:
             self._textvariable = kwargs.pop("textvariable")
             self._text_label.configure(textvariable=self._textvariable)
-
+        
+        if "value" in kwargs:
+            self._value = kwargs.pop("value")
+        
         if "variable" in kwargs:
             if self._variable is not None:
                 self._variable.trace_remove("write", self._variable_callback_name)

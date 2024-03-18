@@ -39,6 +39,7 @@ class CTkTabview(CTkBaseClass):
 
                  text_color: Optional[Union[str, Tuple[str, str]]] = None,
                  text_color_disabled: Optional[Union[str, Tuple[str, str]]] = None,
+                 font=None,
 
                  command: Union[Callable, Any] = None,
                  anchor: str = "center",
@@ -89,6 +90,7 @@ class CTkTabview(CTkBaseClass):
                                                     border_width=self._segmented_button_border_width,
                                                     command=self._segmented_button_callback,
                                                     state=state)
+        if font is not None: self._segmented_button.configure(font=font)
         self._configure_segmented_button_background_corners()
         self._configure_grid()
         self._set_grid_canvas()
