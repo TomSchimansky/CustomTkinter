@@ -10,6 +10,9 @@ ToDo:
  - set icon (self.call("wm", "iconphoto", self._w, tkinter.PhotoImage(file="test_images/CustomTkinter_logo_single.png")))
  - add option to change label position for checkbox, switch, radiobutton #628
 
+## [Unreleased]
+### Added
+ - Added an option to CTkSegmentedButton to make it layout vertically instead of horizontally
 
 ## [5.2.0] - 2022-05-02
 ### Added
