@@ -55,11 +55,11 @@ seg_5.delete("insert 2")
 label_seg_5 = customtkinter.CTkLabel(app, textvariable=seg_5_var)
 label_seg_5.pack(padx=20, pady=20)
 
-seg_6 = customtkinter.CTkSegmentedButton(app, corner_radius=20, values=["value 1", "value 2", "value 3"], background_corner_colors=["red", "orange", "green", "blue"], vertical=True)
+seg_6 = customtkinter.CTkSegmentedButton(app, corner_radius=20, values=["value 1", "value 2", "value 3"], background_corner_colors=["red", "orange", "green", "blue"], orientation="vertical")
 seg_6.set("value 2")
 seg_6.pack(side="left", padx=40)
 
-seg_7 = customtkinter.CTkSegmentedButton(app, corner_radius=40, values=["value 4", "value 5", "value 6"], vertical=True)
+seg_7 = customtkinter.CTkSegmentedButton(app, corner_radius=40, values=["value 4", "value 5", "value 6"], orientation="vertical")
 seg_7.set("value 6")
 seg_7.pack(side="left")
 
