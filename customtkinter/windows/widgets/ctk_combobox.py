@@ -43,6 +43,8 @@ class CTkComboBox(CTkBaseClass):
                  variable: Union[tkinter.Variable, None] = None,
                  command: Union[Callable[[str], Any], None] = None,
                  justify: str = "left",
+                 selectbackground: Optional[Union[str, Tuple[str, str]]] = None,
+                 selectforeground: Optional[Union[str, Tuple[str, str]]] = None,
                  **kwargs):
 
         # transfer basic functionality (_bg_color, size, __appearance_mode, scaling) to CTkBaseClass
@@ -59,7 +61,9 @@ class CTkComboBox(CTkBaseClass):
         self._button_hover_color = ThemeManager.theme["CTkComboBox"]["button_hover_color"] if button_hover_color is None else self._check_color_type(button_hover_color)
         self._text_color = ThemeManager.theme["CTkComboBox"]["text_color"] if text_color is None else self._check_color_type(text_color)
         self._text_color_disabled = ThemeManager.theme["CTkComboBox"]["text_color_disabled"] if text_color_disabled is None else self._check_color_type(text_color_disabled)
-
+        self._selectbackground = None if selectbackground is None else self._check_color_type(selectbackground) #if parameter missing use default selection color, maybe replace with ThemeManager.theme["CTkComboBox"]["button_color"] or ThemeManager.theme["CTkButton"]["button_color"]
+        self._selectforeground = ThemeManager.theme["CTkComboBox"]["text_color"] if selectforeground is None else self._check_color_type(selectforeground)
+        
         # font
         self._font = CTkFont() if font is None else self._check_font_type(font)
         if isinstance(self._font, CTkFont):
@@ -205,7 +209,9 @@ class CTkComboBox(CTkBaseClass):
                                   disabledbackground=self._apply_appearance_mode(self._fg_color),
                                   disabledforeground=self._apply_appearance_mode(self._text_color_disabled),
                                   highlightcolor=self._apply_appearance_mode(self._fg_color),
-                                  insertbackground=self._apply_appearance_mode(self._text_color))
+                                  insertbackground=self._apply_appearance_mode(self._text_color),
+                                  selectbackground=self._apply_appearance_mode(self._selectbackground),
+                                  selectforeground=self._apply_appearance_mode(self._selectforeground))
 
             if self._state == tkinter.DISABLED:
                 self._canvas.itemconfig("dropdown_arrow",
@@ -295,6 +301,13 @@ class CTkComboBox(CTkBaseClass):
         if "justify" in kwargs:
             self._entry.configure(justify=kwargs.pop("justify"))
 
+        if "selectbackground" in kwargs:
+            self._selectbackground = self._check_color_type(kwargs.pop("selectbackground"))
+            require_redraw = True
+        if "selectforeground" in kwargs:
+            self._selectforeground = self._check_color_type(kwargs.pop("selectforeground"))
+            require_redraw = True
+
         super().configure(require_redraw=require_redraw, **kwargs)
 
     def cget(self, attribute_name: str) -> any:
@@ -321,6 +334,10 @@ class CTkComboBox(CTkBaseClass):
             return self._text_color
         elif attribute_name == "text_color_disabled":
             return self._text_color_disabled
+        elif attribute_name == "selectbackground":
+            return self._selectbackground
+        elif attribute_name == "selectforeground":
+            return self._selectforeground
 
         elif attribute_name == "font":
             return self._font
