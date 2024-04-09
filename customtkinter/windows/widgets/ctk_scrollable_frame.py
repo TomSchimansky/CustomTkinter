@@ -75,6 +75,8 @@ class CTkScrollableFrame(tkinter.Frame, CTkAppearanceModeBaseClass, CTkScalingBa
         self.bind("<Configure>", lambda e: self._parent_canvas.configure(scrollregion=self._parent_canvas.bbox("all")))
         self._parent_canvas.bind("<Configure>", self._fit_frame_dimensions_to_canvas)
         self.bind_all("<MouseWheel>", self._mouse_wheel_all, add="+")
+        self.bind_all("<Button-4>", self._mouse_wheel_all, add="+")
+        self.bind_all("<Button-5>", self._mouse_wheel_all, add="+")
         self.bind_all("<KeyPress-Shift_L>", self._keyboard_shift_press_all, add="+")
         self.bind_all("<KeyPress-Shift_R>", self._keyboard_shift_press_all, add="+")
         self.bind_all("<KeyRelease-Shift_L>", self._keyboard_shift_release_all, add="+")
@@ -263,10 +265,10 @@ class CTkScrollableFrame(tkinter.Frame, CTkAppearanceModeBaseClass, CTkScalingBa
             else:
                 if self._shift_pressed:
                     if self._parent_canvas.xview() != (0.0, 1.0):
-                        self._parent_canvas.xview("scroll", -event.delta, "units")
+                        self._parent_canvas.xview("scroll", -10 if event.num == 4 else 10, "units")
                 else:
                     if self._parent_canvas.yview() != (0.0, 1.0):
-                        self._parent_canvas.yview("scroll", -event.delta, "units")
+                        self._parent_canvas.yview("scroll", -10 if event.num == 4 else 10, "units")
 
     def _keyboard_shift_press_all(self, event):
         self._shift_pressed = True
