@@ -174,7 +174,7 @@ class ScalingTracker:
         new_scaling_detected = False
 
         # check for every window if scaling value changed
-        for window in cls.window_widgets_dict:
+        for window in list(cls.window_widgets_dict):
             if window.winfo_exists() and not window.state() == "iconic":
                 current_dpi_scaling_value = cls.get_window_dpi_scaling(window)
                 if current_dpi_scaling_value != cls.window_dpi_scaling_dict[window]:
