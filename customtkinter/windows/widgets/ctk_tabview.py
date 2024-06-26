@@ -376,6 +376,9 @@ class CTkTabview(CTkBaseClass):
         if new_name in self._name_list:
             raise ValueError(f"new_name '{new_name}' already exists")
 
+        # change name 
+        self._current_name = new_name
+
         # segmented button
         old_index = self._segmented_button.index(old_name)
         self._segmented_button.delete(old_name)
