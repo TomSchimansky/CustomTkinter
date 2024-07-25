@@ -39,10 +39,13 @@ class CTkLabel(CTkBaseClass):
                  compound: str = "center",
                  anchor: str = "center",  # label anchor: center, n, e, s, w
                  wraplength: int = 0,
+                 alias: str = "NA",
                  **kwargs):
 
         # transfer basic functionality (_bg_color, size, __appearance_mode, scaling) to CTkBaseClass
         super().__init__(master=master, bg_color=bg_color, width=width, height=height)
+
+        self.alias = alias
 
         # color
         self._fg_color = ThemeManager.theme["CTkLabel"]["fg_color"] if fg_color is None else self._check_color_type(fg_color, transparency=True)
@@ -234,6 +237,9 @@ class CTkLabel(CTkBaseClass):
             self._wraplength = kwargs.pop("wraplength")
             self._label.configure(wraplength=self._apply_widget_scaling(self._wraplength))
 
+        if "alias" in kwargs:
+            self.alias = kwargs.pop("alias")
+
         self._label.configure(**pop_from_dict_by_set(kwargs, self._valid_tk_label_attributes))  # configure tkinter.Label
         super().configure(require_redraw=require_redraw, **kwargs)  # configure CTkBaseClass
 
@@ -260,6 +266,8 @@ class CTkLabel(CTkBaseClass):
             return self._anchor
         elif attribute_name == "wraplength":
             return self._wraplength
+        elif attribute_name == "alias":
+            return self.alias
 
         elif attribute_name in self._valid_tk_label_attributes:
             return self._label.cget(attribute_name)  # cget of tkinter.Label

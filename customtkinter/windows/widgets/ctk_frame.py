@@ -27,10 +27,13 @@ class CTkFrame(CTkBaseClass):
 
                  background_corner_colors: Union[Tuple[Union[str, Tuple[str, str]]], None] = None,
                  overwrite_preferred_drawing_method: Union[str, None] = None,
+                 alias: str = "NA",
                  **kwargs):
 
         # transfer basic functionality (_bg_color, size, __appearance_mode, scaling) to CTkBaseClass
         super().__init__(master=master, bg_color=bg_color, width=width, height=height, **kwargs)
+
+        self.alias = alias
 
         # color
         self._border_color = ThemeManager.theme["CTkFrame"]["border_color"] if border_color is None else self._check_color_type(border_color)
@@ -163,6 +166,9 @@ class CTkFrame(CTkBaseClass):
         if "border_width" in kwargs:
             self._border_width = kwargs.pop("border_width")
             require_redraw = True
+            
+        if "alias" in kwargs:
+            self.alias = kwargs.pop("alias")
 
         super().configure(require_redraw=require_redraw, **kwargs)
 
@@ -178,6 +184,8 @@ class CTkFrame(CTkBaseClass):
             return self._border_color
         elif attribute_name == "background_corner_colors":
             return self._background_corner_colors
+        elif attribute_name == "alias":
+            return self.alias
 
         else:
             return super().cget(attribute_name)

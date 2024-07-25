@@ -41,10 +41,13 @@ class CTkCheckBox(CTkBaseClass):
                  onvalue: Union[int, str] = 1,
                  offvalue: Union[int, str] = 0,
                  variable: Union[tkinter.Variable, None] = None,
+                 alias: str = "NA",
                  **kwargs):
 
         # transfer basic functionality (_bg_color, size, __appearance_mode, scaling) to CTkBaseClass
         super().__init__(master=master, bg_color=bg_color, width=width, height=height, **kwargs)
+
+        self.alias = alias
 
         # dimensions
         self._checkbox_width = checkbox_width
@@ -291,6 +294,9 @@ class CTkCheckBox(CTkBaseClass):
             self._textvariable = kwargs.pop("textvariable")
             self._text_label.configure(textvariable=self._textvariable)
 
+        if "alias" in kwargs:
+            self.alias = kwargs.pop("alias")
+
         if "variable" in kwargs:
             if self._variable is not None and self._variable != "":
                 self._variable.trace_remove("write", self._variable_callback_name)  # remove old variable callback
@@ -343,6 +349,8 @@ class CTkCheckBox(CTkBaseClass):
             return self._offvalue
         elif attribute_name == "variable":
             return self._variable
+        elif attribute_name == "alias":
+            return self.alias
         else:
             return super().cget(attribute_name)
 

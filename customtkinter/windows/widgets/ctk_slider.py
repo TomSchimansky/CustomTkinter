@@ -38,6 +38,7 @@ class CTkSlider(CTkBaseClass):
                  command: Union[Callable[[float], Any], None] = None,
                  variable: Union[tkinter.Variable, None] = None,
                  orientation: str = "horizontal",
+                 alias: str = "NA",
                  **kwargs):
 
         # set default dimensions according to orientation
@@ -54,6 +55,8 @@ class CTkSlider(CTkBaseClass):
 
         # transfer basic functionality (_bg_color, size, __appearance_mode, scaling) to CTkBaseClass
         super().__init__(master=master, bg_color=bg_color, width=width, height=height, **kwargs)
+
+        self.alias = alias
 
         # color
         self._border_color = self._check_color_type(border_color, transparency=True)
@@ -271,6 +274,10 @@ class CTkSlider(CTkBaseClass):
             self._orientation = kwargs.pop("orientation")
             require_redraw = True
 
+        if "alias" in kwargs:
+            self.alias = kwargs.pop("alias")
+
+
         super().configure(require_redraw=require_redraw, **kwargs)
 
     def cget(self, attribute_name: str) -> any:
@@ -310,6 +317,8 @@ class CTkSlider(CTkBaseClass):
             return self._variable
         elif attribute_name == "orientation":
             return self._orientation
+        elif attribute_name == "alias":
+            return self.alias
 
         else:
             return super().cget(attribute_name)

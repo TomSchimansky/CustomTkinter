@@ -43,10 +43,13 @@ class CTkSwitch(CTkBaseClass):
                  hover: bool = True,
                  command: Union[Callable, Any] = None,
                  state: str = tkinter.NORMAL,
+                 alias: str = "NA",
                  **kwargs):
 
         # transfer basic functionality (_bg_color, size, __appearance_mode, scaling) to CTkBaseClass
         super().__init__(master=master, bg_color=bg_color, width=width, height=height, **kwargs)
+
+        self.alias = alias
 
         # dimensions
         self._switch_width = switch_width
@@ -333,6 +336,9 @@ class CTkSwitch(CTkBaseClass):
             self._textvariable = kwargs.pop("textvariable")
             self._text_label.configure(textvariable=self._textvariable)
 
+        if "alias" in kwargs:
+            self.alias = kwargs.pop("alias")
+
         if "variable" in kwargs:
             if self._variable is not None and self._variable != "":
                 self._variable.trace_remove("write", self._variable_callback_name)
@@ -391,6 +397,8 @@ class CTkSwitch(CTkBaseClass):
             return self._command
         elif attribute_name == "state":
             return self._state
+        elif attribute_name == "alias":
+            return self.alias
 
         else:
             return super().cget(attribute_name)
