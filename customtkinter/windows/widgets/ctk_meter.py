@@ -2,7 +2,7 @@ import customtkinter as ctk
 import math
 from typing import Union, Tuple, Optional
 
-class Meter(ctk.CTkCanvas):
+class CTkMeter(ctk.CTkCanvas):
     CIRCLE = "CIRCLE"
     RING = "RING"
 
