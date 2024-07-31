@@ -164,10 +164,6 @@ class CTkMeter(ctk.CTkCanvas):
             self.mid_text_color = mid_text_color
         
         super().configure(bg=self._bg_color)
-        
-        self._divisions.configure(fill=self._top_circle_color)
-        self._circle.configure(fill=self._top_circle_color)
-
     
     def _draw_division(self):
         divisions = self._no_of_division
