@@ -2,6 +2,7 @@ import tkinter
 from typing import Union, Tuple, Dict, List, Callable, Optional, Any
 
 from .theme import ThemeManager
+from .font import CTkFont
 from .ctk_frame import CTkFrame
 from .core_rendering import CTkCanvas
 from .core_rendering import DrawEngine
@@ -39,6 +40,7 @@ class CTkTabview(CTkBaseClass):
 
                  text_color: Optional[Union[str, Tuple[str, str]]] = None,
                  text_color_disabled: Optional[Union[str, Tuple[str, str]]] = None,
+                 font: Optional[Union[tuple, CTkFont]] = None,
 
                  command: Union[Callable, Any] = None,
                  anchor: str = "center",
@@ -48,6 +50,9 @@ class CTkTabview(CTkBaseClass):
         # transfer some functionality to CTkFrame
         super().__init__(master=master, bg_color=bg_color, width=width, height=height, **kwargs)
 
+        # font
+        segmented_button_font = CTkFont() if font is None else font
+        
         # color
         self._border_color = ThemeManager.theme["CTkFrame"]["border_color"] if border_color is None else self._check_color_type(border_color)
 
@@ -85,6 +90,7 @@ class CTkTabview(CTkBaseClass):
                                                     unselected_hover_color=segmented_button_unselected_hover_color,
                                                     text_color=text_color,
                                                     text_color_disabled=text_color_disabled,
+                                                    font=segmented_button_font,
                                                     corner_radius=corner_radius,
                                                     border_width=self._segmented_button_border_width,
                                                     command=self._segmented_button_callback,
