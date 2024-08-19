@@ -18,7 +18,7 @@ class CTkImage:
 
     _checked_PIL_import = False
 
-    def __init__(self,
+    def __init__(self, master=None,
                  light_image: "Image.Image" = None,
                  dark_image: "Image.Image" = None,
                  size: Tuple[int, int] = (20, 20)):
@@ -26,11 +26,12 @@ class CTkImage:
         if not self._checked_PIL_import:
             self._check_pil_import()
 
+        self.master = master
         self._light_image = light_image
         self._dark_image = dark_image
         self._check_images()
         self._size = size
-
+        
         self._configure_callback_list: List[Callable] = []
         self._scaled_light_photo_images: Dict[Tuple[int, int], ImageTk.PhotoImage] = {}
         self._scaled_dark_photo_images: Dict[Tuple[int, int], ImageTk.PhotoImage] = {}
@@ -96,14 +97,16 @@ class CTkImage:
         if scaled_size in self._scaled_light_photo_images:
             return self._scaled_light_photo_images[scaled_size]
         else:
-            self._scaled_light_photo_images[scaled_size] = ImageTk.PhotoImage(self._light_image.resize(scaled_size))
+            self._scaled_light_photo_images[scaled_size] = ImageTk.PhotoImage(self._light_image.resize(scaled_size),
+                master = self.master)
             return self._scaled_light_photo_images[scaled_size]
 
     def _get_scaled_dark_photo_image(self, scaled_size: Tuple[int, int]) -> "ImageTk.PhotoImage":
         if scaled_size in self._scaled_dark_photo_images:
             return self._scaled_dark_photo_images[scaled_size]
         else:
-            self._scaled_dark_photo_images[scaled_size] = ImageTk.PhotoImage(self._dark_image.resize(scaled_size))
+            self._scaled_dark_photo_images[scaled_size] = ImageTk.PhotoImage(self._dark_image.resize(scaled_size),
+                master = self.master)
             return self._scaled_dark_photo_images[scaled_size]
 
     def create_scaled_photo_image(self, widget_scaling: float, appearance_mode: str) -> "ImageTk.PhotoImage":
