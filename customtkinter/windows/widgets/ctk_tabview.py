@@ -283,6 +283,8 @@ class CTkTabview(CTkBaseClass):
             self._segmented_button.configure(text_color=kwargs.pop("text_color"))
         if "text_color_disabled" in kwargs:
             self._segmented_button.configure(text_color_disabled=kwargs.pop("text_color_disabled"))
+        if "font" in kwargs:
+            self._segmented_button.configure(font=kwargs.pop("font"))
 
         if "command" in kwargs:
             self._command = kwargs.pop("command")
@@ -318,6 +320,8 @@ class CTkTabview(CTkBaseClass):
         elif attribute_name == "text_color":
             return self._segmented_button.cget(attribute_name)
         elif attribute_name == "text_color_disabled":
+            return self._segmented_button.cget(attribute_name)
+        elif attribute_name == "font":
             return self._segmented_button.cget(attribute_name)
 
         elif attribute_name == "command":
