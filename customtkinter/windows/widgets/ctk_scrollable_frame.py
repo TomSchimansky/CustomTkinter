@@ -164,7 +164,7 @@ class CTkScrollableFrame(tkinter.Frame, CTkAppearanceModeBaseClass, CTkScalingBa
 
         if "border_width" in kwargs:
             self._border_width = kwargs.pop("border_width")
-            self._parent_frame.configure(border_width=kwargs.pop("border_width"))
+            self._parent_frame.configure(border_width=self._border_width)
             self._create_grid()
 
         if "fg_color" in kwargs:
