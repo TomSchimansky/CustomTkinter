@@ -46,10 +46,13 @@ class CTkButton(CTkBaseClass):
                  command: Union[Callable[[], Any], None] = None,
                  compound: str = "left",
                  anchor: str = "center",
+                 alias: str = "NA",
                  **kwargs):
 
         # transfer basic functionality (bg_color, size, appearance_mode, scaling) to CTkBaseClass
         super().__init__(master=master, bg_color=bg_color, width=width, height=height, **kwargs)
+
+        self.alias = alias
 
         # shape
         self._corner_radius: int = ThemeManager.theme["CTkButton"]["corner_radius"] if corner_radius is None else corner_radius
@@ -184,6 +187,7 @@ class CTkButton(CTkBaseClass):
         super()._draw(no_color_updates)
 
         if self._background_corner_colors is not None:
+            
             self._draw_engine.draw_background_corners(self._apply_widget_scaling(self._current_width),
                                                       self._apply_widget_scaling(self._current_height))
             self._canvas.itemconfig("background_corner_top_left", fill=self._apply_appearance_mode(self._background_corner_colors[0]))
@@ -192,7 +196,7 @@ class CTkButton(CTkBaseClass):
             self._canvas.itemconfig("background_corner_bottom_left", fill=self._apply_appearance_mode(self._background_corner_colors[3]))
         else:
             self._canvas.delete("background_parts")
-
+        
         requires_recoloring = self._draw_engine.draw_rounded_rect_with_border(self._apply_widget_scaling(self._current_width),
                                                                               self._apply_widget_scaling(self._current_height),
                                                                               self._apply_widget_scaling(self._corner_radius),
@@ -439,6 +443,9 @@ class CTkButton(CTkBaseClass):
             self._create_grid()
             require_redraw = True
 
+        if "alias" in kwargs:
+            self.alias = kwargs.pop("alias")
+
         super().configure(require_redraw=require_redraw, **kwargs)
 
     def cget(self, attribute_name: str) -> any:
@@ -480,6 +487,9 @@ class CTkButton(CTkBaseClass):
             return self._compound
         elif attribute_name == "anchor":
             return self._anchor
+        elif attribute_name == "alias":
+            return self.alias
+        
         else:
             return super().cget(attribute_name)
 

@@ -81,7 +81,6 @@ class CTkCanvas(tkinter.Canvas):
         return circle_1
 
     def coords(self, tag_or_id, *args):
-
         if type(tag_or_id) == str and "ctk_aa_circle_font_element" in self.gettags(tag_or_id):
             coords_id = self.find_withtag(tag_or_id)[0]  # take the lowest id for the given tag
             super().coords(coords_id, *args[:2])

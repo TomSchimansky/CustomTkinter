@@ -48,10 +48,13 @@ class CTkTextbox(CTkBaseClass):
 
                  font: Optional[Union[tuple, CTkFont]] = None,
                  activate_scrollbars: bool = True,
+                 alias: str = "NA",
                  **kwargs):
 
         # transfer basic functionality (_bg_color, size, __appearance_mode, scaling) to CTkBaseClass
         super().__init__(master=master, bg_color=bg_color, width=width, height=height)
+
+        self.alias = alias
 
         # color
         self._fg_color = ThemeManager.theme["CTkTextbox"]["fg_color"] if fg_color is None else self._check_color_type(fg_color, transparency=True)
@@ -302,6 +305,9 @@ class CTkTextbox(CTkBaseClass):
 
             self._update_font()
 
+        if "alias" in kwargs:
+            self.alias = kwargs.pop("alias")
+
         self._textbox.configure(**pop_from_dict_by_set(kwargs, self._valid_tk_text_attributes))
         super().configure(require_redraw=require_redraw, **kwargs)
 
@@ -322,6 +328,8 @@ class CTkTextbox(CTkBaseClass):
 
         elif attribute_name == "font":
             return self._font
+        elif attribute_name == "alias":
+            return self.alias
 
         else:
             return super().cget(attribute_name)

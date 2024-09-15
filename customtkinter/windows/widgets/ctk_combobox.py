@@ -43,10 +43,13 @@ class CTkComboBox(CTkBaseClass):
                  variable: Union[tkinter.Variable, None] = None,
                  command: Union[Callable[[str], Any], None] = None,
                  justify: str = "left",
+                 alias: str = "NA",
                  **kwargs):
 
         # transfer basic functionality (_bg_color, size, __appearance_mode, scaling) to CTkBaseClass
         super().__init__(master=master, bg_color=bg_color, width=width, height=height, **kwargs)
+
+        self.alias = alias
 
         # shape
         self._corner_radius = ThemeManager.theme["CTkComboBox"]["corner_radius"] if corner_radius is None else corner_radius
@@ -295,6 +298,10 @@ class CTkComboBox(CTkBaseClass):
         if "justify" in kwargs:
             self._entry.configure(justify=kwargs.pop("justify"))
 
+        if "alias" in kwargs:
+            self.alias = kwargs.pop("alias")
+
+
         super().configure(require_redraw=require_redraw, **kwargs)
 
     def cget(self, attribute_name: str) -> any:
@@ -338,6 +345,8 @@ class CTkComboBox(CTkBaseClass):
             return self._command
         elif attribute_name == "justify":
             return self._entry.cget("justify")
+        elif attribute_name == "alias":
+            return self.alias
         else:
             return super().cget(attribute_name)
 

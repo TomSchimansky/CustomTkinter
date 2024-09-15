@@ -39,10 +39,13 @@ class CTkEntry(CTkBaseClass):
                  placeholder_text: Union[str, None] = None,
                  font: Optional[Union[tuple, CTkFont]] = None,
                  state: str = tkinter.NORMAL,
+                 alias: str = "NA",
                  **kwargs):
 
         # transfer basic functionality (bg_color, size, appearance_mode, scaling) to CTkBaseClass
         super().__init__(master=master, bg_color=bg_color, width=width, height=height)
+
+        self.alias = alias
 
         # configure grid system (1x1)
         self.grid_rowconfigure(0, weight=1)
@@ -249,6 +252,9 @@ class CTkEntry(CTkBaseClass):
             else:
                 self._entry.configure(show=kwargs.pop("show"))
 
+        if "alias" in kwargs:
+            self.alias = kwargs.pop("alias")
+
         self._entry.configure(**pop_from_dict_by_set(kwargs, self._valid_tk_entry_attributes))  # configure Tkinter.Entry
         super().configure(require_redraw=require_redraw, **kwargs)  # configure CTkBaseClass
 
@@ -275,6 +281,8 @@ class CTkEntry(CTkBaseClass):
             return self._font
         elif attribute_name == "state":
             return self._state
+        elif attribute_name == "alias":
+            return self.alias
 
         elif attribute_name in self._valid_tk_entry_attributes:
             return self._entry.cget(attribute_name)  # cget of tkinter.Entry

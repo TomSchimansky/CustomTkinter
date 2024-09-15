@@ -42,10 +42,13 @@ class CTkOptionMenu(CTkBaseClass):
                  command: Union[Callable[[str], Any], None] = None,
                  dynamic_resizing: bool = True,
                  anchor: str = "w",
+                 alias: str = "NA",
                  **kwargs):
 
         # transfer basic functionality (_bg_color, size, __appearance_mode, scaling) to CTkBaseClass
         super().__init__(master=master, bg_color=bg_color, width=width, height=height, **kwargs)
+
+        self.alias = alias
 
         # color variables
         self._fg_color = ThemeManager.theme["CTkOptionMenu"]["fg_color"] if fg_color is None else self._check_color_type(fg_color)
@@ -305,6 +308,9 @@ class CTkOptionMenu(CTkBaseClass):
         if "anchor" in kwargs:
             self._text_label.configure(anchor=kwargs.pop("anchor"))
 
+        if "alias" in kwargs:
+            self.alias = kwargs.pop("alias")
+
         super().configure(require_redraw=require_redraw, **kwargs)
 
     def cget(self, attribute_name: str) -> any:
@@ -346,7 +352,9 @@ class CTkOptionMenu(CTkBaseClass):
             return self._dynamic_resizing
         elif attribute_name == "anchor":
             return self._text_label.cget("anchor")
-
+        elif attribute_name == "alias":
+            return self.alias
+        
         else:
             return super().cget(attribute_name)
 

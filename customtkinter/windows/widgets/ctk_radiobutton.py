@@ -40,10 +40,13 @@ class CTkRadioButton(CTkBaseClass):
                  state: str = tkinter.NORMAL,
                  hover: bool = True,
                  command: Union[Callable, Any] = None,
+                 alias: str = "NA",
                  **kwargs):
 
         # transfer basic functionality (_bg_color, size, __appearance_mode, scaling) to CTkBaseClass
         super().__init__(master=master, bg_color=bg_color, width=width, height=height, **kwargs)
+
+        self.alias = alias
 
         # dimensions
         self._radiobutton_width = radiobutton_width
@@ -276,6 +279,9 @@ class CTkRadioButton(CTkBaseClass):
             self._textvariable = kwargs.pop("textvariable")
             self._text_label.configure(textvariable=self._textvariable)
 
+        if "alias" in kwargs:
+            self.alias = kwargs.pop("alias")
+
         if "variable" in kwargs:
             if self._variable is not None:
                 self._variable.trace_remove("write", self._variable_callback_name)
@@ -328,6 +334,8 @@ class CTkRadioButton(CTkBaseClass):
             return self._hover
         elif attribute_name == "command":
             return self._command
+        elif attribute_name == "alias":
+            return self.alias
 
         else:
             return super().cget(attribute_name)

@@ -41,9 +41,12 @@ class CTkSegmentedButton(CTkFrame):
                  variable: Union[tkinter.Variable, None] = None,
                  dynamic_resizing: bool = True,
                  command: Union[Callable[[str], Any], None] = None,
-                 state: str = "normal"):
+                 state: str = "normal",
+                 alias: str = "NA"):
 
         super().__init__(master=master, bg_color=bg_color, width=width, height=height)
+
+        self.alias = alias
 
         self._sb_fg_color = ThemeManager.theme["CTkSegmentedButton"]["fg_color"] if fg_color is None else self._check_color_type(fg_color)
 
@@ -313,6 +316,9 @@ class CTkSegmentedButton(CTkFrame):
             for button in self._buttons_dict.values():
                 button.configure(state=self._state)
 
+        if "alias" in kwargs:
+            self.alias = kwargs.pop("alias")
+
         check_kwargs_empty(kwargs, raise_error=True)
 
     def cget(self, attribute_name: str) -> any:
@@ -352,6 +358,8 @@ class CTkSegmentedButton(CTkFrame):
             return self._dynamic_resizing
         elif attribute_name == "command":
             return self._command
+        elif attribute_name == "alias":
+            return self.alias
 
         else:
             raise ValueError(f"'{attribute_name}' is not a supported argument. Look at the documentation for supported arguments.")

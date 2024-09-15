@@ -43,10 +43,13 @@ class CTkTabview(CTkBaseClass):
                  command: Union[Callable, Any] = None,
                  anchor: str = "center",
                  state: str = "normal",
+                 alias: str = "NA",
                  **kwargs):
 
         # transfer some functionality to CTkFrame
         super().__init__(master=master, bg_color=bg_color, width=width, height=height, **kwargs)
+
+        self.alias = alias
 
         # color
         self._border_color = ThemeManager.theme["CTkFrame"]["border_color"] if border_color is None else self._check_color_type(border_color)
@@ -287,6 +290,9 @@ class CTkTabview(CTkBaseClass):
         if "state" in kwargs:
             self._segmented_button.configure(state=kwargs.pop("state"))
 
+        if "alias" in kwargs:
+            self.alias = kwargs.pop("alias")
+
         super().configure(require_redraw=require_redraw, **kwargs)
 
     def cget(self, attribute_name: str):
@@ -320,6 +326,8 @@ class CTkTabview(CTkBaseClass):
             return self._anchor
         elif attribute_name == "state":
             return self._segmented_button.cget(attribute_name)
+        elif attribute_name == "alias":
+            return self.alias
 
         else:
             return super().cget(attribute_name)
