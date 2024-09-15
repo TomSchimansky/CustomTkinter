@@ -22,7 +22,7 @@
 
 <a></a>
 
-| :exclamation: Massive Thanks to all the People who Donated to help this Project :exclamation: |
+| Massive Thanks to all the People who Donated to help this Project 😇 |
 |----------------------------------------------|
 
 <h3>
