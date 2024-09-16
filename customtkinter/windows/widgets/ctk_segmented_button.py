@@ -41,7 +41,8 @@ class CTkSegmentedButton(CTkFrame):
                  variable: Union[tkinter.Variable, None] = None,
                  dynamic_resizing: bool = True,
                  command: Union[Callable[[str], Any], None] = None,
-                 state: str = "normal"):
+                 state: str = "normal",
+                 orientation: Literal["horizontal", "vertical"] = "horizontal"):
 
         super().__init__(master=master, bg_color=bg_color, width=width, height=height)
 
@@ -64,6 +65,7 @@ class CTkSegmentedButton(CTkFrame):
         self._command: Callable[[str], None] = command
         self._font = CTkFont() if font is None else font
         self._state = state
+        self._orientation = orientation
 
         self._buttons_dict: Dict[str, CTkButton] = {}  # mapped from value to button object
         if values is None:
@@ -123,15 +125,27 @@ class CTkSegmentedButton(CTkFrame):
 
         elif index == 0:
             if self._background_corner_colors is None:
-                self._buttons_dict[self._value_list[index]].configure(background_corner_colors=(self._bg_color, self._sb_fg_color, self._sb_fg_color, self._bg_color))
+                if self._orientation == "vertical":
+                    self._buttons_dict[self._value_list[index]].configure(background_corner_colors=(self._bg_color, self._bg_color, self._sb_fg_color, self._sb_fg_color))
+                else:
+                    self._buttons_dict[self._value_list[index]].configure(background_corner_colors=(self._bg_color, self._sb_fg_color, self._sb_fg_color, self._bg_color))
             else:
-                self._buttons_dict[self._value_list[index]].configure(background_corner_colors=(self._background_corner_colors[0], self._sb_fg_color, self._sb_fg_color, self._background_corner_colors[3]))
+                if self._orientation == "vertical":
+                    self._buttons_dict[self._value_list[index]].configure(background_corner_colors=(self._background_corner_colors[0], self._background_corner_colors[1], self._sb_fg_color, self._sb_fg_color))
+                else:
+                    self._buttons_dict[self._value_list[index]].configure(background_corner_colors=(self._background_corner_colors[0], self._sb_fg_color, self._sb_fg_color, self._background_corner_colors[3]))
 
         elif index == len(self._value_list) - 1:
             if self._background_corner_colors is None:
-                self._buttons_dict[self._value_list[index]].configure(background_corner_colors=(self._sb_fg_color, self._bg_color, self._bg_color, self._sb_fg_color))
+                if self._orientation == "vertical":
+                    self._buttons_dict[self._value_list[index]].configure(background_corner_colors=(self._sb_fg_color, self._sb_fg_color, self._bg_color, self._bg_color))
+                else:
+                    self._buttons_dict[self._value_list[index]].configure(background_corner_colors=(self._sb_fg_color, self._bg_color, self._bg_color, self._sb_fg_color))
             else:
-                self._buttons_dict[self._value_list[index]].configure(background_corner_colors=(self._sb_fg_color, self._background_corner_colors[1], self._background_corner_colors[2], self._sb_fg_color))
+                if self._orientation == "vertical":
+                    self._buttons_dict[self._value_list[index]].configure(background_corner_colors=(self._sb_fg_color, self._sb_fg_color, self._background_corner_colors[2], self._background_corner_colors[3]))
+                else:
+                    self._buttons_dict[self._value_list[index]].configure(background_corner_colors=(self._sb_fg_color, self._background_corner_colors[1], self._background_corner_colors[2], self._sb_fg_color))
 
         else:
             self._buttons_dict[self._value_list[index]].configure(background_corner_colors=(self._sb_fg_color, self._sb_fg_color, self._sb_fg_color, self._sb_fg_color))
@@ -178,15 +192,25 @@ class CTkSegmentedButton(CTkFrame):
             raise ValueError("CTkSegmentedButton values are not unique")
 
     def _create_button_grid(self):
-        # remove minsize from every grid cell in the first row
-        number_of_columns, _ = self.grid_size()
-        for n in range(number_of_columns):
-            self.grid_columnconfigure(n, weight=1, minsize=0)
-        self.grid_rowconfigure(0, weight=1)
+        number_of_columns, number_of_rows = self.grid_size()
+        if self._orientation == "vertical":
+            # remove minsize from every grid cell in the first column
+            for n in range(number_of_rows):
+                self.grid_rowconfigure(n, weight=1, minsize=0)
+            self.grid_columnconfigure(0, weight=1)
 
-        for index, value in enumerate(self._value_list):
-            self.grid_columnconfigure(index, weight=1, minsize=self._current_height)
-            self._buttons_dict[value].grid(row=0, column=index, sticky="nsew")
+            for index, value in enumerate(self._value_list):
+                self.grid_rowconfigure(index, weight=1, minsize=self._current_height)
+                self._buttons_dict[value].grid(row=index, column=0, sticky="nsew")
+        else:
+            # remove minsize from every grid cell in the first row
+            for n in range(number_of_columns):
+                self.grid_columnconfigure(n, weight=1, minsize=0)
+            self.grid_rowconfigure(0, weight=1)
+
+            for index, value in enumerate(self._value_list):
+                self.grid_columnconfigure(index, weight=1, minsize=self._current_height)
+                self._buttons_dict[value].grid(row=0, column=index, sticky="nsew")
 
     def _create_buttons_from_values(self):
         assert len(self._buttons_dict) == 0
