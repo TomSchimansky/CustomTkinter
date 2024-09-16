@@ -1,6 +1,8 @@
+import locale
 import tkinter
 import customtkinter  # <- import the CustomTkinter module
 
+locale.setlocale(locale.LC_NUMERIC, 'de_DE')  # to verify that the canvas float argument bug is properly averted
 customtkinter.ScalingTracker.set_window_scaling(0.5)
 
 customtkinter.set_appearance_mode("dark")  # Modes: "System" (standard), "Dark", "Light"
