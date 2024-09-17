@@ -287,6 +287,9 @@ class CTkRadioButton(CTkBaseClass):
                 self._check_state = True if self._variable.get() == self._value else False
                 require_redraw = True
 
+        if "value" in kwargs:
+            self._value = kwargs.pop("value")
+        
         super().configure(require_redraw=require_redraw, **kwargs)
 
     def cget(self, attribute_name: str) -> any:
