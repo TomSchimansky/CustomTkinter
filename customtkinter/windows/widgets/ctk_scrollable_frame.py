@@ -49,14 +49,14 @@ class CTkScrollableFrame(tkinter.Frame, CTkAppearanceModeBaseClass, CTkScalingBa
         self._parent_canvas = tkinter.Canvas(master=self._parent_frame, highlightthickness=0)
         self._set_scroll_increments()
 
-        if self._orientation == "horizontal":
-            self._scrollbar = CTkScrollbar(master=self._parent_frame, orientation="horizontal", command=self._parent_canvas.xview,
+        if self._orientation == "horizontal" or "horizontal" in self._orientation:
+            self._scrollbar_x = CTkScrollbar(master=self._parent_frame, orientation="horizontal", command=self._parent_canvas.xview,
                                            fg_color=scrollbar_fg_color, button_color=scrollbar_button_color, button_hover_color=scrollbar_button_hover_color)
-            self._parent_canvas.configure(xscrollcommand=self._scrollbar.set)
-        elif self._orientation == "vertical":
-            self._scrollbar = CTkScrollbar(master=self._parent_frame, orientation="vertical", command=self._parent_canvas.yview,
+            self._parent_canvas.configure(xscrollcommand=self._scrollbar_x.set)
+        if self._orientation == "vertical" or "vertical" in self._orientation:
+            self._scrollbar_y = CTkScrollbar(master=self._parent_frame, orientation="vertical", command=self._parent_canvas.yview,
                                            fg_color=scrollbar_fg_color, button_color=scrollbar_button_color, button_hover_color=scrollbar_button_hover_color)
-            self._parent_canvas.configure(yscrollcommand=self._scrollbar.set)
+            self._parent_canvas.configure(yscrollcommand=self._scrollbar_y.set)
 
         self._label_text = label_text
         self._label = CTkLabel(self._parent_frame, text=label_text, anchor=label_anchor, font=label_font,
@@ -98,22 +98,22 @@ class CTkScrollableFrame(tkinter.Frame, CTkAppearanceModeBaseClass, CTkScalingBa
     def _create_grid(self):
         border_spacing = self._apply_widget_scaling(self._parent_frame.cget("corner_radius") + self._parent_frame.cget("border_width"))
 
-        if self._orientation == "horizontal":
+        if self._orientation == "horizontal" or "horizontal" in self._orientation:
             self._parent_frame.grid_columnconfigure(0, weight=1)
             self._parent_frame.grid_rowconfigure(1, weight=1)
             self._parent_canvas.grid(row=1, column=0, sticky="nsew", padx=border_spacing, pady=(border_spacing, 0))
-            self._scrollbar.grid(row=2, column=0, sticky="nsew", padx=border_spacing)
+            self._scrollbar_x.grid(row=2, column=0, sticky="nsew", padx=border_spacing)
 
             if self._label_text is not None and self._label_text != "":
                 self._label.grid(row=0, column=0, sticky="ew", padx=border_spacing, pady=border_spacing)
             else:
                 self._label.grid_forget()
 
-        elif self._orientation == "vertical":
+        if self._orientation == "vertical" or "vertical" in self._orientation:
             self._parent_frame.grid_columnconfigure(0, weight=1)
             self._parent_frame.grid_rowconfigure(1, weight=1)
             self._parent_canvas.grid(row=1, column=0, sticky="nsew", padx=(border_spacing, 0), pady=border_spacing)
-            self._scrollbar.grid(row=1, column=1, sticky="nsew", pady=border_spacing)
+            self._scrollbar_y.grid(row=1, column=1, sticky="nsew", pady=border_spacing)
 
             if self._label_text is not None and self._label_text != "":
                 self._label.grid(row=0, column=0, columnspan=2, sticky="ew", padx=border_spacing, pady=border_spacing)
@@ -178,14 +178,22 @@ class CTkScrollableFrame(tkinter.Frame, CTkAppearanceModeBaseClass, CTkScalingBa
                     child.configure(bg_color=self._parent_frame.cget("fg_color"))
 
         if "scrollbar_fg_color" in kwargs:
-            self._scrollbar.configure(fg_color=kwargs.pop("scrollbar_fg_color"))
+            if self._orientation == "vertical" or "vertical" in self._orientation:
+                self._scrollbar_y.configure(fg_color=kwargs.pop("scrollbar_fg_color"))
+            if self._orientation == "horizontal" or "horizontal" in self._orientation:
+                self._scrollbar_x.configure(fg_color=kwargs.pop("scrollbar_fg_color"))
 
         if "scrollbar_button_color" in kwargs:
-            self._scrollbar.configure(button_color=kwargs.pop("scrollbar_button_color"))
+            if self._orientation == "vertical" or "vertical" in self._orientation:
+                self._scrollbar_y.configure(button_color=kwargs.pop("scrollbar_button_color"))
+            if self._orientation == "horizontal" or "horizontal" in self._orientation:
+                self._scrollbar_x.configure(button_color=kwargs.pop("scrollbar_button_color"))
 
         if "scrollbar_button_hover_color" in kwargs:
-            self._scrollbar.configure(button_hover_color=kwargs.pop("scrollbar_button_hover_color"))
-
+            if self._orientation == "vertical" or "vertical" in self._orientation:
+                self._scrollbar_y.configure(button_hover_color=kwargs.pop("scrollbar_button_hover_color"))
+            if self._orientation == "horizontal" or "horizontal" in self._orientation:
+                self._scrollbar_x.configure(button_hover_color=kwargs.pop("scrollbar_button_hover_color"))
         if "label_text" in kwargs:
             self._label_text = kwargs.pop("label_text")
             self._label.configure(text=self._label_text)
@@ -222,12 +230,18 @@ class CTkScrollableFrame(tkinter.Frame, CTkAppearanceModeBaseClass, CTkScalingBa
         elif attribute_name == "label_anchor":
             return self._label.cget("anchor")
 
-        elif attribute_name.startswith("scrollbar_fg_color"):
-            return self._scrollbar.cget("fg_color")
-        elif attribute_name.startswith("scrollbar_button_color"):
-            return self._scrollbar.cget("button_color")
-        elif attribute_name.startswith("scrollbar_button_hover_color"):
-            return self._scrollbar.cget("button_hover_color")
+        elif attribute_name.startswith("scrollbar_x_fg_color"):
+            return self._scrollbar_x.cget("fg_color")
+        elif attribute_name.startswith("scrollbar_x_button_color"):
+            return self._scrollbar_x.cget("button_color")
+        elif attribute_name.startswith("scrollbar_x_button_hover_color"):
+            return self._scrollbar_x.cget("button_hover_color")
+        elif attribute_name.startswith("scrollbar_y_fg_color"):
+            return self._scrollbar_y.cget("fg_color")
+        elif attribute_name.startswith("scrollbar_y_button_color"):
+            return self._scrollbar_y.cget("button_color")
+        elif attribute_name.startswith("scrollbar_y_button_hover_color"):
+            return self._scrollbar_y.cget("button_hover_color")
 
         else:
             return self._parent_frame.cget(attribute_name)
