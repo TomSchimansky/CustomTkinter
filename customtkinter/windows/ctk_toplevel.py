@@ -38,13 +38,14 @@ class CTkToplevel(tkinter.Toplevel, CTkAppearanceModeBaseClass, CTkScalingBaseCl
         CTkScalingBaseClass.__init__(self, scaling_type="window")
         check_kwargs_empty(kwargs, raise_error=True)
 
-        try:
-            # Set Windows titlebar icon
-            if sys.platform.startswith("win"):
-                customtkinter_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-                self.after(200, lambda: self.iconbitmap(os.path.join(customtkinter_directory, "assets", "icons", "CustomTkinter_icon_Windows.ico")))
-        except Exception:
-            pass
+        # fix iconbitmap 
+        # try:
+        #     # Set Windows titlebar icon
+        #     if sys.platform.startswith("win"):
+        #         customtkinter_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        #         self.after(200, lambda: self.iconbitmap(os.path.join(customtkinter_directory, "assets", "icons", "CustomTkinter_icon_Windows.ico")))
+        # except Exception:
+        #     pass
 
         self._current_width = 200  # initial window size, always without scaling
         self._current_height = 200
@@ -63,7 +64,7 @@ class CTkToplevel(tkinter.Toplevel, CTkAppearanceModeBaseClass, CTkScalingBaseCl
         super().title("CTkToplevel")
 
         # indicator variables
-        self._iconbitmap_method_called = True
+        self._iconbitmap_method_called = False # indicates if iconbitmap method was called by user
         self._state_before_windows_set_titlebar_color = None
         self._windows_set_titlebar_color_called = False  # indicates if windows_set_titlebar_color was called, stays True until revert_withdraw_after_windows_set_titlebar_color is called
         self._withdraw_called_after_windows_set_titlebar_color = False  # indicates if withdraw() was called after windows_set_titlebar_color
@@ -200,6 +201,11 @@ class CTkToplevel(tkinter.Toplevel, CTkAppearanceModeBaseClass, CTkScalingBaseCl
             return super().cget(attribute_name)
 
     def wm_iconbitmap(self, bitmap=None, default=None):
+        self._iconbitmap_method_called = True
+        super().wm_iconbitmap(bitmap, default)
+    
+    # This function did not exist before
+    def iconbitmap(self, bitmap=None, default=None):
         self._iconbitmap_method_called = True
         super().wm_iconbitmap(bitmap, default)
 
