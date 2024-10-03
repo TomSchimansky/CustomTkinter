@@ -100,6 +100,16 @@
     "text_color": ["gray10", "#DCE4EE"],
     "text_color_disabled": ["gray50", "gray45"]
   },
+  "CTkSpinBox": {
+    "corner_radius": 6,
+    "border_width": 2,
+    "fg_color": ["#F9F9FA", "#343638"],
+    "border_color": ["#979DA2", "#565B5E"],
+    "button_color": ["#979DA2", "#565B5E"],
+    "button_hover_color": ["#6E7174", "#7A848D"],
+    "text_color": ["gray10", "#DCE4EE"],
+    "text_color_disabled": ["gray50", "gray45"]
+  },
   "CTkScrollbar": {
     "corner_radius": 1000,
     "border_spacing": 4,

@@ -10,6 +10,7 @@ from .ctk_radiobutton import CTkRadioButton
 from .ctk_scrollbar import CTkScrollbar
 from .ctk_segmented_button import CTkSegmentedButton
 from .ctk_slider import CTkSlider
+from .ctk_spinbox import CTkSpinBox
 from .ctk_switch import CTkSwitch
 from .ctk_tabview import CTkTabview
 from .ctk_textbox import CTkTextbox
