@@ -86,6 +86,9 @@ class CTkScrollbar(CTkBaseClass):
             self._canvas.bind("<B1-Motion>", self._clicked)
         if sequence is None or sequence == "<MouseWheel>":
             self._canvas.bind("<MouseWheel>", self._mouse_scroll_event)
+        if sequence is None or sequence == "<Button-4>" or sequence == "<Button-5>":
+            self._canvas.bind("<Button-4>", self._mouse_scroll_event)
+            self._canvas.bind("<Button-5>", self._mouse_scroll_event)
 
     def _set_scaling(self, *args, **kwargs):
         super()._set_scaling(*args, **kwargs)
@@ -246,8 +249,10 @@ class CTkScrollbar(CTkBaseClass):
         if self._command is not None:
             if sys.platform.startswith("win"):
                 self._command('scroll', -int(event.delta/40), 'units')
-            else:
+            elif sys.platform == "darwin":
                 self._command('scroll', -event.delta, 'units')
+            else:
+                self._command('scroll', -10 if event.num == 4 else 10, 'units')
 
     def set(self, start_value: float, end_value: float):
         self._start_value = float(start_value)
