@@ -7,6 +7,7 @@ from .core_rendering import CTkCanvas
 from .core_rendering import DrawEngine
 from .core_widget_classes import CTkBaseClass
 from .ctk_segmented_button import CTkSegmentedButton
+from .font import CTkFont
 
 
 class CTkTabview(CTkBaseClass):
@@ -36,6 +37,7 @@ class CTkTabview(CTkBaseClass):
                  segmented_button_selected_hover_color: Optional[Union[str, Tuple[str, str]]] = None,
                  segmented_button_unselected_color: Optional[Union[str, Tuple[str, str]]] = None,
                  segmented_button_unselected_hover_color: Optional[Union[str, Tuple[str, str]]] = None,
+                 segmented_button_font: Optional[Union[tuple, CTkFont]] = None,
 
                  text_color: Optional[Union[str, Tuple[str, str]]] = None,
                  text_color_disabled: Optional[Union[str, Tuple[str, str]]] = None,
@@ -75,6 +77,9 @@ class CTkTabview(CTkBaseClass):
                                  height=self._apply_widget_scaling(self._desired_height - self._outer_spacing - self._outer_button_overhang))
         self._draw_engine = DrawEngine(self._canvas)
 
+        # segmented_button_font font
+        self._segmented_button_font = CTkFont() if segmented_button_font is None else segmented_button_font
+
         self._segmented_button = CTkSegmentedButton(self,
                                                     values=[],
                                                     height=self._button_height,
@@ -88,6 +93,7 @@ class CTkTabview(CTkBaseClass):
                                                     corner_radius=corner_radius,
                                                     border_width=self._segmented_button_border_width,
                                                     command=self._segmented_button_callback,
+                                                    font=self._segmented_button_font,
                                                     state=state)
         self._configure_segmented_button_background_corners()
         self._configure_grid()
