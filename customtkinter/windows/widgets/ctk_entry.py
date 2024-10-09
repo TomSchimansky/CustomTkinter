@@ -20,7 +20,7 @@ class CTkEntry(CTkBaseClass):
     # attributes that are passed to and managed by the tkinter entry only:
     _valid_tk_entry_attributes = {"exportselection", "insertborderwidth", "insertofftime",
                                   "insertontime", "insertwidth", "justify", "selectborderwidth",
-                                  "show", "takefocus", "validate", "validatecommand", "xscrollcommand"}
+                                  "show", "takefocus", "validate", "validatecommand", "xscrollcommand", "selectforeground", "selectbackground"}
 
     def __init__(self,
                  master: Any,
