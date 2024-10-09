@@ -78,12 +78,13 @@ class CTkScrollbar(CTkBaseClass):
         """ set necessary bindings for functionality of widget, will overwrite other bindings """
         if sequence is None:
             self._canvas.tag_bind("border_parts", "<Button-1>", self._clicked)
+            self._canvas.tag_bind("scrollbar_parts", "<Button-1>", self._clicked_scrollbar)
         if sequence is None or sequence == "<Enter>":
             self._canvas.bind("<Enter>", self._on_enter)
         if sequence is None or sequence == "<Leave>":
             self._canvas.bind("<Leave>", self._on_leave)
         if sequence is None or sequence == "<B1-Motion>":
-            self._canvas.bind("<B1-Motion>", self._clicked)
+            self._canvas.bind("<B1-Motion>", self._on_motion)
         if sequence is None or sequence == "<MouseWheel>":
             self._canvas.bind("<MouseWheel>", self._mouse_scroll_event)
 
@@ -228,10 +229,22 @@ class CTkScrollbar(CTkBaseClass):
                                 fill=self._apply_appearance_mode(self._button_color))
 
     def _clicked(self, event):
+        self._motion_center_offset = 0
+        self._on_motion(event)
+    
+    def _clicked_scrollbar(self,event):
         if self._orientation == "vertical":
             value = self._reverse_widget_scaling(((event.y - self._border_spacing) / (self._current_height - 2 * self._border_spacing)))
         else:
             value = self._reverse_widget_scaling(((event.x - self._border_spacing) / (self._current_width - 2 * self._border_spacing)))
+        center = self._start_value + ((self._end_value - self._start_value) * 0.5)
+        self._motion_center_offset = center - value
+
+    def _on_motion(self, event):
+        if self._orientation == "vertical":
+            value = self._reverse_widget_scaling(((event.y - self._border_spacing) / (self._current_height - 2 * self._border_spacing)))+self._motion_center_offset
+        else:
+            value = self._reverse_widget_scaling(((event.x - self._border_spacing) / (self._current_width - 2 * self._border_spacing)))+self._motion_center_offset
 
         current_scrollbar_length = self._end_value - self._start_value
         value = max(current_scrollbar_length / 2, min(value, 1 - (current_scrollbar_length / 2)))
