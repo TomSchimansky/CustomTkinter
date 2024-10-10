@@ -165,6 +165,10 @@ class CTk(CTK_PARENT_CLASS, CTkAppearanceModeBaseClass, CTkScalingBaseClass):
         super().mainloop(*args, **kwargs)
 
     def resizable(self, width: bool = None, height: bool = None):
+        '''
+        Configures whether the window is resizable 
+        by the user in the x or y direction
+        '''
         current_resizable_values = super().resizable(width, height)
         self._last_resizable_args = ([], {"width": width, "height": height})
 
@@ -174,6 +178,7 @@ class CTk(CTK_PARENT_CLASS, CTkAppearanceModeBaseClass, CTkScalingBaseClass):
         return current_resizable_values
 
     def minsize(self, width: int = None, height: int = None):
+        ''' Sets a minimum size of the window in pixels'''
         self._min_width = width
         self._min_height = height
         if self._current_width < width:
@@ -183,6 +188,7 @@ class CTk(CTK_PARENT_CLASS, CTkAppearanceModeBaseClass, CTkScalingBaseClass):
         super().minsize(self._apply_window_scaling(self._min_width), self._apply_window_scaling(self._min_height))
 
     def maxsize(self, width: int = None, height: int = None):
+        ''' Sets a maximum size of the window in pixels '''
         self._max_width = width
         self._max_height = height
         if self._current_width > width:
@@ -192,6 +198,7 @@ class CTk(CTK_PARENT_CLASS, CTkAppearanceModeBaseClass, CTkScalingBaseClass):
         super().maxsize(self._apply_window_scaling(self._max_width), self._apply_window_scaling(self._max_height))
 
     def geometry(self, geometry_string: str = None):
+        ''' This sets the size of a window in pixels, given as str in form "WIDTHxHEIGHT" '''
         if geometry_string is not None:
             super().geometry(self._apply_geometry_scaling(geometry_string))
 
