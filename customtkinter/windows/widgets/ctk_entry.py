@@ -148,6 +148,10 @@ class CTkEntry(CTkBaseClass):
         if isinstance(self._font, CTkFont):
             self._font.remove_size_configure_callback(self._update_font)
 
+        if self._textvariable_callback_name:
+            self._textvariable.trace_remove("write", self._textvariable_callback_name)
+            self._textvariable_callback_name = ""
+
         super().destroy()
 
     def _draw(self, no_color_updates=False):
