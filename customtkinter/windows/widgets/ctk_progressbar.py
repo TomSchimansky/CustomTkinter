@@ -281,7 +281,7 @@ class CTkProgressBar(CTkBaseClass):
     def step(self):
         """ increase progress """
         if self._mode == "determinate":
-            self._determinate_value += self._determinate_speed / 50
+            self._determinate_value += self._determinate_speed / 100
             if self._determinate_value > 1:
                 self._determinate_value -= 1
             self._draw()
