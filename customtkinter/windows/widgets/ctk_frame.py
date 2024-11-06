@@ -186,7 +186,7 @@ class CTkFrame(CTkBaseClass):
         """ called on the tkinter.Canvas """
         if not (add == "+" or add is True):
             raise ValueError("'add' argument can only be '+' or True to preserve internal callbacks")
-        self._canvas.bind(sequence, command, add=True)
+        return self._canvas.bind(sequence, command, add=True)
 
     def unbind(self, sequence=None, funcid=None):
         """ called on the tkinter.Canvas """
