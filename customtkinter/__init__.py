@@ -1,4 +1,4 @@
-__version__ = "5.2.2"
+__version__ = "5.2.3"
 
 import os
 import sys
@@ -39,6 +39,7 @@ from .windows.widgets import CTkScrollableFrame
 from .windows import CTk
 from .windows import CTkToplevel
 from .windows import CTkInputDialog
+from .windows import CTkConfirmationDialog
 
 # import font classes
 from .windows.widgets.font import CTkFont
