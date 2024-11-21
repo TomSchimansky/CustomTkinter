@@ -59,11 +59,12 @@ class CTkEntry(CTkBaseClass):
         self._border_width = ThemeManager.theme["CTkEntry"]["border_width"] if border_width is None else border_width
 
         # text and state
-        self._is_focused: bool = True
+        self._is_focused: bool = False
         self._placeholder_text = placeholder_text
         self._placeholder_text_active = False
         self._pre_placeholder_arguments = {}  # some set arguments of the entry will be changed for placeholder and then set back
         self._textvariable = textvariable
+        self._textvariable_callback_blocked:bool = False
         self._state = state
         self._textvariable_callback_name: str = ""
 
@@ -117,8 +118,11 @@ class CTkEntry(CTkBaseClass):
                              pady=(self._apply_widget_scaling(self._border_width), self._apply_widget_scaling(self._border_width + 1)))
 
     def _textvariable_callback(self, var_name, index, mode):
-        if self._textvariable.get() == "":
+        if self._textvariable_callback_blocked is True: return
+        if self._textvariable.get() == "" and self._placeholder_text_active is False:
             self._activate_placeholder()
+        elif self._textvariable.get() and self._placeholder_text_active:
+            self.insert(0, self._textvariable.get())
 
     def _set_scaling(self, *args, **kwargs):
         super()._set_scaling(*args, **kwargs)
@@ -296,7 +300,8 @@ class CTkEntry(CTkBaseClass):
         self._create_bindings(sequence=sequence)  # restore internal callbacks for sequence
 
     def _activate_placeholder(self):
-        if self._entry.get() == "" and self._placeholder_text is not None and (self._textvariable is None or self._textvariable == ""):
+        self._textvariable_callback_blocked = True
+        if self._entry.get() == "" and self._placeholder_text is not None and self._is_focused is False:
             self._placeholder_text_active = True
 
             self._pre_placeholder_arguments = {"show": self._entry.cget("show")}
@@ -305,8 +310,10 @@ class CTkEntry(CTkBaseClass):
                                show="")
             self._entry.delete(0, tkinter.END)
             self._entry.insert(0, self._placeholder_text)
+        self._textvariable_callback_blocked = False
 
     def _deactivate_placeholder(self):
+        self._textvariable_callback_blocked = True
         if self._placeholder_text_active and self._entry.cget("state") != "readonly":
             self._placeholder_text_active = False
 
@@ -315,14 +322,15 @@ class CTkEntry(CTkBaseClass):
             self._entry.delete(0, tkinter.END)
             for argument, value in self._pre_placeholder_arguments.items():
                 self._entry[argument] = value
+        self._textvariable_callback_blocked = False
 
     def _entry_focus_out(self, event=None):
-        self._activate_placeholder()
         self._is_focused = False
+        self._activate_placeholder()
 
     def _entry_focus_in(self, event=None):
-        self._deactivate_placeholder()
         self._is_focused = True
+        self._deactivate_placeholder()
 
     def delete(self, first_index, last_index=None):
         self._entry.delete(first_index, last_index)
