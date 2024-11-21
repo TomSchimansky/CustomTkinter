@@ -57,7 +57,7 @@ def set_appearance_mode(mode_string: str):
 
 
 def get_appearance_mode() -> str:
-    """ get current state of the appearance mode (light or dark) """
+    """ get current state of the appearance mode ('Light' or 'Dark') """
     if AppearanceModeTracker.appearance_mode == 0:
         return "Light"
     elif AppearanceModeTracker.appearance_mode == 1:
