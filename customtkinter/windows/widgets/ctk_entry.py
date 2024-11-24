@@ -118,10 +118,10 @@ class CTkEntry(CTkBaseClass):
                              pady=(self._apply_widget_scaling(self._border_width), self._apply_widget_scaling(self._border_width + 1)))
 
     def _textvariable_callback(self, var_name, index, mode):
-        if self._textvariable_callback_blocked is True: return
-        if self._textvariable.get() == "" and self._placeholder_text_active is False:
+        if self._textvariable_callback_blocked: return
+        if self._textvariable.get() == "":
             self._activate_placeholder()
-        elif self._textvariable.get() and self._placeholder_text_active:
+        elif self._placeholder_text_active:
             self.insert(0, self._textvariable.get())
 
     def _set_scaling(self, *args, **kwargs):
