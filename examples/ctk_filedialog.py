@@ -8,10 +8,10 @@ class App(customtkinter.CTk):
         self.title("CustomTkinter filedialog Example")
         self.geometry("400x300")
 
-        self.label = customtkinter.CTkLabel(self, text="Seleccione un archivo:")
+        self.label = customtkinter.CTkLabel(self, text="Select a file:")
         self.label.pack(pady=20)
 
-        self.button = customtkinter.CTkButton(self, text="Abrir archivo", command=self.open_custom_file_dialog)
+        self.button = customtkinter.CTkButton(self, text="Open file", command=self.open_custom_file_dialog)
         self.button.pack(pady=20)
 
         self.filepath_label = customtkinter.CTkLabel(self, text="")
@@ -21,7 +21,7 @@ class App(customtkinter.CTk):
         dialog = CTkFileDialog(self)
         filepath = dialog.open_file_dialog()
         if filepath:
-            self.filepath_label.configure(text=f"Archivo seleccionado: {filepath}")
+            self.filepath_label.configure(text=f"File selected: {filepath}")
 
 if __name__ == "__main__":
     app = App()
