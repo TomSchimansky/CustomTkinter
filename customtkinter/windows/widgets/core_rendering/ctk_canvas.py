@@ -81,7 +81,6 @@ class CTkCanvas(tkinter.Canvas):
         return circle_1
 
     def coords(self, tag_or_id, *args):
-
         if type(tag_or_id) == str and "ctk_aa_circle_font_element" in self.gettags(tag_or_id):
             coords_id = self.find_withtag(tag_or_id)[0]  # take the lowest id for the given tag
             super().coords(coords_id, *args[:2])
@@ -96,7 +95,10 @@ class CTkCanvas(tkinter.Canvas):
                 super().itemconfigure(tag_or_id, font=("CustomTkinter_shapes_font", -args[2] * 2), text=self._get_char_from_radius(args[2]))
 
         else:
-            super().coords(tag_or_id, *args)
+            coords = super().coords(tag_or_id, *args)
+            if not coords:
+                return [0, 0, 0, 0]  # Return default coordinates if None
+            return coords
 
     def itemconfig(self, tag_or_id, *args, **kwargs):
         kwargs_except_outline = kwargs.copy()
