@@ -651,12 +651,12 @@ class DrawEngine:
             self._canvas.delete("inner_corner_part")  # delete inner corner parts if not needed
 
         # create canvas inner rectangle parts if not already created
-        if not self._canvas.find_withtag("inner_rectangle_1"):
+        if not self._canvas.find_withtag("inner_rectangle_left_1"):
             self._canvas.create_rectangle(0, 0, 0, 0, tags=("inner_rectangle_left_1", "inner_rectangle_part", "inner_parts_left", "inner_parts", "left_parts"), width=0)
             self._canvas.create_rectangle(0, 0, 0, 0, tags=("inner_rectangle_right_1", "inner_rectangle_part", "inner_parts_right", "inner_parts", "right_parts"), width=0)
             requires_recoloring = True
 
-        if not self._canvas.find_withtag("inner_rectangle_2") and inner_corner_radius * 2 < height - (border_width * 2):
+        if not self._canvas.find_withtag("inner_rectangle_left_2") and inner_corner_radius * 2 < height - (border_width * 2):
             self._canvas.create_rectangle(0, 0, 0, 0, tags=("inner_rectangle_left_2", "inner_rectangle_part", "inner_parts_left", "inner_parts", "left_parts"), width=0)
             self._canvas.create_rectangle(0, 0, 0, 0, tags=("inner_rectangle_right_2", "inner_rectangle_part", "inner_parts_right", "inner_parts", "right_parts"), width=0)
             requires_recoloring = True
