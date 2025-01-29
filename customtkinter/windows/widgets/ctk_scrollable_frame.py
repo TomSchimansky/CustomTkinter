@@ -246,20 +246,13 @@ class CTkScrollableFrame(tkinter.Frame, CTkAppearanceModeBaseClass, CTkScalingBa
 
     def _mouse_wheel_all(self, event):
         if self.check_if_master_is_canvas(event.widget):
-            if sys.platform.startswith("win"):
+            if sys.platform.startswith("win") or sys.platform == "darwin":
                 if self._shift_pressed:
                     if self._parent_canvas.xview() != (0.0, 1.0):
                         self._parent_canvas.xview("scroll", -int(event.delta / 6), "units")
                 else:
                     if self._parent_canvas.yview() != (0.0, 1.0):
                         self._parent_canvas.yview("scroll", -int(event.delta / 6), "units")
-            elif sys.platform == "darwin":
-                if self._shift_pressed:
-                    if self._parent_canvas.xview() != (0.0, 1.0):
-                        self._parent_canvas.xview("scroll", -event.delta, "units")
-                else:
-                    if self._parent_canvas.yview() != (0.0, 1.0):
-                        self._parent_canvas.yview("scroll", -event.delta, "units")
             else:
                 if self._shift_pressed:
                     if self._parent_canvas.xview() != (0.0, 1.0):
