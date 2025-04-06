@@ -12,6 +12,7 @@
 ![Downloads last 6 month](https://static.pepy.tech/personalized-badge/customtkinter?period=total&units=international_system&left_color=grey&right_color=green&left_text=downloads%20last%206%20month)
 ![PyPI - License](https://img.shields.io/badge/license-MIT-blue)
 ![LOC](https://tokei.rs/b1/github/tomschimansky/customtkinter?category=lines)
+![Minimum Python Version](https://shields.io/badge/Minimum_Python-3.7-blue)
 
 </div>
 
