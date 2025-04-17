@@ -130,7 +130,7 @@ class CTkCheckBox(CTkBaseClass):
         
     def _highlight(self, is_active):
         if is_active:
-            # Pull original themed values to restore them
+            # Changes colors of text and border to be the theme the user chooses.
             themed_border = ThemeManager.theme["CTkButton"]["fg_color"] # mimic the CTkButton theme fg_color
             themed_text = ThemeManager.theme["CTkButton"]["fg_color"] # mimic the CTkButton theme fg_color
             self.configure(border_color=themed_border, border_width=2, text_color=themed_text)
