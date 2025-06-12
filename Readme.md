@@ -19,6 +19,12 @@
 
 <div align="center">
 <a href="https://www.paypal.com/donate/?hosted_button_id=LK5QAZYRN2R2A"><img src="documentation_images/paypal_donate_button.png" width=170 alt="Paypal donation button"></a>
+
+<a></a>
+
+| Massive Thanks to all the People who Donated to help this Project 😇 |
+|----------------------------------------------|
+
 <h3>
 Official website: https://customtkinter.tomschimansky.com
 </h3>
