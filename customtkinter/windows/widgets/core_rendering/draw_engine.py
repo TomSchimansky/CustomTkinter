@@ -1,4 +1,3 @@
-from __future__ import annotations
 import sys
 import math
 import tkinter
@@ -28,7 +27,7 @@ class DrawEngine:
 
     preferred_drawing_method: str = None  # 'polygon_shapes', 'font_shapes', 'circle_shapes'
 
-    def __init__(self, canvas: CTkCanvas):
+    def __init__(self, canvas):
         self._canvas = canvas
         self._round_width_to_even_numbers: bool = True
         self._round_height_to_even_numbers: bool = True
