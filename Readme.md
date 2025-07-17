@@ -26,7 +26,7 @@
 |----------------------------------------------|
 
 <h3>
-Official website: [https://customtkinter.tomschimansky.com](https://web.archive.org/web/20250622081556/https://customtkinter.tomschimansky.com/)
+Official website: https://web.archive.org/web/20250622081556/https://customtkinter.tomschimansky.com/
 </h3>
 </div>
 
