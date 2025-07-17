@@ -183,9 +183,15 @@ class ScalingTracker:
                     if sys.platform.startswith("win"):
                         window.attributes("-alpha", 0.15)
 
-                    window.block_update_dimensions_event()
+                    # Check if block_update_dimensions_event exists
+                    if hasattr(window, "block_update_dimensions_event"):
+                        window.block_update_dimensions_event()
+
                     cls.update_scaling_callbacks_for_window(window)
-                    window.unblock_update_dimensions_event()
+
+                    # Check if unblock_update_dimensions_event exists
+                    if hasattr(window, "unblock_update_dimensions_event"):
+                        window.unblock_update_dimensions_event()
 
                     if sys.platform.startswith("win"):
                         window.attributes("-alpha", 1)
