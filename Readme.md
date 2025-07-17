@@ -25,10 +25,8 @@
 | Massive Thanks to all the People who Donated to help this Project 😇 |
 |----------------------------------------------|
 
-<h3>
+
 Official website: ![https://customtkinter.tomschimansky.com/](https://web.archive.org/web/20250622081556/https://customtkinter.tomschimansky.com/)
-</h3>
-</div>
 
 CustomTkinter is a python UI-library based on Tkinter, which provides new, modern and
 fully customizable widgets. They are created and used like normal Tkinter widgets and
