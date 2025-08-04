@@ -352,7 +352,7 @@ class CTkTextbox(CTkBaseClass):
         return self._textbox.insert(index, text, tags)
 
     def get(self, index1, index2=None):
-        return self._textbox.get(index1, index2)
+        return self._textbox.get(index1, index2).replace('\n', '', -1)
 
     def bbox(self, index):
         return self._textbox.bbox(index)
