@@ -428,6 +428,22 @@ class CTkTabview(CTkBaseClass):
         else:
             raise ValueError(f"CTkTabview has no tab named '{name}'")
 
-    def get(self) -> str:
-        """ returns name of selected tab, returns empty string if no tab selected """
-        return self._current_name
+    def get(self, index: int = None) -> str:
+        """ returns name of selected tab, returns empty string if no tab selected\n
+        if an index is defined, return the associated name """
+        if index == None:
+            return self._current_name
+        else:
+            return self._name_list[index]
+
+    def index(self, name: str ="") -> int:
+        """ returns index of selected tab, returns empty int if no tab selected\n
+        if a name is defined, return the associated index """
+        if name == "":
+            return self._name_list.index(self._current_name)
+        else:
+            return self._name_list.index(name)
+        
+    def len(self) -> int:
+        """ return the number of defined tabs """
+        return len(self._name_list)
