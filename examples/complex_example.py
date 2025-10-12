@@ -64,13 +64,16 @@ class App(customtkinter.CTk):
 
         self.optionmenu_1 = customtkinter.CTkOptionMenu(self.tabview.tab("CTkTabview"), dynamic_resizing=False,
                                                         values=["Value 1", "Value 2", "Value Long Long Long"])
-        self.optionmenu_1.grid(row=0, column=0, padx=20, pady=(20, 10))
+        self.optionmenu_1.grid(row=0, column=0, padx=20, pady=(20, 5))
         self.combobox_1 = customtkinter.CTkComboBox(self.tabview.tab("CTkTabview"),
                                                     values=["Value 1", "Value 2", "Value Long....."])
-        self.combobox_1.grid(row=1, column=0, padx=20, pady=(10, 10))
+        self.combobox_1.grid(row=1, column=0, padx=20, pady=(5, 5))
+        self.spinbox_1 = customtkinter.CTkSpinBox(self.tabview.tab("CTkTabview"),
+                                                  from_=0, to=100, step_button=0.5, step_scroll=5)
+        self.spinbox_1.grid(row=2, column=0, padx=20, pady=(5, 5))
         self.string_input_button = customtkinter.CTkButton(self.tabview.tab("CTkTabview"), text="Open CTkInputDialog",
                                                            command=self.open_input_dialog_event)
-        self.string_input_button.grid(row=2, column=0, padx=20, pady=(10, 10))
+        self.string_input_button.grid(row=3, column=0, padx=20, pady=(5, 5))
         self.label_tab_2 = customtkinter.CTkLabel(self.tabview.tab("Tab 2"), text="CTkLabel on Tab 2")
         self.label_tab_2.grid(row=0, column=0, padx=20, pady=20)
 
@@ -136,6 +139,7 @@ class App(customtkinter.CTk):
         self.scaling_optionemenu.set("100%")
         self.optionmenu_1.set("CTkOptionmenu")
         self.combobox_1.set("CTkComboBox")
+        self.spinbox_1.set("CTkSpinBox")
         self.slider_1.configure(command=self.progressbar_2.set)
         self.slider_2.configure(command=self.progressbar_3.set)
         self.progressbar_1.configure(mode="indeterminnate")
