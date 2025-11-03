@@ -28,6 +28,7 @@ class CTkEntry(CTkBaseClass):
                  height: int = 28,
                  corner_radius: Optional[int] = None,
                  border_width: Optional[int] = None,
+                 max_length: Optional[int] = None,
 
                  bg_color: Union[str, Tuple[str, str]] = "transparent",
                  fg_color: Optional[Union[str, Tuple[str, str]]] = None,
@@ -65,6 +66,7 @@ class CTkEntry(CTkBaseClass):
         self._pre_placeholder_arguments = {}  # some set arguments of the entry will be changed for placeholder and then set back
         self._textvariable = textvariable
         self._state = state
+        self._max_length = max_length
         self._textvariable_callback_name: str = ""
 
         # font
@@ -89,7 +91,10 @@ class CTkEntry(CTkBaseClass):
                                     state=self._state,
                                     textvariable=self._textvariable,
                                     **pop_from_dict_by_set(kwargs, self._valid_tk_entry_attributes))
-
+        
+        if self._max_length != None:
+            self._entry.bind("<KeyPress>", self._enforce_max_length)
+            
         check_kwargs_empty(kwargs, raise_error=True)
 
         self._create_grid()
@@ -195,6 +200,9 @@ class CTkEntry(CTkBaseClass):
         if "state" in kwargs:
             self._state = kwargs.pop("state")
             self._entry.configure(state=self._state)
+        
+        if "max_length" in kwargs:
+            self._max_length = kwargs.pop("max_length")
 
         if "fg_color" in kwargs:
             self._fg_color = self._check_color_type(kwargs.pop("fg_color"))
@@ -323,6 +331,13 @@ class CTkEntry(CTkBaseClass):
     def _entry_focus_in(self, event=None):
         self._deactivate_placeholder()
         self._is_focused = True
+
+    def _enforce_max_length(self, event=None):
+        entry_text = self.get()
+        if len(entry_text) >= self._max_length:
+            entry_text = entry_text[:self._max_length]
+            self.delete(0, "end")
+            self.insert(0, entry_text)
 
     def delete(self, first_index, last_index=None):
         self._entry.delete(first_index, last_index)

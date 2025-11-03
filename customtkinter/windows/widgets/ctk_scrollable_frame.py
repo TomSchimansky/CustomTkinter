@@ -30,19 +30,21 @@ class CTkScrollableFrame(tkinter.Frame, CTkAppearanceModeBaseClass, CTkScalingBa
                  scrollbar_fg_color: Optional[Union[str, Tuple[str, str]]] = None,
                  scrollbar_button_color: Optional[Union[str, Tuple[str, str]]] = None,
                  scrollbar_button_hover_color: Optional[Union[str, Tuple[str, str]]] = None,
+                 scrollbar_corner_radius: Optional[Union[int, str]] = None,
                  label_fg_color: Optional[Union[str, Tuple[str, str]]] = None,
                  label_text_color: Optional[Union[str, Tuple[str, str]]] = None,
 
                  label_text: str = "",
                  label_font: Optional[Union[tuple, CTkFont]] = None,
                  label_anchor: str = "center",
-                 orientation: Literal["vertical", "horizontal"] = "vertical"):
+                 orientation: Literal["vertical", "horizontal"] = "vertical",
+                 scrollbar_cursor: str = "hand2"):
 
         self._orientation = orientation
 
         # dimensions independent of scaling
-        self._desired_width = width  # _desired_width and _desired_height, represent desired size set by width and height
-        self._desired_height = height
+        self._desired_width = width  # _desired_width represent desired size set by width
+        self._desired_height = height # _desired_height represent desired size set by height
 
         self._parent_frame = CTkFrame(master=master, width=0, height=0, corner_radius=corner_radius,
                                       border_width=border_width, bg_color=bg_color, fg_color=fg_color, border_color=border_color)
@@ -50,12 +52,12 @@ class CTkScrollableFrame(tkinter.Frame, CTkAppearanceModeBaseClass, CTkScalingBa
         self._set_scroll_increments()
 
         if self._orientation == "horizontal":
-            self._scrollbar = CTkScrollbar(master=self._parent_frame, orientation="horizontal", command=self._parent_canvas.xview,
-                                           fg_color=scrollbar_fg_color, button_color=scrollbar_button_color, button_hover_color=scrollbar_button_hover_color)
+            self._scrollbar = CTkScrollbar(master=self._parent_frame, orientation="horizontal", command=self._parent_canvas.xview, width=self._desired_width, cursor=scrollbar_cursor,
+                                           corner_radius=scrollbar_corner_radius, fg_color=scrollbar_fg_color, button_color=scrollbar_button_color, button_hover_color=scrollbar_button_hover_color)
             self._parent_canvas.configure(xscrollcommand=self._scrollbar.set)
         elif self._orientation == "vertical":
-            self._scrollbar = CTkScrollbar(master=self._parent_frame, orientation="vertical", command=self._parent_canvas.yview,
-                                           fg_color=scrollbar_fg_color, button_color=scrollbar_button_color, button_hover_color=scrollbar_button_hover_color)
+            self._scrollbar = CTkScrollbar(master=self._parent_frame, orientation="vertical", command=self._parent_canvas.yview, height=self._desired_height, cursor=scrollbar_cursor,
+                                           corner_radius=scrollbar_corner_radius, fg_color=scrollbar_fg_color, button_color=scrollbar_button_color, button_hover_color=scrollbar_button_hover_color)
             self._parent_canvas.configure(yscrollcommand=self._scrollbar.set)
 
         self._label_text = label_text
