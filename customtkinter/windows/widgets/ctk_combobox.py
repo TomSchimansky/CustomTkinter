@@ -9,6 +9,7 @@ from .theme import ThemeManager
 from .core_rendering import DrawEngine
 from .core_widget_classes import CTkBaseClass
 from .font import CTkFont
+from .utility import pop_from_dict_by_set
 
 
 class CTkComboBox(CTkBaseClass):
@@ -16,6 +17,9 @@ class CTkComboBox(CTkBaseClass):
     Combobox with dropdown menu, rounded corners, border, variable support.
     For detailed information check out the documentation.
     """
+
+    # attributes that are passed to and managed by the tkinter entry only:
+    _valid_tk_entry_attributes = {"invalidcommand", "validate", "validatecommand"}
 
     def __init__(self,
                  master: Any,
@@ -100,7 +104,8 @@ class CTkComboBox(CTkBaseClass):
                                     bd=0,
                                     justify=justify,
                                     highlightthickness=0,
-                                    font=self._apply_font_scaling(self._font))
+                                    font=self._apply_font_scaling(self._font),
+                                    **pop_from_dict_by_set(kwargs, self._valid_tk_entry_attributes))
 
         self._create_grid()
         self._create_bindings()
@@ -295,6 +300,7 @@ class CTkComboBox(CTkBaseClass):
         if "justify" in kwargs:
             self._entry.configure(justify=kwargs.pop("justify"))
 
+        self._entry.configure(**pop_from_dict_by_set(kwargs, self._valid_tk_entry_attributes))  # configure Tkinter.Entry
         super().configure(require_redraw=require_redraw, **kwargs)
 
     def cget(self, attribute_name: str) -> any:
@@ -338,6 +344,9 @@ class CTkComboBox(CTkBaseClass):
             return self._command
         elif attribute_name == "justify":
             return self._entry.cget("justify")
+
+        elif attribute_name in self._valid_tk_entry_attributes:
+            return self._entry.cget(attribute_name)  # cget of tkinter.Entry
         else:
             return super().cget(attribute_name)
 
@@ -392,6 +401,9 @@ class CTkComboBox(CTkBaseClass):
         else:
             self._entry.delete(0, tkinter.END)
             self._entry.insert(0, value)
+
+    def delete(self, start, end):
+        self._entry.delete(start, end)
 
     def get(self) -> str:
         return self._entry.get()

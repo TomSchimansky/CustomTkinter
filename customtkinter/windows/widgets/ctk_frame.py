@@ -194,3 +194,7 @@ class CTkFrame(CTkBaseClass):
             raise ValueError("'funcid' argument can only be None, because there is a bug in" +
                              " tkinter and its not clear whether the internal callbacks will be unbinded or not")
         self._canvas.unbind(sequence, None)
+
+    def event_generate(self, sequence, **kw):
+        """ called on the tkinter.Canvas """
+        self._canvas.event_generate(sequence, **kw)
