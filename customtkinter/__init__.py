@@ -39,6 +39,7 @@ from .windows.widgets import CTkScrollableFrame
 from .windows import CTk
 from .windows import CTkToplevel
 from .windows import CTkInputDialog
+from .windows import CTkAlertDialog
 
 # import font classes
 from .windows.widgets.font import CTkFont
