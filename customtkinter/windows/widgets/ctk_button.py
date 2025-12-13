@@ -546,7 +546,7 @@ class CTkButton(CTkBaseClass):
         if self._state != tkinter.DISABLED:
 
             # click animation: change color with .on_leave() and back to normal after 100ms with click_animation()
-            self._on_leave()
+            self._on_leave(None)
             self._click_animation_running = True
             self.after(100, self._click_animation)
 
