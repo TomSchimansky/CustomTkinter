@@ -6,27 +6,32 @@
 </p>
 
 <div align="center">
-
+  
 ![PyPI](https://img.shields.io/pypi/v/customtkinter)
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/customtkinter?color=green&label=downloads)
 ![Downloads last 6 month](https://static.pepy.tech/personalized-badge/customtkinter?period=total&units=international_system&left_color=grey&right_color=green&left_text=total%20downloads)
 ![PyPI - License](https://img.shields.io/badge/license-MIT-blue)
+
+---
+
+| Current Developers | Contact |
+|----------------------------------------------|-|
+| Tom Schimansky | contact@customtkinter.tomschimansky.com |
+| Federico Spada |  |
+
+<a href="https://www.paypal.com/donate/?hosted_button_id=LK5QAZYRN2R2A"><img src="documentation_images/paypal_donate_button.png" width=170 alt="Paypal donation button"></a>
+
 
 </div>
 
 ---
 
 <div align="center">
-<a href="https://www.paypal.com/donate/?hosted_button_id=LK5QAZYRN2R2A"><img src="documentation_images/paypal_donate_button.png" width=170 alt="Paypal donation button"></a>
 
-<a></a>
-
-| Massive Thanks to all the People who Donated to help this Project 😇 |
-|----------------------------------------------|
-
-<h3>
+<h2>
 Official website: https://customtkinter.tomschimansky.com/
-</h3>
+</h2>
+
 </div>
 
 CustomTkinter is a python UI-library based on Tkinter, which provides new, modern and
