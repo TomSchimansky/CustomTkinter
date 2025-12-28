@@ -1,7 +1,4 @@
 import customtkinter
-import tkinterDnD
-
-customtkinter.set_ctk_parent_class(tkinterDnD.Tk)
 
 customtkinter.set_appearance_mode("dark")  # Modes: "System" (standard), "Dark", "Light"
 customtkinter.set_default_color_theme("blue")  # Themes: "blue" (standard), "green", "dark-blue"
@@ -10,7 +7,6 @@ app = customtkinter.CTk()
 app.geometry("400x780")
 app.title("CustomTkinter simple_example.py")
 
-print(type(app), isinstance(app, tkinterDnD.Tk))
 
 def button_callback():
     print("Button click", combobox_1.get())
