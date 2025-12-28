@@ -1,5 +1,7 @@
 import customtkinter
 
+customtkinter.set_default_color_theme("dark-blue")
+
 
 app = customtkinter.CTk()
 app.grid_columnconfigure(2, weight=1)

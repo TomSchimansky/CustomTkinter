@@ -1,6 +1,6 @@
 import tkinter
 import sys
-from typing import Union, Tuple, Callable, Optional
+from typing import Union, Tuple, Callable, Optional, Any
 
 from .core_rendering import CTkCanvas
 from .theme import ThemeManager
@@ -16,7 +16,7 @@ class CTkSwitch(CTkBaseClass):
     """
 
     def __init__(self,
-                 master: any,
+                 master: Any,
                  width: int = 100,
                  height: int = 24,
                  switch_width: int = 36,
@@ -41,7 +41,7 @@ class CTkSwitch(CTkBaseClass):
                  offvalue: Union[int, str] = 0,
                  variable: Union[tkinter.Variable, None] = None,
                  hover: bool = True,
-                 command: Union[Callable, None] = None,
+                 command: Union[Callable, Any] = None,
                  state: str = tkinter.NORMAL,
                  **kwargs):
 
@@ -54,7 +54,7 @@ class CTkSwitch(CTkBaseClass):
 
         # color
         self._border_color = self._check_color_type(border_color, transparency=True)
-        self._fg_color = ThemeManager.theme["CTkSwitch"]["fg_Color"] if fg_color is None else self._check_color_type(fg_color)
+        self._fg_color = ThemeManager.theme["CTkSwitch"]["fg_color"] if fg_color is None else self._check_color_type(fg_color)
         self._progress_color = ThemeManager.theme["CTkSwitch"]["progress_color"] if progress_color is None else self._check_color_type(progress_color, transparency=True)
         self._button_color = ThemeManager.theme["CTkSwitch"]["button_color"] if button_color is None else self._check_color_type(button_color)
         self._button_hover_color = ThemeManager.theme["CTkSwitch"]["button_hover_color"] if button_hover_color is None else self._check_color_type(button_hover_color)
@@ -299,6 +299,10 @@ class CTkSwitch(CTkBaseClass):
             self._fg_color = self._check_color_type(kwargs.pop("fg_color"))
             require_redraw = True
 
+        if "border_color" in kwargs:
+            self._border_color = self._check_color_type(kwargs.pop("border_color"), transparency=True)
+            require_redraw = True
+
         if "progress_color" in kwargs:
             self._progress_color = self._check_color_type(kwargs.pop("progress_color"), transparency=True)
             require_redraw = True
@@ -311,8 +315,12 @@ class CTkSwitch(CTkBaseClass):
             self._button_hover_color = self._check_color_type(kwargs.pop("button_hover_color"))
             require_redraw = True
 
-        if "border_color" in kwargs:
-            self._border_color = self._check_color_type(kwargs.pop("border_color"), transparency=True)
+        if "text_color" in kwargs:
+            self._text_color = self._check_color_type(kwargs.pop("text_color"))
+            require_redraw = True
+
+        if "text_color_disabled" in kwargs:
+            self._text_color_disabled = self._check_color_type(kwargs.pop("text_color_disabled"))
             require_redraw = True
 
         if "hover" in kwargs:

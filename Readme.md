@@ -9,13 +9,25 @@
 
 ![PyPI](https://img.shields.io/pypi/v/customtkinter)
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/customtkinter?color=green&label=downloads)
-![Downloads](https://static.pepy.tech/personalized-badge/customtkinter?period=total&units=international_system&left_color=grey&right_color=green&left_text=downloads)
-![PyPI - License](https://img.shields.io/pypi/l/customtkinter)
-![](https://tokei.rs/b1/github/tomschimansky/customtkinter)
+![Downloads last 6 month](https://static.pepy.tech/personalized-badge/customtkinter?period=total&units=international_system&left_color=grey&right_color=green&left_text=total%20downloads)
+![PyPI - License](https://img.shields.io/badge/license-MIT-blue)
 
 </div>
 
 ---
+
+<div align="center">
+<a href="https://www.paypal.com/donate/?hosted_button_id=LK5QAZYRN2R2A"><img src="documentation_images/paypal_donate_button.png" width=170 alt="Paypal donation button"></a>
+
+<a></a>
+
+| Massive Thanks to all the People who Donated to help this Project 😇 |
+|----------------------------------------------|
+
+<h3>
+Official website: https://customtkinter.tomschimansky.com/
+</h3>
+</div>
 
 CustomTkinter is a python UI-library based on Tkinter, which provides new, modern and
 fully customizable widgets. They are created and used like normal Tkinter widgets and
@@ -43,14 +55,13 @@ pip3 install customtkinter
 
 ## Documentation
 
-The **official** documentation can be found in the Wiki Tab here:
+The **official** documentation can be found here:
 
-**--> [Documentation](https://github.com/TomSchimansky/CustomTkinter/wiki)**.
+**➡️ https://customtkinter.tomschimansky.com/documentation**.
 
 ## Example Program
 To test customtkinter you can try this simple example with only a single button:
 ```python
-import tkinter
 import customtkinter
 
 customtkinter.set_appearance_mode("System")  # Modes: system (default), light, dark
@@ -64,7 +75,7 @@ def button_function():
 
 # Use CTkButton instead of tkinter Button
 button = customtkinter.CTkButton(master=app, text="CTkButton", command=button_function)
-button.place(relx=0.5, rely=0.5, anchor=tkinter.CENTER)
+button.place(relx=0.5, rely=0.5, anchor=customtkinter.CENTER)
 
 app.mainloop()
 ```

@@ -1,5 +1,5 @@
 import sys
-from typing import Union, Tuple, Callable, Optional
+from typing import Union, Tuple, Callable, Optional, Any
 
 from .core_rendering import CTkCanvas
 from .theme import ThemeManager
@@ -15,7 +15,7 @@ class CTkScrollbar(CTkBaseClass):
     """
 
     def __init__(self,
-                 master: any,
+                 master: Any,
                  width: Optional[Union[int, str]] = None,
                  height: Optional[Union[int, str]] = None,
                  corner_radius: Optional[int] = None,
@@ -28,7 +28,7 @@ class CTkScrollbar(CTkBaseClass):
                  button_hover_color: Optional[Union[str, Tuple[str, str]]] = None,
 
                  hover: bool = True,
-                 command: Union[Callable, None] = None,
+                 command: Union[Callable, Any] = None,
                  orientation: str = "vertical",
                  **kwargs):
 

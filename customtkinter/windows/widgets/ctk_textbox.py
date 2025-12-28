@@ -1,5 +1,5 @@
 import tkinter
-from typing import Union, Tuple, Optional, Callable
+from typing import Union, Tuple, Optional, Callable, Any
 
 from .core_rendering import CTkCanvas
 from .ctk_scrollbar import CTkScrollbar

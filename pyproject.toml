@@ -3,11 +3,10 @@ requires = ["setuptools>=42", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [tool.tbump]
-# Uncomment this if your project is hosted on GitHub:
 github_url = "https://github.com/TomSchimansky/CustomTkinter"
 
 [tool.tbump.version]
-current = "5.1.1"
+current = "5.2.2"
 
 # Example of a semver regexp.
 # Make sure this matches current_version before
@@ -33,17 +32,3 @@ src = "setup.cfg"
 [[tool.tbump.file]]
 src = "customtkinter/__init__.py"
 search = "__version__ = \"{current_version}\""
-
-# You can specify a list of commands to
-# run after the files have been patched
-# and before the git commit is made
-
-#  [[tool.tbump.before_commit]]
-#  name = "check changelog"
-#  cmd = "grep -q {new_version} Changelog.rst"
-
-# Or run some commands after the git tag and the branch
-# have been pushed:
-#  [[tool.tbump.after_push]]
-#  name = "publish"
-#  cmd = "./publish.sh"

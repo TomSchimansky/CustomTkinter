@@ -1,6 +1,6 @@
 import tkinter
 import sys
-from typing import Union, Tuple, Callable, Optional
+from typing import Union, Tuple, Callable, Optional, Any
 
 from .core_rendering import CTkCanvas
 from .theme import ThemeManager
@@ -16,7 +16,7 @@ class CTkRadioButton(CTkBaseClass):
     """
 
     def __init__(self,
-                 master: any,
+                 master: Any,
                  width: int = 100,
                  height: int = 22,
                  radiobutton_width: int = 22,
@@ -39,7 +39,7 @@ class CTkRadioButton(CTkBaseClass):
                  value: Union[int, str] = 0,
                  state: str = tkinter.NORMAL,
                  hover: bool = True,
-                 command: Union[Callable, None] = None,
+                 command: Union[Callable, Any] = None,
                  **kwargs):
 
         # transfer basic functionality (_bg_color, size, __appearance_mode, scaling) to CTkBaseClass
@@ -50,20 +50,20 @@ class CTkRadioButton(CTkBaseClass):
         self._radiobutton_height = radiobutton_height
 
         # color
-        self._fg_color = ThemeManager.theme["CTkRadiobutton"]["fg_color"] if fg_color is None else self._check_color_type(fg_color)
-        self._hover_color = ThemeManager.theme["CTkRadiobutton"]["hover_color"] if hover_color is None else self._check_color_type(hover_color)
-        self._border_color = ThemeManager.theme["CTkRadiobutton"]["border_color"] if border_color is None else self._check_color_type(border_color)
+        self._fg_color = ThemeManager.theme["CTkRadioButton"]["fg_color"] if fg_color is None else self._check_color_type(fg_color)
+        self._hover_color = ThemeManager.theme["CTkRadioButton"]["hover_color"] if hover_color is None else self._check_color_type(hover_color)
+        self._border_color = ThemeManager.theme["CTkRadioButton"]["border_color"] if border_color is None else self._check_color_type(border_color)
 
         # shape
-        self._corner_radius = ThemeManager.theme["CTkRadiobutton"]["corner_radius"] if corner_radius is None else corner_radius
-        self._border_width_unchecked = ThemeManager.theme["CTkRadiobutton"]["border_width_unchecked"] if border_width_unchecked is None else border_width_unchecked
-        self._border_width_checked = ThemeManager.theme["CTkRadiobutton"]["border_width_checked"] if border_width_checked is None else border_width_checked
+        self._corner_radius = ThemeManager.theme["CTkRadioButton"]["corner_radius"] if corner_radius is None else corner_radius
+        self._border_width_unchecked = ThemeManager.theme["CTkRadioButton"]["border_width_unchecked"] if border_width_unchecked is None else border_width_unchecked
+        self._border_width_checked = ThemeManager.theme["CTkRadioButton"]["border_width_checked"] if border_width_checked is None else border_width_checked
 
         # text
         self._text = text
         self._text_label: Union[tkinter.Label, None] = None
-        self._text_color = ThemeManager.theme["CTkRadiobutton"]["text_color"] if text_color is None else self._check_color_type(text_color)
-        self._text_color_disabled = ThemeManager.theme["CTkRadiobutton"]["text_color_disabled"] if text_color_disabled is None else self._check_color_type(text_color_disabled)
+        self._text_color = ThemeManager.theme["CTkRadioButton"]["text_color"] if text_color is None else self._check_color_type(text_color)
+        self._text_color_disabled = ThemeManager.theme["CTkRadioButton"]["text_color_disabled"] if text_color_disabled is None else self._check_color_type(text_color_disabled)
 
         # font
         self._font = CTkFont() if font is None else self._check_font_type(font)

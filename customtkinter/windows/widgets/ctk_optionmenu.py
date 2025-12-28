@@ -1,7 +1,7 @@
 import tkinter
 import copy
 import sys
-from typing import Union, Tuple, Callable, Optional
+from typing import Union, Tuple, Callable, Optional, Any
 
 from .core_rendering import CTkCanvas
 from .theme import ThemeManager
@@ -18,7 +18,7 @@ class CTkOptionMenu(CTkBaseClass):
     """
 
     def __init__(self,
-                 master: any,
+                 master: Any,
                  width: int = 140,
                  height: int = 28,
                  corner_radius: Optional[Union[int]] = None,
@@ -39,7 +39,7 @@ class CTkOptionMenu(CTkBaseClass):
                  variable: Union[tkinter.Variable, None] = None,
                  state: str = tkinter.NORMAL,
                  hover: bool = True,
-                 command: Union[Callable[[str], None], None] = None,
+                 command: Union[Callable[[str], Any], None] = None,
                  dynamic_resizing: bool = True,
                  anchor: str = "w",
                  **kwargs):
@@ -243,6 +243,10 @@ class CTkOptionMenu(CTkBaseClass):
             self._text_color = self._check_color_type(kwargs.pop("text_color"))
             require_redraw = True
 
+        if "text_color_disabled" in kwargs:
+            self._text_color_disabled = self._check_color_type(kwargs.pop("text_color_disabled"))
+            require_redraw = True
+
         if "dropdown_fg_color" in kwargs:
             self._dropdown_menu.configure(fg_color=kwargs.pop("dropdown_fg_color"))
 
@@ -261,8 +265,12 @@ class CTkOptionMenu(CTkBaseClass):
 
             self._update_font()
 
-        if "command" in kwargs:
-            self._command = kwargs.pop("command")
+        if "dropdown_font" in kwargs:
+            self._dropdown_menu.configure(font=kwargs.pop("dropdown_font"))
+
+        if "values" in kwargs:
+            self._values = kwargs.pop("values")
+            self._dropdown_menu.configure(values=self._values)
 
         if "variable" in kwargs:
             if self._variable is not None:  # remove old callback
@@ -277,19 +285,15 @@ class CTkOptionMenu(CTkBaseClass):
             else:
                 self._variable = None
 
-        if "values" in kwargs:
-            self._values = kwargs.pop("values")
-            self._dropdown_menu.configure(values=self._values)
-
-        if "dropdown_font" in kwargs:
-            self._dropdown_menu.configure(font=kwargs.pop("dropdown_font"))
+        if "state" in kwargs:
+            self._state = kwargs.pop("state")
+            require_redraw = True
 
         if "hover" in kwargs:
             self._hover = kwargs.pop("hover")
 
-        if "state" in kwargs:
-            self._state = kwargs.pop("state")
-            require_redraw = True
+        if "command" in kwargs:
+            self._command = kwargs.pop("command")
 
         if "dynamic_resizing" in kwargs:
             self._dynamic_resizing = kwargs.pop("dynamic_resizing")

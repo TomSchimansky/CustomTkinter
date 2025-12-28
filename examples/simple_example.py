@@ -7,6 +7,7 @@ app = customtkinter.CTk()
 app.geometry("400x780")
 app.title("CustomTkinter simple_example.py")
 
+
 def button_callback():
     print("Button click", combobox_1.get())
 
@@ -63,7 +64,7 @@ text_1.insert("0.0", "CTkTextbox\n\n\n\n")
 segmented_button_1 = customtkinter.CTkSegmentedButton(master=frame_1, values=["CTkSegmentedButton", "Value 2"])
 segmented_button_1.pack(pady=10, padx=10)
 
-tabview_1 = customtkinter.CTkTabview(master=frame_1, width=200, height=70)
+tabview_1 = customtkinter.CTkTabview(master=frame_1, width=300)
 tabview_1.pack(pady=10, padx=10)
 tabview_1.add("CTkTabview")
 tabview_1.add("Tab 2")
