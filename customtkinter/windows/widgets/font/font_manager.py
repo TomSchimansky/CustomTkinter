@@ -2,25 +2,29 @@ import sys
 import os
 import shutil
 from typing import Union
+import subprocess
 
 
 class FontManager:
-
-    linux_font_path = "~/.fonts/"
+    linux_font_paths = [
+        os.path.expanduser("~/.fonts/"),  # Default path
+        os.path.expanduser("~/.local/share/fonts/"),  # Fallback path
+    ]
 
     @classmethod
     def init_font_manager(cls):
-        # Linux
+        """
+        Initialize font manager by ensuring the required font directories exist.
+        """
         if sys.platform.startswith("linux"):
             try:
-                if not os.path.isdir(os.path.expanduser(cls.linux_font_path)):
-                    os.mkdir(os.path.expanduser(cls.linux_font_path))
+                for path in cls.linux_font_paths:
+                    if not os.path.isdir(path):
+                        os.makedirs(path, exist_ok=True)
                 return True
             except Exception as err:
-                sys.stderr.write("FontManager error: " + str(err) + "\n")
+                sys.stderr.write(f"FontManager error (init): {err}\n")
                 return False
-
-        # other platforms
         else:
             return True
 
@@ -48,19 +52,42 @@ class FontManager:
 
     @classmethod
     def load_font(cls, font_path: str) -> bool:
+        """
+        Load a font into the system for different platforms.
+        """
+        # Check if the font file exists
+        if not os.path.isfile(font_path):
+            sys.stderr.write(f"FontManager error: Font file '{font_path}' does not exist.\n")
+            return False
+
         # Windows
         if sys.platform.startswith("win"):
             return cls.windows_load_font(font_path, private=True, enumerable=False)
 
         # Linux
         elif sys.platform.startswith("linux"):
-            try:
-                shutil.copy(font_path, os.path.expanduser(cls.linux_font_path))
-                return True
-            except Exception as err:
-                sys.stderr.write("FontManager error: " + str(err) + "\n")
-                return False
+            for path in cls.linux_font_paths:
+                try:
+                    dest_path = os.path.join(path, os.path.basename(font_path))
+                    if not os.path.isfile(dest_path):  # Avoid redundant copying
+                        shutil.copy(font_path, dest_path)
+                        cls.refresh_font_cache(path)  # Refresh the font cache
+                    return True
+                except Exception as err:
+                    sys.stderr.write(f"FontManager error (Linux): {err}\n")
+            return False
 
         # macOS and others
         else:
+            sys.stderr.write("FontManager warning: Font loading is not supported on this platform.\n")
             return False
+
+    @staticmethod
+    def refresh_font_cache(directory: str):
+        """
+        Refresh the font cache on Linux using fc-cache.
+        """
+        try:
+            subprocess.run(["fc-cache", "-fv", directory], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        except Exception as err:
+            sys.stderr.write(f"FontManager error (fc-cache): {err}\n")
