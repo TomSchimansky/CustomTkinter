@@ -17,7 +17,7 @@
 | Current Developers | Contact |
 |----------------------------------------------|-|
 | Tom Schimansky | contact@customtkinter.tomschimansky.com |
-| Federico Spada |  |
+| Federico Spada | linkedin.com/in/federicospada13 |
 
 <a href="https://www.paypal.com/donate/?hosted_button_id=LK5QAZYRN2R2A"><img src="documentation_images/paypal_donate_button.png" width=170 alt="Paypal donation button"></a>
 
@@ -93,6 +93,11 @@ can find more example programs and in the [Documentation](https://github.com/Tom
 you can find further information on the appearance mode, scaling, themes and all widgets.
 
 ## More Examples and Showcase
+You can run the following code to show a simple App that displays all available widgets:
+```python
+import customtkinter as ctk
+ctk.run_showroom()
+```
 
 ### Appearance mode change and scaling change
 
