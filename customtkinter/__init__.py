@@ -29,6 +29,7 @@ from .windows.widgets import CTkProgressBar
 from .windows.widgets import CTkRadioButton
 from .windows.widgets import CTkScrollbar
 from .windows.widgets import CTkSegmentedButton
+from .windows.widgets import CTkSegmentedVerticalButton
 from .windows.widgets import CTkSlider
 from .windows.widgets import CTkSwitch
 from .windows.widgets import CTkTabview
