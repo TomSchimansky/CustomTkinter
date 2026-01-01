@@ -50,6 +50,7 @@ class DropdownMenu(tkinter.Menu, CTkAppearanceModeBaseClass, CTkScalingBaseClass
         # call destroy methods of super classes
         tkinter.Menu.destroy(self)
         CTkAppearanceModeBaseClass.destroy(self)
+        CTkScalingBaseClass.destroy(self)
 
     def _update_font(self):
         """ pass font to tkinter widgets with applied font scaling """
