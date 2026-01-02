@@ -6,29 +6,33 @@
 </p>
 
 <div align="center">
-
+  
 ![PyPI](https://img.shields.io/pypi/v/customtkinter)
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/customtkinter?color=green&label=downloads)
-![Downloads last 6 month](https://static.pepy.tech/personalized-badge/customtkinter?period=total&units=international_system&left_color=grey&right_color=green&left_text=downloads%20last%206%20month)
+![Downloads last 6 month](https://static.pepy.tech/personalized-badge/customtkinter?period=total&units=international_system&left_color=grey&right_color=green&left_text=total%20downloads)
 ![PyPI - License](https://img.shields.io/badge/license-MIT-blue)
-![LOC](https://tokei.rs/b1/github/tomschimansky/customtkinter?category=lines)
 ![Minimum Python Version](https://shields.io/badge/Minimum_Python-3.7-blue)
+
+---
+
+| Current Developers | Contact |
+|----------------------------------------------|-|
+| Tom Schimansky | contact@customtkinter.tomschimansky.com |
+| Federico Spada | www.linkedin.com/in/federicospada13 |
+
+<a href="https://www.paypal.com/donate/?hosted_button_id=LK5QAZYRN2R2A"><img src="documentation_images/paypal_donate_button.png" width=170 alt="Paypal donation button"></a>
+
 
 </div>
 
 ---
 
 <div align="center">
-<a href="https://www.paypal.com/donate/?hosted_button_id=LK5QAZYRN2R2A"><img src="documentation_images/paypal_donate_button.png" width=170 alt="Paypal donation button"></a>
 
-<a></a>
+<h2>
+Official website: https://customtkinter.tomschimansky.com/
+</h2>
 
-| Massive Thanks to all the People who Donated to help this Project 😇 |
-|----------------------------------------------|
-
-<h3>
-Official website: https://customtkinter.tomschimansky.com
-</h3>
 </div>
 
 CustomTkinter is a python UI-library based on Tkinter, which provides new, modern and
@@ -90,6 +94,11 @@ can find more example programs and in the [Documentation](https://github.com/Tom
 you can find further information on the appearance mode, scaling, themes and all widgets.
 
 ## More Examples and Showcase
+You can run the following code to show a simple App that displays all available widgets:
+```python
+import customtkinter as ctk
+ctk.run_showroom()
+```
 
 ### Appearance mode change and scaling change
 

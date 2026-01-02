@@ -164,3 +164,4 @@ cython_debug/
 documentation_images/customtkinter_design.afdesign
 images/
 Readme_pypi.md
+temp.py
