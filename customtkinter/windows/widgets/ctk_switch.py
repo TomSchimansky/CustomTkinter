@@ -255,6 +255,12 @@ class CTkSwitch(CTkBaseClass):
             self._text_label.configure(bg=self._apply_appearance_mode(self._bg_color))
 
     def configure(self, require_redraw=False, **kwargs):
+        if "onvalue" in kwargs:
+             self._onvalue = kwargs.pop("onvalue")
+
+        if "offvalue" in kwargs:
+             self._offvalue = kwargs.pop("offvalue")
+
         if "corner_radius" in kwargs:
             self._corner_radius = kwargs.pop("corner_radius")
             require_redraw = True
