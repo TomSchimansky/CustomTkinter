@@ -11,13 +11,14 @@
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/customtkinter?color=green&label=downloads)
 ![Downloads last 6 month](https://static.pepy.tech/personalized-badge/customtkinter?period=total&units=international_system&left_color=grey&right_color=green&left_text=total%20downloads)
 ![PyPI - License](https://img.shields.io/badge/license-MIT-blue)
+![Minimum Python Version](https://shields.io/badge/Minimum_Python-3.7-blue)
 
 ---
 
 | Current Developers | Contact |
 |----------------------------------------------|-|
 | Tom Schimansky | contact@customtkinter.tomschimansky.com |
-| Federico Spada | linkedin.com/in/federicospada13 |
+| Federico Spada | www.linkedin.com/in/federicospada13 |
 
 <a href="https://www.paypal.com/donate/?hosted_button_id=LK5QAZYRN2R2A"><img src="documentation_images/paypal_donate_button.png" width=170 alt="Paypal donation button"></a>
 
