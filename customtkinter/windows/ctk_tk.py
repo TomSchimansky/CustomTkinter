@@ -257,72 +257,84 @@ class CTk(CTK_PARENT_CLASS, CTkAppearanceModeBaseClass, CTkScalingBaseClass):
                     # This command reverts the dark-mode setting for all programs.
 
     def _windows_set_titlebar_color(self, color_mode: str):
-        """
-        Set the titlebar color of the window to light or dark theme on Microsoft Windows.
+    """
+    Set the titlebar color of the window to light or dark theme on Microsoft Windows.
 
-        Credits for this function:
-        https://stackoverflow.com/questions/23836000/can-i-change-the-title-bar-in-tkinter/70724666#70724666
+    Credits for this function:
+    [https://stackoverflow.com/questions/23836000/can-i-change-the-title-bar-in-tkinter/70724666#70724666](https://stackoverflow.com/questions/23836000/can-i-change-the-title-bar-in-tkinter/70724666#70724666)
 
-        MORE INFO:
-        https://docs.microsoft.com/en-us/windows/win32/api/dwmapi/ne-dwmapi-dwmwindowattribute
-        """
+    MORE INFO:
+    [https://docs.microsoft.com/en-us/windows/win32/api/dwmapi/ne-dwmapi-dwmwindowattribute](https://docs.microsoft.com/en-us/windows/win32/api/dwmapi/ne-dwmapi-dwmwindowattribute)
+    """
 
-        if sys.platform.startswith("win") and not self._deactivate_windows_window_header_manipulation:
+    if sys.platform.startswith("win") and not self._deactivate_windows_window_header_manipulation:
 
-            if self._window_exists:
-                self._state_before_windows_set_titlebar_color = self.state()
-                # print("window_exists -> state_before_windows_set_titlebar_color: ", self.state_before_windows_set_titlebar_color)
+        if self._window_exists:
+            self._state_before_windows_set_titlebar_color = self.state()
+            # print("window_exists -> state_before_windows_set_titlebar_color: ", self.state_before_windows_set_titlebar_color)
 
-                if self._state_before_windows_set_titlebar_color != "iconic" or self._state_before_windows_set_titlebar_color != "withdrawn":
-                    self.focused_widget_before_widthdraw = self.focus_get()
-                    super().withdraw()  # hide window so that it can be redrawn after the titlebar change so that the color change is visible
-            else:
-                # print("window dont exists -> withdraw and update")
+            if self._state_before_windows_set_titlebar_color != "iconic" or self._state_before_windows_set_titlebar_color != "withdrawn":
                 self.focused_widget_before_widthdraw = self.focus_get()
-                super().withdraw()
-                super().update()
+                super().withdraw()  # hide window so that it can be redrawn after the titlebar change so that the color change is visible
+        else:
+            # print("window dont exists -> withdraw and update")
+            self.focused_widget_before_widthdraw = self.focus_get()
+            super().withdraw()
+            super().update()
 
-            if color_mode.lower() == "dark":
-                value = 1
-            elif color_mode.lower() == "light":
-                value = 0
+        if color_mode.lower() == "dark":
+            value = 1
+        elif color_mode.lower() == "light":
+            value = 0
+        else:
+            return
+
+        try:
+            # Third key fix: use Tk's HWND directly instead of GetParent(...)
+            from ctypes import wintypes  # Windows HANDLE types
+            hwnd = self.winfo_id()  # on Windows this is an HWND
+
+            DWMWA_USE_IMMERSIVE_DARK_MODE = 20
+            DWMWA_USE_IMMERSIVE_DARK_MODE_BEFORE_20H1 = 19
+
+            c_val = ctypes.c_int(value)
+
+            # try with DWMWA_USE_IMMERSIVE_DARK_MODE
+            if ctypes.windll.dwmapi.DwmSetWindowAttribute(
+                wintypes.HWND(hwnd),
+                DWMWA_USE_IMMERSIVE_DARK_MODE,
+                ctypes.byref(c_val),
+                ctypes.sizeof(c_val)
+            ) != 0:
+
+                # try with DWMWA_USE_IMMERSIVE_DARK_MODE_BEFORE_20H1
+                ctypes.windll.dwmapi.DwmSetWindowAttribute(
+                    wintypes.HWND(hwnd),
+                    DWMWA_USE_IMMERSIVE_DARK_MODE_BEFORE_20H1,
+                    ctypes.byref(c_val),
+                    ctypes.sizeof(c_val)
+                )
+
+        except Exception as err:
+            print(err)
+
+        if self._window_exists or True:
+            # print("window_exists -> return to original state: ", self.state_before_windows_set_titlebar_color)
+            if self._state_before_windows_set_titlebar_color == "normal":
+                self.deiconify()
+            elif self._state_before_windows_set_titlebar_color == "iconic":
+                self.iconify()
+            elif self._state_before_windows_set_titlebar_color == "zoomed":
+                self.state("zoomed")
             else:
-                return
+                self.state(self._state_before_windows_set_titlebar_color)  # other states
+        else:
+            pass  # wait for update or mainloop to be called
 
-            try:
-                hwnd = ctypes.windll.user32.GetParent(self.winfo_id())
-                DWMWA_USE_IMMERSIVE_DARK_MODE = 20
-                DWMWA_USE_IMMERSIVE_DARK_MODE_BEFORE_20H1 = 19
+        if self.focused_widget_before_widthdraw is not None:
+            self.after(1, self.focused_widget_before_widthdraw.focus)
+            self.focused_widget_before_widthdraw = None
 
-                # try with DWMWA_USE_IMMERSIVE_DARK_MODE
-                if ctypes.windll.dwmapi.DwmSetWindowAttribute(hwnd, DWMWA_USE_IMMERSIVE_DARK_MODE,
-                                                              ctypes.byref(ctypes.c_int(value)),
-                                                              ctypes.sizeof(ctypes.c_int(value))) != 0:
-
-                    # try with DWMWA_USE_IMMERSIVE_DARK_MODE_BEFORE_20h1
-                    ctypes.windll.dwmapi.DwmSetWindowAttribute(hwnd, DWMWA_USE_IMMERSIVE_DARK_MODE_BEFORE_20H1,
-                                                               ctypes.byref(ctypes.c_int(value)),
-                                                               ctypes.sizeof(ctypes.c_int(value)))
-
-            except Exception as err:
-                print(err)
-
-            if self._window_exists or True:
-                # print("window_exists -> return to original state: ", self.state_before_windows_set_titlebar_color)
-                if self._state_before_windows_set_titlebar_color == "normal":
-                    self.deiconify()
-                elif self._state_before_windows_set_titlebar_color == "iconic":
-                    self.iconify()
-                elif self._state_before_windows_set_titlebar_color == "zoomed":
-                    self.state("zoomed")
-                else:
-                    self.state(self._state_before_windows_set_titlebar_color)  # other states
-            else:
-                pass  # wait for update or mainloop to be called
-
-            if self.focused_widget_before_widthdraw is not None:
-                self.after(1, self.focused_widget_before_widthdraw.focus)
-                self.focused_widget_before_widthdraw = None
 
     def _set_appearance_mode(self, mode_string: str):
         super()._set_appearance_mode(mode_string)
