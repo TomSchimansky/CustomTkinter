@@ -131,6 +131,14 @@ class CTkButton(CTkBaseClass):
                 self._text_label.bind("<Button-1>", self._clicked)
             if self._image_label is not None:
                 self._image_label.bind("<Button-1>", self._clicked)
+        if sequence is None or sequence == "<ButtonRelease-1>":
+            self._canvas.bind("<ButtonRelease-1>", self._on_release)
+
+            if self._text_label is not None:
+                self._text_label.bind("<ButtonRelease-1>", self._on_release)
+            if self._image_label is not None:
+               self._image_label.bind("<ButtonRelease-1>", self._on_release)
+
 
     def _set_scaling(self, *args, **kwargs):
         super()._set_scaling(*args, **kwargs)
@@ -544,14 +552,10 @@ class CTkButton(CTkBaseClass):
 
     def _clicked(self, event=None):
         if self._state != tkinter.DISABLED:
-
-            # click animation: change color with .on_leave() and back to normal after 100ms with click_animation()
-            self._on_leave()
+            self._on_leave() 
             self._click_animation_running = True
             self.after(100, self._click_animation)
-
-            if self._command is not None:
-                self._command()
+ 
 
     def invoke(self):
         """ calls command function if button is not disabled """
@@ -592,3 +596,14 @@ class CTkButton(CTkBaseClass):
 
     def focus_force(self):
         return self._text_label.focus_force()
+
+    def _on_release(self, event=None):
+        if self._state != tkinter.DISABLED:
+            x, y = event.x, event.y
+            width = self._canvas.winfo_width()
+            height = self._canvas.winfo_height()
+
+            if 0 <= x <= width and 0 <= y <= height:
+                if self._command is not None:
+                    self._command()
+
