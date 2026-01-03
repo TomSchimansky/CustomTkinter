@@ -73,7 +73,7 @@ class CTkScrollableFrame(tkinter.Frame, CTkAppearanceModeBaseClass, CTkScalingBa
         self._parent_canvas.configure(width=self._apply_widget_scaling(self._desired_width),
                                       height=self._apply_widget_scaling(self._desired_height))
 
-        self.bind("<Configure>", lambda e: self._parent_canvas.configure(scrollregion=self._parent_canvas.bbox("all")))
+        self.bind("<Configure>", self._update_scroll_region)
         self._parent_canvas.bind("<Configure>", self._fit_frame_dimensions_to_canvas)
         self.bind_all("<MouseWheel>", self._mouse_wheel_all, add="+")
         self.bind_all("<KeyPress-Shift_L>", self._keyboard_shift_press_all, add="+")
@@ -241,6 +241,23 @@ class CTkScrollableFrame(tkinter.Frame, CTkAppearanceModeBaseClass, CTkScalingBa
             self._parent_canvas.itemconfigure(self._create_window_id, height=self._parent_canvas.winfo_height())
         elif self._orientation == "vertical":
             self._parent_canvas.itemconfigure(self._create_window_id, width=self._parent_canvas.winfo_width())
+
+        self._check_scroll_necessity()
+
+    def _check_scroll_necessity(self):
+        canvas_height = self._parent_canvas.winfo_height()
+        content_height = self.winfo_height()
+
+        if content_height <= canvas_height:
+            self._scrollbar.grid_remove()
+            self._parent_canvas.configure(yscrollcommand=None)
+        else:
+            self._scrollbar.grid()
+            self._parent_canvas.configure(yscrollcommand=self._scrollbar.set)
+
+    def _update_scroll_region(self, event=None):
+        self._parent_canvas.configure(scrollregion=self._parent_canvas.bbox("all"))
+        self._check_scroll_necessity()
 
     def _set_scroll_increments(self):
         if sys.platform.startswith("win"):
