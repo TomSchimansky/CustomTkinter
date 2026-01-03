@@ -6,7 +6,7 @@ from .theme import ThemeManager
 from .core_rendering import DrawEngine
 from .core_widget_classes import CTkBaseClass
 from .font import CTkFont
-from .utility import pop_from_dict_by_set, check_kwargs_empty
+from .utility import pop_from_dict_by_set, check_kwargs_empty, handle_root_click, get_root_window
 
 
 class CTkEntry(CTkBaseClass):
@@ -39,6 +39,7 @@ class CTkEntry(CTkBaseClass):
                  placeholder_text: Union[str, None] = None,
                  font: Optional[Union[tuple, CTkFont]] = None,
                  state: str = tkinter.NORMAL,
+                 focus_loss_outside_click: bool = True,
                  **kwargs):
 
         # transfer basic functionality (bg_color, size, appearance_mode, scaling) to CTkBaseClass
@@ -65,6 +66,7 @@ class CTkEntry(CTkBaseClass):
         self._pre_placeholder_arguments = {}  # some set arguments of the entry will be changed for placeholder and then set back
         self._textvariable = textvariable
         self._state = state
+        self.focus_loss_outside_click = focus_loss_outside_click
         self._textvariable_callback_name: str = ""
 
         # font
@@ -95,10 +97,17 @@ class CTkEntry(CTkBaseClass):
         self._create_grid()
         self._activate_placeholder()
         self._create_bindings()
+
+        if self.focus_loss_outside_click:
+            self._root_window = get_root_window(self)
+            self._root_window.bind("<Button-1>", self.on_root_click, add=True)
+
         self._draw()
 
+    def on_root_click(self, event):
+        handle_root_click(self, event, self._entry)
+
     def _create_bindings(self, sequence: Optional[str] = None):
-        """ set necessary bindings for functionality of widget, will overwrite other bindings """
         if sequence is None or sequence == "<FocusIn>":
             self._entry.bind("<FocusIn>", self._entry_focus_in)
         if sequence is None or sequence == "<FocusOut>":
