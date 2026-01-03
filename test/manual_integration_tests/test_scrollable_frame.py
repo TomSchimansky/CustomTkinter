@@ -28,7 +28,7 @@ frame_4.configure(label_text="CTkScrollableFrame")
 frame_5 = customtkinter.CTkScrollableFrame(app, orientation="vertical", label_text="CTkScrollableFrame", corner_radius=0)
 frame_5.grid(row=0, column=2, rowspan=2, sticky="nsew")
 
-for i in range(100):
+for i in range(20):
     customtkinter.CTkCheckBox(frame_1).grid(row=i, padx=10, pady=10)
     customtkinter.CTkCheckBox(frame_2).grid(row=i, padx=10, pady=10)
     customtkinter.CTkCheckBox(frame_3).grid(row=0, column=i, padx=10, pady=10)
