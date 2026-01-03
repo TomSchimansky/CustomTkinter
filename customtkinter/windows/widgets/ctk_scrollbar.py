@@ -30,6 +30,7 @@ class CTkScrollbar(CTkBaseClass):
                  hover: bool = True,
                  command: Union[Callable, Any] = None,
                  orientation: str = "vertical",
+                 alias: str = "NA",
                  **kwargs):
 
         # set default dimensions according to orientation
@@ -46,6 +47,8 @@ class CTkScrollbar(CTkBaseClass):
 
         # transfer basic functionality (_bg_color, size, __appearance_mode, scaling) to CTkBaseClass
         super().__init__(master=master, bg_color=bg_color, width=width, height=height, **kwargs)
+
+        self.alias = alias
 
         # color
         self._fg_color = ThemeManager.theme["CTkScrollbar"]["fg_color"] if fg_color is None else self._check_color_type(fg_color, transparency=True)
@@ -187,6 +190,9 @@ class CTkScrollbar(CTkBaseClass):
             self._border_spacing = kwargs.pop("border_spacing")
             require_redraw = True
 
+        if "alias" in kwargs:
+            self.alias = kwargs.pop("alias")
+
         super().configure(require_redraw=require_redraw, **kwargs)
 
     def cget(self, attribute_name: str) -> any:
@@ -210,6 +216,8 @@ class CTkScrollbar(CTkBaseClass):
             return self._command
         elif attribute_name == "orientation":
             return self._orientation
+        elif attribute_name == "alias":
+            return self.alias
 
         else:
             return super().cget(attribute_name)

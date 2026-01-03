@@ -10,7 +10,7 @@ from .widgets.theme import ThemeManager
 from .widgets.scaling import CTkScalingBaseClass
 from .widgets.appearance_mode import CTkAppearanceModeBaseClass
 
-from customtkinter.windows.widgets.utility.utility_functions import pop_from_dict_by_set, check_kwargs_empty
+from customtkinter_FV_Automation.windows.widgets.utility.utility_functions import pop_from_dict_by_set, check_kwargs_empty
 
 CTK_PARENT_CLASS = tkinter.Tk
 

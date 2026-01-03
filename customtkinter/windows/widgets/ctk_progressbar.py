@@ -36,6 +36,7 @@ class CTkProgressBar(CTkBaseClass):
                  mode: Literal["determinate", "indeterminate"] = "determinate",
                  determinate_speed: float = 1,
                  indeterminate_speed: float = 1,
+                 alias: str = "NA",
                  **kwargs):
 
         # set default dimensions according to orientation
@@ -52,6 +53,8 @@ class CTkProgressBar(CTkBaseClass):
 
         # transfer basic functionality (_bg_color, size, __appearance_mode, scaling) to CTkBaseClass
         super().__init__(master=master, bg_color=bg_color, width=width, height=height, **kwargs)
+
+        self.alias = alias
 
         # color
         self._border_color = ThemeManager.theme["CTkProgressBar"]["border_color"] if border_color is None else self._check_color_type(border_color)
@@ -200,6 +203,9 @@ class CTkProgressBar(CTkBaseClass):
         if "indeterminate_speed" in kwargs:
             self._indeterminate_speed = kwargs.pop("indeterminate_speed")
 
+        if "alias" in kwargs:
+            self.alias = kwargs.pop("alias")
+
         super().configure(require_redraw=require_redraw, **kwargs)
 
     def cget(self, attribute_name: str) -> any:
@@ -225,6 +231,8 @@ class CTkProgressBar(CTkBaseClass):
             return self._determinate_speed
         elif attribute_name == "indeterminate_speed":
             return self._indeterminate_speed
+        elif attribute_name == "alias":
+            return self.alias
 
         else:
             return super().cget(attribute_name)

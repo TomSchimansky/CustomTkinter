@@ -36,9 +36,12 @@ class CTkScrollableFrame(tkinter.Frame, CTkAppearanceModeBaseClass, CTkScalingBa
                  label_text: str = "",
                  label_font: Optional[Union[tuple, CTkFont]] = None,
                  label_anchor: str = "center",
-                 orientation: Literal["vertical", "horizontal"] = "vertical"):
+                 orientation: Literal["vertical", "horizontal"] = "vertical",
+                 alias: str = "NA"):
 
         self._orientation = orientation
+
+        self.alias = alias
 
         # dimensions independent of scaling
         self._desired_width = width  # _desired_width and _desired_height, represent desired size set by width and height
@@ -207,6 +210,9 @@ class CTkScrollableFrame(tkinter.Frame, CTkAppearanceModeBaseClass, CTkScalingBa
         if "label_anchor" in kwargs:
             self._label.configure(anchor=kwargs.pop("label_anchor"))
 
+        if "alias" in kwargs:
+            self.alias = kwargs.pop("alias")
+
         self._parent_frame.configure(**kwargs)
 
     def cget(self, attribute_name: str):
@@ -232,6 +238,8 @@ class CTkScrollableFrame(tkinter.Frame, CTkAppearanceModeBaseClass, CTkScalingBa
             return self._scrollbar.cget("button_color")
         elif attribute_name.startswith("scrollbar_button_hover_color"):
             return self._scrollbar.cget("button_hover_color")
+        elif attribute_name == "alias":
+            return self.alias
 
         else:
             return self._parent_frame.cget(attribute_name)
