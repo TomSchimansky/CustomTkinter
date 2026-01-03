@@ -84,5 +84,10 @@ def deactivate_automatic_dpi_awareness():
     ScalingTracker.deactivate_automatic_dpi_awareness = True
 
 
+def activate_automatic_dpi_awareness():
+    """ activate DPI awareness of current process (windll.shcore.SetProcessDpiAwareness(1)) """
+    ScalingTracker.deactivate_automatic_dpi_awareness = False
+
+
 def set_ctk_parent_class(ctk_parent_class):
     ctk_tk.CTK_PARENT_CLASS = ctk_parent_class
