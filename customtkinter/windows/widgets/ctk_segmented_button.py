@@ -376,6 +376,8 @@ class CTkSegmentedButton(CTkFrame):
             return self._dynamic_resizing
         elif attribute_name == "command":
             return self._command
+        elif attribute_name == "orientation":
+            return self._orientation
 
         else:
             raise ValueError(f"'{attribute_name}' is not a supported argument. Look at the documentation for supported arguments.")
