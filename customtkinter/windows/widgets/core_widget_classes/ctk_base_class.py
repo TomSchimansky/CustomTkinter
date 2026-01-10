@@ -2,7 +2,7 @@ import sys
 import warnings
 import tkinter
 import tkinter.ttk as ttk
-from typing import Union, Callable, Tuple
+from typing import Union, Callable, Tuple, Any
 
 try:
     from typing import TypedDict
@@ -30,7 +30,7 @@ class CTkBaseClass(tkinter.Frame, CTkAppearanceModeBaseClass, CTkScalingBaseClas
     _cursor_manipulation_enabled: bool = True
 
     def __init__(self,
-                 master: any,
+                 master: Any,
                  width: int = 0,
                  height: int = 0,
 

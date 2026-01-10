@@ -1,19 +1,6 @@
-import sys
 import tkinter
-from distutils.version import StrictVersion as Version
 from typing import Callable
-
-try:
-    import darkdetect
-
-    if Version(darkdetect.__version__) < Version("0.3.1"):
-        sys.stderr.write("WARNING: You have to upgrade the darkdetect library: pip3 install --upgrade darkdetect\n")
-        if sys.platform != "darwin":
-            exit()
-except ImportError as err:
-    raise err
-except Exception:
-    sys.stderr.write("customtkinter.appearance_mode_tracker warning: failed to import darkdetect")
+import darkdetect
 
 
 class AppearanceModeTracker:

@@ -11,6 +11,17 @@ ToDo:
  - add option to change label position for checkbox, switch, radiobutton #628
 
 
+## [5.2.0] - 2022-05-02
+### Added
+ - Mostly bug fixes
+
+## [5.1.0] - 2022-05-02
+### Added
+ - Added CTkScrollableFrame
+
+### Changed
+ - Changed license to MIT
+
 ## [5.0.0] - 2022-11-13
 ### Added
  - Added CTkTextbox with automatic x and y scrollbars, corner_radius, border_width, border_spacing

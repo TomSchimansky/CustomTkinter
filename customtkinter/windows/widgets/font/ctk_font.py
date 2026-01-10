@@ -52,7 +52,10 @@ class CTkFont(Font):
 
     def remove_size_configure_callback(self, callback: Callable):
         """ remove function, that gets called when font got configured """
-        self._size_configure_callback_list.remove(callback)
+        try:
+            self._size_configure_callback_list.remove(callback)
+        except ValueError:
+            pass
 
     def create_scaled_tuple(self, font_scaling: float) -> Tuple[str, int, str]:
         """ return scaled tuple representation of font in the form (family: str, size: int, style: str)"""

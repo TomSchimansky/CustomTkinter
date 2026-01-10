@@ -1,4 +1,4 @@
-from typing import Union, Tuple, List, Optional
+from typing import Union, Tuple, List, Optional, Any
 
 from .core_rendering import CTkCanvas
 from .theme import ThemeManager
@@ -15,7 +15,7 @@ class CTkFrame(CTkBaseClass):
     """
 
     def __init__(self,
-                 master: any,
+                 master: Any,
                  width: int = 200,
                  height: int = 200,
                  corner_radius: Optional[Union[int, str]] = None,

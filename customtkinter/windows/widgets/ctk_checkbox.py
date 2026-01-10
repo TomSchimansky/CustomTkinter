@@ -1,6 +1,6 @@
 import tkinter
 import sys
-from typing import Union, Tuple, Callable, Optional
+from typing import Union, Tuple, Callable, Optional, Any
 
 from .core_rendering import CTkCanvas
 from .theme import ThemeManager
@@ -16,7 +16,7 @@ class CTkCheckBox(CTkBaseClass):
     """
 
     def __init__(self,
-                 master: any,
+                 master: Any,
                  width: int = 100,
                  height: int = 24,
                  checkbox_width: int = 24,
@@ -37,7 +37,7 @@ class CTkCheckBox(CTkBaseClass):
                  textvariable: Union[tkinter.Variable, None] = None,
                  state: str = tkinter.NORMAL,
                  hover: bool = True,
-                 command: Union[Callable[[], None], None] = None,
+                 command: Union[Callable[[], Any], None] = None,
                  onvalue: Union[int, str] = 1,
                  offvalue: Union[int, str] = 0,
                  variable: Union[tkinter.Variable, None] = None,
@@ -51,20 +51,20 @@ class CTkCheckBox(CTkBaseClass):
         self._checkbox_height = checkbox_height
 
         # color
-        self._fg_color = ThemeManager.theme["CTkCheckbox"]["fg_color"] if fg_color is None else self._check_color_type(fg_color)
-        self._hover_color = ThemeManager.theme["CTkCheckbox"]["hover_color"] if hover_color is None else self._check_color_type(hover_color)
-        self._border_color = ThemeManager.theme["CTkCheckbox"]["border_color"] if border_color is None else self._check_color_type(border_color)
-        self._checkmark_color = ThemeManager.theme["CTkCheckbox"]["checkmark_color"] if checkmark_color is None else self._check_color_type(checkmark_color)
+        self._fg_color = ThemeManager.theme["CTkCheckBox"]["fg_color"] if fg_color is None else self._check_color_type(fg_color)
+        self._hover_color = ThemeManager.theme["CTkCheckBox"]["hover_color"] if hover_color is None else self._check_color_type(hover_color)
+        self._border_color = ThemeManager.theme["CTkCheckBox"]["border_color"] if border_color is None else self._check_color_type(border_color)
+        self._checkmark_color = ThemeManager.theme["CTkCheckBox"]["checkmark_color"] if checkmark_color is None else self._check_color_type(checkmark_color)
 
         # shape
-        self._corner_radius = ThemeManager.theme["CTkCheckbox"]["corner_radius"] if corner_radius is None else corner_radius
-        self._border_width = ThemeManager.theme["CTkCheckbox"]["border_width"] if border_width is None else border_width
+        self._corner_radius = ThemeManager.theme["CTkCheckBox"]["corner_radius"] if corner_radius is None else corner_radius
+        self._border_width = ThemeManager.theme["CTkCheckBox"]["border_width"] if border_width is None else border_width
 
         # text
         self._text = text
         self._text_label: Union[tkinter.Label, None] = None
-        self._text_color = ThemeManager.theme["CTkCheckbox"]["text_color"] if text_color is None else self._check_color_type(text_color)
-        self._text_color_disabled = ThemeManager.theme["CTkCheckbox"]["text_color_disabled"] if text_color_disabled is None else self._check_color_type(text_color_disabled)
+        self._text_color = ThemeManager.theme["CTkCheckBox"]["text_color"] if text_color is None else self._check_color_type(text_color)
+        self._text_color_disabled = ThemeManager.theme["CTkCheckBox"]["text_color_disabled"] if text_color_disabled is None else self._check_color_type(text_color_disabled)
 
         # font
         self._font = CTkFont() if font is None else self._check_font_type(font)
@@ -265,12 +265,20 @@ class CTkCheckBox(CTkBaseClass):
             self._hover_color = self._check_color_type(kwargs.pop("hover_color"))
             require_redraw = True
 
+        if "border_color" in kwargs:
+            self._border_color = self._check_color_type(kwargs.pop("border_color"))
+            require_redraw = True
+
+        if "checkmark_color" in kwargs:
+            self._checkmark_color = self._check_color_type(kwargs.pop("checkmark_color"))
+            require_redraw = True
+
         if "text_color" in kwargs:
             self._text_color = self._check_color_type(kwargs.pop("text_color"))
             require_redraw = True
 
-        if "border_color" in kwargs:
-            self._border_color = self._check_color_type(kwargs.pop("border_color"))
+        if "text_color_disabled" in kwargs:
+            self._text_color_disabled = self._check_color_type(kwargs.pop("text_color_disabled"))
             require_redraw = True
 
         if "hover" in kwargs:

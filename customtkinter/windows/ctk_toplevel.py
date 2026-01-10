@@ -1,5 +1,5 @@
 import tkinter
-from distutils.version import StrictVersion as Version
+from packaging import version
 import sys
 import os
 import platform
@@ -19,7 +19,7 @@ class CTkToplevel(tkinter.Toplevel, CTkAppearanceModeBaseClass, CTkScalingBaseCl
     For detailed information check out the documentation.
     """
 
-    _valid_tk_toplevel_arguments: set = {"bd", "borderwidth", "class", "container", "cursor", "height",
+    _valid_tk_toplevel_arguments: set = {"master", "bd", "borderwidth", "class", "container", "cursor", "height",
                                          "highlightbackground", "highlightthickness", "menu", "relief",
                                          "screen", "takefocus", "use", "visual", "width"}
 
@@ -215,15 +215,15 @@ class CTkToplevel(tkinter.Toplevel, CTkAppearanceModeBaseClass, CTkScalingBaseCl
     @classmethod
     def _enable_macos_dark_title_bar(cls):
         if sys.platform == "darwin" and not cls._deactivate_macos_window_header_manipulation:  # macOS
-            if Version(platform.python_version()) < Version("3.10"):
-                if Version(tkinter.Tcl().call("info", "patchlevel")) >= Version("8.6.9"):  # Tcl/Tk >= 8.6.9
+            if version.parse(platform.python_version()) < version.parse("3.10"):
+                if version.parse(tkinter.Tcl().call("info", "patchlevel")) >= version.parse("8.6.9"):  # Tcl/Tk >= 8.6.9
                     os.system("defaults write -g NSRequiresAquaSystemAppearance -bool No")
 
     @classmethod
     def _disable_macos_dark_title_bar(cls):
         if sys.platform == "darwin" and not cls._deactivate_macos_window_header_manipulation:  # macOS
-            if Version(platform.python_version()) < Version("3.10"):
-                if Version(tkinter.Tcl().call("info", "patchlevel")) >= Version("8.6.9"):  # Tcl/Tk >= 8.6.9
+            if version.parse(platform.python_version()) < version.parse("3.10"):
+                if version.parse(tkinter.Tcl().call("info", "patchlevel")) >= version.parse("8.6.9"):  # Tcl/Tk >= 8.6.9
                     os.system("defaults delete -g NSRequiresAquaSystemAppearance")
                     # This command reverts the dark-mode setting for all programs.
 

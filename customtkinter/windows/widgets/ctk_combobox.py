@@ -1,7 +1,7 @@
 import tkinter
 import sys
 import copy
-from typing import Union, Tuple, Callable, List, Optional
+from typing import Union, Tuple, Callable, List, Optional, Any
 
 from .core_widget_classes import DropdownMenu
 from .core_rendering import CTkCanvas
@@ -18,7 +18,7 @@ class CTkComboBox(CTkBaseClass):
     """
 
     def __init__(self,
-                 master: any,
+                 master: Any,
                  width: int = 140,
                  height: int = 28,
                  corner_radius: Optional[int] = None,
@@ -41,7 +41,7 @@ class CTkComboBox(CTkBaseClass):
                  state: str = tkinter.NORMAL,
                  hover: bool = True,
                  variable: Union[tkinter.Variable, None] = None,
-                 command: Union[Callable[[str], None], None] = None,
+                 command: Union[Callable[[str], Any], None] = None,
                  justify: str = "left",
                  **kwargs):
 
