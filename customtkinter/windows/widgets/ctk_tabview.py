@@ -7,6 +7,7 @@ from .core_rendering import CTkCanvas
 from .core_rendering import DrawEngine
 from .core_widget_classes import CTkBaseClass
 from .ctk_segmented_button import CTkSegmentedButton
+from .font import CTkFont
 
 
 class CTkTabview(CTkBaseClass):
@@ -36,6 +37,7 @@ class CTkTabview(CTkBaseClass):
                  segmented_button_selected_hover_color: Optional[Union[str, Tuple[str, str]]] = None,
                  segmented_button_unselected_color: Optional[Union[str, Tuple[str, str]]] = None,
                  segmented_button_unselected_hover_color: Optional[Union[str, Tuple[str, str]]] = None,
+                 segmented_button_font: Optional[Union[tuple, CTkFont]] = None,
 
                  text_color: Optional[Union[str, Tuple[str, str]]] = None,
                  text_color_disabled: Optional[Union[str, Tuple[str, str]]] = None,
@@ -75,6 +77,9 @@ class CTkTabview(CTkBaseClass):
                                  height=self._apply_widget_scaling(self._desired_height - self._outer_spacing - self._outer_button_overhang))
         self._draw_engine = DrawEngine(self._canvas)
 
+        # segmented_button_font font
+        self._segmented_button_font = CTkFont() if segmented_button_font is None else segmented_button_font
+
         self._segmented_button = CTkSegmentedButton(self,
                                                     values=[],
                                                     height=self._button_height,
@@ -88,6 +93,7 @@ class CTkTabview(CTkBaseClass):
                                                     corner_radius=corner_radius,
                                                     border_width=self._segmented_button_border_width,
                                                     command=self._segmented_button_callback,
+                                                    font=self._segmented_button_font,
                                                     state=state)
         self._configure_segmented_button_background_corners()
         self._configure_grid()
@@ -278,6 +284,10 @@ class CTkTabview(CTkBaseClass):
         if "text_color_disabled" in kwargs:
             self._segmented_button.configure(text_color_disabled=kwargs.pop("text_color_disabled"))
 
+        if "segmented_button_font" in kwargs:
+            self._segmented_button_font = kwargs.pop("segmented_button_font")
+            self._segmented_button.configure(font=self._segmented_button_font)
+
         if "command" in kwargs:
             self._command = kwargs.pop("command")
         if "anchor" in kwargs:
@@ -313,6 +323,9 @@ class CTkTabview(CTkBaseClass):
             return self._segmented_button.cget(attribute_name)
         elif attribute_name == "text_color_disabled":
             return self._segmented_button.cget(attribute_name)
+
+        elif attribute_name == "segmented_button_font":
+            return self._segmented_button_font
 
         elif attribute_name == "command":
             return self._command
@@ -382,11 +395,14 @@ class CTkTabview(CTkBaseClass):
         self._segmented_button.insert(old_index, new_name)
 
         # name list
-        self._name_list.remove(old_name)
-        self._name_list.append(new_name)
+        self._name_list[self._name_list.index(old_name)] = new_name
 
         # tab dictionary
         self._tab_dict[new_name] = self._tab_dict.pop(old_name)
+
+        # update current_name so we don't loose the connection to the frame
+        if self._current_name == old_name:
+            self._current_name = new_name
 
     def delete(self, name: str):
         """ delete tab by name """
@@ -428,6 +444,22 @@ class CTkTabview(CTkBaseClass):
         else:
             raise ValueError(f"CTkTabview has no tab named '{name}'")
 
-    def get(self) -> str:
-        """ returns name of selected tab, returns empty string if no tab selected """
-        return self._current_name
+    def get(self, index: Optional[int] = None) -> str:
+        """ returns name of selected tab, returns empty string if no tab selected.\n
+        if an index is provided, returns the tab name in that position """
+        if index is None:
+            return self._current_name
+        else:
+            return self._name_list[index]
+
+    def index(self, name: str = "") -> int:
+        """ returns index of selected tab, raises ValueError if no tab selected\n
+        if a name is provided, returns the associated index or raises ValueError if no tab is found """
+        if name == "":
+            return self._name_list.index(self._current_name)
+        else:
+            return self._name_list.index(name)
+        
+    def len(self) -> int:
+        """ returns the number of defined tabs """
+        return len(self._name_list)

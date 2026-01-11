@@ -50,7 +50,7 @@ class CTkLabel(CTkBaseClass):
 
         if text_color_disabled is None:
             if "text_color_disabled" in ThemeManager.theme["CTkLabel"]:
-                self._text_color_disabled = ThemeManager.theme["CTkLabel"]["text_color"]
+                self._text_color_disabled = ThemeManager.theme["CTkLabel"]["text_color_disabled"]
             else:
                 self._text_color_disabled = self._text_color
         else:

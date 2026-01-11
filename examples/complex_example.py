@@ -132,7 +132,7 @@ class App(customtkinter.CTk):
         self.scrollable_frame_switches[0].select()
         self.scrollable_frame_switches[4].select()
         self.radio_button_3.configure(state="disabled")
-        self.appearance_mode_optionemenu.set("Dark")
+        self.appearance_mode_optionemenu.set("System")
         self.scaling_optionemenu.set("100%")
         self.optionmenu_1.set("CTkOptionmenu")
         self.combobox_1.set("CTkComboBox")
