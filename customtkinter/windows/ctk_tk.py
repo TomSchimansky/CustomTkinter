@@ -278,6 +278,7 @@ class CTk(CTK_PARENT_CLASS, CTkAppearanceModeBaseClass, CTkScalingBaseClass):
                     super().withdraw()  # hide window so that it can be redrawn after the titlebar change so that the color change is visible
             else:
                 # print("window dont exists -> withdraw and update")
+                self._state_before_windows_set_titlebar_color = self.state()
                 self.focused_widget_before_widthdraw = self.focus_get()
                 super().withdraw()
                 super().update()
