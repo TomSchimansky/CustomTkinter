@@ -174,6 +174,14 @@ class CTkOptionMenu(CTkBaseClass):
         self._canvas.grid(row=0, column=0, sticky="nsew")
 
     def destroy(self):
+        # The dropdown menu is a separate Tk widget and must be destroyed explicitly.
+        if self._dropdown_menu is not None:
+            try:
+                self._dropdown_menu.destroy()
+            except tkinter.TclError:
+                pass
+            self._dropdown_menu = None
+
         if self._variable is not None:  # remove old callback
             self._variable.trace_remove("write", self._variable_callback_name)
 

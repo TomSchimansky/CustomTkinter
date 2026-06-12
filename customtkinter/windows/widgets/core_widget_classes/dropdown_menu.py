@@ -47,6 +47,9 @@ class DropdownMenu(tkinter.Menu, CTkAppearanceModeBaseClass, CTkScalingBaseClass
         if isinstance(self._font, CTkFont):
             self._font.remove_size_configure_callback(self._update_font)
 
+        # Remove the scaling callback before destroying the underlying Tk menu.
+        CTkScalingBaseClass.destroy(self)
+
         # call destroy methods of super classes
         tkinter.Menu.destroy(self)
         CTkAppearanceModeBaseClass.destroy(self)
