@@ -70,6 +70,11 @@ class CTkBaseClass(tkinter.Frame, CTkAppearanceModeBaseClass, CTkScalingBaseClas
         # add configure callback to tkinter.Frame
         super().bind('<Configure>', self._update_dimensions_event)
 
+        # focus handling
+        self._has_focus: bool = False
+        self._focus_enabled: bool = True
+        self._enable_focus_handling()
+
         # overwrite configure methods of master when master is tkinter widget, so that bg changes get applied on child CTk widget as well
         if isinstance(self.master, (tkinter.Tk, tkinter.Toplevel, tkinter.Frame, tkinter.LabelFrame, ttk.Frame, ttk.LabelFrame, ttk.Notebook)) and not isinstance(self.master, (CTkBaseClass, CTkAppearanceModeBaseClass)):
             master_old_configure = self.master.config
@@ -90,6 +95,37 @@ class CTkBaseClass(tkinter.Frame, CTkAppearanceModeBaseClass, CTkScalingBaseClas
 
             self.master.config = new_configure
             self.master.configure = new_configure
+            
+    def _enable_focus_handling(self):
+        """Enable keyboard focus handling (Tab navigation)."""
+    
+        if not self._focus_enabled:
+            return
+    
+        # allow widget to receive focus via Tab
+        try:
+            super().configure(takefocus=True)
+        except Exception:
+            pass
+    
+        # bind focus events
+        super().bind("<FocusIn>", self._on_focus_in, add="+")
+        super().bind("<FocusOut>", self._on_focus_out, add="+")
+
+    def _on_focus_in(self, event=None):
+        self._has_focus = True
+        self._apply_focus_state()
+
+    def _on_focus_out(self, event=None):
+        self._has_focus = False
+        self._apply_focus_state()
+        
+    def _apply_focus_state(self):
+        """
+        Called when focus state changes.
+        Subclasses override this to apply visual focus indication.
+        """
+        pass
 
     def destroy(self):
         """ Destroy this and all descendants widgets. """
