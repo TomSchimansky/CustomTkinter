@@ -4,6 +4,7 @@ from .core_rendering import CTkCanvas
 from .theme import ThemeManager
 from .core_rendering import DrawEngine
 from .core_widget_classes import CTkBaseClass
+import customtkinter.windows.widgets as widgets
 
 
 class CTkFrame(CTkBaseClass):
@@ -44,6 +45,8 @@ class CTkFrame(CTkBaseClass):
                     self._fg_color = ThemeManager.theme["CTkFrame"]["fg_color"]
             else:
                 self._fg_color = ThemeManager.theme["CTkFrame"]["fg_color"]
+            if isinstance(self.master, widgets.ctk_scrollable_frame.CTkScrollableFrame):
+                self._fg_color = ThemeManager.theme["CTkFrame"]["top_fg_color"]
         else:
             self._fg_color = self._check_color_type(fg_color, transparency=True)
 
