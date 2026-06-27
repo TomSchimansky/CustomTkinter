@@ -29,7 +29,7 @@ class CTkTextbox(CTkBaseClass):
                                  "insertborderwidth", "insertofftime", "insertontime", "insertwidth",
                                  "maxundo", "padx", "pady", "selectborderwidth", "spacing1",
                                  "spacing2", "spacing3", "state", "tabs", "takefocus", "undo", "wrap",
-                                 "xscrollcommand", "yscrollcommand"}
+                                 "xscrollcommand", "yscrollcommand", "selectforeground", "selectbackground"}
 
     def __init__(self,
                  master: any,
