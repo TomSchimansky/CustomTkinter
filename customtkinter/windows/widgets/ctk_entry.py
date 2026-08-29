@@ -313,7 +313,7 @@ class CTkEntry(CTkBaseClass):
             self._entry.insert(0, self._placeholder_text)
 
     def _deactivate_placeholder(self):
-        if self._placeholder_text_active and self._entry.cget("state") != "readonly":
+        if self._placeholder_text_active and self._entry.cget("state") not in ("disabled", "readonly"):
             self._placeholder_text_active = False
 
             self._entry.config(fg=self._apply_appearance_mode(self._text_color),
