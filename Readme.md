@@ -6,7 +6,7 @@
 </p>
 
 <div align="center">
-  
+
 ![PyPI](https://img.shields.io/pypi/v/customtkinter)
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/customtkinter?color=green&label=downloads)
 ![Downloads last 6 month](https://static.pepy.tech/personalized-badge/customtkinter?period=total&units=international_system&left_color=grey&right_color=green&left_text=total%20downloads)
@@ -73,8 +73,8 @@ import customtkinter
 customtkinter.set_appearance_mode("System")  # Modes: system (default), light, dark
 customtkinter.set_default_color_theme("blue")  # Themes: blue (default), dark-blue, green
 
-app = customtkinter.CTk()  # create CTk window like you do with the Tk window
-app.geometry("400x240")
+app = customtkinter.CTk()  # Create CTk window like you do with a Tk window
+app.geometry("400x240")  # Modify the size of the window
 
 def button_function():
     print("button pressed")
@@ -90,8 +90,8 @@ which results in the following window on macOS:
 <img src="documentation_images/single_button_macOS.png" width="400"/>
 
 In the [examples folder](https://github.com/TomSchimansky/CustomTkinter/tree/master/examples), you
-can find more example programs and in the [Documentation](https://github.com/TomSchimansky/CustomTkinter/wiki)
-you can find further information on the appearance mode, scaling, themes and all widgets.
+can find more example programs, as well as the complete [Documentation](https://github.com/TomSchimansky/CustomTkinter/wiki)
+which provides further information on the appearance mode, scaling, themes and all widgets.
 
 ## More Examples and Showcase
 You can run the following code to show a simple App that displays all available widgets:
