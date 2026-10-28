@@ -1,3 +1,7 @@
+import os
+import re
+import subprocess
+import time
 import tkinter
 import sys
 from typing import Callable
@@ -15,6 +19,10 @@ class ScalingTracker:
     update_loop_running = False
     update_loop_interval = 100  # ms
     loop_pause_after_new_scaling = 1500  # ms
+
+    linux_scaling_cache_duration = 2  # s
+    _linux_scaling_cache = None
+    _linux_scaling_cache_time = 0
 
     @classmethod
     def get_widget_scaling(cls, widget) -> float:
@@ -145,7 +153,7 @@ class ScalingTracker:
 
                 ctypes.windll.shcore.SetProcessDpiAwareness(2)  # Titlebar does not scale at runtime
             else:
-                pass  # DPI awareness on Linux not implemented
+                pass  # X11/XWayland windows are not scaled by the compositor, scaling factor is detected in get_window_dpi_scaling
 
     @classmethod
     def get_window_dpi_scaling(cls, window) -> float:
@@ -165,8 +173,52 @@ class ScalingTracker:
                 return (x_dpi.value + y_dpi.value) / (2 * DPI100pc)
 
             else:
-                return 1  # DPI awareness on Linux not implemented
+                return cls._get_linux_dpi_scaling()
         else:
+            return 1
+
+    @classmethod
+    def _get_linux_dpi_scaling(cls) -> float:
+        """ detect scaling factor on Linux (GNOME), result is cached because this gets polled often """
+
+        now = time.monotonic()
+        if cls._linux_scaling_cache is not None and now - cls._linux_scaling_cache_time < cls.linux_scaling_cache_duration:
+            return cls._linux_scaling_cache
+
+        scaling = cls._detect_linux_dpi_scaling()
+        cls._linux_scaling_cache = min(max(scaling, 1.0), 4.0)
+        cls._linux_scaling_cache_time = now
+        return cls._linux_scaling_cache
+
+    @staticmethod
+    def _run_command(command: list) -> str:
+        try:
+            return subprocess.run(command, capture_output=True, text=True, timeout=1).stdout
+        except Exception:
+            return ""
+
+    @classmethod
+    def _detect_linux_dpi_scaling(cls) -> float:
+        # 1. GDK environment variables
+        try:
+            if "GDK_SCALE" in os.environ:
+                return float(os.environ["GDK_SCALE"]) * float(os.environ.get("GDK_DPI_SCALE", 1))
+        except ValueError:
+            pass
+
+        # 2. Xft.dpi, set by the GNOME settings daemon (X11 and XWayland): 96 * scale * text scale
+        match = re.search(r"^Xft\.dpi:\s*([\d.]+)", cls._run_command(["xrdb", "-query"]), re.MULTILINE)
+        if match:
+            return float(match.group(1)) / 96
+
+        # 3. GNOME settings
+        try:
+            output = cls._run_command(["gsettings", "get", "org.gnome.desktop.interface", "scaling-factor"])
+            scale = int(output.split()[-1]) if output.strip() else 0
+            output = cls._run_command(["gsettings", "get", "org.gnome.desktop.interface", "text-scaling-factor"])
+            text_scale = float(output.strip()) if output.strip() else 1.0
+            return max(scale, 1) * text_scale
+        except ValueError:
             return 1
 
     @classmethod
