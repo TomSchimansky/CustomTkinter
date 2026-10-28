@@ -38,9 +38,21 @@ class App(customtkinter.CTk):
         self.appearance_mode_optionemenu.grid(row=6, column=0, padx=20, pady=(10, 10))
         self.scaling_label = customtkinter.CTkLabel(self.sidebar_frame, text="UI Scaling:", anchor="w")
         self.scaling_label.grid(row=7, column=0, padx=20, pady=(10, 0))
-        self.scaling_optionemenu = customtkinter.CTkOptionMenu(self.sidebar_frame, values=["80%", "90%", "100%", "110%", "120%"],
+        self.scaling_values = ["80%", "90%", "100%", "110%", "120%"]
+        self.scaling_optionemenu = customtkinter.CTkOptionMenu(self.sidebar_frame, values=self.scaling_values,
                                                                command=self.change_scaling_event)
         self.scaling_optionemenu.grid(row=8, column=0, padx=20, pady=(10, 20))
+
+        # keyboard shortcuts for zoom (Ctrl/Cmd + / - / 0)
+        for key in ("<Control-plus>", "<Control-equal>", "<Control-KP_Add>",
+                    "<Command-plus>", "<Command-equal>", "<Command-KP_Add>"):
+            self.bind(key, self.zoom_in_event)
+        for key in ("<Control-minus>", "<Control-KP_Subtract>",
+                    "<Command-minus>", "<Command-KP_Subtract>"):
+            self.bind(key, self.zoom_out_event)
+        for key in ("<Control-0>", "<Control-KP_0>",
+                    "<Command-0>", "<Command-KP_0>"):
+            self.bind(key, self.zoom_reset_event)
 
         # create main entry and button
         self.entry = customtkinter.CTkEntry(self, placeholder_text="CTkEntry")
@@ -154,6 +166,28 @@ class App(customtkinter.CTk):
     def change_scaling_event(self, new_scaling: str):
         new_scaling_float = int(new_scaling.replace("%", "")) / 100
         customtkinter.set_widget_scaling(new_scaling_float)
+
+    def zoom_in_event(self, event=None):
+        current_value = self.scaling_optionemenu.get()
+        if current_value in self.scaling_values:
+            current_index = self.scaling_values.index(current_value)
+            if current_index < len(self.scaling_values) - 1:
+                new_value = self.scaling_values[current_index + 1]
+                self.scaling_optionemenu.set(new_value)
+                self.change_scaling_event(new_value)
+
+    def zoom_out_event(self, event=None):
+        current_value = self.scaling_optionemenu.get()
+        if current_value in self.scaling_values:
+            current_index = self.scaling_values.index(current_value)
+            if current_index > 0:
+                new_value = self.scaling_values[current_index - 1]
+                self.scaling_optionemenu.set(new_value)
+                self.change_scaling_event(new_value)
+
+    def zoom_reset_event(self, event=None):
+        self.scaling_optionemenu.set("100%")
+        self.change_scaling_event("100%")
 
     def sidebar_button_event(self):
         print("sidebar_button click")
