@@ -101,6 +101,8 @@ class CTkCheckBox(CTkBaseClass):
                                  width=self._apply_widget_scaling(self._checkbox_width),
                                  height=self._apply_widget_scaling(self._checkbox_height))
         self._canvas.grid(row=0, column=0, sticky="e")
+        self._canvas.configure(takefocus=True)
+        
         self._draw_engine = DrawEngine(self._canvas)
 
         self._text_label = tkinter.Label(master=self,
@@ -118,10 +120,25 @@ class CTkCheckBox(CTkBaseClass):
         if self._variable is not None and self._variable != "":
             self._variable_callback_name = self._variable.trace_add("write", self._variable_callback)
             self._check_state = True if self._variable.get() == self._onvalue else False
+            
+        self.bind("<FocusIn>", lambda e: self._highlight(True))
+        self.bind("<FocusOut>", lambda e: self._highlight(False))
 
         self._create_bindings()
         self._set_cursor()
         self._draw()
+        
+    def _highlight(self, is_active):
+        if is_active:
+            # Changes colors of text and border to be the theme the user chooses.
+            themed_border = ThemeManager.theme["CTkButton"]["fg_color"] # mimic the CTkButton theme fg_color
+            themed_text = ThemeManager.theme["CTkButton"]["fg_color"] # mimic the CTkButton theme fg_color
+            self.configure(border_color=themed_border, border_width=2, text_color=themed_text)
+        else:
+            # Pull original themed values to restore them
+            themed_border = ThemeManager.theme["CTkCheckBox"]["border_color"] # return normal CTkCheckBox colors
+            themed_text = ThemeManager.theme["CTkCheckBox"]["text_color"] # return normal CTkCheckBox colors
+            self.configure(border_color=themed_border, border_width=2, text_color=themed_text)
 
     def _create_bindings(self, sequence: Optional[str] = None):
         """ set necessary bindings for functionality of widget, will overwrite other bindings """
@@ -134,6 +151,9 @@ class CTkCheckBox(CTkBaseClass):
         if sequence is None or sequence == "<Button-1>":
             self._canvas.bind("<Button-1>", self.toggle)
             self._text_label.bind("<Button-1>", self.toggle)
+        if sequence is None or sequence == "<space>":   
+            self._canvas.bind("<space>", self.toggle)
+            self._text_label.bind("<space>", self.toggle)
 
     def _set_scaling(self, *args, **kwargs):
         super()._set_scaling(*args, **kwargs)
