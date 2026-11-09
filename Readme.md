@@ -15,11 +15,6 @@
 
 ---
 
-| Current Developers | Contact |
-|----------------------------------------------|-|
-| Tom Schimansky | contact@customtkinter.tomschimansky.com |
-| Federico Spada | www.linkedin.com/in/federicospada13 |
-
 <a href="https://www.paypal.com/donate/?hosted_button_id=LK5QAZYRN2R2A"><img src="documentation_images/paypal_donate_button.png" width=170 alt="Paypal donation button"></a>
 
 
@@ -31,6 +26,9 @@
 
 <h2>
 Official website: https://customtkinter.tomschimansky.com/
+</h2>
+<h2>
+Tutorials: https://customtkinter.tomschimansky.com/tutorial/
 </h2>
 
 </div>
