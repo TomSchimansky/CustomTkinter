@@ -15,7 +15,7 @@ def pop_from_dict_by_set(dictionary: dict, valid_keys: set) -> dict:
 
 
 def check_kwargs_empty(kwargs_dict, raise_error=False) -> bool:
-    """ returns True if kwargs are empty, False otherwise, raises error if not empty """
+    """ returns True if kwargs are not empty, False otherwise, raises error if not empty and raise_error is True """
 
     if len(kwargs_dict) > 0:
         if raise_error:

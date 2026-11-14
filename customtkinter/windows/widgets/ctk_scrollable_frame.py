@@ -237,7 +237,7 @@ class CTkScrollableFrame(tkinter.Frame, CTkAppearanceModeBaseClass, CTkScalingBa
         elif attribute_name == "label_fg_color":
             return self._label.cget("fg_color")
         elif attribute_name == "label_text_color":
-            return self._label.cget("_text_color")
+            return self._label.cget("text_color")
 
         elif attribute_name == "label_text":
             return self._label_text

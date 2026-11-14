@@ -52,7 +52,7 @@ class ThemeManager:
     def save_theme(cls):
         if cls._currently_loaded_theme is not None:
             if cls._currently_loaded_theme not in cls._built_in_themes:
-                with open(cls._currently_loaded_theme, "r") as f:
+                with open(cls._currently_loaded_theme, "w") as f:
                     json.dump(cls.theme, f, indent=2)
             else:
                 raise ValueError(f"cannot modify builtin theme '{cls._currently_loaded_theme}'")

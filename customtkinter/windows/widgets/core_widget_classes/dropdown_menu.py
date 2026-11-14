@@ -211,7 +211,7 @@ class DropdownMenu(tkinter.Menu, CTkAppearanceModeBaseClass, CTkScalingBaseClass
 
         elif type(font) == tuple and len(font) == 1:
             sys.stderr.write(f"Warning: font {font} given without size, will be extended with default text size of current theme\n")
-            return font[0], ThemeManager.theme["text"]["size"]
+            return font[0], ThemeManager.theme["CTkFont"]["size"]
 
         elif type(font) == tuple and 2 <= len(font) <= 3:
             return font

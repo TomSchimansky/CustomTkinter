@@ -34,13 +34,16 @@ class CTk(CTK_PARENT_CLASS, CTkAppearanceModeBaseClass, CTkScalingBaseClass):
                  fg_color: Optional[Union[str, Tuple[str, str]]] = None,
                  **kwargs):
 
+        # check arguments before the window is created and registered for appearance mode and scaling changes
+        tk_kwargs = pop_from_dict_by_set(kwargs, self._valid_tk_constructor_arguments)
+        check_kwargs_empty(kwargs, raise_error=True)
+
         self._enable_macos_dark_title_bar()
 
         # call init methods of super classes
-        CTK_PARENT_CLASS.__init__(self, **pop_from_dict_by_set(kwargs, self._valid_tk_constructor_arguments))
+        CTK_PARENT_CLASS.__init__(self, **tk_kwargs)
         CTkAppearanceModeBaseClass.__init__(self)
         CTkScalingBaseClass.__init__(self, scaling_type="window")
-        check_kwargs_empty(kwargs, raise_error=True)
 
         self._current_width = 600  # initial window size, independent of scaling
         self._current_height = 500

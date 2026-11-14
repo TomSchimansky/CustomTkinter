@@ -1,5 +1,4 @@
 from tkinter.font import Font
-import copy
 from typing import List, Callable, Tuple, Optional
 try:
     from typing import Literal
@@ -90,4 +89,10 @@ class CTkFont(Font):
             return super().cget(attribute_name)
 
     def copy(self) -> "CTkFont":
-        return copy.deepcopy(self)
+        """ returns a new CTkFont with the same attributes, a deepcopy is not possible because of the Tcl interpreter """
+        return CTkFont(family=self._family,
+                       size=self._size,
+                       weight=super().cget("weight"),
+                       slant=super().cget("slant"),
+                       underline=bool(super().cget("underline")),
+                       overstrike=bool(super().cget("overstrike")))

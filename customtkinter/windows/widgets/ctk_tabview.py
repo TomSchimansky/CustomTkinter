@@ -188,6 +188,8 @@ class CTkTabview(CTkBaseClass):
 
     def _set_grid_current_tab(self):
         """ needs to be called for changes in corner_radius, border_width """
+        if self._current_name not in self._tab_dict:
+            return  # no tab added yet
         if self._anchor.lower() in ("center", "w", "nw", "n", "ne", "e", "e"):
             self._tab_dict[self._current_name].grid(row=3, column=0, sticky="nsew",
                                                     padx=self._apply_widget_scaling(max(self._corner_radius, self._border_width)),
@@ -323,15 +325,15 @@ class CTkTabview(CTkBaseClass):
             return self._border_color
 
         elif attribute_name == "segmented_button_fg_color":
-            return self._segmented_button.cget(attribute_name)
+            return self._segmented_button.cget("fg_color")
         elif attribute_name == "segmented_button_selected_color":
-            return self._segmented_button.cget(attribute_name)
+            return self._segmented_button.cget("selected_color")
         elif attribute_name == "segmented_button_selected_hover_color":
-            return self._segmented_button.cget(attribute_name)
+            return self._segmented_button.cget("selected_hover_color")
         elif attribute_name == "segmented_button_unselected_color":
-            return self._segmented_button.cget(attribute_name)
+            return self._segmented_button.cget("unselected_color")
         elif attribute_name == "segmented_button_unselected_hover_color":
-            return self._segmented_button.cget(attribute_name)
+            return self._segmented_button.cget("unselected_hover_color")
         elif attribute_name == "segmented_button_font":
             return self._segmented_button_font
 
@@ -366,7 +368,7 @@ class CTkTabview(CTkBaseClass):
             if len(self._tab_dict) == 0:
                 self._set_grid_segmented_button()
 
-            self._name_list.append(name)
+            self._name_list.insert(index, name)
             self._tab_dict[name] = self._create_tab()
             self._segmented_button.insert(index, name)
 
@@ -389,6 +391,8 @@ class CTkTabview(CTkBaseClass):
         if 0 <= new_index < len(self._name_list):
             if name in self._tab_dict:
                 self._segmented_button.move(new_index, name)
+                self._name_list.remove(name)
+                self._name_list.insert(new_index, name)
             else:
                 raise ValueError(f"CTkTabview has no name '{name}'")
         else:

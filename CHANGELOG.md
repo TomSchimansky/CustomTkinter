@@ -34,6 +34,17 @@ ToDo:
  - CTkInputDialog failed with "grab failed: window not viewable" on window managers that show the window later (#1722)
  - CTk and CTkToplevel lost track of the window size after an app bound <Configure> to the window
  - Every CTkToplevel added another global <Button-1> focus handler
+ - Font tuples with several styles in one string, like ("Arial", 14, "bold italic"), raised "unknown font style"
+ - CTkFont.copy() raised a TypeError
+ - A font tuple without size raised a KeyError
+ - Configuring a CTkImage after a CTkButton or CTkLabel that used it was destroyed raised a TclError
+ - ThemeManager.save_theme() couldn't write the theme file
+ - Destroyed CTkToplevel windows were never freed
+ - A widget or window with an unknown argument left a half created widget behind, which raised errors on the next scaling change
+ - A readonly CTkComboBox didn't show its first value
+ - CTkTabview: insert() and move() didn't update the tab order, changing corner_radius without tabs raised a KeyError, cget() of the segmented_button colors didn't work
+ - CTkScrollableFrame: cget("label_text_color") raised an error
+ - A color tuple with one element raised an IndexError instead of a ValueError
 
 ## [6.0.0] - 2026-01-21
 ### Added
