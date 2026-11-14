@@ -5,7 +5,7 @@ They are created and used like normal Tkinter widgets and can also be used in co
 The widgets and windows adapt to the system appearance or the manually set mode ('light', 'dark'),
 and they support HighDPI scaling. With CustomTkinter you'll get a consistent and modern look on Windows, macOS and Linux.
 
-![complex_example.py on Windows 11 with dark mode](https://raw.githubusercontent.com/TomSchimansky/CustomTkinter/master/documentation_images/complex_example_dark_Windows.png)
+![complex_example_climate.py on macOS with dark mode](https://raw.githubusercontent.com/TomSchimansky/CustomTkinter/master/documentation_images/complex_example_climate_dark_macOS.png)
 
 ## Installation
 
