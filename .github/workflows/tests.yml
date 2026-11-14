@@ -60,11 +60,11 @@ jobs:
 
       - name: Run tests (Linux)
         if: runner.os == 'Linux'
-        run: xvfb-run -a -s "-screen 0 1280x900x24" python -m pytest -ra --timeout 120
+        run: xvfb-run -a -s "-screen 0 1280x900x24" python -m pytest -ra --timeout 120 --timeout-method thread
 
       - name: Run tests (Windows, macOS)
         if: runner.os != 'Linux'
-        run: python -m pytest -v -ra --timeout 120
+        run: python -m pytest -v -ra --timeout 120 --timeout-method thread
 
   tests-tk9:
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.repository
@@ -92,4 +92,4 @@ jobs:
         run: .venv/bin/python -c "import tkinter; print('Tk', tkinter.Tcl().call('info', 'patchlevel'))"
 
       - name: Run tests
-        run: xvfb-run -a -s "-screen 0 1280x900x24" .venv/bin/python -m pytest -ra --timeout 120
+        run: xvfb-run -a -s "-screen 0 1280x900x24" .venv/bin/python -m pytest -ra --timeout 120 --timeout-method thread
