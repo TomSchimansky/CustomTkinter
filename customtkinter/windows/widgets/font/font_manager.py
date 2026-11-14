@@ -1,12 +1,14 @@
 import sys
 import os
 import shutil
+import tkinter
 from typing import Union
 
 
 class FontManager:
 
     linux_font_path = "~/.fonts/"
+    _default_font_holder_name = "__ctk_default_font_holder"
 
     @classmethod
     def init_font_manager(cls):
@@ -45,6 +47,26 @@ class FontManager:
         flags = (FR_PRIVATE if private else 0) | (FR_NOT_ENUM if not enumerable else 0)
         num_fonts_added = add_font_resource_ex(byref(path_buffer), flags, 0)
         return bool(min(num_fonts_added, 1))
+
+    @classmethod
+    def keep_default_fonts_allocated(cls, widget: tkinter.Misc):
+        """ Tk frees a font as soon as no widget uses it anymore. Every new tkinter Label, Entry, Text and Menu
+        first allocates its default font (TkDefaultFont, ...) before CustomTkinter sets its own font. If no other
+        widget uses the default font, Tk loads it again for every widget, which takes about 1 ms on Linux (fontconfig).
+        A hidden canvas with a text item for each default font keeps them allocated. It's created directly in Tcl,
+        so it doesn't appear in winfo_children(). Called once per root window. """
+        root = widget._root()
+        if root.__dict__.get("_ctk_default_font_holder") is not None:
+            return
+        holder = f"{'' if root._w == '.' else root._w}.{cls._default_font_holder_name}"
+        try:
+            if not int(root.tk.call("winfo", "exists", holder)):
+                root.tk.call("canvas", holder, "-width", 0, "-height", 0, "-highlightthickness", 0, "-takefocus", 0)
+                for font in ("TkDefaultFont", "TkTextFont", "TkFixedFont", "TkMenuFont"):
+                    root.tk.call(holder, "create", "text", 0, 0, "-text", "", "-font", font)
+            root.__dict__["_ctk_default_font_holder"] = holder
+        except tkinter.TclError:
+            root.__dict__["_ctk_default_font_holder"] = ""  # don't try again
 
     @classmethod
     def load_font(cls, font_path: str) -> bool:

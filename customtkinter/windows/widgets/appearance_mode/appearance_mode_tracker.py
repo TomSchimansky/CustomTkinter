@@ -1,3 +1,4 @@
+import sys
 import tkinter
 from typing import Callable
 import darkdetect
@@ -8,7 +9,9 @@ class AppearanceModeTracker:
     callback_list = []
     app_list = []
     update_loop_running = False
-    update_loop_interval = 30  # milliseconds
+    # milliseconds, on Linux darkdetect starts a gsettings process for every check (about 3 ms of CPU time),
+    # so the system appearance mode is checked less often there
+    update_loop_interval = 1000 if sys.platform.startswith("linux") else 30
 
     appearance_mode_set_by = "system"
     appearance_mode = 0  # Light (standard)
@@ -76,6 +79,13 @@ class AppearanceModeTracker:
                     callback("Dark")
                 except Exception:
                     continue
+
+        # show the new appearance mode of all widgets at once
+        for app in cls.app_list:
+            try:
+                app.update_idletasks()
+            except Exception:
+                continue
 
     @classmethod
     def update(cls):
