@@ -14,13 +14,26 @@ ToDo:
 ### Added
  - Drawing method "image_shapes": antialiased shapes from small PNG images, works with every Tk 8.6 and 9 build without extra dependencies
  - Two-finger touchpad scrolling for CTkScrollableFrame with Tk 9 on Windows and macOS (<TouchpadScroll> event)
+ - HighDPI scaling on Linux: the scaling factor is detected with Xft.dpi, which GNOME, KDE and other desktops set (idea from #2877 by Ken Van Hoeylandt)
 
 ### Changed
  - "image_shapes" is the default drawing method on Linux, it's faster than "font_shapes" and doesn't need Xft
  - "font_shapes" switches to "image_shapes" if Tk can't use the CustomTkinter_shapes_font
+ - "polygon_shapes" is used on Linux with Tk 8.5, which can't load PNG images and has no rotated text
+ - Dropdown menus of CTkOptionMenu and CTkComboBox are split into columns on Linux when they are taller than the screen
+ - Fonts are only copied to ~/.fonts on Linux if they are not already there
+ - Widgets are created 25-60% faster, resizing, scaling and appearance mode changes are 30-45% faster, scrolling in CTkScrollableFrame on macOS is about 4 times faster
+ - The system appearance mode is checked every second on Linux instead of every 30 ms, which used about 10% CPU while idle
 
 ### Fixed
  - Mouse wheel scrolling on Linux with Tk 9 for CTkScrollableFrame, CTkScrollbar and CTkSlider (Tk 9 sends <MouseWheel> instead of <Button-4>/<Button-5>)
+ - Text too large compared to the widgets on Linux with Tk 8.6.15 or newer when desktop scaling is used (#2870, #2597, #2259)
+ - Exceptions when scrolling in a tkinter.filedialog while a CTkScrollableFrame exists (#2866)
+ - Black dropdown menu on Linux with many values and high scaling (#2817)
+ - Error importing customtkinter when the font files in ~/.fonts are read-only (#2693, thanks to RoGreat for #2852)
+ - CTkInputDialog failed with "grab failed: window not viewable" on window managers that show the window later (#1722)
+ - CTk and CTkToplevel lost track of the window size after an app bound <Configure> to the window
+ - Every CTkToplevel added another global <Button-1> focus handler
 
 ## [6.0.0] - 2026-01-21
 ### Added
