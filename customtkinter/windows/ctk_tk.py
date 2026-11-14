@@ -77,16 +77,28 @@ class CTk(CTK_PARENT_CLASS, CTkAppearanceModeBaseClass, CTkScalingBaseClass):
         if sys.platform.startswith("win"):
             self._windows_set_titlebar_color(self._get_appearance_mode())
 
-        self.bind('<Configure>', self._update_dimensions_event)
+        # <Configure> is bound to a bindtag that only this window has. A binding on the window itself would also be
+        # called for the <Configure> events of every widget inside the window, and it would be replaced by app.bind("<Configure>", ...)
+        self._configure_bindtag = f"CTkWindowConfigure{id(self)}"
+        self.bind_class(self._configure_bindtag, "<Configure>", self._update_dimensions_event)
+        self.bindtags((self._configure_bindtag,) + self.bindtags())
         self.bind('<FocusIn>', self._focus_in_event)
-        #allows CTkEntry and CTkTextbox to lose focus
-        def set_focus(event: tkinter.Event):
-            if hasattr(event.widget, "focus_set"):
-                event.widget.focus_set()
-        self.bind_all("<Button-1>", set_focus, add=True)
+
+        # allows CTkEntry and CTkTextbox to lose focus, bound only once per Tk interpreter
+        if not self.tk.call("info", "exists", "::ctk_set_focus_bound"):
+            def set_focus(event: tkinter.Event):
+                if hasattr(event.widget, "focus_set"):
+                    event.widget.focus_set()
+            self._root().bind_all("<Button-1>", set_focus, add=True)
+            self.tk.call("set", "::ctk_set_focus_bound", 1)
 
     def destroy(self):
         self._disable_macos_dark_title_bar()
+
+        try:
+            self.unbind_class(self._configure_bindtag, "<Configure>")
+        except (tkinter.TclError, AttributeError):
+            pass
 
         # call destroy methods of super classes
         tkinter.Tk.destroy(self)

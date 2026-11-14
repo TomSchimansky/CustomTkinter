@@ -13,7 +13,7 @@ from .... import windows  # import windows for isinstance checks
 
 from ..theme import ThemeManager
 from ..core_rendering import DrawEngine
-from ..font import CTkFont
+from ..font import CTkFont, FontManager
 from ..image import CTkImage
 from ..appearance_mode import CTkAppearanceModeBaseClass
 from ..scaling import CTkScalingBaseClass
@@ -41,6 +41,7 @@ class CTkBaseClass(tkinter.Frame, CTkAppearanceModeBaseClass, CTkScalingBaseClas
         # call init methods of super classes
         tkinter.Frame.__init__(self, master=master, width=width, height=height, **pop_from_dict_by_set(kwargs, self._valid_tk_frame_attributes))
         DrawEngine.check_shapes_font(self)
+        FontManager.keep_default_fonts_allocated(self)
         CTkAppearanceModeBaseClass.__init__(self)
         CTkScalingBaseClass.__init__(self, scaling_type="widget")
 
@@ -221,8 +222,7 @@ class CTkBaseClass(tkinter.Frame, CTkAppearanceModeBaseClass, CTkScalingBaseClas
 
     def _set_appearance_mode(self, mode_string):
         super()._set_appearance_mode(mode_string)
-        self._draw()
-        super().update_idletasks()
+        self._draw()  # AppearanceModeTracker calls update_idletasks() once after all widgets are redrawn
 
     def _set_scaling(self, new_widget_scaling, new_window_scaling):
         super()._set_scaling(new_widget_scaling, new_window_scaling)

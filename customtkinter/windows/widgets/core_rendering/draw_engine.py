@@ -85,16 +85,16 @@ class DrawEngine:
 
         requires_recoloring = False
 
-        if not self._canvas.find_withtag("background_corner_top_left"):
+        if not self._canvas.tag_exists("background_corner_top_left"):
             self._canvas.create_rectangle((0, 0, 0, 0), tags=("background_parts", "background_corner_top_left"), width=0)
             requires_recoloring = True
-        if not self._canvas.find_withtag("background_corner_top_right"):
+        if not self._canvas.tag_exists("background_corner_top_right"):
             self._canvas.create_rectangle((0, 0, 0, 0), tags=("background_parts", "background_corner_top_right"), width=0)
             requires_recoloring = True
-        if not self._canvas.find_withtag("background_corner_bottom_right"):
+        if not self._canvas.tag_exists("background_corner_bottom_right"):
             self._canvas.create_rectangle((0, 0, 0, 0), tags=("background_parts", "background_corner_bottom_right"), width=0)
             requires_recoloring = True
-        if not self._canvas.find_withtag("background_corner_bottom_left"):
+        if not self._canvas.tag_exists("background_corner_bottom_left"):
             self._canvas.create_rectangle((0, 0, 0, 0), tags=("background_parts", "background_corner_bottom_left"), width=0)
             requires_recoloring = True
 
@@ -151,7 +151,7 @@ class DrawEngine:
 
         # create border button parts (only if border exists)
         if border_width > 0:
-            if not self._canvas.find_withtag("border_parts"):
+            if not self._canvas.tag_exists("border_parts"):
                 self._canvas.create_polygon((0, 0, 0, 0), tags=("border_line_1", "border_parts"))
                 requires_recoloring = True
 
@@ -172,7 +172,7 @@ class DrawEngine:
             self._canvas.delete("border_parts")
 
         # create inner button parts
-        if not self._canvas.find_withtag("inner_parts"):
+        if not self._canvas.tag_exists("inner_parts"):
             self._canvas.create_polygon((0, 0, 0, 0), tags=("inner_line_1", "inner_parts"), joinstyle=tkinter.ROUND)
             requires_recoloring = True
 
@@ -208,34 +208,34 @@ class DrawEngine:
         if border_width > 0:
             if corner_radius > 0:
                 # create canvas border corner parts if not already created, but only if needed, and delete if not needed
-                if not self._canvas.find_withtag("border_oval_1_a") and "border_oval_1" not in exclude_parts:
+                if not self._canvas.tag_exists("border_oval_1_a") and "border_oval_1" not in exclude_parts:
                     self._canvas.create_aa_circle(0, 0, 0, tags=("border_oval_1_a", "border_corner_part", "border_parts"), anchor=tkinter.CENTER)
                     self._canvas.create_aa_circle(0, 0, 0, tags=("border_oval_1_b", "border_corner_part", "border_parts"), anchor=tkinter.CENTER, angle=180)
                     requires_recoloring = True
-                elif self._canvas.find_withtag("border_oval_1_a") and "border_oval_1" in exclude_parts:
+                elif self._canvas.tag_exists("border_oval_1_a") and "border_oval_1" in exclude_parts:
                     self._canvas.delete("border_oval_1_a", "border_oval_1_b")
 
-                if not self._canvas.find_withtag("border_oval_2_a") and width > 2 * corner_radius and "border_oval_2" not in exclude_parts:
+                if not self._canvas.tag_exists("border_oval_2_a") and width > 2 * corner_radius and "border_oval_2" not in exclude_parts:
                     self._canvas.create_aa_circle(0, 0, 0, tags=("border_oval_2_a", "border_corner_part", "border_parts"), anchor=tkinter.CENTER)
                     self._canvas.create_aa_circle(0, 0, 0, tags=("border_oval_2_b", "border_corner_part", "border_parts"), anchor=tkinter.CENTER, angle=180)
                     requires_recoloring = True
-                elif self._canvas.find_withtag("border_oval_2_a") and (not width > 2 * corner_radius or "border_oval_2" in exclude_parts):
+                elif self._canvas.tag_exists("border_oval_2_a") and (not width > 2 * corner_radius or "border_oval_2" in exclude_parts):
                     self._canvas.delete("border_oval_2_a", "border_oval_2_b")
 
-                if not self._canvas.find_withtag("border_oval_3_a") and height > 2 * corner_radius \
+                if not self._canvas.tag_exists("border_oval_3_a") and height > 2 * corner_radius \
                     and width > 2 * corner_radius and "border_oval_3" not in exclude_parts:
                     self._canvas.create_aa_circle(0, 0, 0, tags=("border_oval_3_a", "border_corner_part", "border_parts"), anchor=tkinter.CENTER)
                     self._canvas.create_aa_circle(0, 0, 0, tags=("border_oval_3_b", "border_corner_part", "border_parts"), anchor=tkinter.CENTER, angle=180)
                     requires_recoloring = True
-                elif self._canvas.find_withtag("border_oval_3_a") and (not (height > 2 * corner_radius
+                elif self._canvas.tag_exists("border_oval_3_a") and (not (height > 2 * corner_radius
                                                                             and width > 2 * corner_radius) or "border_oval_3" in exclude_parts):
                     self._canvas.delete("border_oval_3_a", "border_oval_3_b")
 
-                if not self._canvas.find_withtag("border_oval_4_a") and height > 2 * corner_radius and "border_oval_4" not in exclude_parts:
+                if not self._canvas.tag_exists("border_oval_4_a") and height > 2 * corner_radius and "border_oval_4" not in exclude_parts:
                     self._canvas.create_aa_circle(0, 0, 0, tags=("border_oval_4_a", "border_corner_part", "border_parts"), anchor=tkinter.CENTER)
                     self._canvas.create_aa_circle(0, 0, 0, tags=("border_oval_4_b", "border_corner_part", "border_parts"), anchor=tkinter.CENTER, angle=180)
                     requires_recoloring = True
-                elif self._canvas.find_withtag("border_oval_4_a") and (not height > 2 * corner_radius or "border_oval_4" in exclude_parts):
+                elif self._canvas.tag_exists("border_oval_4_a") and (not height > 2 * corner_radius or "border_oval_4" in exclude_parts):
                     self._canvas.delete("border_oval_4_a", "border_oval_4_b")
 
                 # change position of border corner parts
@@ -252,7 +252,7 @@ class DrawEngine:
                 self._canvas.delete("border_corner_part")  # delete border corner parts if not needed
 
             # create canvas border rectangle parts if not already created
-            if not self._canvas.find_withtag("border_rectangle_1"):
+            if not self._canvas.tag_exists("border_rectangle_1"):
                 self._canvas.create_rectangle(0, 0, 0, 0, tags=("border_rectangle_1", "border_rectangle_part", "border_parts"), width=0)
                 self._canvas.create_rectangle(0, 0, 0, 0, tags=("border_rectangle_2", "border_rectangle_part", "border_parts"), width=0)
                 requires_recoloring = True
@@ -268,34 +268,34 @@ class DrawEngine:
         if inner_corner_radius > 0:
 
             # create canvas border corner parts if not already created, but only if they're needed and delete if not needed
-            if not self._canvas.find_withtag("inner_oval_1_a") and "inner_oval_1" not in exclude_parts:
+            if not self._canvas.tag_exists("inner_oval_1_a") and "inner_oval_1" not in exclude_parts:
                 self._canvas.create_aa_circle(0, 0, 0, tags=("inner_oval_1_a", "inner_corner_part", "inner_parts"), anchor=tkinter.CENTER)
                 self._canvas.create_aa_circle(0, 0, 0, tags=("inner_oval_1_b", "inner_corner_part", "inner_parts"), anchor=tkinter.CENTER, angle=180)
                 requires_recoloring = True
-            elif self._canvas.find_withtag("inner_oval_1_a") and "inner_oval_1" in exclude_parts:
+            elif self._canvas.tag_exists("inner_oval_1_a") and "inner_oval_1" in exclude_parts:
                 self._canvas.delete("inner_oval_1_a", "inner_oval_1_b")
 
-            if not self._canvas.find_withtag("inner_oval_2_a") and width - (2 * border_width) > 2 * inner_corner_radius and "inner_oval_2" not in exclude_parts:
+            if not self._canvas.tag_exists("inner_oval_2_a") and width - (2 * border_width) > 2 * inner_corner_radius and "inner_oval_2" not in exclude_parts:
                 self._canvas.create_aa_circle(0, 0, 0, tags=("inner_oval_2_a", "inner_corner_part", "inner_parts"), anchor=tkinter.CENTER)
                 self._canvas.create_aa_circle(0, 0, 0, tags=("inner_oval_2_b", "inner_corner_part", "inner_parts"), anchor=tkinter.CENTER, angle=180)
                 requires_recoloring = True
-            elif self._canvas.find_withtag("inner_oval_2_a") and (not width - (2 * border_width) > 2 * inner_corner_radius or "inner_oval_2" in exclude_parts):
+            elif self._canvas.tag_exists("inner_oval_2_a") and (not width - (2 * border_width) > 2 * inner_corner_radius or "inner_oval_2" in exclude_parts):
                 self._canvas.delete("inner_oval_2_a", "inner_oval_2_b")
 
-            if not self._canvas.find_withtag("inner_oval_3_a") and height - (2 * border_width) > 2 * inner_corner_radius \
+            if not self._canvas.tag_exists("inner_oval_3_a") and height - (2 * border_width) > 2 * inner_corner_radius \
                 and width - (2 * border_width) > 2 * inner_corner_radius and "inner_oval_3" not in exclude_parts:
                 self._canvas.create_aa_circle(0, 0, 0, tags=("inner_oval_3_a", "inner_corner_part", "inner_parts"), anchor=tkinter.CENTER)
                 self._canvas.create_aa_circle(0, 0, 0, tags=("inner_oval_3_b", "inner_corner_part", "inner_parts"), anchor=tkinter.CENTER, angle=180)
                 requires_recoloring = True
-            elif self._canvas.find_withtag("inner_oval_3_a") and (not (height - (2 * border_width) > 2 * inner_corner_radius
+            elif self._canvas.tag_exists("inner_oval_3_a") and (not (height - (2 * border_width) > 2 * inner_corner_radius
                                                                        and width - (2 * border_width) > 2 * inner_corner_radius) or "inner_oval_3" in exclude_parts):
                 self._canvas.delete("inner_oval_3_a", "inner_oval_3_b")
 
-            if not self._canvas.find_withtag("inner_oval_4_a") and height - (2 * border_width) > 2 * inner_corner_radius and "inner_oval_4" not in exclude_parts:
+            if not self._canvas.tag_exists("inner_oval_4_a") and height - (2 * border_width) > 2 * inner_corner_radius and "inner_oval_4" not in exclude_parts:
                 self._canvas.create_aa_circle(0, 0, 0, tags=("inner_oval_4_a", "inner_corner_part", "inner_parts"), anchor=tkinter.CENTER)
                 self._canvas.create_aa_circle(0, 0, 0, tags=("inner_oval_4_b", "inner_corner_part", "inner_parts"), anchor=tkinter.CENTER, angle=180)
                 requires_recoloring = True
-            elif self._canvas.find_withtag("inner_oval_4_a") and (not height - (2 * border_width) > 2 * inner_corner_radius or "inner_oval_4" in exclude_parts):
+            elif self._canvas.tag_exists("inner_oval_4_a") and (not height - (2 * border_width) > 2 * inner_corner_radius or "inner_oval_4" in exclude_parts):
                 self._canvas.delete("inner_oval_4_a", "inner_oval_4_b")
 
             # change position of border corner parts
@@ -311,15 +311,15 @@ class DrawEngine:
             self._canvas.delete("inner_corner_part")  # delete inner corner parts if not needed
 
         # create canvas inner rectangle parts if not already created
-        if not self._canvas.find_withtag("inner_rectangle_1"):
+        if not self._canvas.tag_exists("inner_rectangle_1"):
             self._canvas.create_rectangle(0, 0, 0, 0, tags=("inner_rectangle_1", "inner_rectangle_part", "inner_parts"), width=0)
             requires_recoloring = True
 
-        if not self._canvas.find_withtag("inner_rectangle_2") and inner_corner_radius * 2 < height - (border_width * 2):
+        if not self._canvas.tag_exists("inner_rectangle_2") and inner_corner_radius * 2 < height - (border_width * 2):
             self._canvas.create_rectangle(0, 0, 0, 0, tags=("inner_rectangle_2", "inner_rectangle_part", "inner_parts"), width=0)
             requires_recoloring = True
 
-        elif self._canvas.find_withtag("inner_rectangle_2") and not inner_corner_radius * 2 < height - (border_width * 2):
+        elif self._canvas.tag_exists("inner_rectangle_2") and not inner_corner_radius * 2 < height - (border_width * 2):
             self._canvas.delete("inner_rectangle_2")
 
         # change position of inner rectangle parts
@@ -346,7 +346,7 @@ class DrawEngine:
         if border_width > 0:
             if corner_radius > 0:
 
-                if not self._canvas.find_withtag("border_oval_1"):
+                if not self._canvas.tag_exists("border_oval_1"):
                     self._canvas.create_oval(0, 0, 0, 0, tags=("border_oval_1", "border_corner_part", "border_parts"), width=0)
                     self._canvas.create_oval(0, 0, 0, 0, tags=("border_oval_2", "border_corner_part", "border_parts"), width=0)
                     self._canvas.create_oval(0, 0, 0, 0, tags=("border_oval_3", "border_corner_part", "border_parts"), width=0)
@@ -362,7 +362,7 @@ class DrawEngine:
             else:
                 self._canvas.delete("border_corner_part")
 
-            if not self._canvas.find_withtag("border_rectangle_1"):
+            if not self._canvas.tag_exists("border_rectangle_1"):
                 self._canvas.create_rectangle(0, 0, 0, 0, tags=("border_rectangle_1", "border_rectangle_part", "border_parts"), width=0)
                 self._canvas.create_rectangle(0, 0, 0, 0, tags=("border_rectangle_2", "border_rectangle_part", "border_parts"), width=0)
                 self._canvas.tag_lower("border_parts")
@@ -377,7 +377,7 @@ class DrawEngine:
         # inner button parts
         if inner_corner_radius > 0:
 
-            if not self._canvas.find_withtag("inner_oval_1"):
+            if not self._canvas.tag_exists("inner_oval_1"):
                 self._canvas.create_oval(0, 0, 0, 0, tags=("inner_oval_1", "inner_corner_part", "inner_parts"), width=0)
                 self._canvas.create_oval(0, 0, 0, 0, tags=("inner_oval_2", "inner_corner_part", "inner_parts"), width=0)
                 self._canvas.create_oval(0, 0, 0, 0, tags=("inner_oval_3", "inner_corner_part", "inner_parts"), width=0)
@@ -396,7 +396,7 @@ class DrawEngine:
         else:
             self._canvas.delete("inner_corner_part")  # delete inner corner parts if not needed
 
-        if not self._canvas.find_withtag("inner_rectangle_1"):
+        if not self._canvas.tag_exists("inner_rectangle_1"):
             self._canvas.create_rectangle(0, 0, 0, 0, tags=("inner_rectangle_1", "inner_rectangle_part", "inner_parts"), width=0)
             self._canvas.create_rectangle(0, 0, 0, 0, tags=("inner_rectangle_2", "inner_rectangle_part", "inner_parts"), width=0)
             self._canvas.tag_raise("inner_parts")
@@ -457,7 +457,7 @@ class DrawEngine:
 
         # create border button parts (only if border exists)
         if border_width > 0:
-            if not self._canvas.find_withtag("border_parts"):
+            if not self._canvas.tag_exists("border_parts"):
                 self._canvas.create_polygon((0, 0, 0, 0), tags=("border_line_left_1", "border_parts_left", "border_parts", "left_parts"))
                 self._canvas.create_polygon((0, 0, 0, 0), tags=("border_line_right_1", "border_parts_right", "border_parts", "right_parts"))
                 self._canvas.create_rectangle((0, 0, 0, 0), tags=("border_rect_left_1", "border_parts_left", "border_parts", "left_parts"), width=0)
@@ -499,7 +499,7 @@ class DrawEngine:
             self._canvas.delete("border_parts")
 
         # create inner button parts
-        if not self._canvas.find_withtag("inner_parts"):
+        if not self._canvas.tag_exists("inner_parts"):
             self._canvas.create_polygon((0, 0, 0, 0), tags=("inner_line_left_1", "inner_parts_left", "inner_parts", "left_parts"), joinstyle=tkinter.ROUND)
             self._canvas.create_polygon((0, 0, 0, 0), tags=("inner_line_right_1", "inner_parts_right", "inner_parts", "right_parts"), joinstyle=tkinter.ROUND)
             self._canvas.create_rectangle((0, 0, 0, 0), tags=("inner_rect_left_1", "inner_parts_left", "inner_parts", "left_parts"), width=0)
@@ -552,40 +552,40 @@ class DrawEngine:
         if border_width > 0:
             if corner_radius > 0:
                 # create canvas border corner parts if not already created, but only if needed, and delete if not needed
-                if not self._canvas.find_withtag("border_oval_1_a") and "border_oval_1" not in exclude_parts:
+                if not self._canvas.tag_exists("border_oval_1_a") and "border_oval_1" not in exclude_parts:
                     self._canvas.create_aa_circle(0, 0, 0, tags=("border_oval_1_a", "border_corner_part", "border_parts_left", "border_parts", "left_parts"), anchor=tkinter.CENTER)
                     self._canvas.create_aa_circle(0, 0, 0, tags=("border_oval_1_b", "border_corner_part", "border_parts_left", "border_parts", "left_parts"), anchor=tkinter.CENTER,
                                                   angle=180)
                     requires_recoloring = True
-                elif self._canvas.find_withtag("border_oval_1_a") and "border_oval_1" in exclude_parts:
+                elif self._canvas.tag_exists("border_oval_1_a") and "border_oval_1" in exclude_parts:
                     self._canvas.delete("border_oval_1_a", "border_oval_1_b")
 
-                if not self._canvas.find_withtag("border_oval_2_a") and width > 2 * corner_radius and "border_oval_2" not in exclude_parts:
+                if not self._canvas.tag_exists("border_oval_2_a") and width > 2 * corner_radius and "border_oval_2" not in exclude_parts:
                     self._canvas.create_aa_circle(0, 0, 0, tags=("border_oval_2_a", "border_corner_part", "border_parts_right", "border_parts", "right_parts"),
                                                   anchor=tkinter.CENTER)
                     self._canvas.create_aa_circle(0, 0, 0, tags=("border_oval_2_b", "border_corner_part", "border_parts_right", "border_parts", "right_parts"),
                                                   anchor=tkinter.CENTER, angle=180)
                     requires_recoloring = True
-                elif self._canvas.find_withtag("border_oval_2_a") and (not width > 2 * corner_radius or "border_oval_2" in exclude_parts):
+                elif self._canvas.tag_exists("border_oval_2_a") and (not width > 2 * corner_radius or "border_oval_2" in exclude_parts):
                     self._canvas.delete("border_oval_2_a", "border_oval_2_b")
 
-                if not self._canvas.find_withtag("border_oval_3_a") and height > 2 * corner_radius \
+                if not self._canvas.tag_exists("border_oval_3_a") and height > 2 * corner_radius \
                     and width > 2 * corner_radius and "border_oval_3" not in exclude_parts:
                     self._canvas.create_aa_circle(0, 0, 0, tags=("border_oval_3_a", "border_corner_part", "border_parts_right", "border_parts", "right_parts"),
                                                   anchor=tkinter.CENTER)
                     self._canvas.create_aa_circle(0, 0, 0, tags=("border_oval_3_b", "border_corner_part", "border_parts_right", "border_parts", "right_parts"),
                                                   anchor=tkinter.CENTER, angle=180)
                     requires_recoloring = True
-                elif self._canvas.find_withtag("border_oval_3_a") and (not (height > 2 * corner_radius
+                elif self._canvas.tag_exists("border_oval_3_a") and (not (height > 2 * corner_radius
                                                                             and width > 2 * corner_radius) or "border_oval_3" in exclude_parts):
                     self._canvas.delete("border_oval_3_a", "border_oval_3_b")
 
-                if not self._canvas.find_withtag("border_oval_4_a") and height > 2 * corner_radius and "border_oval_4" not in exclude_parts:
+                if not self._canvas.tag_exists("border_oval_4_a") and height > 2 * corner_radius and "border_oval_4" not in exclude_parts:
                     self._canvas.create_aa_circle(0, 0, 0, tags=("border_oval_4_a", "border_corner_part", "border_parts_left", "border_parts", "left_parts"), anchor=tkinter.CENTER)
                     self._canvas.create_aa_circle(0, 0, 0, tags=("border_oval_4_b", "border_corner_part", "border_parts_left", "border_parts", "left_parts"), anchor=tkinter.CENTER,
                                                   angle=180)
                     requires_recoloring = True
-                elif self._canvas.find_withtag("border_oval_4_a") and (not height > 2 * corner_radius or "border_oval_4" in exclude_parts):
+                elif self._canvas.tag_exists("border_oval_4_a") and (not height > 2 * corner_radius or "border_oval_4" in exclude_parts):
                     self._canvas.delete("border_oval_4_a", "border_oval_4_b")
 
                 # change position of border corner parts
@@ -602,7 +602,7 @@ class DrawEngine:
                 self._canvas.delete("border_corner_part")  # delete border corner parts if not needed
 
             # create canvas border rectangle parts if not already created
-            if not self._canvas.find_withtag("border_rectangle_1"):
+            if not self._canvas.tag_exists("border_rectangle_1"):
                 self._canvas.create_rectangle(0, 0, 0, 0, tags=("border_rectangle_left_1", "border_rectangle_part", "border_parts_left", "border_parts", "left_parts"), width=0)
                 self._canvas.create_rectangle(0, 0, 0, 0, tags=("border_rectangle_left_2", "border_rectangle_part", "border_parts_left", "border_parts", "left_parts"), width=0)
                 self._canvas.create_rectangle(0, 0, 0, 0, tags=("border_rectangle_right_1", "border_rectangle_part", "border_parts_right", "border_parts", "right_parts"), width=0)
@@ -622,38 +622,38 @@ class DrawEngine:
         if inner_corner_radius > 0:
 
             # create canvas border corner parts if not already created, but only if they're needed and delete if not needed
-            if not self._canvas.find_withtag("inner_oval_1_a") and "inner_oval_1" not in exclude_parts:
+            if not self._canvas.tag_exists("inner_oval_1_a") and "inner_oval_1" not in exclude_parts:
                 self._canvas.create_aa_circle(0, 0, 0, tags=("inner_oval_1_a", "inner_corner_part", "inner_parts_left", "inner_parts", "left_parts"), anchor=tkinter.CENTER)
                 self._canvas.create_aa_circle(0, 0, 0, tags=("inner_oval_1_b", "inner_corner_part", "inner_parts_left", "inner_parts", "left_parts"), anchor=tkinter.CENTER,
                                               angle=180)
                 requires_recoloring = True
-            elif self._canvas.find_withtag("inner_oval_1_a") and "inner_oval_1" in exclude_parts:
+            elif self._canvas.tag_exists("inner_oval_1_a") and "inner_oval_1" in exclude_parts:
                 self._canvas.delete("inner_oval_1_a", "inner_oval_1_b")
 
-            if not self._canvas.find_withtag("inner_oval_2_a") and width - (2 * border_width) > 2 * inner_corner_radius and "inner_oval_2" not in exclude_parts:
+            if not self._canvas.tag_exists("inner_oval_2_a") and width - (2 * border_width) > 2 * inner_corner_radius and "inner_oval_2" not in exclude_parts:
                 self._canvas.create_aa_circle(0, 0, 0, tags=("inner_oval_2_a", "inner_corner_part", "inner_parts_right", "inner_parts", "right_parts"), anchor=tkinter.CENTER)
                 self._canvas.create_aa_circle(0, 0, 0, tags=("inner_oval_2_b", "inner_corner_part", "inner_parts_right", "inner_parts", "right_parts"), anchor=tkinter.CENTER,
                                               angle=180)
                 requires_recoloring = True
-            elif self._canvas.find_withtag("inner_oval_2_a") and (not width - (2 * border_width) > 2 * inner_corner_radius or "inner_oval_2" in exclude_parts):
+            elif self._canvas.tag_exists("inner_oval_2_a") and (not width - (2 * border_width) > 2 * inner_corner_radius or "inner_oval_2" in exclude_parts):
                 self._canvas.delete("inner_oval_2_a", "inner_oval_2_b")
 
-            if not self._canvas.find_withtag("inner_oval_3_a") and height - (2 * border_width) > 2 * inner_corner_radius \
+            if not self._canvas.tag_exists("inner_oval_3_a") and height - (2 * border_width) > 2 * inner_corner_radius \
                 and width - (2 * border_width) > 2 * inner_corner_radius and "inner_oval_3" not in exclude_parts:
                 self._canvas.create_aa_circle(0, 0, 0, tags=("inner_oval_3_a", "inner_corner_part", "inner_parts_right", "inner_parts", "right_parts"), anchor=tkinter.CENTER)
                 self._canvas.create_aa_circle(0, 0, 0, tags=("inner_oval_3_b", "inner_corner_part", "inner_parts_right", "inner_parts", "right_parts"), anchor=tkinter.CENTER,
                                               angle=180)
                 requires_recoloring = True
-            elif self._canvas.find_withtag("inner_oval_3_a") and (not (height - (2 * border_width) > 2 * inner_corner_radius
+            elif self._canvas.tag_exists("inner_oval_3_a") and (not (height - (2 * border_width) > 2 * inner_corner_radius
                                                                        and width - (2 * border_width) > 2 * inner_corner_radius) or "inner_oval_3" in exclude_parts):
                 self._canvas.delete("inner_oval_3_a", "inner_oval_3_b")
 
-            if not self._canvas.find_withtag("inner_oval_4_a") and height - (2 * border_width) > 2 * inner_corner_radius and "inner_oval_4" not in exclude_parts:
+            if not self._canvas.tag_exists("inner_oval_4_a") and height - (2 * border_width) > 2 * inner_corner_radius and "inner_oval_4" not in exclude_parts:
                 self._canvas.create_aa_circle(0, 0, 0, tags=("inner_oval_4_a", "inner_corner_part", "inner_parts_left", "inner_parts", "left_parts"), anchor=tkinter.CENTER)
                 self._canvas.create_aa_circle(0, 0, 0, tags=("inner_oval_4_b", "inner_corner_part", "inner_parts_left", "inner_parts", "left_parts"), anchor=tkinter.CENTER,
                                               angle=180)
                 requires_recoloring = True
-            elif self._canvas.find_withtag("inner_oval_4_a") and (not height - (2 * border_width) > 2 * inner_corner_radius or "inner_oval_4" in exclude_parts):
+            elif self._canvas.tag_exists("inner_oval_4_a") and (not height - (2 * border_width) > 2 * inner_corner_radius or "inner_oval_4" in exclude_parts):
                 self._canvas.delete("inner_oval_4_a", "inner_oval_4_b")
 
             # change position of border corner parts
@@ -669,17 +669,17 @@ class DrawEngine:
             self._canvas.delete("inner_corner_part")  # delete inner corner parts if not needed
 
         # create canvas inner rectangle parts if not already created
-        if not self._canvas.find_withtag("inner_rectangle_left_1"):
+        if not self._canvas.tag_exists("inner_rectangle_left_1"):
             self._canvas.create_rectangle(0, 0, 0, 0, tags=("inner_rectangle_left_1", "inner_rectangle_part", "inner_parts_left", "inner_parts", "left_parts"), width=0)
             self._canvas.create_rectangle(0, 0, 0, 0, tags=("inner_rectangle_right_1", "inner_rectangle_part", "inner_parts_right", "inner_parts", "right_parts"), width=0)
             requires_recoloring = True
 
-        if not self._canvas.find_withtag("inner_rectangle_left_2") and inner_corner_radius * 2 < height - (border_width * 2):
+        if not self._canvas.tag_exists("inner_rectangle_left_2") and inner_corner_radius * 2 < height - (border_width * 2):
             self._canvas.create_rectangle(0, 0, 0, 0, tags=("inner_rectangle_left_2", "inner_rectangle_part", "inner_parts_left", "inner_parts", "left_parts"), width=0)
             self._canvas.create_rectangle(0, 0, 0, 0, tags=("inner_rectangle_right_2", "inner_rectangle_part", "inner_parts_right", "inner_parts", "right_parts"), width=0)
             requires_recoloring = True
 
-        elif self._canvas.find_withtag("inner_rectangle_2") and not inner_corner_radius * 2 < height - (border_width * 2):
+        elif self._canvas.tag_exists("inner_rectangle_2") and not inner_corner_radius * 2 < height - (border_width * 2):
             self._canvas.delete("inner_rectangle_left_2")
             self._canvas.delete("inner_rectangle_right_2")
 
@@ -751,7 +751,7 @@ class DrawEngine:
             bottom_right_shift = 0
 
         # create progress parts
-        if not self._canvas.find_withtag("progress_parts"):
+        if not self._canvas.tag_exists("progress_parts"):
             self._canvas.create_polygon((0, 0, 0, 0), tags=("progress_line_1", "progress_parts"), joinstyle=tkinter.ROUND)
             self._canvas.tag_raise("progress_parts", "inner_parts")
             requires_recoloring = True
@@ -789,30 +789,30 @@ class DrawEngine:
 
         if inner_corner_radius > 0:
             # create canvas border corner parts if not already created
-            if not self._canvas.find_withtag("progress_oval_1_a"):
+            if not self._canvas.tag_exists("progress_oval_1_a"):
                 self._canvas.create_aa_circle(0, 0, 0, tags=("progress_oval_1_a", "progress_corner_part", "progress_parts"), anchor=tkinter.CENTER)
                 self._canvas.create_aa_circle(0, 0, 0, tags=("progress_oval_1_b", "progress_corner_part", "progress_parts"), anchor=tkinter.CENTER, angle=180)
                 self._canvas.create_aa_circle(0, 0, 0, tags=("progress_oval_2_a", "progress_corner_part", "progress_parts"), anchor=tkinter.CENTER)
                 self._canvas.create_aa_circle(0, 0, 0, tags=("progress_oval_2_b", "progress_corner_part", "progress_parts"), anchor=tkinter.CENTER, angle=180)
                 requires_recoloring = True
 
-            if not self._canvas.find_withtag("progress_oval_3_a") and round(inner_corner_radius) * 2 < height - 2 * border_width:
+            if not self._canvas.tag_exists("progress_oval_3_a") and round(inner_corner_radius) * 2 < height - 2 * border_width:
                 self._canvas.create_aa_circle(0, 0, 0, tags=("progress_oval_3_a", "progress_corner_part", "progress_parts"), anchor=tkinter.CENTER)
                 self._canvas.create_aa_circle(0, 0, 0, tags=("progress_oval_3_b", "progress_corner_part", "progress_parts"), anchor=tkinter.CENTER, angle=180)
                 self._canvas.create_aa_circle(0, 0, 0, tags=("progress_oval_4_a", "progress_corner_part", "progress_parts"), anchor=tkinter.CENTER)
                 self._canvas.create_aa_circle(0, 0, 0, tags=("progress_oval_4_b", "progress_corner_part", "progress_parts"), anchor=tkinter.CENTER, angle=180)
                 requires_recoloring = True
-            elif self._canvas.find_withtag("progress_oval_3_a") and not round(inner_corner_radius) * 2 < height - 2 * border_width:
+            elif self._canvas.tag_exists("progress_oval_3_a") and not round(inner_corner_radius) * 2 < height - 2 * border_width:
                 self._canvas.delete("progress_oval_3_a", "progress_oval_3_b", "progress_oval_4_a", "progress_oval_4_b")
 
-        if not self._canvas.find_withtag("progress_rectangle_1"):
+        if not self._canvas.tag_exists("progress_rectangle_1"):
             self._canvas.create_rectangle(0, 0, 0, 0, tags=("progress_rectangle_1", "progress_rectangle_part", "progress_parts"), width=0)
             requires_recoloring = True
 
-        if not self._canvas.find_withtag("progress_rectangle_2") and inner_corner_radius * 2 < height - (border_width * 2):
+        if not self._canvas.tag_exists("progress_rectangle_2") and inner_corner_radius * 2 < height - (border_width * 2):
             self._canvas.create_rectangle(0, 0, 0, 0, tags=("progress_rectangle_2", "progress_rectangle_part", "progress_parts"), width=0)
             requires_recoloring = True
-        elif self._canvas.find_withtag("progress_rectangle_2") and not inner_corner_radius * 2 < height - (border_width * 2):
+        elif self._canvas.tag_exists("progress_rectangle_2") and not inner_corner_radius * 2 < height - (border_width * 2):
             self._canvas.delete("progress_rectangle_2")
 
         # horizontal orientation from the bottom
@@ -928,7 +928,7 @@ class DrawEngine:
                                                                                           0, slider_value, orientation)
 
         # create slider button part
-        if not self._canvas.find_withtag("slider_parts"):
+        if not self._canvas.tag_exists("slider_parts"):
             self._canvas.create_polygon((0, 0, 0, 0), tags=("slider_line_1", "slider_parts"), joinstyle=tkinter.ROUND)
             self._canvas.tag_raise("slider_parts")  # manage z-order
             requires_recoloring = True
@@ -967,43 +967,43 @@ class DrawEngine:
                                                                                        0, slider_value, orientation)
 
         # create 4 circles (if not needed, then less)
-        if not self._canvas.find_withtag("slider_oval_1_a"):
+        if not self._canvas.tag_exists("slider_oval_1_a"):
             self._canvas.create_aa_circle(0, 0, 0, tags=("slider_oval_1_a", "slider_corner_part", "slider_parts"), anchor=tkinter.CENTER)
             self._canvas.create_aa_circle(0, 0, 0, tags=("slider_oval_1_b", "slider_corner_part", "slider_parts"), anchor=tkinter.CENTER, angle=180)
             requires_recoloring = True
 
-        if not self._canvas.find_withtag("slider_oval_2_a") and button_length > 0:
+        if not self._canvas.tag_exists("slider_oval_2_a") and button_length > 0:
             self._canvas.create_aa_circle(0, 0, 0, tags=("slider_oval_2_a", "slider_corner_part", "slider_parts"), anchor=tkinter.CENTER)
             self._canvas.create_aa_circle(0, 0, 0, tags=("slider_oval_2_b", "slider_corner_part", "slider_parts"), anchor=tkinter.CENTER, angle=180)
             requires_recoloring = True
-        elif self._canvas.find_withtag("slider_oval_2_a") and not button_length > 0:
+        elif self._canvas.tag_exists("slider_oval_2_a") and not button_length > 0:
             self._canvas.delete("slider_oval_2_a", "slider_oval_2_b")
 
-        if not self._canvas.find_withtag("slider_oval_4_a") and height > 2 * button_corner_radius:
+        if not self._canvas.tag_exists("slider_oval_4_a") and height > 2 * button_corner_radius:
             self._canvas.create_aa_circle(0, 0, 0, tags=("slider_oval_4_a", "slider_corner_part", "slider_parts"), anchor=tkinter.CENTER)
             self._canvas.create_aa_circle(0, 0, 0, tags=("slider_oval_4_b", "slider_corner_part", "slider_parts"), anchor=tkinter.CENTER, angle=180)
             requires_recoloring = True
-        elif self._canvas.find_withtag("slider_oval_4_a") and not height > 2 * button_corner_radius:
+        elif self._canvas.tag_exists("slider_oval_4_a") and not height > 2 * button_corner_radius:
             self._canvas.delete("slider_oval_4_a", "slider_oval_4_b")
 
-        if not self._canvas.find_withtag("slider_oval_3_a") and button_length > 0 and height > 2 * button_corner_radius:
+        if not self._canvas.tag_exists("slider_oval_3_a") and button_length > 0 and height > 2 * button_corner_radius:
             self._canvas.create_aa_circle(0, 0, 0, tags=("slider_oval_3_a", "slider_corner_part", "slider_parts"), anchor=tkinter.CENTER)
             self._canvas.create_aa_circle(0, 0, 0, tags=("slider_oval_3_b", "slider_corner_part", "slider_parts"), anchor=tkinter.CENTER, angle=180)
             requires_recoloring = True
-        elif self._canvas.find_withtag("border_oval_3_a") and not (button_length > 0 and height > 2 * button_corner_radius):
+        elif self._canvas.tag_exists("border_oval_3_a") and not (button_length > 0 and height > 2 * button_corner_radius):
             self._canvas.delete("slider_oval_3_a", "slider_oval_3_b")
 
         # create the 2 rectangles (if needed)
-        if not self._canvas.find_withtag("slider_rectangle_1") and button_length > 0:
+        if not self._canvas.tag_exists("slider_rectangle_1") and button_length > 0:
             self._canvas.create_rectangle(0, 0, 0, 0, tags=("slider_rectangle_1", "slider_rectangle_part", "slider_parts"), width=0)
             requires_recoloring = True
-        elif self._canvas.find_withtag("slider_rectangle_1") and not button_length > 0:
+        elif self._canvas.tag_exists("slider_rectangle_1") and not button_length > 0:
             self._canvas.delete("slider_rectangle_1")
 
-        if not self._canvas.find_withtag("slider_rectangle_2") and height > 2 * button_corner_radius:
+        if not self._canvas.tag_exists("slider_rectangle_2") and height > 2 * button_corner_radius:
             self._canvas.create_rectangle(0, 0, 0, 0, tags=("slider_rectangle_2", "slider_rectangle_part", "slider_parts"), width=0)
             requires_recoloring = True
-        elif self._canvas.find_withtag("slider_rectangle_2") and not height > 2 * button_corner_radius:
+        elif self._canvas.tag_exists("slider_rectangle_2") and not height > 2 * button_corner_radius:
             self._canvas.delete("slider_rectangle_2")
 
         # set positions of circles and rectangles
@@ -1079,12 +1079,12 @@ class DrawEngine:
                                                 start_value: float, end_value: float, orientation: str) -> bool:
         requires_recoloring = False
 
-        if not self._canvas.find_withtag("border_parts"):
+        if not self._canvas.tag_exists("border_parts"):
             self._canvas.create_rectangle(0, 0, 0, 0, tags=("border_rectangle_1", "border_parts"), width=0)
             requires_recoloring = True
         self._canvas.coords("border_rectangle_1", 0, 0, width, height)
 
-        if not self._canvas.find_withtag("scrollbar_parts"):
+        if not self._canvas.tag_exists("scrollbar_parts"):
             self._canvas.create_polygon((0, 0, 0, 0), tags=("scrollbar_polygon_1", "scrollbar_parts"), joinstyle=tkinter.ROUND)
             self._canvas.tag_raise("scrollbar_parts", "border_parts")
             requires_recoloring = True
@@ -1110,50 +1110,50 @@ class DrawEngine:
                                              start_value: float, end_value: float, orientation: str) -> bool:
         requires_recoloring = False
 
-        if not self._canvas.find_withtag("border_parts"):
+        if not self._canvas.tag_exists("border_parts"):
             self._canvas.create_rectangle(0, 0, 0, 0, tags=("border_rectangle_1", "border_parts"), width=0)
             requires_recoloring = True
         self._canvas.coords("border_rectangle_1", 0, 0, width, height)
 
         if inner_corner_radius > 0:
-            if not self._canvas.find_withtag("scrollbar_oval_1_a"):
+            if not self._canvas.tag_exists("scrollbar_oval_1_a"):
                 self._canvas.create_aa_circle(0, 0, 0, tags=("scrollbar_oval_1_a", "scrollbar_corner_part", "scrollbar_parts"), anchor=tkinter.CENTER)
                 self._canvas.create_aa_circle(0, 0, 0, tags=("scrollbar_oval_1_b", "scrollbar_corner_part", "scrollbar_parts"), anchor=tkinter.CENTER, angle=180)
                 requires_recoloring = True
 
-            if not self._canvas.find_withtag("scrollbar_oval_2_a") and width > 2 * corner_radius:
+            if not self._canvas.tag_exists("scrollbar_oval_2_a") and width > 2 * corner_radius:
                 self._canvas.create_aa_circle(0, 0, 0, tags=("scrollbar_oval_2_a", "scrollbar_corner_part", "scrollbar_parts"), anchor=tkinter.CENTER)
                 self._canvas.create_aa_circle(0, 0, 0, tags=("scrollbar_oval_2_b", "scrollbar_corner_part", "scrollbar_parts"), anchor=tkinter.CENTER, angle=180)
                 requires_recoloring = True
-            elif self._canvas.find_withtag("scrollbar_oval_2_a") and not width > 2 * corner_radius:
+            elif self._canvas.tag_exists("scrollbar_oval_2_a") and not width > 2 * corner_radius:
                 self._canvas.delete("scrollbar_oval_2_a", "scrollbar_oval_2_b")
 
-            if not self._canvas.find_withtag("scrollbar_oval_3_a") and height > 2 * corner_radius and width > 2 * corner_radius:
+            if not self._canvas.tag_exists("scrollbar_oval_3_a") and height > 2 * corner_radius and width > 2 * corner_radius:
                 self._canvas.create_aa_circle(0, 0, 0, tags=("scrollbar_oval_3_a", "scrollbar_corner_part", "scrollbar_parts"), anchor=tkinter.CENTER)
                 self._canvas.create_aa_circle(0, 0, 0, tags=("scrollbar_oval_3_b", "scrollbar_corner_part", "scrollbar_parts"), anchor=tkinter.CENTER, angle=180)
                 requires_recoloring = True
-            elif self._canvas.find_withtag("scrollbar_oval_3_a") and not (height > 2 * corner_radius and width > 2 * corner_radius):
+            elif self._canvas.tag_exists("scrollbar_oval_3_a") and not (height > 2 * corner_radius and width > 2 * corner_radius):
                 self._canvas.delete("scrollbar_oval_3_a", "scrollbar_oval_3_b")
 
-            if not self._canvas.find_withtag("scrollbar_oval_4_a") and height > 2 * corner_radius:
+            if not self._canvas.tag_exists("scrollbar_oval_4_a") and height > 2 * corner_radius:
                 self._canvas.create_aa_circle(0, 0, 0, tags=("scrollbar_oval_4_a", "scrollbar_corner_part", "scrollbar_parts"), anchor=tkinter.CENTER)
                 self._canvas.create_aa_circle(0, 0, 0, tags=("scrollbar_oval_4_b", "scrollbar_corner_part", "scrollbar_parts"), anchor=tkinter.CENTER, angle=180)
                 requires_recoloring = True
-            elif self._canvas.find_withtag("scrollbar_oval_4_a") and not height > 2 * corner_radius:
+            elif self._canvas.tag_exists("scrollbar_oval_4_a") and not height > 2 * corner_radius:
                 self._canvas.delete("scrollbar_oval_4_a", "scrollbar_oval_4_b")
         else:
             self._canvas.delete("scrollbar_corner_part")
 
-        if not self._canvas.find_withtag("scrollbar_rectangle_1") and height > 2 * corner_radius:
+        if not self._canvas.tag_exists("scrollbar_rectangle_1") and height > 2 * corner_radius:
             self._canvas.create_rectangle(0, 0, 0, 0, tags=("scrollbar_rectangle_1", "scrollbar_rectangle_part", "scrollbar_parts"), width=0)
             requires_recoloring = True
-        elif self._canvas.find_withtag("scrollbar_rectangle_1") and not height > 2 * corner_radius:
+        elif self._canvas.tag_exists("scrollbar_rectangle_1") and not height > 2 * corner_radius:
             self._canvas.delete("scrollbar_rectangle_1")
 
-        if not self._canvas.find_withtag("scrollbar_rectangle_2") and width > 2 * corner_radius:
+        if not self._canvas.tag_exists("scrollbar_rectangle_2") and width > 2 * corner_radius:
             self._canvas.create_rectangle(0, 0, 0, 0, tags=("scrollbar_rectangle_2", "scrollbar_rectangle_part", "scrollbar_parts"), width=0)
             requires_recoloring = True
-        elif self._canvas.find_withtag("scrollbar_rectangle_2") and not width > 2 * corner_radius:
+        elif self._canvas.tag_exists("scrollbar_rectangle_2") and not width > 2 * corner_radius:
             self._canvas.delete("scrollbar_rectangle_2")
 
         if orientation == "vertical":
@@ -1203,7 +1203,7 @@ class DrawEngine:
 
         if self.preferred_drawing_method == "polygon_shapes" or self.preferred_drawing_method == "circle_shapes":
             x, y, radius = width / 2, height / 2, size / 2.8
-            if not self._canvas.find_withtag("checkmark"):
+            if not self._canvas.tag_exists("checkmark"):
                 self._canvas.create_line(0, 0, 0, 0, tags=("checkmark", "create_line"), width=round(height / 8), joinstyle=tkinter.MITER, capstyle=tkinter.ROUND)
                 self._canvas.tag_raise("checkmark")
                 requires_recoloring = True
@@ -1215,7 +1215,7 @@ class DrawEngine:
         elif self.preferred_drawing_method == "image_shapes":
             # line width and position are fitted to the checkmark glyph of the font_shapes method
             line_width, x, y = height * 0.09, width / 2 + height / 48, height / 2 + height / 48
-            if not self._canvas.find_withtag("checkmark"):
+            if not self._canvas.tag_exists("checkmark"):
                 self._canvas.create_aa_shape("checkmark", x, y, size, line_width, tags=("checkmark", "create_image"))
                 self._canvas.tag_raise("checkmark")
                 requires_recoloring = True
@@ -1223,7 +1223,7 @@ class DrawEngine:
             self._canvas.set_aa_shape("checkmark", "checkmark", x, y, size, line_width)
 
         elif self.preferred_drawing_method == "font_shapes":
-            if not self._canvas.find_withtag("checkmark"):
+            if not self._canvas.tag_exists("checkmark"):
                 self._canvas.create_text(0, 0, text="Z", font=("CustomTkinter_shapes_font", -size), tags=("checkmark", "create_text"), anchor=tkinter.CENTER)
                 self._canvas.tag_raise("checkmark")
                 requires_recoloring = True
@@ -1241,7 +1241,7 @@ class DrawEngine:
         requires_recoloring = False
 
         if self.preferred_drawing_method == "polygon_shapes" or self.preferred_drawing_method == "circle_shapes":
-            if not self._canvas.find_withtag("dropdown_arrow"):
+            if not self._canvas.tag_exists("dropdown_arrow"):
                 self._canvas.create_line(0, 0, 0, 0, tags="dropdown_arrow", width=round(size / 3), joinstyle=tkinter.ROUND, capstyle=tkinter.ROUND)
                 self._canvas.tag_raise("dropdown_arrow")
                 requires_recoloring = True
@@ -1257,7 +1257,7 @@ class DrawEngine:
         elif self.preferred_drawing_method == "image_shapes":
             # line width and position are fitted to the arrow glyph of the font_shapes method
             line_width, x, y = size * 0.19, x_position + 0.5, y_position + size * 0.053
-            if not self._canvas.find_withtag("dropdown_arrow"):
+            if not self._canvas.tag_exists("dropdown_arrow"):
                 self._canvas.create_aa_shape("dropdown_arrow", x, y, size, line_width, tags="dropdown_arrow")
                 self._canvas.tag_raise("dropdown_arrow")
                 requires_recoloring = True
@@ -1265,7 +1265,7 @@ class DrawEngine:
             self._canvas.set_aa_shape("dropdown_arrow", "dropdown_arrow", x, y, size, line_width)
 
         elif self.preferred_drawing_method == "font_shapes":
-            if not self._canvas.find_withtag("dropdown_arrow"):
+            if not self._canvas.tag_exists("dropdown_arrow"):
                 self._canvas.create_text(0, 0, text="Y", font=("CustomTkinter_shapes_font", -size), tags="dropdown_arrow", anchor=tkinter.CENTER)
                 self._canvas.tag_raise("dropdown_arrow")
                 requires_recoloring = True
