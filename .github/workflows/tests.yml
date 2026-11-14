@@ -1,0 +1,85 @@
+name: Tests
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  tests:
+    # pull requests from branches of this repository are already tested by the push
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.repository
+    name: ${{ matrix.os }}, Python ${{ matrix.python }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: ubuntu-latest, python: "3.9" }
+          - { os: ubuntu-latest, python: "3.14" }
+          - { os: windows-latest, python: "3.9" }
+          - { os: windows-latest, python: "3.14" }
+          - { os: macos-latest, python: "3.14" }
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python }}
+
+      - name: Install Linux packages
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y xvfb x11-xserver-utils libtk8.6
+
+      - name: Install test dependencies
+        run: python -m pip install pytest pytest-timeout pillow darkdetect packaging
+
+      - name: Tk version
+        run: python -c "import tkinter; print('Tk', tkinter.Tcl().call('info', 'patchlevel'))"
+
+      - name: Run tests (Linux)
+        if: runner.os == 'Linux'
+        run: xvfb-run -a -s "-screen 0 1280x900x24" python -m pytest -ra --timeout 120
+
+      - name: Run tests (Windows, macOS)
+        if: runner.os != 'Linux'
+        run: python -m pytest -ra --timeout 120
+
+  tests-tk9:
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.repository
+    name: ubuntu-latest, Python 3.14 with Tk 9 (uv)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Install Linux packages
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y xvfb x11-xserver-utils
+
+      - name: Install uv, Python with Tk 9 and test dependencies
+        env:
+          UV_PYTHON_PREFERENCE: only-managed  # the Python builds of uv come with Tk 9
+        run: |
+          pipx install uv
+          uv venv --python 3.14 .venv
+          uv pip install --python .venv/bin/python pytest pytest-timeout pillow darkdetect packaging
+
+      - name: Tk version
+        run: .venv/bin/python -c "import tkinter; print('Tk', tkinter.Tcl().call('info', 'patchlevel'))"
+
+      - name: Run tests
+        run: xvfb-run -a -s "-screen 0 1280x900x24" .venv/bin/python -m pytest -ra --timeout 120
