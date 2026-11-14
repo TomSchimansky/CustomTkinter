@@ -93,10 +93,30 @@ CITIES = {
                "sunshine": [43, 64, 121, 189, 253, 250, 259, 247, 172, 112, 44, 30]},
 }
 
+NOTES = {
+    "Amsterdam": "Mild and wet all year, a light rain jacket is never wrong. Cycling along the canals is best from May to September.",
+    "Athens": "Very hot and dry in July and August. Spring and autumn are much better for walking up to the Acropolis.",
+    "Berlin": "Warm summers and grey winters. Swimming in the lakes from June to August, Christmas markets in December.",
+    "Budapest": "Hot summers and cold winters. The thermal baths are worth a visit in every season.",
+    "Copenhagen": "Windy and cool most of the year. Long summer evenings, but very short days in December.",
+    "Dublin": "Mild winters and cool summers, the rain is spread over the whole year.",
+    "Helsinki": "The coldest capital in this list. Snow from December to March, white nights in June.",
+    "Lisbon": "Warm and sunny, the winters are mild but rainy. The Atlantic is cold even in summer.",
+    "London": "Mild and changeable weather, it rarely gets really hot or really cold.",
+    "Madrid": "Hot and dry summers, cold nights in winter because of the altitude.",
+    "Oslo": "Cold winters with snow and pleasant summers. August and October are the wettest months.",
+    "Paris": "Mild climate with rain in every month. Spring and early autumn are the best time to visit.",
+    "Prague": "Rather dry, most of the rain falls in summer thunderstorms. Cold winters.",
+    "Rome": "Hot summers and mild winters, October and November are the wettest months.",
+    "Stockholm": "Cold winters, but sunny summers with very long days.",
+    "Vienna": "Warm summers and cold winters, often windy.",
+    "Warsaw": "Continental climate with cold winters and warm summers.",
+}
+
 MAP_STYLES = {
-    "OpenStreetMap": ("https://tile.openstreetmap.org/{z}/{x}/{y}.png", 19),
-    "Google Maps": ("https://mt0.google.com/vt/lyrs=m&hl=en&x={x}&y={y}&z={z}&s=Ga", 22),
     "Google Satellite": ("https://mt0.google.com/vt/lyrs=s&hl=en&x={x}&y={y}&z={z}&s=Ga", 22),
+    "Google Maps": ("https://mt0.google.com/vt/lyrs=m&hl=en&x={x}&y={y}&z={z}&s=Ga", 22),
+    "OpenStreetMap": ("https://tile.openstreetmap.org/{z}/{x}/{y}.png", 19),
 }
 
 THEME = customtkinter.ThemeManager.theme
@@ -160,9 +180,10 @@ class App(customtkinter.CTk):
     def create_main_view(self):
         main = customtkinter.CTkFrame(self, fg_color="transparent")
         main.grid(row=0, column=1, padx=20, pady=20, sticky="nsew")
-        main.grid_columnconfigure(0, weight=3)
-        main.grid_columnconfigure(1, weight=2)
-        main.grid_rowconfigure((2, 3), weight=1)
+        # uniform: the columns and rows keep their proportions, also when the content of the tabview changes
+        main.grid_columnconfigure(0, weight=3, uniform="columns")
+        main.grid_columnconfigure(1, weight=2, uniform="columns")
+        main.grid_rowconfigure((2, 3), weight=1, uniform="rows")
 
         # header with the name of the selected city
         header = customtkinter.CTkFrame(main, fg_color="transparent")
@@ -214,22 +235,25 @@ class App(customtkinter.CTk):
         self.map_style_menu = customtkinter.CTkOptionMenu(card, values=list(MAP_STYLES), width=150, command=self.change_map_style)
         self.map_style_menu.grid(row=0, column=2, padx=(0, 10), pady=10)
 
-        self.map = tkintermapview.TkinterMapView(card, corner_radius=6)
+        self.map = tkintermapview.TkinterMapView(card, corner_radius=14)
         self.map.grid(row=1, column=0, columnspan=3, padx=10, sticky="nsew")
         self.map.set_position(50.5, 10.0)
         self.map.set_zoom(4)
         self.markers = {}
         for name, city in CITIES.items():
             self.markers[name] = self.map.set_marker(*city["position"], data=name, command=lambda marker: self.select_city(marker.data))
+        self.map_style_menu.set("Google Satellite")
+        self.change_map_style("Google Satellite")
 
         controls = customtkinter.CTkFrame(card, fg_color="transparent")
         controls.grid(row=2, column=0, columnspan=3, padx=10, pady=10, sticky="ew")
         controls.grid_columnconfigure(1, weight=1)
         customtkinter.CTkLabel(controls, text="Zoom").grid(row=0, column=0, padx=(5, 10))
-        self.zoom_slider = customtkinter.CTkSlider(controls, from_=3, to=12, number_of_steps=9,
+        self.zoom_slider = customtkinter.CTkSlider(controls, from_=2, to=19, number_of_steps=17,
                                                    command=lambda value: self.map.set_zoom(round(value)))
         self.zoom_slider.grid(row=0, column=1, sticky="ew")
         self.zoom_slider.set(4)
+        self.after(250, self.update_zoom_slider)
         self.follow_switch = customtkinter.CTkSwitch(controls, text="Follow selection")
         self.follow_switch.grid(row=0, column=2, padx=(20, 0))
         self.follow_switch.select()
@@ -283,7 +307,7 @@ class App(customtkinter.CTk):
                                 text_color=("gray10", "#DCE4EE"), command=self.save_chart).grid(row=3, column=0, columnspan=2, padx=10, pady=8, sticky="ew")
 
         about_tab.grid_columnconfigure(0, weight=1)
-        customtkinter.CTkLabel(about_tab, justify="left", anchor="w", wraplength=320,
+        customtkinter.CTkLabel(about_tab, justify="left", anchor="w", wraplength=280,
                                text="The values are approximate monthly averages of the years 1991 to 2020. "
                                     "Click on a city in the list or on the map to see its climate.").grid(row=0, column=0, padx=10, pady=8, sticky="ew")
 
@@ -310,7 +334,7 @@ class App(customtkinter.CTk):
         self.markers[name].set_text(name)
         self.notes_label.configure(text=f"Notes about {name}")
         self.notes_textbox.delete("1.0", "end")
-        self.notes_textbox.insert("1.0", self.notes.get(name, ""))
+        self.notes_textbox.insert("1.0", self.notes.get(name, NOTES[name]))
         if self.follow_switch.get():
             self.map.set_position(*CITIES[name]["position"])
 
@@ -450,6 +474,15 @@ class App(customtkinter.CTk):
     def change_map_style(self, style):
         url, max_zoom = MAP_STYLES[style]
         self.map.set_tile_server(url, max_zoom=max_zoom)
+        for marker in self.markers.values():  # marker names have to be readable on the dark satellite images
+            marker.text_color = "white" if style == "Google Satellite" else "#652A22"
+            marker.draw()
+
+    def update_zoom_slider(self):
+        """ the map can also be zoomed with the mouse wheel and its buttons, the slider follows it """
+        if round(self.zoom_slider.get()) != round(self.map.zoom):
+            self.zoom_slider.set(round(self.map.zoom))
+        self.after(250, self.update_zoom_slider)
 
     # ------------------------------------------------------------------ appearance mode and scaling
 
