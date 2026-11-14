@@ -22,6 +22,7 @@ ToDo:
  - "polygon_shapes" is used on Linux with Tk 8.5, which can't load PNG images and has no rotated text
  - Dropdown menus of CTkOptionMenu and CTkComboBox are split into columns on Linux when they are taller than the screen
  - Fonts are only copied to ~/.fonts on Linux if they are not already there
+ - On macOS the CTk window is brought to the front when mainloop() shows it the first time, it could open behind the terminal or IDE
  - Widgets are created 25-60% faster, resizing, scaling and appearance mode changes are 30-45% faster, scrolling in CTkScrollableFrame on macOS is about 4 times faster
  - The system appearance mode is checked every second on Linux instead of every 30 ms, which used about 10% CPU while idle
 

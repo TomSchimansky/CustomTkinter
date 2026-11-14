@@ -180,9 +180,21 @@ class CTk(CTK_PARENT_CLASS, CTkAppearanceModeBaseClass, CTkScalingBaseClass):
                     # print("window dont exists -> deiconify in mainloop")
                     self.deiconify()
 
+            elif sys.platform == "darwin":
+                if not self._withdraw_called_before_window_exists and not self._iconify_called_before_window_exists:
+                    self._macos_bring_to_front()
+
             self._window_exists = True
 
         super().mainloop(*args, **kwargs)
+
+    def _macos_bring_to_front(self):
+        """ On macOS the window can open behind the terminal or IDE that started the program. It's lifted above all other
+            windows for a moment, and focus_force() activates the app, so that the menu bar and the keyboard input belong to it. """
+        self.lift()
+        self.attributes("-topmost", True)
+        self.after_idle(self.attributes, "-topmost", False)
+        self.focus_force()
 
     def resizable(self, width: bool = None, height: bool = None):
         current_resizable_values = super().resizable(width, height)

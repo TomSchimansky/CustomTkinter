@@ -257,3 +257,31 @@ def test_input_dialog_grab_retries_until_viewable(root, monkeypatch):
         dialog._cancel_event()
     value, _ = run_dialog(root, check_and_cancel)
     assert value is None
+
+
+@several_interpreters
+@pytest.mark.parametrize("call_before", [None, "withdraw", "iconify"])
+def test_macos_window_is_brought_to_front(monkeypatch, call_before):
+    """ on macOS the window can open behind the terminal, mainloop() brings it to the front once """
+    import types
+    import customtkinter.windows.ctk_tk as ctk_tk_module
+    calls = []
+    monkeypatch.setattr(ctk_tk_module, "sys", types.SimpleNamespace(platform="darwin"))
+    monkeypatch.setattr(customtkinter.CTk, "_macos_bring_to_front", lambda self: calls.append(self))
+    app = customtkinter.CTk()
+    try:
+        if call_before is not None:
+            getattr(app, call_before)()
+        app.after(100, app.quit)
+        app.mainloop()
+        app.after(100, app.quit)
+        app.mainloop()  # only the first mainloop() brings the window to the front
+        assert len(calls) == (1 if call_before is None else 0)
+    finally:
+        app.destroy()
+
+
+def test_macos_bring_to_front_resets_topmost(root):
+    root._macos_bring_to_front()
+    update(root, 0.1)
+    assert not root.attributes("-topmost")
