@@ -10,6 +10,18 @@ ToDo:
  - set icon (self.call("wm", "iconphoto", self._w, tkinter.PhotoImage(file="test_images/CustomTkinter_logo_single.png")))
  - add option to change label position for checkbox, switch, radiobutton #628
 
+## [Unreleased]
+### Added
+ - Drawing method "image_shapes": antialiased shapes from small PNG images, works with every Tk 8.6 and 9 build without extra dependencies
+ - Two-finger touchpad scrolling for CTkScrollableFrame with Tk 9 on Windows and macOS (<TouchpadScroll> event)
+
+### Changed
+ - "image_shapes" is the default drawing method on Linux, it's faster than "font_shapes" and doesn't need Xft
+ - "font_shapes" switches to "image_shapes" if Tk can't use the CustomTkinter_shapes_font
+
+### Fixed
+ - Mouse wheel scrolling on Linux with Tk 9 for CTkScrollableFrame, CTkScrollbar and CTkSlider (Tk 9 sends <MouseWheel> instead of <Button-4>/<Button-5>)
+
 ## [6.0.0] - 2026-01-21
 ### Added
  - Showroom App, immediately available with the library installation

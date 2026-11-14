@@ -2,6 +2,7 @@ from __future__ import annotations
 import sys
 import math
 import tkinter
+import tkinter.font
 from typing import Union, TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -26,8 +27,22 @@ class DrawEngine:
 
     """
 
-    DRAWING_METHODS: list[str] = ["polygon_shapes", "font_shapes", "circle_shapes"]
+    DRAWING_METHODS: list[str] = ["polygon_shapes", "font_shapes", "image_shapes", "circle_shapes"]
     preferred_drawing_method: str = None
+    _shapes_font_checked: bool = False
+
+    @classmethod
+    def check_shapes_font(cls, widget: tkinter.Misc):
+        """ Switch to image_shapes if Tk can't use the shapes font, for example when Tk was built
+        without Xft on Linux, like the Tk 9 in the Python builds of uv. Checked once, with the first widget. """
+        if cls._shapes_font_checked:
+            return
+        cls._shapes_font_checked = True
+        if cls.preferred_drawing_method == "font_shapes" and widget.tk.call("tk", "windowingsystem") == "x11":
+            if "CustomTkinter_shapes_font" not in tkinter.font.families(widget):
+                sys.stderr.write("customtkinter warning: Tk can't use the font 'CustomTkinter_shapes_font' "
+                                 "(Tk was probably built without Xft), using 'image_shapes' instead.\n")
+                cls.preferred_drawing_method = "image_shapes"
 
     def __init__(self, canvas: CTkCanvas):
         self._canvas = canvas
@@ -46,8 +61,8 @@ class DrawEngine:
             else:
                 return round(user_corner_radius)
 
-        # optimize for drawing with antialiased font shapes
-        elif self.preferred_drawing_method == "font_shapes":
+        # optimize for drawing with antialiased font or image shapes
+        elif self.preferred_drawing_method == "font_shapes" or self.preferred_drawing_method == "image_shapes":
             return round(user_corner_radius)
 
         # optimize for drawing with circles and rects
@@ -125,7 +140,8 @@ class DrawEngine:
 
         if preferred_drawing_method == "polygon_shapes":
             return self.__draw_rounded_rect_with_border_polygon_shapes(width, height, corner_radius, border_width, inner_corner_radius)
-        elif preferred_drawing_method == "font_shapes":
+        elif preferred_drawing_method == "font_shapes" or preferred_drawing_method == "image_shapes":
+            self._canvas.aa_circles_as_images = preferred_drawing_method == "image_shapes"
             return self.__draw_rounded_rect_with_border_font_shapes(width, height, corner_radius, border_width, inner_corner_radius, ())
         elif preferred_drawing_method == "circle_shapes":
             return self.__draw_rounded_rect_with_border_circle_shapes(width, height, corner_radius, border_width, inner_corner_radius)
@@ -431,7 +447,8 @@ class DrawEngine:
 
         if self.preferred_drawing_method == "polygon_shapes" or self.preferred_drawing_method == "circle_shapes":
             return self.__draw_rounded_rect_with_border_vertical_split_polygon_shapes(width, height, corner_radius, border_width, inner_corner_radius, left_section_width)
-        elif self.preferred_drawing_method == "font_shapes":
+        elif self.preferred_drawing_method == "font_shapes" or self.preferred_drawing_method == "image_shapes":
+            self._canvas.aa_circles_as_images = self.preferred_drawing_method == "image_shapes"
             return self.__draw_rounded_rect_with_border_vertical_split_font_shapes(width, height, corner_radius, border_width, inner_corner_radius, left_section_width, ())
 
     def __draw_rounded_rect_with_border_vertical_split_polygon_shapes(self, width: int, height: int, corner_radius: int, border_width: int, inner_corner_radius: int,
@@ -718,7 +735,8 @@ class DrawEngine:
         if self.preferred_drawing_method == "polygon_shapes" or self.preferred_drawing_method == "circle_shapes":
             return self.__draw_rounded_progress_bar_with_border_polygon_shapes(width, height, corner_radius, border_width, inner_corner_radius,
                                                                                progress_value_1, progress_value_2, orientation)
-        elif self.preferred_drawing_method == "font_shapes":
+        elif self.preferred_drawing_method == "font_shapes" or self.preferred_drawing_method == "image_shapes":
+            self._canvas.aa_circles_as_images = self.preferred_drawing_method == "image_shapes"
             return self.__draw_rounded_progress_bar_with_border_font_shapes(width, height, corner_radius, border_width, inner_corner_radius,
                                                                             progress_value_1, progress_value_2, orientation)
 
@@ -897,7 +915,8 @@ class DrawEngine:
         if self.preferred_drawing_method == "polygon_shapes" or self.preferred_drawing_method == "circle_shapes":
             return self.__draw_rounded_slider_with_border_and_button_polygon_shapes(width, height, corner_radius, border_width, inner_corner_radius,
                                                                                     button_length, button_corner_radius, slider_value, orientation)
-        elif self.preferred_drawing_method == "font_shapes":
+        elif self.preferred_drawing_method == "font_shapes" or self.preferred_drawing_method == "image_shapes":
+            self._canvas.aa_circles_as_images = self.preferred_drawing_method == "image_shapes"
             return self.__draw_rounded_slider_with_border_and_button_font_shapes(width, height, corner_radius, border_width, inner_corner_radius,
                                                                                  button_length, button_corner_radius, slider_value, orientation)
 
@@ -1051,7 +1070,8 @@ class DrawEngine:
         if self.preferred_drawing_method == "polygon_shapes" or self.preferred_drawing_method == "circle_shapes":
             return self.__draw_rounded_scrollbar_polygon_shapes(width, height, corner_radius, inner_corner_radius,
                                                                 start_value, end_value, orientation)
-        elif self.preferred_drawing_method == "font_shapes":
+        elif self.preferred_drawing_method == "font_shapes" or self.preferred_drawing_method == "image_shapes":
+            self._canvas.aa_circles_as_images = self.preferred_drawing_method == "image_shapes"
             return self.__draw_rounded_scrollbar_font_shapes(width, height, corner_radius, inner_corner_radius,
                                                              start_value, end_value, orientation)
 
@@ -1192,6 +1212,16 @@ class DrawEngine:
                                 x + radius, y - radius,
                                 x - radius / 4, y + radius * 0.8,
                                 x - radius, y + radius / 6)
+        elif self.preferred_drawing_method == "image_shapes":
+            # line width and position are fitted to the checkmark glyph of the font_shapes method
+            line_width, x, y = height * 0.09, width / 2 + height / 48, height / 2 + height / 48
+            if not self._canvas.find_withtag("checkmark"):
+                self._canvas.create_aa_shape("checkmark", x, y, size, line_width, tags=("checkmark", "create_image"))
+                self._canvas.tag_raise("checkmark")
+                requires_recoloring = True
+
+            self._canvas.set_aa_shape("checkmark", "checkmark", x, y, size, line_width)
+
         elif self.preferred_drawing_method == "font_shapes":
             if not self._canvas.find_withtag("checkmark"):
                 self._canvas.create_text(0, 0, text="Z", font=("CustomTkinter_shapes_font", -size), tags=("checkmark", "create_text"), anchor=tkinter.CENTER)
@@ -1223,6 +1253,16 @@ class DrawEngine:
                                 y_position + (size / 5),
                                 x_position + (size / 2),
                                 y_position - (size / 5))
+
+        elif self.preferred_drawing_method == "image_shapes":
+            # line width and position are fitted to the arrow glyph of the font_shapes method
+            line_width, x, y = size * 0.19, x_position + 0.5, y_position + size * 0.053
+            if not self._canvas.find_withtag("dropdown_arrow"):
+                self._canvas.create_aa_shape("dropdown_arrow", x, y, size, line_width, tags="dropdown_arrow")
+                self._canvas.tag_raise("dropdown_arrow")
+                requires_recoloring = True
+
+            self._canvas.set_aa_shape("dropdown_arrow", "dropdown_arrow", x, y, size, line_width)
 
         elif self.preferred_drawing_method == "font_shapes":
             if not self._canvas.find_withtag("dropdown_arrow"):
