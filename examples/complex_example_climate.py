@@ -143,7 +143,6 @@ class App(customtkinter.CTk):
 
         self.city = None
         self.notes = {}
-        self.appearance_mode = customtkinter.get_appearance_mode()
 
         self.grid_columnconfigure(1, weight=1)
         self.grid_rowconfigure(0, weight=1)
@@ -151,7 +150,8 @@ class App(customtkinter.CTk):
         self.create_main_view()
 
         self.select_city("Berlin")
-        self.after(500, self.check_appearance_mode)
+        # matplotlib doesn't know the appearance mode, the chart is drawn again when it changes, also when the system changes it
+        customtkinter.AppearanceModeTracker.add(self.appearance_mode_changed)
 
     # ------------------------------------------------------------------ layout
 
@@ -438,7 +438,11 @@ class App(customtkinter.CTk):
             spine.set_visible(side == "bottom")
             spine.set_color(grid_color)
 
+        self.chart_canvas.get_tk_widget().configure(bg=background)  # can be visible for a moment when the window is resized
         self.chart_canvas.draw_idle()
+
+    def appearance_mode_changed(self, mode):
+        self.draw_chart()
 
     def chart_resized(self, event):
         self.update_month_names(event.width)
@@ -495,19 +499,15 @@ class App(customtkinter.CTk):
 
     def change_appearance_mode(self, mode):
         customtkinter.set_appearance_mode(mode)
-        self.check_appearance_mode(repeat=False)
-
-    def check_appearance_mode(self, repeat=True):
-        """ matplotlib doesn't know the appearance mode, the chart is drawn again when it changes, also when the system changes it """
-        if customtkinter.get_appearance_mode() != self.appearance_mode:
-            self.appearance_mode = customtkinter.get_appearance_mode()
-            self.draw_chart()
-        if repeat:
-            self.after(500, self.check_appearance_mode)
 
     def change_scaling(self, scaling):
         customtkinter.set_widget_scaling(int(scaling.replace("%", "")) / 100)
         self.after(50, self.update_chart_dpi)
+
+
+    def destroy(self):
+        customtkinter.AppearanceModeTracker.remove(self.appearance_mode_changed)
+        super().destroy()
 
 
 if __name__ == "__main__":
