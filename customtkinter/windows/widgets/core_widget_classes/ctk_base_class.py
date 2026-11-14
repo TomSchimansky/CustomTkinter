@@ -2,6 +2,7 @@ import sys
 import warnings
 import tkinter
 import tkinter.ttk as ttk
+from types import SimpleNamespace
 from typing import Union, Callable, Tuple, Any
 
 try:
@@ -70,8 +71,13 @@ class CTkBaseClass(tkinter.Frame, CTkAppearanceModeBaseClass, CTkScalingBaseClas
         # set bg color of tkinter.Frame
         super().configure(bg=self._apply_appearance_mode(self._bg_color))
 
-        # add configure callback to tkinter.Frame
-        super().bind('<Configure>', self._update_dimensions_event)
+        # add configure callback to tkinter.Frame. The size is compared in Tcl, so Python is only called when the size
+        # changed and not when the widget only moved. On macOS every widget gets a <Configure> event when a
+        # CTkScrollableFrame scrolls, and the full tkinter event conversion for each of them made scrolling slow.
+        self._configure_size_command = self._register(self._configure_size_event)
+        self.tk.call("bind", self._w, "<Configure>",
+                     f'if {{![info exists ::ctk_widget_size({self._w})] || $::ctk_widget_size({self._w}) ne "%w %h"}} '
+                     f'{{set ::ctk_widget_size({self._w}) "%w %h"; {self._configure_size_command} %w %h}}')
 
         # overwrite configure methods of master when master is tkinter widget, so that bg changes get applied on child CTk widget as well
         if isinstance(self.master, (tkinter.Tk, tkinter.Toplevel, tkinter.Frame, tkinter.LabelFrame, ttk.Frame, ttk.LabelFrame, ttk.Notebook)) and not isinstance(self.master, (CTkBaseClass, CTkAppearanceModeBaseClass)):
@@ -96,6 +102,10 @@ class CTkBaseClass(tkinter.Frame, CTkAppearanceModeBaseClass, CTkScalingBaseClas
 
     def destroy(self):
         """ Destroy this and all descendants widgets. """
+        try:
+            self.tk.call("unset", "-nocomplain", f"::ctk_widget_size({self._w})")
+        except tkinter.TclError:
+            pass
 
         # call destroy methods of super classes
         tkinter.Frame.destroy(self)
@@ -182,6 +192,9 @@ class CTkBaseClass(tkinter.Frame, CTkAppearanceModeBaseClass, CTkScalingBaseClas
             warnings.warn(f"{type(self).__name__} Warning: Given image is not CTkImage but {type(image)}. Image can not be scaled on HighDPI displays, use CTkImage instead.\n")
             return image
 
+    def _configure_size_event(self, width, height):
+        self._update_dimensions_event(SimpleNamespace(width=int(width), height=int(height)))
+
     def _update_dimensions_event(self, event):
         # only redraw if dimensions changed (for performance), independent of scaling
         if round(self._current_width) != round(self._reverse_widget_scaling(event.width)) or round(self._current_height) != round(self._reverse_widget_scaling(event.height)):
@@ -226,6 +239,8 @@ class CTkBaseClass(tkinter.Frame, CTkAppearanceModeBaseClass, CTkScalingBaseClas
 
     def _set_scaling(self, new_widget_scaling, new_window_scaling):
         super()._set_scaling(new_widget_scaling, new_window_scaling)
+        # the size without scaling changes even if the size in pixels stays the same, so the next <Configure> event has to reach Python
+        self.tk.call("unset", "-nocomplain", f"::ctk_widget_size({self._w})")
 
         super().configure(width=self._apply_widget_scaling(self._desired_width),
                           height=self._apply_widget_scaling(self._desired_height))
