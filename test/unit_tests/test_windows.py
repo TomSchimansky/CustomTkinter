@@ -2,6 +2,7 @@
 CTk, CTkToplevel and CTkInputDialog.
 """
 
+import sys
 import tkinter
 
 import pytest
@@ -22,15 +23,31 @@ def window(root):
     update(root)
 
 
+# several Tk interpreters at the same time are not reliable with Tk 8.6 on macOS, update() can block forever
+several_interpreters = pytest.mark.skipif(sys.platform == "darwin" and tkinter.TkVersion < 9,
+                                          reason="several Tk interpreters at the same time are not reliable with Tk 8.6 on macOS")
+
+
 @pytest.fixture
-def app():
-    """ a separate CTk root window """
-    ctk_app = customtkinter.CTk()
-    ctk_app.geometry("300x200+50+50")
-    update(ctk_app, 0.2)
-    yield ctk_app
-    if ctk_app.winfo_exists():
-        ctk_app.destroy()
+def app(root):
+    """ the CTk window of the tests, restored afterwards, a second CTk would need a second Tk interpreter """
+    min_size, max_size = (root._min_width, root._min_height), (root._max_width, root._max_height)
+    root.geometry("300x200+50+50")
+    update(root, 0.2)
+    yield root
+    root.unbind("<Configure>")
+    root.bind_class(root._configure_bindtag, "<Configure>", root._update_dimensions_event)
+    for child in root.winfo_children():
+        child.destroy()
+    root.minsize(*min_size)
+    root.maxsize(*max_size)
+    root.resizable(True, True)
+    root.title("CustomTkinter tests")
+    root.configure(fg_color=customtkinter.ThemeManager.theme["CTk"]["fg_color"])
+    if root.state() != "normal":
+        root.deiconify()
+    root.geometry("900x700+0+0")
+    update(root, 0.2)
 
 
 @pytest.mark.parametrize("window_fixture", ["app", "window"])
@@ -119,6 +136,7 @@ class TestWindowGeometry:
         assert win.title() == "Test title"
 
 
+@several_interpreters
 def test_ctk_class_name(root):
     app = customtkinter.CTk(className="MyApp")
     try:
@@ -149,6 +167,7 @@ def test_toplevel_destroy_while_after_callbacks_pending(root):
     update(root, 0.5)  # pending after() callbacks of the toplevel must not raise
 
 
+@several_interpreters
 def test_new_root_after_destroy():
     app = customtkinter.CTk()
     customtkinter.CTkButton(app).pack()

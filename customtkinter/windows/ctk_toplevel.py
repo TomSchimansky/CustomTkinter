@@ -144,6 +144,8 @@ class CTkToplevel(tkinter.Toplevel, CTkAppearanceModeBaseClass, CTkScalingBaseCl
 
     def geometry(self, geometry_string: str = None):
         if geometry_string is not None:
+            # after a scaling change, min and max size are set to the current size for a moment, they would block the new size
+            self._set_scaled_min_max()
             super().geometry(self._apply_geometry_scaling(geometry_string))
 
             # update width and height attributes
