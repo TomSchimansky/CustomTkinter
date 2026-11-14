@@ -31,6 +31,7 @@ ToDo:
  - Mouse wheel scrolling on Linux with Tk 9 for CTkScrollableFrame, CTkScrollbar and CTkSlider (Tk 9 sends <MouseWheel> instead of <Button-4>/<Button-5>)
  - Mouse wheel scrolling on macOS with Tk 9 scrolled 120 times too far in CTkScrollableFrame and CTkScrollbar (one wheel step has a delta of 120 since Tk 8.7)
  - CTk and CTkToplevel ignored geometry() for one second after a scaling change
+ - On macOS, scrolling and clicks didn't work after selecting a value in CTkOptionMenu or CTkComboBox until the next click, the native menu took the mouse release. The dropdown opens on the release on macOS now.
  - Thin lines at the edges of CTkSegmentedButton and CTkTabview, and shapes one pixel too small, with scaling like 125% (the unscaled widget size was stored as int)
  - Text too large compared to the widgets on Linux with Tk 8.6.15 or newer when desktop scaling is used (#2870, #2597, #2259)
  - Exceptions when scrolling in a tkinter.filedialog while a CTkScrollableFrame exists (#2866)

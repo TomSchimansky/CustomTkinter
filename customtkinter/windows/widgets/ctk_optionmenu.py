@@ -136,9 +136,9 @@ class CTkOptionMenu(CTkBaseClass):
         if sequence is None or sequence == "<Leave>":
             self._canvas.bind("<Leave>", self._on_leave)
             self._text_label.bind("<Leave>", self._on_leave)
-        if sequence is None or sequence == "<Button-1>":
-            self._canvas.bind("<Button-1>", self._clicked)
-            self._text_label.bind("<Button-1>", self._clicked)
+        if sequence is None or sequence == DropdownMenu.open_event:
+            self._canvas.bind(DropdownMenu.open_event, self._clicked)
+            self._text_label.bind(DropdownMenu.open_event, self._clicked)
 
     def _create_grid(self):
         self._canvas.grid(row=0, column=0, sticky="nsew")
@@ -402,7 +402,9 @@ class CTkOptionMenu(CTkBaseClass):
         else:
             return self._values.index(value)
 
-    def _clicked(self, event=0):
+    def _clicked(self, event=None):
+        if DropdownMenu.is_click_outside(event):
+            return
         if self._close_on_next_click:
             self._dropdown_menu.close()
             self._close_on_next_click = False
