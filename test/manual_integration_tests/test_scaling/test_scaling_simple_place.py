@@ -2,7 +2,13 @@ import locale
 import tkinter
 import customtkinter  # <- import the CustomTkinter module
 
-locale.setlocale(locale.LC_NUMERIC, 'de_DE')  # to verify that the canvas float argument bug is properly averted
+# to verify that the canvas float argument bug is properly averted, a locale with a decimal comma is used
+for locale_name in ("de_DE.UTF-8", "de_DE", "German_Germany"):
+    try:
+        locale.setlocale(locale.LC_NUMERIC, locale_name)
+        break
+    except locale.Error:
+        pass
 customtkinter.ScalingTracker.set_window_scaling(0.5)
 
 customtkinter.set_appearance_mode("dark")  # Modes: "System" (standard), "Dark", "Light"

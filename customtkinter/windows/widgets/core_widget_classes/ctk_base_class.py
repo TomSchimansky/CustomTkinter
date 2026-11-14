@@ -1,5 +1,6 @@
 import sys
 import warnings
+import functools
 import tkinter
 import tkinter.ttk as ttk
 from types import SimpleNamespace
@@ -25,6 +26,34 @@ from ..utility import pop_from_dict_by_set, check_kwargs_empty
 class CTkBaseClass(tkinter.Frame, CTkAppearanceModeBaseClass, CTkScalingBaseClass):
     """ Base class of every CTk widget, handles the dimensions, bg_color,
         appearance_mode changes, scaling, bg changes of master if master is not a CTk widget """
+
+    def __init_subclass__(cls, **kwargs):
+        """ If the __init__ of a widget raises an exception, the half created widget is removed again. Otherwise
+            destroying its master later would fail, because destroy() needs attributes that were never set. """
+        super().__init_subclass__(**kwargs)
+        original_init = cls.__dict__.get("__init__")
+        if original_init is None:
+            return
+
+        @functools.wraps(original_init)
+        def __init__(self, *args, **init_kwargs):
+            try:
+                original_init(self, *args, **init_kwargs)
+            except Exception:
+                self._remove_half_created_widget()
+                raise
+
+        cls.__init__ = __init__
+
+    def _remove_half_created_widget(self):
+        for remove in (lambda: tkinter.Frame.destroy(self),
+                       lambda: CTkAppearanceModeBaseClass.destroy(self),
+                       lambda: CTkScalingBaseClass.destroy(self)):
+            try:
+                remove()
+            except Exception:
+                pass
+
 
     # attributes that are passed to and managed by the tkinter frame only:
     _valid_tk_frame_attributes: set = {"cursor"}
@@ -170,7 +199,7 @@ class CTkBaseClass(tkinter.Frame, CTkAppearanceModeBaseClass, CTkScalingBaseClas
 
         elif type(font) == tuple and len(font) == 1:
             warnings.warn(f"{type(self).__name__} Warning: font {font} given without size, will be extended with default text size of current theme\n")
-            return font[0], ThemeManager.theme["text"]["size"]
+            return font[0], ThemeManager.theme["CTkFont"]["size"]
 
         elif type(font) == tuple and 2 <= len(font) <= 6:
             return font
@@ -196,10 +225,15 @@ class CTkBaseClass(tkinter.Frame, CTkAppearanceModeBaseClass, CTkScalingBaseClas
         self._update_dimensions_event(SimpleNamespace(width=int(width), height=int(height)))
 
     def _update_dimensions_event(self, event):
-        # only redraw if dimensions changed (for performance), independent of scaling
-        if round(self._current_width) != round(self._reverse_widget_scaling(event.width)) or round(self._current_height) != round(self._reverse_widget_scaling(event.height)):
-            self._current_width = self._reverse_widget_scaling(event.width)  # adjust current size according to new size given by event
-            self._current_height = self._reverse_widget_scaling(event.height)  # _current_width and _current_height are independent of the scale
+        # _current_width and _current_height are independent of the scale, they are stored exactly (as float), with an int
+        # the widget would be drawn up to two pixels smaller than its canvas with scaling like 125%
+        new_width = self._reverse_widget_scaling(float(event.width))
+        new_height = self._reverse_widget_scaling(float(event.height))
+
+        # only redraw if dimensions changed (for performance)
+        if new_width != self._current_width or new_height != self._current_height:
+            self._current_width = new_width
+            self._current_height = new_height
 
             self._draw(no_color_updates=True)  # faster drawing without color changes
 

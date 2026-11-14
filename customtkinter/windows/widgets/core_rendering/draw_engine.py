@@ -78,6 +78,12 @@ class DrawEngine:
                 return user_corner_radius
 
     def draw_background_corners(self, width: Union[float, int], height: Union[float, int], ):
+        # The corners have to reach to the edge of the canvas. With scaling like 125% the canvas can be a few pixels larger
+        # than the scaled size of the widget, because the unscaled size is stored as int, and the size is rounded down to
+        # even numbers below. The last pixel row and column would show the canvas background then. Parts of the
+        # rectangles outside of the canvas are not drawn.
+        canvas_width, canvas_height = math.ceil(width) + 8, math.ceil(height) + 8
+
         if self._round_width_to_even_numbers:
             width = math.floor(width / 2) * 2  # round (floor) _current_width and _current_height and restrict them to even values only
         if self._round_height_to_even_numbers:
@@ -100,9 +106,9 @@ class DrawEngine:
 
         mid_width, mid_height = round(width / 2), round(height / 2)
         self._canvas.coords("background_corner_top_left", (0, 0, mid_width, mid_height))
-        self._canvas.coords("background_corner_top_right", (mid_width, 0, width, mid_height))
-        self._canvas.coords("background_corner_bottom_right", (mid_width, mid_height, width, height))
-        self._canvas.coords("background_corner_bottom_left", (0, mid_height, mid_width, height))
+        self._canvas.coords("background_corner_top_right", (mid_width, 0, canvas_width, mid_height))
+        self._canvas.coords("background_corner_bottom_right", (mid_width, mid_height, canvas_width, canvas_height))
+        self._canvas.coords("background_corner_bottom_left", (0, mid_height, mid_width, canvas_height))
 
         if requires_recoloring:  # new parts were added -> manage z-order
             self._canvas.tag_lower("background_parts")

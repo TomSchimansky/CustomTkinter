@@ -33,10 +33,13 @@ class CTkToplevel(tkinter.Toplevel, CTkAppearanceModeBaseClass, CTkScalingBaseCl
         self._enable_macos_dark_title_bar()
 
         # call init methods of super classes
-        super().__init__(*args, **pop_from_dict_by_set(kwargs, self._valid_tk_toplevel_arguments))
+        # check arguments before the window is created and registered for appearance mode and scaling changes
+        tk_kwargs = pop_from_dict_by_set(kwargs, self._valid_tk_toplevel_arguments)
+        check_kwargs_empty(kwargs, raise_error=True)
+
+        super().__init__(*args, **tk_kwargs)
         CTkAppearanceModeBaseClass.__init__(self)
         CTkScalingBaseClass.__init__(self, scaling_type="window")
-        check_kwargs_empty(kwargs, raise_error=True)
 
         self._current_width = 200  # initial window size, always without scaling
         self._current_height = 200
@@ -141,6 +144,8 @@ class CTkToplevel(tkinter.Toplevel, CTkAppearanceModeBaseClass, CTkScalingBaseCl
 
     def geometry(self, geometry_string: str = None):
         if geometry_string is not None:
+            # after a scaling change, min and max size are set to the current size for a moment, they would block the new size
+            self._set_scaled_min_max()
             super().geometry(self._apply_geometry_scaling(geometry_string))
 
             # update width and height attributes

@@ -4,10 +4,10 @@ import os
 
 # load images
 file_path = os.path.dirname(os.path.realpath(__file__))
-image_1 = customtkinter.CTkImage(light_image=Image.open(file_path + "/test_images/add_folder_dark.png"),
-                                 dark_image=Image.open(file_path + "/test_images/add_folder_light.png"),
+image_1 = customtkinter.CTkImage(light_image=Image.open(file_path + "/test_images/add_user_dark.png"),
+                                 dark_image=Image.open(file_path + "/test_images/add_user_light.png"),
                                  size=(30, 30))
-image_1.configure(dark_image=Image.open(file_path + "/test_images/add_folder_light.png"))
+image_1.configure(dark_image=Image.open(file_path + "/test_images/add_user_light.png"))
 image_2 = customtkinter.CTkImage(light_image=Image.open(file_path + "/test_images/bg_gradient.jpg"),
                                  size=(30, 50))
 

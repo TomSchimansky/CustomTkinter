@@ -22,11 +22,16 @@ ToDo:
  - "polygon_shapes" is used on Linux with Tk 8.5, which can't load PNG images and has no rotated text
  - Dropdown menus of CTkOptionMenu and CTkComboBox are split into columns on Linux when they are taller than the screen
  - Fonts are only copied to ~/.fonts on Linux if they are not already there
+ - On macOS the CTk window is brought to the front when mainloop() shows it the first time, it could open behind the terminal or IDE
  - Widgets are created 25-60% faster, resizing, scaling and appearance mode changes are 30-45% faster, scrolling in CTkScrollableFrame on macOS is about 4 times faster
  - The system appearance mode is checked every second on Linux instead of every 30 ms, which used about 10% CPU while idle
+ - Package metadata moved from setup.cfg to pyproject.toml, the PyPI page has a short readme and links to the GitHub repository and the documentation
 
 ### Fixed
  - Mouse wheel scrolling on Linux with Tk 9 for CTkScrollableFrame, CTkScrollbar and CTkSlider (Tk 9 sends <MouseWheel> instead of <Button-4>/<Button-5>)
+ - Mouse wheel scrolling on macOS with Tk 9 scrolled 120 times too far in CTkScrollableFrame and CTkScrollbar (one wheel step has a delta of 120 since Tk 8.7)
+ - CTk and CTkToplevel ignored geometry() for one second after a scaling change
+ - Thin lines at the edges of CTkSegmentedButton and CTkTabview, and shapes one pixel too small, with scaling like 125% (the unscaled widget size was stored as int)
  - Text too large compared to the widgets on Linux with Tk 8.6.15 or newer when desktop scaling is used (#2870, #2597, #2259)
  - Exceptions when scrolling in a tkinter.filedialog while a CTkScrollableFrame exists (#2866)
  - Black dropdown menu on Linux with many values and high scaling (#2817)
@@ -34,6 +39,19 @@ ToDo:
  - CTkInputDialog failed with "grab failed: window not viewable" on window managers that show the window later (#1722)
  - CTk and CTkToplevel lost track of the window size after an app bound <Configure> to the window
  - Every CTkToplevel added another global <Button-1> focus handler
+ - Font tuples with several styles in one string, like ("Arial", 14, "bold italic"), raised "unknown font style"
+ - CTkFont.copy() raised a TypeError
+ - A font tuple without size raised a KeyError
+ - Configuring a CTkImage after a CTkButton or CTkLabel that used it was destroyed raised a TclError
+ - ThemeManager.save_theme() couldn't write the theme file
+ - Destroyed CTkToplevel windows were never freed
+ - A widget or window with an unknown argument left a half created widget behind, which raised errors on the next scaling change
+ - A readonly CTkComboBox didn't show its first value
+ - CTkTabview: insert() and move() didn't update the tab order, changing corner_radius without tabs raised a KeyError, cget() of the segmented_button colors didn't work
+ - CTkScrollableFrame: cget("label_text_color") raised an error
+ - A color tuple with one element raised an IndexError instead of a ValueError
+ - "bad screen distance" errors with Tk 8.6 when the app sets a locale with a decimal comma, like locale.setlocale(locale.LC_ALL, "") on a German system
+ - License on PyPI was "Creative Commons Zero v1.0 Universal" instead of MIT
 
 ## [6.0.0] - 2026-01-21
 ### Added

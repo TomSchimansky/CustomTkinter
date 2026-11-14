@@ -98,10 +98,8 @@ class ScalingTracker:
 
     @classmethod
     def remove_window(cls, window_callback, window):
-        try:
-            del cls.window_widgets_dict[window]
-        except:
-            pass
+        cls.window_widgets_dict.pop(window, None)
+        cls.window_dpi_scaling_dict.pop(window, None)  # otherwise destroyed windows are never freed
 
     @classmethod
     def add_window(cls, window_callback, window):

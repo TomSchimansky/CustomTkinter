@@ -94,7 +94,8 @@ class CTkScalingBaseClass:
             elif len(font) == 2:
                 return font[0], -abs(round(font[1] * self.__widget_scaling))
             elif 3 <= len(font) <= 6:
-                return font[0], -abs(round(font[1] * self.__widget_scaling)), font[2:]
+                # styles stay separate elements, a nested tuple would make Tk read "bold italic" as one unknown style
+                return (font[0], -abs(round(font[1] * self.__widget_scaling))) + tuple(font[2:])
             else:
                 raise ValueError(f"Can not scale font {font}. font needs to be tuple of len 1, 2 or 3")
 
