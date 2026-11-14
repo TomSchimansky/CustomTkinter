@@ -364,9 +364,9 @@ def test_check_kwargs_empty():
 def test_wheel_event_steps():
     assert wheel_event_steps(SimpleNamespace(num=4, delta=0)) == 1
     assert wheel_event_steps(SimpleNamespace(num=5, delta=0)) == -1
-    if sys.platform == "darwin":
+    if sys.platform == "darwin" and tkinter.TkVersion < 8.7:  # one step has a delta of 1
         assert wheel_event_steps(SimpleNamespace(num="??", delta=3)) == 3
-    else:
+    else:  # one step has a delta of 120, on macOS since Tk 8.7
         assert wheel_event_steps(SimpleNamespace(num="??", delta=120)) == 1
         assert wheel_event_steps(SimpleNamespace(num="??", delta=-240)) == -2
         assert wheel_event_steps(SimpleNamespace(num="??", delta=30)) == 1  # high resolution wheel

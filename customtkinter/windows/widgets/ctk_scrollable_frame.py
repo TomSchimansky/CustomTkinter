@@ -275,12 +275,13 @@ class CTkScrollableFrame(tkinter.Frame, CTkAppearanceModeBaseClass, CTkScalingBa
                     if self._parent_canvas.yview() != (0.0, 1.0):
                         self._parent_canvas.yview("scroll", -int(event.delta / 6), "units")
             elif sys.platform == "darwin":
+                steps = -wheel_event_steps(event)  # the delta of one wheel step is 1 with Tk 8.6 and 120 since Tk 8.7
                 if self._shift_pressed:
                     if self._parent_canvas.xview() != (0.0, 1.0):
-                        self._parent_canvas.xview("scroll", -event.delta, "units")
+                        self._parent_canvas.xview("scroll", steps, "units")
                 else:
                     if self._parent_canvas.yview() != (0.0, 1.0):
-                        self._parent_canvas.yview("scroll", -event.delta, "units")
+                        self._parent_canvas.yview("scroll", steps, "units")
             else:
                 steps = -wheel_event_steps(event)
                 if self._shift_pressed:

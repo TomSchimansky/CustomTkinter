@@ -38,11 +38,11 @@ def wheel_event_steps(event) -> int:
         return 1
     if event.num == 5:
         return -1
-    if sys.platform.startswith("linux") or sys.platform.startswith("win"):
-        # one step of the wheel has a delta of 120, high resolution wheels send smaller values
+    if sys.platform != "darwin" or tkinter.TkVersion >= 8.7:
+        # one step of the wheel has a delta of 120, also on macOS since Tk 8.7 (TIP 474), high resolution wheels send smaller values
         steps = int(event.delta / 120)
         return steps if steps != 0 else (1 if event.delta > 0 else -1)
-    return event.delta  # macOS: one step has a delta of 1
+    return event.delta  # macOS with Tk 8.6: one step has a delta of 1
 
 
 def touchpad_scroll_deltas(event) -> Tuple[int, int]:

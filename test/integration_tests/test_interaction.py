@@ -80,7 +80,7 @@ def wheel(widget, steps):
         if WHEEL_USES_BUTTON_EVENTS:
             target.event_generate("<Button-4>" if steps > 0 else "<Button-5>", x=x, y=y)
         else:
-            delta = 120 if sys.platform != "darwin" else 1
+            delta = 1 if sys.platform == "darwin" and tkinter.TkVersion < 8.7 else 120  # TIP 474
             target.event_generate("<MouseWheel>", x=x, y=y, delta=delta if steps > 0 else -delta)
     update(widget, 0.05)
 
