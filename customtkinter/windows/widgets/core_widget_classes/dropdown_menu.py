@@ -117,7 +117,31 @@ class DropdownMenu(tkinter.Menu, CTkAppearanceModeBaseClass, CTkScalingBaseClass
         if sys.platform == "darwin" or sys.platform.startswith("win"):
             self.post(int(x), int(y))
         else:  # Linux
+            self._break_into_columns()
             self.tk_popup(int(x), int(y))
+
+    def _break_into_columns(self):
+        """ Menus can't scroll on Linux (X11), so entries below the screen can't be reached, and with a compositing
+            window manager a menu taller than 32767 pixels is rendered black (#2817). If the menu is taller than the
+            screen, it's split into several columns. """
+        try:
+            last_index = self.index("end")
+            if last_index is None or last_index < 1:
+                return
+            if getattr(self, "_has_column_breaks", False):
+                for index in range(last_index + 1):
+                    self.entryconfigure(index, columnbreak=0)
+                self._has_column_breaks = False
+            entry_height = self.yposition(1) - self.yposition(0)
+            available_height = self.winfo_screenheight() - 2 * self.yposition(0) - 40
+            if entry_height <= 0 or (last_index + 1) * entry_height <= available_height:
+                return
+            rows_per_column = max(1, available_height // entry_height)
+            for index in range(rows_per_column, last_index + 1, rows_per_column):
+                self.entryconfigure(index, columnbreak=1)
+            self._has_column_breaks = True
+        except tkinter.TclError:
+            pass
 
     def close(self):
         self.unpost()

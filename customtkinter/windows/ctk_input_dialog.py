@@ -1,3 +1,4 @@
+import tkinter
 from typing import Union, Tuple, Optional
 
 from .widgets import CTkLabel
@@ -51,7 +52,15 @@ class CTkInputDialog(CTkToplevel):
         self.protocol("WM_DELETE_WINDOW", self._on_closing)
         self.after(10, self._create_widgets)  # create widgets with slight delay, to avoid white flickering of background
         self.resizable(False, False)
-        self.grab_set()  # make other windows not clickable
+        self._grab_when_viewable()  # make other windows not clickable
+
+    def _grab_when_viewable(self, attempts: int = 50):
+        """ some window managers (like Awesome) show the window later, a grab only works when the window is viewable (#1722) """
+        try:
+            self.grab_set()
+        except tkinter.TclError:
+            if attempts > 0:
+                self.after(20, self._grab_when_viewable, attempts - 1)
 
     def _create_widgets(self):
         self.grid_columnconfigure((0, 1), weight=1)
