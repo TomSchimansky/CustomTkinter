@@ -1,3 +1,4 @@
+import locale
 import math
 import tkinter
 import sys
@@ -46,7 +47,7 @@ class CTkCanvas(tkinter.Canvas):
         self._tag_registry_valid: bool = True
         self._coords_cache: dict = {}  # canvas id -> last coordinates set with coords(), to skip unchanged ones
 
-        super().__init__(*args, **kwargs)
+        super().__init__(*args, **self._locale_safe_width(kwargs))
         self._aa_circle_canvas_ids = set()
         self.aa_circles_as_images: bool = False
         self._aa_image_items: dict = {}  # canvas id -> dict with radius or shape, fill color and current image
@@ -72,7 +73,30 @@ class CTkCanvas(tkinter.Canvas):
                 cls._plain_tag_cache[tag] = result
         return result
 
+    @staticmethod
+    def _locale_safe_width(options: dict) -> dict:
+        """ Tk 8.6 reads the width of canvas items and the size options of the canvas with strtod(), which uses the
+            decimal separator of the locale. If an app sets a locale with a decimal comma, for example with
+            locale.setlocale(locale.LC_ALL, "") on a German system, a float like 8.0 is a 'bad screen distance'.
+            Whole numbers are passed as int, other floats are rounded if the locale has no decimal point. """
+        for key in ("width", "height"):
+            value = options.get(key)
+            if type(value) is float:
+                if value.is_integer():
+                    options[key] = int(value)
+                elif tkinter.TkVersion < 9 and locale.localeconv()["decimal_point"] != ".":
+                    options[key] = math.floor(value + 0.5)  # rounded like Tk does it
+        return options
+
+    def configure(self, cnf=None, **kwargs):
+        return super().configure(cnf, **self._locale_safe_width(kwargs))
+
+    config = configure
+
     def _create(self, itemType, args, kw):
+        self._locale_safe_width(kw)
+        if args and isinstance(args[-1], dict):
+            args = args[:-1] + (self._locale_safe_width(dict(args[-1])),)
         canvas_id = super()._create(itemType, args, kw)
         tags = kw.get("tags")
         if tags is None and args and isinstance(args[-1], dict):
@@ -115,7 +139,7 @@ class CTkCanvas(tkinter.Canvas):
     def itemconfigure(self, tagOrId, cnf=None, **kw):
         if "tags" in kw or (isinstance(cnf, dict) and "tags" in cnf):
             self._tag_registry_valid = False
-        return super().itemconfigure(tagOrId, cnf, **kw)
+        return super().itemconfigure(tagOrId, cnf, **self._locale_safe_width(kw))
 
     @classmethod
     def init_font_character_mapping(cls):
@@ -318,6 +342,7 @@ class CTkCanvas(tkinter.Canvas):
     def itemconfig(self, tag_or_id, *args, **kwargs):
         if "tags" in kwargs:
             self._tag_registry_valid = False
+        self._locale_safe_width(kwargs)
         configure_ids = self._ids_with_tag(tag_or_id) if type(tag_or_id) != int else (tag_or_id,)
         if not configure_ids:
             return

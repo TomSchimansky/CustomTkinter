@@ -164,6 +164,8 @@ class CTkLabel(CTkBaseClass):
     def destroy(self):
         if isinstance(self._font, CTkFont):
             self._font.remove_size_configure_callback(self._update_font)
+        if isinstance(self._image, CTkImage):
+            self._image.remove_configure_callback(self._update_image)
         super().destroy()
 
     def _create_grid(self):

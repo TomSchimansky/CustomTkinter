@@ -48,7 +48,10 @@ class CTkImage:
 
     def remove_configure_callback(self, callback: Callable):
         """ remove function, that gets called when image got configured """
-        self._configure_callback_list.remove(callback)
+        try:
+            self._configure_callback_list.remove(callback)
+        except ValueError:
+            pass
 
     def configure(self, **kwargs):
         if "light_image" in kwargs:

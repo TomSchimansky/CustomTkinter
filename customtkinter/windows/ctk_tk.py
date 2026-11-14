@@ -34,13 +34,16 @@ class CTk(CTK_PARENT_CLASS, CTkAppearanceModeBaseClass, CTkScalingBaseClass):
                  fg_color: Optional[Union[str, Tuple[str, str]]] = None,
                  **kwargs):
 
+        # check arguments before the window is created and registered for appearance mode and scaling changes
+        tk_kwargs = pop_from_dict_by_set(kwargs, self._valid_tk_constructor_arguments)
+        check_kwargs_empty(kwargs, raise_error=True)
+
         self._enable_macos_dark_title_bar()
 
         # call init methods of super classes
-        CTK_PARENT_CLASS.__init__(self, **pop_from_dict_by_set(kwargs, self._valid_tk_constructor_arguments))
+        CTK_PARENT_CLASS.__init__(self, **tk_kwargs)
         CTkAppearanceModeBaseClass.__init__(self)
         CTkScalingBaseClass.__init__(self, scaling_type="window")
-        check_kwargs_empty(kwargs, raise_error=True)
 
         self._current_width = 600  # initial window size, independent of scaling
         self._current_height = 500
@@ -177,9 +180,21 @@ class CTk(CTK_PARENT_CLASS, CTkAppearanceModeBaseClass, CTkScalingBaseClass):
                     # print("window dont exists -> deiconify in mainloop")
                     self.deiconify()
 
+            elif sys.platform == "darwin":
+                if not self._withdraw_called_before_window_exists and not self._iconify_called_before_window_exists:
+                    self._macos_bring_to_front()
+
             self._window_exists = True
 
         super().mainloop(*args, **kwargs)
+
+    def _macos_bring_to_front(self):
+        """ On macOS the window can open behind the terminal or IDE that started the program. It's lifted above all other
+            windows for a moment, and focus_force() activates the app, so that the menu bar and the keyboard input belong to it. """
+        self.lift()
+        self.attributes("-topmost", True)
+        self.after_idle(self.attributes, "-topmost", False)
+        self.focus_force()
 
     def resizable(self, width: bool = None, height: bool = None):
         current_resizable_values = super().resizable(width, height)
@@ -210,6 +225,8 @@ class CTk(CTK_PARENT_CLASS, CTkAppearanceModeBaseClass, CTkScalingBaseClass):
 
     def geometry(self, geometry_string: str = None):
         if geometry_string is not None:
+            # after a scaling change, min and max size are set to the current size for a moment, they would block the new size
+            self._set_scaled_min_max()
             super().geometry(self._apply_geometry_scaling(geometry_string))
 
             # update width and height attributes

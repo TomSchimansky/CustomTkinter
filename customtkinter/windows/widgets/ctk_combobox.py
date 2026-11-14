@@ -110,12 +110,14 @@ class CTkComboBox(CTkBaseClass):
         if self._variable is not None:
             self._entry.configure(textvariable=self._variable)
 
-        # insert default value
+        # insert default value, also when the entry is readonly
         if self._variable is None:
+            self._entry.configure(state="normal")
             if len(self._values) > 0:
                 self._entry.insert(0, self._values[0])
             else:
                 self._entry.insert(0, "CTkComboBox")
+            self._entry.configure(state=self._state)
 
     def _create_bindings(self, sequence: Optional[str] = None):
         """ set necessary bindings for functionality of widget, will overwrite other bindings """
