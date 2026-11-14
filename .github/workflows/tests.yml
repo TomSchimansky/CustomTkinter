@@ -23,10 +23,12 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - { os: ubuntu-latest, python: "3.9" }
+          # Python 3.14 from setup-python comes with Tk 9 on Windows and macOS, and Tk 8.6 on Linux
+          - { os: ubuntu-24.04, python: "3.9" }  # the oldest Python setup-python has for Linux
           - { os: ubuntu-latest, python: "3.14" }
           - { os: windows-latest, python: "3.9" }
           - { os: windows-latest, python: "3.14" }
+          - { os: macos-latest, python: "3.13" }
           - { os: macos-latest, python: "3.14" }
 
     steps:
@@ -48,13 +50,21 @@ jobs:
       - name: Tk version
         run: python -c "import tkinter; print('Tk', tkinter.Tcl().call('info', 'patchlevel'))"
 
+      - name: Smoke test (Linux)
+        if: runner.os == 'Linux'
+        run: xvfb-run -a python -c "import customtkinter; app = customtkinter.CTk(); customtkinter.CTkButton(app).pack(); app.update(); app.destroy(); print('ok')"
+
+      - name: Smoke test (Windows, macOS)
+        if: runner.os != 'Linux'
+        run: python -c "import customtkinter; app = customtkinter.CTk(); customtkinter.CTkButton(app).pack(); app.update(); app.destroy(); print('ok')"
+
       - name: Run tests (Linux)
         if: runner.os == 'Linux'
         run: xvfb-run -a -s "-screen 0 1280x900x24" python -m pytest -ra --timeout 120
 
       - name: Run tests (Windows, macOS)
         if: runner.os != 'Linux'
-        run: python -m pytest -ra --timeout 120
+        run: python -m pytest -v -ra --timeout 120
 
   tests-tk9:
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.repository

@@ -25,10 +25,15 @@ import customtkinter  # noqa: E402
 DEFAULT_DRAWING_METHOD = customtkinter.DrawEngine.preferred_drawing_method
 
 
+_first_window = None
+
+
 def _display_available() -> bool:
+    """ creates the window for the tests, which is used by the root fixture, a second Tk interpreter isn't needed """
+    global _first_window
     try:
-        root = tkinter.Tk()
-        root.destroy()
+        customtkinter.set_appearance_mode("light")
+        _first_window = customtkinter.CTk()
         return True
     except tkinter.TclError:
         return False
@@ -80,7 +85,7 @@ def color_distance(a: tuple, b: tuple) -> int:
 def root():
     """ one CTk window for all tests """
     customtkinter.set_appearance_mode("light")
-    app = customtkinter.CTk()
+    app = _first_window if _first_window is not None else customtkinter.CTk()
     app.geometry("900x700+0+0")
     app.title("CustomTkinter tests")
     update(app, 0.2)

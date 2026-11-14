@@ -231,7 +231,8 @@ def test_option_menu_dropdown(frame, place):
     command = Recorder()
     option_menu = place(customtkinter.CTkOptionMenu(frame, values=["one", "two", "three"], command=command))
     menu = option_menu._dropdown_menu
-    if frame.tk.call("tk", "windowingsystem") != "aqua":  # menus on macOS are native, not Tk windows
+    # menus on Windows and macOS are native, not Tk windows, and post() waits on Windows until the menu is closed
+    if frame.tk.call("tk", "windowingsystem") == "x11":
         click(option_menu)
         update(frame, 0.1)
         try:
