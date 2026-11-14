@@ -12,6 +12,7 @@ except ImportError:
 from .... import windows  # import windows for isinstance checks
 
 from ..theme import ThemeManager
+from ..core_rendering import DrawEngine
 from ..font import CTkFont
 from ..image import CTkImage
 from ..appearance_mode import CTkAppearanceModeBaseClass
@@ -39,6 +40,7 @@ class CTkBaseClass(tkinter.Frame, CTkAppearanceModeBaseClass, CTkScalingBaseClas
 
         # call init methods of super classes
         tkinter.Frame.__init__(self, master=master, width=width, height=height, **pop_from_dict_by_set(kwargs, self._valid_tk_frame_attributes))
+        DrawEngine.check_shapes_font(self)
         CTkAppearanceModeBaseClass.__init__(self)
         CTkScalingBaseClass.__init__(self, scaling_type="widget")
 

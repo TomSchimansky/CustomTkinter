@@ -5,6 +5,7 @@ from .core_rendering import CTkCanvas
 from .theme import ThemeManager
 from .core_rendering import DrawEngine
 from .core_widget_classes import CTkBaseClass
+from .utility import WHEEL_USES_BUTTON_EVENTS, wheel_event_steps
 
 
 class CTkScrollbar(CTkBaseClass):
@@ -85,7 +86,7 @@ class CTkScrollbar(CTkBaseClass):
             self._canvas.bind("<Leave>", self._on_leave)
         if sequence is None or sequence == "<B1-Motion>":
             self._canvas.bind("<B1-Motion>", self._on_motion)
-        if "linux" in sys.platform:
+        if WHEEL_USES_BUTTON_EVENTS:
             if sequence is None or sequence == "<Button-4>":
                 self._canvas.bind("<Button-4>", self._mouse_scroll_event)
             if sequence is None or sequence == "<Button-5>":
@@ -265,16 +266,14 @@ class CTkScrollbar(CTkBaseClass):
         if self._command is not None:
             if sys.platform.startswith("win"):
                 delta = -int(event.delta/40)
-            elif sys.platform == "darwin":
-                delta = -event.delta
             else:
-                delta = -1 if event.num == 4 else 1
+                delta = -wheel_event_steps(event)
             self._command('scroll', delta, 'units')
         else:
             #empty space is divided in 20 steps
             delta = (1 - self._end_value + self._start_value) / 20
             #condition for both Linux and others OS
-            if event.delta > 0 or event.num == 4:
+            if wheel_event_steps(event) > 0:
                 delta = -delta
 
             if self._start_value + delta < 0.0:

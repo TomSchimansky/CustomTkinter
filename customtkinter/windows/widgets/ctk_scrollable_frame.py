@@ -16,6 +16,7 @@ from .core_widget_classes import CTkBaseClass
 from .ctk_label import CTkLabel
 from .font import CTkFont
 from .theme import ThemeManager
+from .utility import WHEEL_USES_BUTTON_EVENTS, HAS_TOUCHPAD_SCROLL_EVENT, wheel_event_steps, touchpad_scroll_deltas
 
 
 class CTkScrollableFrame(tkinter.Frame, CTkAppearanceModeBaseClass, CTkScalingBaseClass):
@@ -78,11 +79,14 @@ class CTkScrollableFrame(tkinter.Frame, CTkAppearanceModeBaseClass, CTkScalingBa
         self.bind("<Configure>", lambda e: self._parent_canvas.configure(scrollregion=self._parent_canvas.bbox("all")))
         self._parent_canvas.bind("<Configure>", self._fit_frame_dimensions_to_canvas)
 
-        if "linux" in sys.platform:
+        if WHEEL_USES_BUTTON_EVENTS:
             self.bind_all("<Button-4>", self._mouse_wheel_all, add=True)
             self.bind_all("<Button-5>", self._mouse_wheel_all, add=True)
         else:
             self.bind_all("<MouseWheel>", self._mouse_wheel_all, add=True)
+        if HAS_TOUCHPAD_SCROLL_EVENT:
+            self._touchpad_pixels = [0, 0]
+            self.bind_all("<TouchpadScroll>", self._touchpad_scroll_all, add=True)
 
         self.bind_all("<KeyPress-Shift_L>", self._keyboard_shift_press_all, add=True)
         self.bind_all("<KeyPress-Shift_R>", self._keyboard_shift_press_all, add=True)
@@ -278,13 +282,29 @@ class CTkScrollableFrame(tkinter.Frame, CTkAppearanceModeBaseClass, CTkScalingBa
                     if self._parent_canvas.yview() != (0.0, 1.0):
                         self._parent_canvas.yview("scroll", -event.delta, "units")
             else:
+                steps = -wheel_event_steps(event)
                 if self._shift_pressed:
                     if self._parent_canvas.xview() != (0.0, 1.0):
-                        self._parent_canvas.xview_scroll(-1 if event.num == 4 else 1, "units")
+                        self._parent_canvas.xview_scroll(steps, "units")
                 else:
                     if self._parent_canvas.yview() != (0.0, 1.0):
-                        self._parent_canvas.yview_scroll(-1 if event.num == 4 else 1, "units")
+                        self._parent_canvas.yview_scroll(steps, "units")
 
+    def _touchpad_scroll_all(self, event):
+        # two-finger scrolling on Windows and macOS with Tk 9, the deltas are in pixels,
+        # they are added up until they reach the scroll increment of the canvas
+        if self._check_if_valid_scroll(event.widget):
+            delta_x, delta_y = touchpad_scroll_deltas(event)
+            for axis, delta, view, option in ((0, delta_x, self._parent_canvas.xview, "xscrollincrement"),
+                                              (1, delta_y, self._parent_canvas.yview, "yscrollincrement")):
+                if delta == 0 or view() == (0.0, 1.0):
+                    continue
+                increment = max(1, self._parent_canvas.winfo_pixels(self._parent_canvas.cget(option)))
+                self._touchpad_pixels[axis] -= delta
+                units = int(self._touchpad_pixels[axis] / increment)
+                if units != 0:
+                    self._touchpad_pixels[axis] -= units * increment
+                    view("scroll", units, "units")
 
     def _keyboard_shift_press_all(self, event):
         self._shift_pressed = True

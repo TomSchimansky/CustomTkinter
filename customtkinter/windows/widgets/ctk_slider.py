@@ -6,6 +6,7 @@ from .core_rendering import CTkCanvas
 from .theme import ThemeManager
 from .core_rendering import DrawEngine
 from .core_widget_classes import CTkBaseClass
+from .utility import WHEEL_USES_BUTTON_EVENTS, wheel_event_steps
 
 
 class CTkSlider(CTkBaseClass):
@@ -118,7 +119,7 @@ class CTkSlider(CTkBaseClass):
             self._canvas.bind("<Button-1>", self._clicked)
         if sequence is None or sequence == "<B1-Motion>":
             self._canvas.bind("<B1-Motion>", self._clicked)
-        if "linux" in sys.platform:
+        if WHEEL_USES_BUTTON_EVENTS:
             if sequence is None or sequence == "<Button-4>":
                 self._canvas.bind("<Button-4>", self._mouse_scroll_event)
             if sequence is None or sequence == "<Button-5>":
@@ -352,8 +353,7 @@ class CTkSlider(CTkBaseClass):
 
     def _mouse_scroll_event(self, event):
         delta = self._scroll_step
-        #condition for both Linux and others OS
-        if event.delta < 0 or event.num == 5:
+        if wheel_event_steps(event) < 0:
             delta = -delta
 
         self._update_value(self._value + delta)

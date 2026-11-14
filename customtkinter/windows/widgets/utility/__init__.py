@@ -1,1 +1,2 @@
 from .utility_functions import pop_from_dict_by_set, check_kwargs_empty
+from .utility_functions import WHEEL_USES_BUTTON_EVENTS, HAS_TOUCHPAD_SCROLL_EVENT, wheel_event_steps, touchpad_scroll_deltas
