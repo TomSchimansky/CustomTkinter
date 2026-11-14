@@ -24,6 +24,7 @@ ToDo:
  - Fonts are only copied to ~/.fonts on Linux if they are not already there
  - Widgets are created 25-60% faster, resizing, scaling and appearance mode changes are 30-45% faster, scrolling in CTkScrollableFrame on macOS is about 4 times faster
  - The system appearance mode is checked every second on Linux instead of every 30 ms, which used about 10% CPU while idle
+ - Package metadata moved from setup.cfg to pyproject.toml, the PyPI page has a short readme and links to the GitHub repository and the documentation
 
 ### Fixed
  - Mouse wheel scrolling on Linux with Tk 9 for CTkScrollableFrame, CTkScrollbar and CTkSlider (Tk 9 sends <MouseWheel> instead of <Button-4>/<Button-5>)
@@ -46,6 +47,7 @@ ToDo:
  - CTkScrollableFrame: cget("label_text_color") raised an error
  - A color tuple with one element raised an IndexError instead of a ValueError
  - "bad screen distance" errors with Tk 8.6 when the app sets a locale with a decimal comma, like locale.setlocale(locale.LC_ALL, "") on a German system
+ - License on PyPI was "Creative Commons Zero v1.0 Universal" instead of MIT
 
 ## [6.0.0] - 2026-01-21
 ### Added
