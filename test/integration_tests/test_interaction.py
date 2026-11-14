@@ -230,15 +230,17 @@ def test_tabview_switch_by_click(frame, place):
 def test_option_menu_dropdown(frame, place):
     command = Recorder()
     option_menu = place(customtkinter.CTkOptionMenu(frame, values=["one", "two", "three"], command=command))
-    click(option_menu)
-    update(frame, 0.1)
     menu = option_menu._dropdown_menu
-    try:
-        assert menu.is_open()
-        menu.invoke(2)
-    finally:
-        menu.close()
+    if frame.tk.call("tk", "windowingsystem") != "aqua":  # menus on macOS are native, not Tk windows
+        click(option_menu)
         update(frame, 0.1)
+        try:
+            assert menu.is_open()
+        finally:
+            menu.close()
+            update(frame, 0.1)
+    menu.invoke(2)
+    update(frame)
     assert option_menu.get() == "three"
     assert command.calls == [("three",)]
 

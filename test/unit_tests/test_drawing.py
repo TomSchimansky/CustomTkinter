@@ -223,6 +223,47 @@ def test_itemconfig_with_tag(canvas):
     canvas.itemconfig("missing", fill="green")  # no error
 
 
+@pytest.fixture
+def decimal_comma_locale():
+    """ sets a locale with a decimal comma for LC_NUMERIC, like apps do with locale.setlocale(locale.LC_ALL, "") """
+    import locale
+    previous = locale.setlocale(locale.LC_NUMERIC)
+    for name in ("de_DE.UTF-8", "de_DE", "German_Germany", "fr_FR.UTF-8", "fr_FR"):
+        try:
+            locale.setlocale(locale.LC_NUMERIC, name)
+        except locale.Error:
+            continue
+        if locale.localeconv()["decimal_point"] == ",":
+            break
+    else:
+        pytest.skip("no locale with a decimal comma installed")
+    yield
+    locale.setlocale(locale.LC_NUMERIC, previous)
+
+
+def test_float_widths_with_decimal_comma_locale(decimal_comma_locale, frame):
+    canvas = CTkCanvas(frame, width=100.0, height=50.0)
+    canvas.configure(width=120.0, height=60.5)
+    line = canvas.create_line(0, 0, 10, 10, width=2.0)
+    polygon = canvas.create_polygon(0, 0, 10, 0, 10, 10, width=8.0, tags="polygon")
+    canvas.itemconfig("polygon", width=8.5)
+    canvas.itemconfigure(line, width=3.0)
+    assert float(canvas.itemcget(polygon, "width")) in (8, 8.5, 9)
+
+    # polygon_shapes on macOS keeps the corner radius as float
+    for method in DRAWING_METHODS:
+        DrawEngine.preferred_drawing_method = method
+        engine = DrawEngine(canvas)
+        engine.draw_rounded_rect_with_border(100, 30, 7.5, 1)
+        engine.draw_rounded_rect_with_border(100, 30, 8.0, 2.0)
+        engine.draw_rounded_progress_bar_with_border(100, 15, 7.5, 0, 0, 0.5, "w")
+        canvas.delete("all")
+    for widget_class in (customtkinter.CTkProgressBar, customtkinter.CTkSlider, customtkinter.CTkSwitch):
+        widget_class(frame).pack()
+    customtkinter.set_widget_scaling(1.25)
+    update(frame)
+
+
 # ---------------------------------------------------------------- antialiased images
 
 @pytest.mark.skipif(tkinter.TkVersion < 8.6, reason="Tk 8.5 can't load PNG images")

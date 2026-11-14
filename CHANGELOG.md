@@ -45,6 +45,7 @@ ToDo:
  - CTkTabview: insert() and move() didn't update the tab order, changing corner_radius without tabs raised a KeyError, cget() of the segmented_button colors didn't work
  - CTkScrollableFrame: cget("label_text_color") raised an error
  - A color tuple with one element raised an IndexError instead of a ValueError
+ - "bad screen distance" errors with Tk 8.6 when the app sets a locale with a decimal comma, like locale.setlocale(locale.LC_ALL, "") on a German system
 
 ## [6.0.0] - 2026-01-21
 ### Added
