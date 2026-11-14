@@ -313,7 +313,10 @@ class CTkScrollableFrame(tkinter.Frame, CTkAppearanceModeBaseClass, CTkScalingBa
         self._shift_pressed = False
 
     def _check_if_valid_scroll(self, widget):
-        if widget == self._parent_canvas:
+        if not isinstance(widget, tkinter.Misc):
+            # widgets created in Tcl, like the ones of tkinter.filedialog on Linux, are only a path string (#2866)
+            return False
+        elif widget == self._parent_canvas:
             return True
         elif isinstance(widget, (CTkScrollbar, CTkSlider, CTkTextbox)):
             return False
