@@ -1,6 +1,7 @@
 import sys
 import os
 import shutil
+import filecmp
 import tkinter
 from typing import Union
 
@@ -76,8 +77,17 @@ class FontManager:
 
         # Linux
         elif sys.platform.startswith("linux"):
+            destination = os.path.join(os.path.expanduser(cls.linux_font_path), os.path.basename(font_path))
             try:
-                shutil.copyfile(font_path, os.path.join(os.path.expanduser(cls.linux_font_path), os.path.basename(font_path)))
+                # don't write the file again if it's already there, this would also make fontconfig scan the folder again
+                if os.path.isfile(destination) and filecmp.cmp(font_path, destination, shallow=False):
+                    return True
+                try:
+                    shutil.copyfile(font_path, destination)
+                except PermissionError:
+                    # older versions copied the permissions of the source file, which can be read-only (#2693)
+                    os.chmod(destination, 0o644)
+                    shutil.copyfile(font_path, destination)
                 return True
             except Exception as err:
                 sys.stderr.write("FontManager error: " + str(err) + "\n")
