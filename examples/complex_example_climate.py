@@ -504,7 +504,6 @@ class App(customtkinter.CTk):
         customtkinter.set_widget_scaling(int(scaling.replace("%", "")) / 100)
         self.after(50, self.update_chart_dpi)
 
-
     def destroy(self):
         customtkinter.AppearanceModeTracker.remove(self.appearance_mode_changed)
         super().destroy()
