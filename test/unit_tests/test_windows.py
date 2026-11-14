@@ -44,10 +44,12 @@ class TestWindowGeometry:
 
     def test_geometry_with_window_scaling(self, request, window_fixture):
         win = request.getfixturevalue(window_fixture)
-        customtkinter.set_window_scaling(1.5)
+        # with 1.5, the 900x700 test window would be larger than the screen of the macOS CI runner, macOS and Tk then
+        # resize it in an endless loop
+        customtkinter.set_window_scaling(1.25)
         win.geometry("300x200")
         update(win, 0.3)
-        assert (win.winfo_width(), win.winfo_height()) == (450, 300)
+        assert (win.winfo_width(), win.winfo_height()) == (375, 250)
         assert win.geometry().startswith("300x200")
 
     def test_minsize_and_maxsize(self, request, window_fixture):
