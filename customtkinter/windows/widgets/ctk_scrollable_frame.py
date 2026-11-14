@@ -38,7 +38,7 @@ class CTkScrollableFrame(tkinter.Frame, CTkAppearanceModeBaseClass, CTkScalingBa
                  label_text: str = "",
                  label_font: Optional[Union[tuple, CTkFont]] = None,
                  label_anchor: str = "center",
-                 orientation: Literal["vertical", "horizontal"] = "vertical"):
+                 orientation: Literal["vertical", "horizontal", "both"] = "vertical"):
 
         self._orientation = orientation
 
@@ -60,7 +60,15 @@ class CTkScrollableFrame(tkinter.Frame, CTkAppearanceModeBaseClass, CTkScalingBa
             self._scrollbar = CTkScrollbar(master=self._parent_frame, orientation="vertical", command=self._parent_canvas.yview,
                                            fg_color=scrollbar_fg_color, button_color=scrollbar_button_color, button_hover_color=scrollbar_button_hover_color)
             self._parent_canvas.configure(yscrollcommand=self._scrollbar.set)
+        elif self._orientation == "both":
+            self._scrollbar = CTkScrollbar(master=self._parent_frame, orientation="vertical", command=self._parent_canvas.yview,
+                                            fg_color=scrollbar_fg_color, button_color=scrollbar_button_color, button_hover_color=scrollbar_button_hover_color)
+            self._parent_canvas.configure(yscrollcommand=self._scrollbar.set)
 
+            self._h_scrollbar = CTkScrollbar(master=self._parent_frame, orientation="horizontal", command=self._parent_canvas.xview,
+                                            fg_color=scrollbar_fg_color, button_color=scrollbar_button_color, button_hover_color=scrollbar_button_hover_color)
+            self._parent_canvas.configure(xscrollcommand=self._h_scrollbar.set)
+        
         self._label_text = label_text
         self._label = CTkLabel(self._parent_frame, text=label_text, anchor=label_anchor, font=label_font,
                                corner_radius=self._parent_frame.cget("corner_radius"), text_color=label_text_color,
@@ -107,16 +115,16 @@ class CTkScrollableFrame(tkinter.Frame, CTkAppearanceModeBaseClass, CTkScalingBa
 
     def _create_grid(self):
         border_spacing = self._apply_widget_scaling(self._parent_frame.cget("corner_radius") + self._parent_frame.cget("border_width"))
-
+        constant_spacing = 2
         if self._orientation == "horizontal":
             border_padding = (0, self._border_width +1)
             self._parent_frame.grid_columnconfigure(0, weight=1)
             self._parent_frame.grid_rowconfigure(1, weight=1)
-            self._parent_canvas.grid(row=1, column=0, sticky="nsew", padx=border_spacing, pady=(border_spacing, 0))
+            self._parent_canvas.grid(row=1, column=0, sticky="nsew", padx=border_spacing)
             self._scrollbar.grid(row=2, column=0, sticky="nsew", padx=border_spacing, pady=border_padding)
 
             if self._label_text is not None and self._label_text != "":
-                self._label.grid(row=0, column=0, sticky="ew", padx=border_spacing, pady=border_spacing)
+                self._label.grid(row=0, column=0, sticky="ew", padx=border_spacing, pady=(border_spacing, constant_spacing))
             else:
                 self._label.grid_forget()
 
@@ -124,11 +132,24 @@ class CTkScrollableFrame(tkinter.Frame, CTkAppearanceModeBaseClass, CTkScalingBa
             border_padding = (0, self._border_width +1)
             self._parent_frame.grid_columnconfigure(0, weight=1)
             self._parent_frame.grid_rowconfigure(1, weight=1)
-            self._parent_canvas.grid(row=1, column=0, sticky="nsew", padx=(border_spacing, 0), pady=border_spacing)
-            self._scrollbar.grid(row=1, column=1, sticky="nsew", padx=border_padding, pady=border_spacing)
+            self._parent_canvas.grid(row=1, column=0, sticky="nsew", padx=(border_spacing, constant_spacing), pady=( constant_spacing, border_spacing))
+            self._scrollbar.grid(row=1, column=1, sticky="nsew", padx=border_padding, pady=( constant_spacing, border_spacing))
 
             if self._label_text is not None and self._label_text != "":
-                self._label.grid(row=0, column=0, columnspan=2, sticky="ew", padx=border_spacing, pady=border_spacing)
+                self._label.grid(row=0, column=0, columnspan=2, sticky="ew", padx=border_spacing, pady=(border_spacing, constant_spacing))
+            else:
+                self._label.grid_forget()
+
+        elif self._orientation == "both":
+            border_padding = (0, self._border_width +1)
+            self._parent_frame.grid_columnconfigure(0, weight=1)
+            self._parent_frame.grid_rowconfigure(1, weight=1)
+            self._parent_canvas.grid(row=1, column=0, sticky="nsew", padx=(border_spacing, constant_spacing), pady=constant_spacing)
+            self._scrollbar.grid(row=1, column=1, sticky="nsew", padx=border_padding, pady=constant_spacing)
+            self._h_scrollbar.grid(row=2, column=0, sticky="nsew", padx=(border_spacing, constant_spacing), pady=border_padding)
+
+            if self._label_text is not None and self._label_text != "":
+                self._label.grid(row=0, column=0, columnspan=2, sticky="ew", padx=border_spacing, pady=(border_spacing, constant_spacing))
             else:
                 self._label.grid_forget()
 
@@ -252,6 +273,8 @@ class CTkScrollableFrame(tkinter.Frame, CTkAppearanceModeBaseClass, CTkScalingBa
             self._parent_canvas.itemconfigure(self._create_window_id, height=self._parent_canvas.winfo_height())
         elif self._orientation == "vertical":
             self._parent_canvas.itemconfigure(self._create_window_id, width=self._parent_canvas.winfo_width())
+        elif self._orientation == "both":
+            self._parent_canvas.itemconfigure(self._create_window_id)
 
     def _set_scroll_increments(self):
         if sys.platform.startswith("win"):
