@@ -185,3 +185,17 @@ def test_read_xft_dpi_without_xrdb(without_libx11, monkeypatch):
 
     monkeypatch.setattr(subprocess, "run", run)
     assert ScalingTracker._read_xft_dpi(":7.0") is None
+
+
+@pytest.mark.parametrize("scaling", [1.2, 1.25, 1.5, 0.8])
+def test_widget_size_is_exact_with_fractional_scaling(frame, scaling):
+    """ the unscaled size is stored exactly, so that widgets are drawn as large as their canvas """
+    customtkinter.set_widget_scaling(scaling)
+    tabview = customtkinter.CTkTabview(frame, width=200, height=80)
+    tabview.pack()
+    tabview.add("Options")
+    tabview.add("Notes")
+    update(frame, 0.1)
+    for button in tabview._segmented_button._buttons_dict.values():
+        assert button._apply_widget_scaling(button._current_width) == pytest.approx(button.winfo_width())
+        assert button._apply_widget_scaling(button._current_height) == pytest.approx(button.winfo_height())

@@ -191,3 +191,19 @@ def test_widget_scaling(method, white):
     assert image.size == (150, 45)
     assert near(image.getpixel((75, 1)), RED)
     assert near(image.getpixel((0, 0)), WHITE)
+
+
+@pytest.mark.parametrize("scaling", [1.2, 1.25, 1.5])
+def test_no_gaps_with_fractional_scaling(method, white, scaling):
+    """ the last pixel row and column of the canvas were not drawn with scaling like 125% """
+    customtkinter.set_widget_scaling(scaling)
+    tabview = customtkinter.CTkTabview(white, width=200, height=80, fg_color="#ffffff", segmented_button_fg_color="#ff0000",
+                                       segmented_button_unselected_color="#ff0000", segmented_button_selected_color="#0000ff")
+    tabview.add("Options")
+    tabview.add("Notes")
+    tabview.pack(padx=20, pady=20)
+    update(white, 0.1)
+    image = grab(tabview._segmented_button)
+    width, height = image.size
+    for corner in ((0, 0), (width - 1, 0), (0, height - 1), (width - 1, height - 1)):
+        assert near(image.getpixel(corner), WHITE), f"corner {corner} is not drawn with the background color"
