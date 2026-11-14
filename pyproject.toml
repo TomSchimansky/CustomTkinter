@@ -1,6 +1,41 @@
 [build-system]
-requires = ["setuptools>=42", "wheel"]
+requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
+
+[project]
+name = "customtkinter"
+version = "6.0.0"
+description = "Create modern looking GUIs with Python"
+readme = "Readme_PyPI.md"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Tom Schimansky" }]
+requires-python = ">=3.7"
+dependencies = [
+    "darkdetect",
+    "typing_extensions; python_version<='3.7'",
+    "packaging",
+]
+keywords = ["tkinter", "gui", "ui", "widgets", "dark mode"]
+classifiers = [
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3 :: Only",
+    "Topic :: Software Development :: User Interfaces",
+]
+
+[project.urls]
+Homepage = "https://customtkinter.tomschimansky.com"
+Documentation = "https://customtkinter.tomschimansky.com/documentation"
+Tutorials = "https://customtkinter.tomschimansky.com/tutorial"
+Source = "https://github.com/TomSchimansky/CustomTkinter"
+Issues = "https://github.com/TomSchimansky/CustomTkinter/issues"
+Changelog = "https://github.com/TomSchimansky/CustomTkinter/blob/master/CHANGELOG.md"
+
+[tool.setuptools.packages.find]
+include = ["customtkinter*"]
+
+[tool.pytest.ini_options]
+testpaths = ["test/unit_tests", "test/integration_tests"]
 
 [tool.tbump]
 github_url = "https://github.com/TomSchimansky/CustomTkinter"
@@ -27,7 +62,8 @@ tag_template = "v{new_version}"
 # section containing the path of the file, relative to the
 # tbump.toml location.
 [[tool.tbump.file]]
-src = "setup.cfg"
+src = "pyproject.toml"
+search = "version = \"{current_version}\""
 
 [[tool.tbump.file]]
 src = "customtkinter/__init__.py"
