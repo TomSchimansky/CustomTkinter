@@ -2,6 +2,7 @@
 Methods, commands, variables and states of the widgets.
 """
 
+import sys
 import tkinter
 
 import pytest
@@ -781,3 +782,38 @@ class TestCTkScrollableFrame:
         assert scrollable._check_if_valid_scroll(".tcl_created_widget") is False  # #2866
         inner = customtkinter.CTkLabel(scrollable)
         assert scrollable._check_if_valid_scroll(inner._label) is True
+
+
+@pytest.mark.parametrize("widget_class", [customtkinter.CTkOptionMenu, customtkinter.CTkComboBox])
+def test_dropdown_opens_on_release_on_macos(frame, monkeypatch, widget_class):
+    """ on macOS the native menu takes the mouse release, so the menu is opened on the release there """
+    from customtkinter.windows.widgets.core_widget_classes import DropdownMenu
+    monkeypatch.setattr(DropdownMenu, "open_event", "<ButtonRelease-1>")
+    opened = []
+    monkeypatch.setattr(DropdownMenu, "open", lambda self, x, y: opened.append((x, y)))
+    widget = widget_class(frame, values=["a", "b"])
+    widget.pack()
+    update(frame)
+
+    canvas = widget._canvas
+    x, y = canvas.winfo_width() - 8, canvas.winfo_height() // 2  # dropdown arrow
+    canvas.event_generate("<Enter>", x=x, y=y)
+    canvas.event_generate("<Motion>", x=x, y=y)
+    canvas.event_generate("<Button-1>", x=x, y=y)
+    update(frame)
+    assert opened == []  # not on the press
+    canvas.event_generate("<ButtonRelease-1>", x=x, y=y)
+    update(frame)
+    assert len(opened) == 1
+
+    widget._close_on_next_click = False
+    canvas.event_generate("<Button-1>", x=x, y=y)
+    canvas.event_generate("<ButtonRelease-1>", x=x + 500, y=y)  # released outside of the widget
+    update(frame)
+    assert len(opened) == 1
+
+
+def test_dropdown_opens_on_press_on_other_platforms():
+    from customtkinter.windows.widgets.core_widget_classes import DropdownMenu
+    expected = "<ButtonRelease-1>" if sys.platform == "darwin" else "<Button-1>"
+    assert DropdownMenu.open_event == expected

@@ -10,6 +10,18 @@ from ..scaling import CTkScalingBaseClass
 
 
 class DropdownMenu(tkinter.Menu, CTkAppearanceModeBaseClass, CTkScalingBaseClass):
+    # Event that opens the menu in CTkOptionMenu and CTkComboBox. On macOS the native menu takes the mouse release of
+    # the click that opened it, Tk would then send the following mouse and wheel events to the widget until the next
+    # click, so scrolling wouldn't work. The menu is opened on the release there.
+    open_event: str = "<ButtonRelease-1>" if sys.platform == "darwin" else "<Button-1>"
+
+    @staticmethod
+    def is_click_outside(event) -> bool:
+        """ True for a mouse release outside of the widget that got the press, then the menu is not opened """
+        if event is None or getattr(event, "type", None) != tkinter.EventType.ButtonRelease:
+            return False
+        return not (0 <= event.x < event.widget.winfo_width() and 0 <= event.y < event.widget.winfo_height())
+
     def __init__(self, *args,
                  min_character_width: int = 18,
 

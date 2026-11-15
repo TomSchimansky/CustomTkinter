@@ -126,8 +126,8 @@ class CTkComboBox(CTkBaseClass):
             self._canvas.tag_bind("dropdown_arrow", "<Enter>", self._on_enter)
             self._canvas.tag_bind("right_parts", "<Leave>", self._on_leave)
             self._canvas.tag_bind("dropdown_arrow", "<Leave>", self._on_leave)
-            self._canvas.tag_bind("right_parts", "<Button-1>", self._clicked)
-            self._canvas.tag_bind("dropdown_arrow", "<Button-1>", self._clicked)
+            self._canvas.tag_bind("right_parts", DropdownMenu.open_event, self._clicked)
+            self._canvas.tag_bind("dropdown_arrow", DropdownMenu.open_event, self._clicked)
 
     def _create_grid(self):
         self._canvas.grid(row=0, column=0, rowspan=1, columnspan=1, sticky="nsew")
@@ -410,6 +410,8 @@ class CTkComboBox(CTkBaseClass):
             return self._values.index(value)
 
     def _clicked(self, event=None):
+        if DropdownMenu.is_click_outside(event):
+            return
         if self._close_on_next_click:
             self._dropdown_menu.close()
             self._close_on_next_click = False
