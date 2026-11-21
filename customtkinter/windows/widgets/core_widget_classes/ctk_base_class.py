@@ -180,10 +180,13 @@ class CTkBaseClass(tkinter.Frame, CTkAppearanceModeBaseClass, CTkScalingBaseClas
             return image
 
     def _update_dimensions_event(self, event):
+        new_width = self._reverse_widget_scaling(float(event.width))
+        new_height = self._reverse_widget_scaling(float(event.height))
+
         # only redraw if dimensions changed (for performance), independent of scaling
-        if round(self._current_width) != round(self._reverse_widget_scaling(event.width)) or round(self._current_height) != round(self._reverse_widget_scaling(event.height)):
-            self._current_width = self._reverse_widget_scaling(event.width)  # adjust current size according to new size given by event
-            self._current_height = self._reverse_widget_scaling(event.height)  # _current_width and _current_height are independent of the scale
+        if round(self._apply_widget_scaling(self._current_width)) != event.width or round(self._apply_widget_scaling(self._current_height)) != event.height:
+            self._current_width = new_width  # adjust current size according to new size given by event
+            self._current_height = new_height  # _current_width and _current_height are independent of the scale
 
             self._draw(no_color_updates=True)  # faster drawing without color changes
 
