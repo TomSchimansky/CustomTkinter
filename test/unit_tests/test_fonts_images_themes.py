@@ -344,6 +344,29 @@ def test_save_custom_theme(tmp_path):
         assert json.load(file)["CTkButton"]["corner_radius"] == 17
 
 
+def test_custom_theme_file_is_read_as_utf8(tmp_path, monkeypatch):
+    from customtkinter.windows.widgets.theme import theme_manager
+
+    real_open = open
+
+    def open_cp1252(file, mode="r", *args, **kwargs):
+        # without an explicit encoding, open() uses cp1252, as it does on a non-UTF-8 Windows locale
+        if "b" not in mode and not args:
+            kwargs.setdefault("encoding", "cp1252")
+        return real_open(file, mode, *args, **kwargs)
+
+    monkeypatch.setattr(theme_manager, "open", open_cp1252, raising=False)
+    with real_open(os.path.join(THEMES_DIR, "blue.json"), encoding="utf-8") as file:
+        theme = json.load(file)
+    for platform_font in theme["CTkFont"].values():
+        platform_font["family"] = "Łukasz ✨"
+    path = tmp_path / "custom_theme.json"
+    path.write_text(json.dumps(theme, ensure_ascii=False), encoding="utf-8")
+
+    customtkinter.set_default_color_theme(str(path))
+    assert ThemeManager.theme["CTkFont"]["family"] == "Łukasz ✨"
+
+
 def test_save_built_in_theme_raises():
     customtkinter.set_default_color_theme("green")
     with pytest.raises(ValueError):
